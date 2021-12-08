@@ -1,0 +1,55 @@
+= https://no-website-yet.org[MigrateDB]
+
+image:https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat[GitHub license,link=http://www.apache.org/licenses/LICENSE-2.0]
+
+== Database Migrations, Easy and Free
+
+Evolve your database schema easily and reliably across all your instances.
+
+=== Supported databases
+
+Oracle, SQL Server, DB2, MySQL, Aurora MySQL, MariaDB, Percona XtraDB Cluster, PostgreSQL, Aurora PostgreSQL, Redshift, CockroachDB, SAP HANA, Sybase ASE, Informix, H2, HSQLDB, Derby, SQLite, Firebird
+
+== Documentation
+
+https://no-website-yet.org
+
+== Support
+
+The aim of this spare-time-project is to maintain a library for database migrations.
+We believe the library to be feature-complete.
+Bugs will be fixed, and new database versions will be supported as long as the changes are testable.
+
+New features are unlikely to be added, unless they are requested by a large number of users and are contributed via some excellent merge request.
+
+== How to contribute
+
+https://no-website-yet.org/documentation/contribute
+
+== Legacy
+
+This project was forked from Flyway 7.15. There is no affiliation between this project and the owners of the Flyway trademark.
+
+== License
+
+Copyright (C) Red Gate Software Ltd 2010-2021 +
+Copyright 2022 The MigrateDB contributors
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and limitations under the License.
+
+== MigrateDB Contributors
+
+In alphabetical order:
+
+|===
+|Name |GPG Key
+
+|Daniel Huss
+|7DF871E08AA9A9005514E44D8F6800C3B4CCDA0A
+|===
