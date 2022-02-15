@@ -14,10 +14,26 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl
+package migratedb.integrationtest.dsl.internal
 
-class ThenStep<G : Any>(val given: G) {
-    fun columnExists(table: String, column: String) {
+import migratedb.integrationtest.dsl.Dsl
+import migratedb.integrationtest.dsl.RunMigrateSpec
 
+class WhenStepImpl<G : Any>(
+    override val given: G,
+    givenInfo: GivenInfo
+) : AutoCloseable, Dsl.WhenStep<G> {
+
+    private val runMigrate = RunMigrateImpl(givenInfo)
+
+    override fun migrate(block: (RunMigrateSpec).() -> Unit) {
+        runMigrate.block()
+    }
+
+    override fun close() {
+    }
+
+    fun executeActions() {
+        runMigrate.executeActions()
     }
 }

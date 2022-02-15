@@ -30,12 +30,14 @@ object Exec {
         return CloseableFuture(executor.submit(block))
     }
 
-    fun tryAll(vararg blocks: () -> Unit) {
-        var thrown: Throwable? = null
+    fun tryAll(vararg blocks: () -> Unit) = tryAll(blocks.toList())
+
+    fun tryAll(blocks: Iterable<() -> Unit>) {
+        var thrown: Exception? = null
         blocks.forEach {
             try {
                 it()
-            } catch (t: Throwable) {
+            } catch (t: Exception) {
                 if (t is InterruptedException) Thread.currentThread().interrupt()
                 if (thrown == null) thrown = t
                 else if (t != thrown) thrown!!.addSuppressed(t)

@@ -16,65 +16,58 @@
 
 package migratedb.integrationtest
 
-import migratedb.integrationtest.Exec.async
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
 
 class SharedResources private constructor() : ExtensionContext.Store.CloseableResource {
+
     companion object {
         fun ExtensionContext.Store.resources(): SharedResources {
             return getOrComputeIfAbsent(SharedResources::class.java, { SharedResources() }, SharedResources::class.java)
         }
+
+        private const val maxContainers = 10
     }
 
     private val lock = object : Any() {}
     private var closed = false
     private val network = Network.newNetwork()
-    private val maxContainers = 10
-    private val containers = object : LinkedHashMap<Any, AutoCloseable>(maxContainers) {
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Any, AutoCloseable>): Boolean {
-            return if (size >= maxContainers) {
-                eldest.value.close()
-                true
-            } else false
+    private val containerPool = ContainerPool(maxContainers)
+    private val logConsumersByAlias = LinkedHashMap<String, ToFileLogConsumer>()
+
+
+    private fun getOrCreateLogConsumer(alias: String): ToFileLogConsumer {
+        synchronized(lock) {
+            checkNotClosed()
+            return logConsumersByAlias.computeIfAbsent(alias) { ToFileLogConsumer(alias) }
         }
     }
 
-    private data class ContainerKey(val alias: String)
-    private data class LogConsumerKey(val alias: String)
-
-    @Suppress("UNCHECKED_CAST")
-    private fun <X : AutoCloseable> getOrCreate(key: Any, supplier: () -> X): X = synchronized(lock) {
-        if (closed) throw IllegalStateException("Closed")
-        containers.getOrPut(key) { supplier() } as X
-    }
-
-    fun <T : GenericContainer<*>> container(alias: String) = synchronized(lock) {
-        @Suppress("UNCHECKED_CAST")
-        containers[ContainerKey(alias)] as? T
-    }
-
-    fun <T : GenericContainer<*>> container(alias: String, setup: () -> T): T {
-        return getOrCreate(ContainerKey(alias)) {
-            setup().also {
-                it.withNetworkAliases(alias)
-                it.withNetwork(network)
-                it.withLogConsumer(getOrCreate(LogConsumerKey(alias)) { ToFileLogConsumer(alias) })
-                it.start()
+    fun <T : GenericContainer<*>> container(alias: String, setup: () -> T): Lease<T> {
+        synchronized(lock) {
+            checkNotClosed()
+            return containerPool.lease(alias) {
+                setup().also {
+                    it.withNetworkAliases(alias)
+                    it.withNetwork(network)
+                    it.withLogConsumer(getOrCreateLogConsumer(alias))
+                    it.start()
+                }
             }
         }
     }
 
+    private fun checkNotClosed() {
+        if (closed) throw IllegalStateException("Closed")
+    }
 
     override fun close() {
         synchronized(lock) {
             closed = true
             network.use {
-                containers.values.reversed()
-                    .asSequence()
-                    .map { async { it.close() } }
-                    .forEach { it() }
+                containerPool.use {}
+                logConsumersByAlias.values.reversed().forEach { it.close() }
             }
         }
     }

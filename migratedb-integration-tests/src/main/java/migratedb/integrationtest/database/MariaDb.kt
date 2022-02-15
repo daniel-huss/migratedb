@@ -17,16 +17,14 @@
 package migratedb.integrationtest.database
 
 import migratedb.core.internal.database.mysql.mariadb.MariaDBDatabaseType
-import migratedb.integrationtest.SafeIdentifier
-import migratedb.integrationtest.SharedResources
-import migratedb.integrationtest.awaitConnectivity
+import migratedb.integrationtest.*
 import org.mariadb.jdbc.MariaDbDataSource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
 import java.sql.Connection
 import javax.sql.DataSource
 
-enum class MariaDb(image: String) : SupportedDatabase {
+enum class MariaDb(image: String) : DatabaseSupport {
     V10_2("mariadb:10.2"),
     V10_3("mariadb:10.3"),
     V10_4("mariadb:10.4"),
@@ -35,8 +33,8 @@ enum class MariaDb(image: String) : SupportedDatabase {
     V10_7("mariadb:10.7"),
     ;
 
+    private val containerAlias = "mariadb_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
-    override val type = MariaDBDatabaseType()
 
     override fun toString() = "MariaDB $name"
 
@@ -44,50 +42,67 @@ enum class MariaDb(image: String) : SupportedDatabase {
         companion object {
             private const val port = 3306
             private const val password = "test"
-            private const val user = "mariadb"
-            private const val database = "mariadb"
+            const val adminUser = "root"
+            const val regularUser = "mariadb"
+            const val defaultDatabase = "mariadb"
         }
 
-        fun dataSource(): DataSource {
+        fun dataSource(user: String, databaseAndSchema: String): DataSource {
             return MariaDbDataSource().also {
                 it.user = user
                 it.setPassword(password)
                 it.port = port
-                it.databaseName = database
+                it.databaseName = databaseAndSchema
             }
         }
 
         init {
-            withEnv("MARIADB_USER", user)
+            withEnv("MARIADB_USER", regularUser)
             withEnv("MARIADB_PASSWORD", password)
             withEnv("MARIADB_ROOT_PASSWORD", password)
             withExposedPorts(port)
         }
     }
 
-    private val containerAlias = "mariadb_${name.lowercase()}"
+    override fun get(sharedResources: SharedResources): DatabaseSupport.Handle {
+        return Handle(sharedResources.container(containerAlias) { Container(image) })
+    }
 
-    override fun createDatabaseIfNotExists(sharedResources: SharedResources, dbName: SafeIdentifier): DataSource {
-        return sharedResources.container(containerAlias) {
-            Container(image)
-        }.dataSource().also { ds ->
-            ds.awaitConnectivity().use {
-                createDatabaseIfNotExists(it, dbName)
+    private class Handle(private val container: Lease<Container>) : DatabaseSupport.Handle {
+        override val type = MariaDBDatabaseType()
+
+        private val adminDataSource = container().dataSource(Container.adminUser, Container.defaultDatabase)
+
+        override fun createDatabaseIfNotExists(dbName: SafeIdentifier): DataSource {
+            return adminDataSource.also { ds ->
+                ds.awaitConnectivity().use {
+                    createDatabaseIfNotExists(it, dbName)
+                }
             }
         }
-    }
 
-    private fun createDatabaseIfNotExists(connection: Connection, dbName: SafeIdentifier) {
-        connection.createStatement().use { s ->
-            s.executeUpdate("create database if not exists $dbName")
-        }
-    }
-
-    override fun dropDatabaseIfExists(sharedResources: SharedResources, dbName: SafeIdentifier) {
-        sharedResources.container<Container>(containerAlias)?.dataSource()?.awaitConnectivity()?.use { connection ->
+        private fun createDatabaseIfNotExists(connection: Connection, dbName: SafeIdentifier) {
             connection.createStatement().use { s ->
-                s.executeUpdate("drop database if exists $dbName")
+                s.executeUpdate("create database if not exists $dbName")
             }
         }
+
+        override fun newAdminConnection(databaseName: SafeIdentifier, schemaName: SafeIdentifier): DataSource {
+            return container().dataSource(Container.adminUser, "${databaseName}_${schemaName}")
+        }
+
+        override fun dropDatabaseIfExists(dbName: SafeIdentifier) {
+            adminDataSource.awaitConnectivity().use { connection ->
+                connection.createStatement().use { s ->
+                    s.executeUpdate("drop database if exists $dbName")
+                }
+            }
+        }
+
+        override fun nextMutation(schemaName: SafeIdentifier): IndependentDatabaseMutation {
+            return BasicCreateTableMutation(schemaName, Names.nextTable())
+        }
+
+        override fun close() = container.close()
     }
 }

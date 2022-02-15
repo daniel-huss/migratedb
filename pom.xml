@@ -334,6 +334,11 @@
                 <artifactId>logback-classic</artifactId>
                 <version>1.2.8</version>
             </dependency>
+            <dependency>
+                <groupId>io.kotest</groupId>
+                <artifactId>kotest-assertions-core-jvm</artifactId>
+                <version>5.0.3</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

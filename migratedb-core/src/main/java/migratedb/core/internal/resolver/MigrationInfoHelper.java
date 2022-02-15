@@ -39,7 +39,6 @@ public class MigrationInfoHelper {
      * @param migrationName The migration name to parse. Should not contain any folders or packages.
      * @param prefix        The migration prefix.
      * @param separator     The migration separator.
-     * @param suffixes      The migration suffixes. Must not be empty. DEPRECATED: TO BE REMOVED
      * @param repeatable    Whether this is a repeatable migration.
      *
      * @return The extracted schema version.
@@ -49,53 +48,39 @@ public class MigrationInfoHelper {
     public static Pair<MigrationVersion, String> extractVersionAndDescription(String migrationName,
                                                                               String prefix,
                                                                               String separator,
-                                                                              @Deprecated String[] suffixes,
                                                                               boolean repeatable) {
-        // Only handles Java migrations now
-        String cleanMigrationName = cleanMigrationName(migrationName, prefix, suffixes);
-
-        int separatorPos = cleanMigrationName.indexOf(separator);
+        int separatorPos = migrationName.indexOf(separator);
 
         String version;
         String description;
         if (separatorPos < 0) {
-            version = cleanMigrationName;
+            version = migrationName.substring(prefix.length());
             description = "";
         } else {
-            version = cleanMigrationName.substring(0, separatorPos);
-            description = cleanMigrationName.substring(separatorPos + separator.length()).replace("_", " ");
+            version = migrationName.substring(prefix.length(), separatorPos);
+            description = migrationName.substring(separatorPos + separator.length()).replace("_", " ");
         }
 
         if (StringUtils.hasText(version)) {
             if (repeatable) {
                 throw new MigrateDbException("Wrong repeatable migration name format: " + migrationName
-                                             + " (It cannot contain a version and should look like this: "
-                                             + prefix + separator + description + suffixes[0] + ")");
+                        + " (It cannot contain a version and should look like this: "
+                        + prefix + separator + description + ")");
             }
             try {
                 return Pair.of(MigrationVersion.fromVersion(version), description);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 throw new MigrateDbException("Wrong versioned migration name format: " + migrationName
-                                             + " (could not recognise version number " + version + ")", e);
+                        + " (could not recognise version number " + version + ")", e);
             }
         }
 
         if (!repeatable) {
             throw new MigrateDbException("Wrong versioned migration name format: " + migrationName
-                                         + " (It must contain a version and should look like this: "
-                                         + prefix + "1.2" + separator + description + suffixes[0] + ")");
+                    + " (It must contain a version and should look like this: "
+                    + prefix + "1.2" + separator + description + ")");
         }
         return Pair.of(null, description);
     }
 
-    private static String cleanMigrationName(String migrationName, String prefix, String[] suffixes) {
-        for (String suffix : suffixes) {
-            if (migrationName.endsWith(suffix)) {
-                return migrationName.substring(
-                    StringUtils.hasLength(prefix) ? prefix.length() : 0,
-                    migrationName.length() - suffix.length());
-            }
-        }
-        return migrationName;
-    }
 }

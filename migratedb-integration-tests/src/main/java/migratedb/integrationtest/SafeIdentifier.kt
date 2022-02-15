@@ -19,11 +19,12 @@ package migratedb.integrationtest
 /**
  * A database identifier that doesn't need quoting or escaping.
  */
-class SafeIdentifier private constructor(private val s: String) {
+class SafeIdentifier private constructor(private val s: String) : CharSequence by s {
     companion object {
-        private val regex = Regex("""[_a-zA-Z][\w_]+""")
+        private val regex = Regex("""[_a-zA-Z][\w_]{0,29}""")
 
-        fun String.requireSafeIdentifier() = takeIfSafeIdentifier() ?: throw IllegalArgumentException("Not a safe identifier")
+        fun String.asSafeIdentifier() =
+            takeIfSafeIdentifier() ?: throw IllegalArgumentException("Not a safe identifier")
 
         fun String.takeIfSafeIdentifier() = when (regex.matches(this)) {
             true -> SafeIdentifier(this)

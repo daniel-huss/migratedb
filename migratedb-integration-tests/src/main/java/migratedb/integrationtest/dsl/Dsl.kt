@@ -17,35 +17,59 @@
 package migratedb.integrationtest.dsl
 
 import migratedb.integrationtest.SharedResources
+import migratedb.integrationtest.database.DatabaseSupport
+import migratedb.integrationtest.dsl.internal.GivenStepImpl
+import migratedb.integrationtest.dsl.internal.ThenStepImpl
+import migratedb.integrationtest.dsl.internal.WhenStepImpl
+import org.springframework.jdbc.core.JdbcTemplate
 
-class Dsl(private val sharedResources: SharedResources) {
+class Dsl(sharedResources: SharedResources) : AutoCloseable {
+
+    private val givenStep = GivenStepImpl(sharedResources)
+
+    override fun close() {
+        givenStep.close()
+    }
 
     fun <G : Any> given(block: (GivenStep).() -> G): GivenStepResult<G> {
-        val givenStep = GivenStep(sharedResources)
-        val givenResult = givenStep.block()
+        val g = givenStep.block()
         return object : GivenStepResult<G> {
             override fun <W : Any> `when`(block: WhenStep<G>.() -> W): WhenStepResult<G, W> {
-                val whenStep = WhenStep(givenResult)
-                givenStep.beforeWhen()
-                val whenResult = whenStep.block()
-                return object : WhenStepResult<G, W> {
-                    override fun then(block: (ThenStep<G>).(W) -> Unit) {
-                        val thenStep = ThenStep(givenResult)
-                        val allSteps = listOf(givenStep, whenStep)
-                        try {
-                            allSteps.forEach { it.beforeThen() }
-                            thenStep.block(whenResult)
-                        } finally {
-                            allSteps.forEach {
-                                runCatching { it.cleanup() }
-                                    .exceptionOrNull()
-                                    ?.takeIf { it is InterruptedException }
-                                    ?.let { Thread.currentThread().interrupt() }
+                givenStep.executeActions().let { givenInfo ->
+                    WhenStepImpl(g, givenInfo).use { whenStep ->
+                        val w = whenStep.block()
+                        return object : WhenStepResult<G, W> {
+                            override fun then(block: (ThenStep<G>).(W) -> Unit) {
+                                whenStep.executeActions()
+                                val thenStep = ThenStepImpl(g, givenInfo)
+                                thenStep.block(w)
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    interface GivenStep {
+        fun database(db: DatabaseSupport, block: DatabaseSpec.() -> Unit)
+    }
+
+    interface GivenStepResult<G : Any> {
+        fun <W : Any> `when`(block: (WhenStep<G>).() -> W): WhenStepResult<G, W>
+    }
+
+    interface WhenStep<G> {
+        val given: G
+        fun migrate(block: RunMigrateSpec.() -> Unit)
+    }
+
+    interface WhenStepResult<G : Any, W : Any> {
+        fun then(block: (ThenStep<G>).(W) -> Unit)
+    }
+
+    interface ThenStep<G : Any> {
+        val given: G
+        fun withConnection(block: (JdbcTemplate) -> Unit)
     }
 }

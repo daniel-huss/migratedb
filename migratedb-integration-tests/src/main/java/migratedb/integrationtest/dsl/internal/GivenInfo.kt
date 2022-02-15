@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl
+package migratedb.integrationtest.dsl.internal
 
-interface GivenStepResult<G : Any> {
-    fun <W : Any> `when`(block: (WhenStep<G>).() -> W): WhenStepResult<G, W>
-}
+import migratedb.core.internal.database.base.Database
+import migratedb.integrationtest.SafeIdentifier
+import migratedb.integrationtest.database.DatabaseSupport
+
+data class GivenInfo(
+    val databaseHandle: DatabaseSupport.Handle,
+    val database: Database<*>,
+    val databaseName: SafeIdentifier,
+    val schemaName: SafeIdentifier,
+)

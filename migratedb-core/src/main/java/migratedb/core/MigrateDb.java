@@ -16,10 +16,6 @@
  */
 package migratedb.core;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import migratedb.core.api.ClassProvider;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfoService;
@@ -32,25 +28,14 @@ import migratedb.core.api.configuration.FluentConfiguration;
 import migratedb.core.api.exception.MigrateDbValidateException;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.migration.JavaMigration;
-import migratedb.core.api.output.BaselineResult;
-import migratedb.core.api.output.CleanResult;
-import migratedb.core.api.output.MigrateResult;
-import migratedb.core.api.output.RepairResult;
-import migratedb.core.api.output.UndoResult;
-import migratedb.core.api.output.ValidateResult;
+import migratedb.core.api.output.*;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.callback.DefaultCallbackExecutor;
 import migratedb.core.internal.callback.NoopCallbackExecutor;
 import migratedb.core.internal.callback.SqlScriptCallbackFactory;
 import migratedb.core.internal.clazz.NoopClassProvider;
-import migratedb.core.internal.command.DbBaseline;
-import migratedb.core.internal.command.DbClean;
-import migratedb.core.internal.command.DbInfo;
-import migratedb.core.internal.command.DbMigrate;
-import migratedb.core.internal.command.DbRepair;
-import migratedb.core.internal.command.DbSchemas;
-import migratedb.core.internal.command.DbValidate;
+import migratedb.core.internal.command.*;
 import migratedb.core.internal.configuration.ConfigurationValidator;
 import migratedb.core.internal.database.DatabaseType;
 import migratedb.core.internal.database.base.Database;
@@ -71,11 +56,12 @@ import migratedb.core.internal.sqlscript.SqlScript;
 import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.internal.strategy.RetryStrategy;
-import migratedb.core.internal.util.Development;
-import migratedb.core.internal.util.IOUtils;
-import migratedb.core.internal.util.MigrateDbWebsiteLinks;
-import migratedb.core.internal.util.Pair;
-import migratedb.core.internal.util.StringUtils;
+import migratedb.core.internal.util.*;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This is the centre point of MigrateDB, and for most users, the only class they will ever have to deal with.
@@ -585,24 +571,23 @@ public class MigrateDb {
             dbConnectionInfoPrinted = true;
             LOG.debug("DDL Transactions Supported: " + database.supportsDdlTransactions());
 
-            Pair<Schema, List<Schema>> schemas = SchemaHistoryFactory.prepareSchemas(configuration, database);
-            Schema defaultSchema = schemas.getLeft();
+            var schemas = SchemaHistoryFactory.scanSchemas(configuration, database);
 
             parsingContext.populate(database, configuration);
 
             database.ensureSupported();
 
             DefaultCallbackExecutor callbackExecutor =
-                new DefaultCallbackExecutor(configuration, database, defaultSchema,
-                                            prepareCallbacks(
-                                                database,
-                                                resourceProvider,
-                                                jdbcConnectionFactory,
-                                                sqlScriptFactory,
-                                                statementInterceptor,
-                                                defaultSchema,
-                                                parsingContext
-                                            ));
+                    new DefaultCallbackExecutor(configuration, database, schemas.defaultSchema,
+                            prepareCallbacks(
+                                    database,
+                                    resourceProvider,
+                                    jdbcConnectionFactory,
+                                    sqlScriptFactory,
+                                    statementInterceptor,
+                                    schemas.defaultSchema,
+                                    parsingContext
+                            ));
 
             SqlScriptExecutorFactory sqlScriptExecutorFactory =
                 databaseType.createSqlScriptExecutorFactory(jdbcConnectionFactory,
@@ -610,24 +595,24 @@ public class MigrateDb {
                                                             statementInterceptor);
 
             SchemaHistory schemaHistory = SchemaHistoryFactory.getSchemaHistory(
-                configuration,
-                noCallbackSqlScriptExecutorFactory,
-                sqlScriptFactory,
-                database,
-                defaultSchema,
-                statementInterceptor);
+                    configuration,
+                    noCallbackSqlScriptExecutorFactory,
+                    sqlScriptFactory,
+                    database,
+                    schemas.defaultSchema,
+                    statementInterceptor);
 
             result = command.execute(
-                createMigrationResolver(resourceProvider,
-                                        classProvider,
-                                        sqlScriptExecutorFactory,
-                                        sqlScriptFactory,
-                                        parsingContext),
-                schemaHistory,
-                database,
-                schemas.getRight().toArray(new Schema[0]),
-                callbackExecutor,
-                statementInterceptor);
+                    createMigrationResolver(resourceProvider,
+                            classProvider,
+                            sqlScriptExecutorFactory,
+                            sqlScriptFactory,
+                            parsingContext),
+                    schemaHistory,
+                    database,
+                    schemas.all.toArray(new Schema[0]),
+                    callbackExecutor,
+                    statementInterceptor);
         } finally {
             IOUtils.close(database);
 

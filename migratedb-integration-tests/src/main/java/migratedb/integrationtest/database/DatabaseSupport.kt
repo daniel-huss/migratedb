@@ -26,11 +26,33 @@ import java.util.*
 import java.util.stream.Stream
 import javax.sql.DataSource
 
-interface SupportedDatabase {
-    val type: DatabaseType
+interface DatabaseSupport {
+    interface Handle : AutoCloseable {
+        val type: DatabaseType
 
-    fun createDatabaseIfNotExists(sharedResources: SharedResources, dbName: SafeIdentifier): DataSource
-    fun dropDatabaseIfExists(sharedResources: SharedResources, dbName: SafeIdentifier)
+        /**
+         * Creates a database and returns a connection to that database (with admin privileges).
+         */
+        fun createDatabaseIfNotExists(dbName: SafeIdentifier): DataSource
+
+        /**
+         * Drops an existing database.
+         */
+        fun dropDatabaseIfExists(dbName: SafeIdentifier)
+
+        /**
+         * Connects to a database/schema combination with administrative privileges.
+         */
+        fun newAdminConnection(databaseName: SafeIdentifier, schemaName: SafeIdentifier): DataSource
+
+        /**
+         * Generates a new database mutation that is independent from all previously generated database mutations.
+         */
+        fun nextMutation(schemaName: SafeIdentifier): IndependentDatabaseMutation
+    }
+
+    fun get(sharedResources: SharedResources): Handle
+
 
     class All : ArgumentsProvider {
         override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(

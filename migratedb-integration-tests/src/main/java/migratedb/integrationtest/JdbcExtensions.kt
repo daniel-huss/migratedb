@@ -16,12 +16,24 @@
 
 package migratedb.integrationtest
 
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.datasource.SingleConnectionDataSource
 import java.sql.Connection
 import java.sql.SQLException
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import javax.sql.DataSource
+
+fun <T> Connection.with(schema: CharSequence, action: (JdbcTemplate) -> T): T {
+    val oldSchema = this.schema
+    this.schema = schema.toString()
+    try {
+        return action(JdbcTemplate(SingleConnectionDataSource(this, true)))
+    } finally {
+        this.schema = oldSchema
+    }
+}
 
 fun DataSource.awaitConnectivity(timeout: Duration = Duration.ofSeconds(10)): Connection {
     val delays = arrayOf(0, 100, 200, 500) // milliseconds

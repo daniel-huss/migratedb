@@ -18,7 +18,6 @@ package migratedb.integrationtest
 
 import migratedb.integrationtest.SharedResources.Companion.resources
 import migratedb.integrationtest.dsl.Dsl
-import migratedb.integrationtest.dsl.GivenStep
 import org.junit.jupiter.api.Timeout
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.ExtendWith
@@ -44,5 +43,5 @@ abstract class IntegrationTest {
         }
     }
 
-    fun <G : Any> given(block: (GivenStep).() -> G) = Dsl(Extension.resources()).given(block)
+    fun withDsl(block: (Dsl).() -> (Unit)) = Dsl(Extension.resources()).use(block)
 }

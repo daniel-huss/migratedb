@@ -63,6 +63,14 @@ public class Pair<L, R> implements Comparable<Pair<L, R>> {
         return right;
     }
 
+    public L component1() {
+        return left;
+    }
+
+    public R component2() {
+        return right;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -16,23 +16,19 @@
  */
 package migratedb.core.internal.database;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import migratedb.core.api.DatabaseTypeRegister;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.jdbc.JdbcUtils;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class DatabaseTypeRegisterImpl implements DatabaseTypeRegister {
     private static final Log LOG = Log.getLog(DatabaseTypeRegister.class);
@@ -42,10 +38,12 @@ public class DatabaseTypeRegisterImpl implements DatabaseTypeRegister {
     public void registerDatabaseTypes(Collection<DatabaseType> databaseTypes) {
         synchronized (this) {
             // Copy-on-write
-            var sortedSet = new TreeSet<>(Comparator.comparing(DatabaseType::getPriority));
-            sortedSet.addAll(registeredDatabaseTypesInPriorityOrder);
-            sortedSet.addAll(databaseTypes);
-            registeredDatabaseTypesInPriorityOrder = sortedSet.stream().collect(Collectors.toUnmodifiableList());
+            var copy = new HashSet<DatabaseType>();
+            copy.addAll(registeredDatabaseTypesInPriorityOrder);
+            copy.addAll(databaseTypes);
+            registeredDatabaseTypesInPriorityOrder = copy.stream()
+                    .sorted(Comparator.comparing(DatabaseType::getPriority))
+                    .collect(Collectors.toUnmodifiableList());
         }
     }
 

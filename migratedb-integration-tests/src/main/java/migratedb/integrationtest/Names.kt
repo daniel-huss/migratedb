@@ -16,11 +16,12 @@
 
 package migratedb.integrationtest
 
-import migratedb.integrationtest.SafeIdentifier.Companion.requireSafeIdentifier
+import migratedb.integrationtest.SafeIdentifier.Companion.asSafeIdentifier
 import java.util.concurrent.atomic.AtomicLong
 
 object Names {
     private val counter = AtomicLong(0)
-    fun nextDatabase() = "db_${counter.incrementAndGet()}".requireSafeIdentifier()
-    fun nextSchema() = "schema_${counter.incrementAndGet()}".requireSafeIdentifier()
+    fun nextDatabase() = "db_${counter.incrementAndGet()}".asSafeIdentifier()
+    fun nextSchema() = "schema_${counter.incrementAndGet()}".asSafeIdentifier()
+    fun nextTable() = "tbl_${counter.incrementAndGet()}".asSafeIdentifier()
 }

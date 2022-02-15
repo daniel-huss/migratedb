@@ -70,7 +70,7 @@ public abstract class BaseJavaMigration implements JavaMigration {
         }
 
         Pair<MigrationVersion, String> info =
-            MigrationInfoHelper.extractVersionAndDescription(shortName, prefix, "__", new String[] { "" }, repeatable);
+                MigrationInfoHelper.extractVersionAndDescription(shortName, prefix, "__", repeatable);
         version = info.getLeft();
         description = info.getRight();
     }

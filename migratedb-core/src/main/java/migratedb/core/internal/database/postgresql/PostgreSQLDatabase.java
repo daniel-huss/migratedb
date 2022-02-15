@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.postgresql;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.internal.database.base.Database;
 import migratedb.core.internal.database.base.Table;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class PostgreSQLDatabase extends Database<PostgreSQLConnection> {
     public PostgreSQLDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
@@ -39,7 +40,7 @@ public class PostgreSQLDatabase extends Database<PostgreSQLConnection> {
     @Override
     public void ensureSupported() {
         ensureDatabaseIsRecentEnough("9.0");
-        recommendMigrateDbUpgradeIfNecessaryForMajorVersion("13");
+        recommendMigrateDbUpgradeIfNecessaryForMajorVersion("14");
     }
 
     @Override
@@ -111,8 +112,7 @@ public class PostgreSQLDatabase extends Database<PostgreSQLConnection> {
     }
 
     /**
-     * This exists to fix this issue: https://github.com/migratedb/migratedb/issues/2638 See
-     * https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html
+     * See https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html
      */
     @Override
     public String getSelectStatement(Table table) {

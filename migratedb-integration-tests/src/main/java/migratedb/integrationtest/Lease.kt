@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl
+package migratedb.integrationtest
 
-interface WhenStepResult<G : Any, W : Any> {
-    fun then(block: (ThenStep<G>).(W) -> Unit)
-}
+/**
+ * Holding a lease guarantees that a pooled resource is not going to be closed.
+ */
+interface Lease<T : AutoCloseable> : AutoCloseable, () -> T

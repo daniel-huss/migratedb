@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl
+package migratedb.integrationtest.dsl.internal
 
-class WhenStep<G : Any>(val given: G) : DslCallback {
-    fun migrate(block: (RunMigrateSpec).() -> Unit) {
-        RunMigrateSpec().block()
+import migratedb.integrationtest.dsl.Dsl
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.datasource.SingleConnectionDataSource
+
+class ThenStepImpl<G : Any>(override val given: G, private val givenInfo: GivenInfo) : Dsl.ThenStep<G> {
+    override fun withConnection(block: (JdbcTemplate) -> Unit) {
+        givenInfo.databaseHandle
+            .newAdminConnection(givenInfo.databaseName, givenInfo.schemaName)
+            .connection
+            .use {
+                block(JdbcTemplate(SingleConnectionDataSource(it, true)))
+            }
     }
 }

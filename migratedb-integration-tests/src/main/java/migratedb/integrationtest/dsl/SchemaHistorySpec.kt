@@ -16,8 +16,8 @@
 
 package migratedb.integrationtest.dsl
 
-interface DslCallback {
-    fun beforeWhen() {}
-    fun beforeThen() {}
-    fun cleanup() {}
+import migratedb.core.api.MigrationType
+
+interface SchemaHistorySpec {
+    fun entry(name: String, type: MigrationType, success: Boolean, installedRank: Int? = null, checksum: Int = 0)
 }

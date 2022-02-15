@@ -16,15 +16,12 @@
 
 package migratedb.integrationtest.dsl
 
+import migratedb.core.api.migration.JavaMigration
 import java.sql.Connection
 
-class RunMigrateSpec {
-    data class MigrationScript(val name: String, val sql: String)
-    data class MigrationCode(val name: String, val code: (Connection) -> Unit)
-
-    private val scriptMigrations = mutableListOf<MigrationScript>()
-    private val codeMigrations = mutableListOf<MigrationCode>()
-
-    fun migration(name: String, sql: String) = scriptMigrations.add(MigrationScript(name, sql))
-    fun migration(name: String, code: (Connection) -> Unit) = codeMigrations.add(MigrationCode(name, code))
+interface RunMigrateSpec {
+    fun script(name: String, sql: String)
+    fun code(name: String, code: (Connection) -> Unit)
+    fun code(name: String, code: JavaMigration)
+    fun code(name: String)
 }

@@ -26,7 +26,7 @@ internal class DoesThisWork : IntegrationTest() {
 
     @ParameterizedTest
     @EnumSource(Postgres::class)
-    fun test(postgres: Postgres) {
+    fun test(postgres: Postgres) = withDsl {
         given {
             database(postgres) {
                 name("test")
