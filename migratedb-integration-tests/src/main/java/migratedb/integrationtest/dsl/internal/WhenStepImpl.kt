@@ -21,19 +21,21 @@ import migratedb.integrationtest.dsl.RunMigrateSpec
 
 class WhenStepImpl<G : Any>(
     override val given: G,
-    givenInfo: GivenInfo
+    private val givenInfo: GivenInfo
 ) : AutoCloseable, Dsl.WhenStep<G> {
 
-    private val runMigrate = RunMigrateImpl(givenInfo)
+    private val executableActions = mutableListOf<() -> Unit>()
 
     override fun migrate(block: (RunMigrateSpec).() -> Unit) {
+        val runMigrate = RunMigrateImpl(givenInfo)
         runMigrate.block()
+        executableActions.add(runMigrate::execute)
     }
 
     override fun close() {
     }
 
     fun executeActions() {
-        runMigrate.executeActions()
+        executableActions.forEach { it() }
     }
 }

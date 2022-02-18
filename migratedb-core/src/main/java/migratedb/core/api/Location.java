@@ -19,299 +19,322 @@ package migratedb.core.api;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import migratedb.core.api.logging.Log;
 
 /**
  * A location to load migrations from.
  */
-public final class Location implements Comparable<Location> {
-    private static final Log LOG = Log.getLog(Location.class);
+public abstract class Location implements Comparable<Location> {
 
-    /**
-     * The prefix for classpath locations.
-     */
-    private static final String CLASSPATH_PREFIX = "classpath:";
+    public abstract boolean matchesPath(String path);
 
-    /**
-     * The prefix for filesystem locations.
-     */
-    public static final String FILESYSTEM_PREFIX = "filesystem:";
+    public abstract String getPathRelativeToThis(String path);
 
-    /**
-     * The prefix part of the location. Can be either classpath: or filesystem:.
-     */
-    private final String prefix;
+    public abstract boolean isClassPath();
 
-    /**
-     * The path part of the location.
-     */
-    private String rawPath;
+    public abstract boolean isFileSystem();
 
-    /**
-     * The first folder in the path. This will equal rawPath if the path does not contain any wildcards
-     */
-    private String rootPath;
+    public abstract boolean isParentOf(Location other);
 
-    private Pattern pathRegex = null;
+    public abstract String getRootPath();
 
-    /**
-     * Creates a new location.
-     *
-     * @param descriptor The location descriptor.
-     */
-    public Location(String descriptor) {
-        String normalizedDescriptor = descriptor.trim();
+    public abstract String getDescriptor();
 
-        if (normalizedDescriptor.contains(":")) {
-            prefix = normalizedDescriptor.substring(0, normalizedDescriptor.indexOf(":") + 1);
-            rawPath = normalizedDescriptor.substring(normalizedDescriptor.indexOf(":") + 1);
-        } else {
-            prefix = CLASSPATH_PREFIX;
-            rawPath = normalizedDescriptor;
-        }
+    public static final class ClassPathLocation extends Location {
+        /**
+         * The prefix part of the location. Can be either classpath: or filesystem:.
+         */
+        private final String prefix;
 
-        if (isClassPath()) {
-            if (rawPath.startsWith("/")) {
-                rawPath = rawPath.substring(1);
+        /**
+         * The path part of the location.
+         */
+        private String rawPath;
+
+        /**
+         * The first folder in the path. This will equal rawPath if the path does not contain any wildcards
+         */
+        private String rootPath;
+
+        private Pattern pathRegex = null;
+
+        /**
+         * The prefix for classpath locations.
+         */
+        private static final String PREFIX = "classpath:";
+
+        /**
+         * Creates a new location.
+         *
+         * @param descriptor The location descriptor.
+         */
+        public ClassPathLocation(String descriptor) {
+            String normalizedDescriptor = descriptor.trim();
+
+            if (normalizedDescriptor.contains(":")) {
+                prefix = normalizedDescriptor.substring(0, normalizedDescriptor.indexOf(":") + 1);
+                rawPath = normalizedDescriptor.substring(normalizedDescriptor.indexOf(":") + 1);
+            } else {
+                prefix = ClassPathLocation.PREFIX;
+                rawPath = normalizedDescriptor;
             }
-            if (rawPath.endsWith("/")) {
+
+            if (isClassPath()) {
+                if (rawPath.startsWith("/")) {
+                    rawPath = rawPath.substring(1);
+                }
+                if (rawPath.endsWith("/")) {
+                    rawPath = rawPath.substring(0, rawPath.length() - 1);
+                }
+                processRawPath();
+            } else if (isFileSystem()) {
+                processRawPath();
+                rootPath = new File(rootPath).getPath();
+
+                if (pathRegex == null) {
+                    // if the original path contained no wildcards, also normalise it
+                    rawPath = new File(rawPath).getPath();
+                }
+            } else {
+                throw new MigrateDbException(
+                        "Unknown prefix for location (should be one of filesystem:, classpath:): "
+                                + normalizedDescriptor);
+            }
+
+            if (rawPath.endsWith(File.separator)) {
                 rawPath = rawPath.substring(0, rawPath.length() - 1);
             }
-            processRawPath();
-        } else if (isFileSystem()) {
-            processRawPath();
-            rootPath = new File(rootPath).getPath();
+        }
 
+        /**
+         * Process the rawPath into a rootPath and a regex. Supported wildcards: **: Match any 0 or more directories *:
+         * Match any sequence of non-seperator characters ?: Match any single character
+         */
+        private void processRawPath() {
+            if (rawPath.contains("*") || rawPath.contains("?")) {
+                // we need to figure out the root, and create the regex
+
+                String separator = isFileSystem() ? File.separator : "/";
+                String escapedSeparator = separator.replace("\\", "\\\\").replace("/", "\\/");
+
+                // split on either of the path seperators
+                String[] pathSplit = rawPath.split("[\\\\/]");
+
+                StringBuilder rootPart = new StringBuilder();
+                StringBuilder patternPart = new StringBuilder();
+
+                boolean endsInFile = false;
+                boolean skipSeperator = false;
+                boolean inPattern = false;
+                for (String pathPart : pathSplit) {
+                    endsInFile = false;
+
+                    if (pathPart.contains("*") || pathPart.contains("?")) {
+                        inPattern = true;
+                    }
+
+                    if (inPattern) {
+                        if (skipSeperator) {
+                            skipSeperator = false;
+                        } else {
+                            patternPart.append("/");
+                        }
+
+                        String regex;
+                        if ("**".equals(pathPart)) {
+                            regex = "([^/]+/)*?";
+
+                            // this pattern contains the ending seperator, so make sure we skip appending it after
+                            skipSeperator = true;
+                        } else {
+                            endsInFile = pathPart.contains(".");
+
+                            regex = pathPart;
+                            regex = regex.replace(".", "\\.");
+                            regex = regex.replace("?", "[^/]");
+                            regex = regex.replace("*", "[^/]+?");
+                        }
+
+                        patternPart.append(regex);
+                    } else {
+                        rootPart.append(separator).append(pathPart);
+                    }
+                }
+
+                // We always append a seperator before each part, so ensure we skip it when setting the final rootPath
+                rootPath = rootPart.length() > 0 ? rootPart.substring(1) : "";
+
+                // Again, skip first seperator
+                String pattern = patternPart.substring(1);
+
+                // Replace the temporary / with the actual escaped seperator
+                pattern = pattern.replace("/", escapedSeparator);
+
+                // Append the rootpath if it is non-empty
+                if (rootPart.length() > 0) {
+                    pattern = rootPath.replace(separator, escapedSeparator) + escapedSeparator + pattern;
+                }
+
+                // if the path did not end in a file, then append the file match pattern
+                if (!endsInFile) {
+                    pattern = pattern + escapedSeparator + "(?<relpath>.*)";
+                }
+
+                pathRegex = Pattern.compile(pattern);
+            } else {
+                rootPath = rawPath;
+            }
+        }
+
+        /**
+         * @return Whether the given path matches this locations regex. Will always return true when the location did not
+         * contain any wildcards.
+         */
+        @Override
+        public boolean matchesPath(String path) {
             if (pathRegex == null) {
-                // if the original path contained no wildcards, also normalise it
-                rawPath = new File(rawPath).getPath();
+                return true;
             }
-        } else {
-            throw new MigrateDbException(
-                "Unknown prefix for location (should be one of filesystem:, classpath:): "
-                + normalizedDescriptor);
+
+            return pathRegex.matcher(path).matches();
         }
 
-        if (rawPath.endsWith(File.separator)) {
-            rawPath = rawPath.substring(0, rawPath.length() - 1);
-        }
-    }
-
-    /**
-     * Process the rawPath into a rootPath and a regex. Supported wildcards: **: Match any 0 or more directories *:
-     * Match any sequence of non-seperator characters ?: Match any single character
-     */
-    private void processRawPath() {
-        if (rawPath.contains("*") || rawPath.contains("?")) {
-            // we need to figure out the root, and create the regex
-
-            String separator = isFileSystem() ? File.separator : "/";
-            String escapedSeparator = separator.replace("\\", "\\\\").replace("/", "\\/");
-
-            // split on either of the path seperators
-            String[] pathSplit = rawPath.split("[\\\\/]");
-
-            StringBuilder rootPart = new StringBuilder();
-            StringBuilder patternPart = new StringBuilder();
-
-            boolean endsInFile = false;
-            boolean skipSeperator = false;
-            boolean inPattern = false;
-            for (String pathPart : pathSplit) {
-                endsInFile = false;
-
-                if (pathPart.contains("*") || pathPart.contains("?")) {
-                    inPattern = true;
-                }
-
-                if (inPattern) {
-                    if (skipSeperator) {
-                        skipSeperator = false;
-                    } else {
-                        patternPart.append("/");
+        /**
+         * Returns the path relative to this location. If the location path contains wildcards, the returned path will be
+         * relative to the last non-wildcard folder in the path.
+         *
+         * @return the path relative to this location
+         */
+        @Override
+        public String getPathRelativeToThis(String path) {
+            if (pathRegex != null && pathRegex.pattern().contains("?<relpath>")) {
+                Matcher matcher = pathRegex.matcher(path);
+                if (matcher.matches()) {
+                    String relPath = matcher.group("relpath");
+                    if (relPath != null && relPath.length() > 0) {
+                        return relPath;
                     }
-
-                    String regex;
-                    if ("**".equals(pathPart)) {
-                        regex = "([^/]+/)*?";
-
-                        // this pattern contains the ending seperator, so make sure we skip appending it after
-                        skipSeperator = true;
-                    } else {
-                        endsInFile = pathPart.contains(".");
-
-                        regex = pathPart;
-                        regex = regex.replace(".", "\\.");
-                        regex = regex.replace("?", "[^/]");
-                        regex = regex.replace("*", "[^/]+?");
-                    }
-
-                    patternPart.append(regex);
-                } else {
-                    rootPart.append(separator).append(pathPart);
                 }
             }
 
-            // We always append a seperator before each part, so ensure we skip it when setting the final rootPath
-            rootPath = rootPart.length() > 0 ? rootPart.substring(1) : "";
-
-            // Again, skip first seperator
-            String pattern = patternPart.substring(1);
-
-            // Replace the temporary / with the actual escaped seperator
-            pattern = pattern.replace("/", escapedSeparator);
-
-            // Append the rootpath if it is non-empty
-            if (rootPart.length() > 0) {
-                pattern = rootPath.replace(separator, escapedSeparator) + escapedSeparator + pattern;
-            }
-
-            // if the path did not end in a file, then append the file match pattern
-            if (!endsInFile) {
-                pattern = pattern + escapedSeparator + "(?<relpath>.*)";
-            }
-
-            pathRegex = Pattern.compile(pattern);
-        } else {
-            rootPath = rawPath;
-        }
-    }
-
-    /**
-     * @return Whether the given path matches this locations regex. Will always return true when the location did not
-     * contain any wildcards.
-     */
-    public boolean matchesPath(String path) {
-        if (pathRegex == null) {
-            return true;
+            return rootPath.length() > 0 ? path.substring(rootPath.length() + 1) : path;
         }
 
-        return pathRegex.matcher(path).matches();
-    }
 
-    /**
-     * Returns the path relative to this location. If the location path contains wildcards, the returned path will be
-     * relative to the last non-wildcard folder in the path.
-     *
-     * @return the path relative to this location
-     */
-    public String getPathRelativeToThis(String path) {
-        if (pathRegex != null && pathRegex.pattern().contains("?<relpath>")) {
-            Matcher matcher = pathRegex.matcher(path);
-            if (matcher.matches()) {
-                String relPath = matcher.group("relpath");
-                if (relPath != null && relPath.length() > 0) {
-                    return relPath;
-                }
-            }
+        /**
+         * Checks whether this denotes a location on the classpath.
+         *
+         * @return {@code true} if it does, {@code false} if it doesn't.
+         */
+        @Override
+        public boolean isClassPath() {
+            return ClassPathLocation.PREFIX.equals(prefix);
         }
 
-        return rootPath.length() > 0 ? path.substring(rootPath.length() + 1) : path;
-    }
+        /**
+         * Checks whether this denotes a location on the filesystem.
+         *
+         * @return {@code true} if it does, {@code false} if it doesn't.
+         */
+        @Override
+        public boolean isFileSystem() {
+            return DefaultFileSystemLocation.PREFIX.equals(prefix);
+        }
 
-    /**
-     * Checks whether this denotes a location on the classpath.
-     *
-     * @return {@code true} if it does, {@code false} if it doesn't.
-     */
-    public boolean isClassPath() {
-        return CLASSPATH_PREFIX.equals(prefix);
-    }
+        /**
+         * Checks whether this location is a parent of this other location.
+         *
+         * @param other The other location.
+         * @return {@code true} if it is, {@code false} if it isn't.
+         */
+        @Override
+        public boolean isParentOf(Location other) {
+            if (pathRegex != null || other.pathRegex != null) {
+                return false;
+            }
 
-    /**
-     * Checks whether this denotes a location on the filesystem.
-     *
-     * @return {@code true} if it does, {@code false} if it doesn't.
-     */
-    public boolean isFileSystem() {
-        return FILESYSTEM_PREFIX.equals(prefix);
-    }
-
-    /**
-     * Checks whether this location is a parent of this other location.
-     *
-     * @param other The other location.
-     *
-     * @return {@code true} if it is, {@code false} if it isn't.
-     */
-    @SuppressWarnings("SimplifiableIfStatement")
-    public boolean isParentOf(Location other) {
-        if (pathRegex != null || other.pathRegex != null) {
+            if (isClassPath() && other.isClassPath()) {
+                return (other.getDescriptor() + "/").startsWith(getDescriptor() + "/");
+            }
+            if (isFileSystem() && other.isFileSystem()) {
+                return (other.getDescriptor() + File.separator).startsWith(getDescriptor() + File.separator);
+            }
             return false;
         }
 
-        if (isClassPath() && other.isClassPath()) {
-            return (other.getDescriptor() + "/").startsWith(getDescriptor() + "/");
-        }
-        if (isFileSystem() && other.isFileSystem()) {
-            return (other.getDescriptor() + File.separator).startsWith(getDescriptor() + File.separator);
-        }
-        return false;
-    }
-
-    /**
-     * @return The prefix part of the location. Can be either classpath: or filesystem:.
-     */
-    public String getPrefix() {
-        return prefix;
-    }
-
-    /**
-     * @return The root part of the path part of the location.
-     */
-    public String getRootPath() {
-        return rootPath;
-    }
-
-    /**
-     * @return The path part of the location.
-     */
-    public String getPath() {
-        return rawPath;
-    }
-
-    /**
-     * @return The the regex that matches in original path. Null if the original path did not contain any wildcards.
-     */
-    public Pattern getPathRegex() {
-        return pathRegex;
-    }
-
-    /**
-     * @return The complete location descriptor.
-     */
-    public String getDescriptor() {
-        return prefix + rawPath;
-    }
-
-    public int compareTo(Location o) {
-        return getDescriptor().compareTo(o.getDescriptor());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
+        /**
+         * @return The prefix part of the location. Can be either classpath: or filesystem:.
+         */
+        public String getPrefix() {
+            return prefix;
         }
 
-        Location location = (Location) o;
+        /**
+         * @return The root part of the path part of the location.
+         */
+        @Override
+        public String getRootPath() {
+            return rootPath;
+        }
 
-        return getDescriptor().equals(location.getDescriptor());
+        /**
+         * @return The path part of the location.
+         */
+        public String getPath() {
+            return rawPath;
+        }
+
+        /**
+         * @return The the regex that matches in original path. Null if the original path did not contain any wildcards.
+         */
+        public Pattern getPathRegex() {
+            return pathRegex;
+        }
+
+        /**
+         * @return The complete location descriptor.
+         */
+        @Override
+        public String getDescriptor() {
+            return prefix + rawPath;
+        }
+
+        public int compareTo(Location o) {
+            return getDescriptor().compareTo(o.getDescriptor());
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            Location location = (Location) o;
+
+            return getDescriptor().equals(location.getDescriptor());
+        }
+
+        @Override
+        public int hashCode() {
+            return getDescriptor().hashCode();
+        }
+
+        /**
+         * @return The complete location descriptor.
+         */
+        @Override
+        public String toString() {
+            return getDescriptor();
+        }
     }
 
-    @Override
-    public int hashCode() {
-        return getDescriptor().hashCode();
-    }
+    public static final class DefaultFileSystemLocation extends Location {
 
-    /**
-     * @return The complete location descriptor.
-     */
-    @Override
-    public String toString() {
-        return getDescriptor();
+        /**
+         * The prefix for filesystem locations.
+         */
+        public static final String PREFIX = "filesystem:";
     }
 }

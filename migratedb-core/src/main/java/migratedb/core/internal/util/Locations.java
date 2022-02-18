@@ -16,11 +16,12 @@
  */
 package migratedb.core.internal.util;
 
+import migratedb.core.api.Location;
+import migratedb.core.api.logging.Log;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import migratedb.core.api.Location;
-import migratedb.core.api.logging.Log;
 
 /**
  * Encapsulation of a location list.
@@ -41,7 +42,7 @@ public class Locations {
     public Locations(String... rawLocations) {
         List<Location> normalizedLocations = new ArrayList<>();
         for (String rawLocation : rawLocations) {
-            normalizedLocations.add(new Location(rawLocation));
+            normalizedLocations.add(Location.parse(rawLocation));
         }
         processLocations(normalizedLocations);
     }

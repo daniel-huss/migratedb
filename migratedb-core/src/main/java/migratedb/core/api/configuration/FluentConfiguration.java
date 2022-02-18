@@ -16,21 +16,8 @@
  */
 package migratedb.core.api.configuration;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import javax.sql.DataSource;
 import migratedb.core.MigrateDb;
-import migratedb.core.api.ClassProvider;
-import migratedb.core.api.DatabaseTypeRegister;
-import migratedb.core.api.Location;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrationPattern;
-import migratedb.core.api.MigrationVersion;
-import migratedb.core.api.ResourceProvider;
+import migratedb.core.api.*;
 import migratedb.core.api.callback.Callback;
 import migratedb.core.api.logging.LogSystem;
 import migratedb.core.api.logging.LogSystems;
@@ -39,6 +26,15 @@ import migratedb.core.api.pattern.ValidatePattern;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.extensibility.MigrateDbExtension;
 import migratedb.core.internal.configuration.ConfigUtils;
+import migratedb.core.internal.util.ClassUtils;
+
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Fluent configuration for MigrateDB . This is the preferred means of configuring the MigrateDb API. This configuration
@@ -53,7 +49,7 @@ public class FluentConfiguration implements Configuration {
 
     /**
      * @param classLoader The ClassLoader to use for loading migrations, resolvers, etc from the classpath. (default:
-     *                    Thread.currentThread().getContextClassLoader() )
+     *                    same as {@link ClassUtils#defaultClassLoader()} )
      */
     public FluentConfiguration(ClassLoader classLoader) {
         config = new ClassicConfiguration(classLoader);
@@ -1340,7 +1336,6 @@ public class FluentConfiguration implements Configuration {
      * calling this method.
      *
      * @param properties Properties used for configuration.
-     *
      * @throws MigrateDbException when the configuration failed.
      */
     public FluentConfiguration configuration(Properties properties) {
@@ -1354,7 +1349,6 @@ public class FluentConfiguration implements Configuration {
      * prior to calling this method.
      *
      * @param props Properties used for configuration.
-     *
      * @throws MigrateDbException when the configuration failed.
      */
     public FluentConfiguration configuration(Map<String, String> props) {
@@ -1386,8 +1380,8 @@ public class FluentConfiguration implements Configuration {
      * Enables a single MigrateDB extension.
      */
     public FluentConfiguration useExtension(MigrateDbExtension extension) {
-       config.useExtension(extension);
-       return this;
+        config.useExtension(extension);
+        return this;
     }
 
     /**
@@ -1399,6 +1393,6 @@ public class FluentConfiguration implements Configuration {
      */
     public FluentConfiguration useExtensions(Iterable<MigrateDbExtension> extensions) {
         config.useExtensions(extensions);
-       return this;
+        return this;
     }
 }

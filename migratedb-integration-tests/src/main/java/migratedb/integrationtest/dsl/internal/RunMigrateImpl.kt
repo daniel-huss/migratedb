@@ -16,7 +16,9 @@
 
 package migratedb.integrationtest.dsl.internal
 
+import migratedb.core.api.ClassProvider
 import migratedb.core.api.MigrationVersion
+import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.api.migration.Context
 import migratedb.core.api.migration.JavaMigration
 import migratedb.core.internal.resolver.MigrationInfoHelper.extractVersionAndDescription
@@ -29,6 +31,7 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
 
     private val scriptMigrations = mutableListOf<ScriptMigration>()
     private val codeMigrations = mutableListOf<CodeMigration>()
+    private var config = FluentConfiguration()
 
     override fun script(name: String, sql: String) {
         scriptMigrations.add(ScriptMigration(name, sql))
@@ -67,6 +70,15 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
         givenInfo.databaseHandle.nextMutation(givenInfo.schemaName).apply(it)
     }
 
-    fun executeActions() {
+    override fun config(classLoader: ClassLoader?, block: (FluentConfiguration) -> Unit) {
+        config = when (classLoader) {
+            null -> FluentConfiguration()
+            else -> FluentConfiguration(classLoader)
+        }.also(block)
+    }
+
+    fun execute() {
+        config.locations()
+        config.javaMigrationClassProvider(ClassProvider { codeMigrations.map { it.code } })
     }
 }

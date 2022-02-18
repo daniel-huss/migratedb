@@ -31,7 +31,7 @@ internal class DoesThisWork : IntegrationTest() {
             database(postgres) {
                 name("test")
                 existingSchemaHistory("migratedb") {
-                    entry(name = "V001__Test", type = JDBC, true)
+                    entry(name = "V001__Test", type = JDBC, success = true)
                 }
             }
         }.`when` {
