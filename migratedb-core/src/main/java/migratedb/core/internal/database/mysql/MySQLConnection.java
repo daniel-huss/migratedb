@@ -118,7 +118,7 @@ public class MySQLConnection extends Connection<MySQLDatabase> {
                 jdbcTemplate.execute("CREATE SCHEMA " + newDb);
                 jdbcTemplate.execute("USE " + newDb);
                 jdbcTemplate.execute("DROP SCHEMA " + newDb);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 LOG.warn("Unable to restore connection to having no default schema: " + e.getMessage());
             }
         }

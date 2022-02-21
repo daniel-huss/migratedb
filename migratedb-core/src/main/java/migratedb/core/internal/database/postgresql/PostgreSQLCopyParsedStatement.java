@@ -74,7 +74,7 @@ public class PostgreSQLCopyParsedStatement extends ParsedSqlStatement {
             copyManagerCopyInMethod = copyManagerClass.getMethod("copyIn", String.class, Reader.class);
 
             copyManager = copyManagerConstructor.newInstance(baseConnection);
-        } catch (Exception e) {
+        } catch (RuntimeException | ReflectiveOperationException | SQLException e) {
             throw new MigrateDbException("Unable to find PostgreSQL CopyManager class", e);
         }
 

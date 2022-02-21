@@ -17,6 +17,7 @@
 package migratedb.core.internal.resolver.sql;
 
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import migratedb.core.api.MigrationType;
@@ -27,7 +28,7 @@ import migratedb.core.api.logging.Log;
 import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
-import migratedb.core.api.resource.LoadableResource;
+import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PlaceholderReplacingReader;
 import migratedb.core.internal.resolver.ChecksumCalculator;
@@ -40,8 +41,7 @@ import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.internal.sqlscript.SqlScriptFactory;
 
 /**
- * Migration resolver for SQL files on the classpath. The SQL files must have names like V1__Description.sql,
- * V1_1__Description.sql, or R__description.sql.
+ * Migration resolver for SQL file resources.
  */
 public class SqlMigrationResolver implements MigrationResolver {
     private static final Log LOG = Log.getLog(SqlMigrationResolver.class);
@@ -64,83 +64,67 @@ public class SqlMigrationResolver implements MigrationResolver {
     public List<ResolvedMigration> resolveMigrations(Context context) {
         List<ResolvedMigration> migrations = new ArrayList<>();
         String[] suffixes = configuration.getSqlMigrationSuffixes();
-
-        addMigrations(migrations, configuration.getSqlMigrationPrefix(), suffixes,
-                      false
-
-        );
-
-        addMigrations(migrations, configuration.getRepeatableSqlMigrationPrefix(), suffixes,
-                      true
-
-        );
-
+        addMigrations(migrations, configuration.getSqlMigrationPrefix(), suffixes, false);
+        addMigrations(migrations, configuration.getRepeatableSqlMigrationPrefix(), suffixes, true);
         migrations.sort(new ResolvedMigrationComparator());
         return migrations;
     }
 
-    private LoadableResource[] createPlaceholderReplacingLoadableResources(List<LoadableResource> loadableResources) {
-        List<LoadableResource> list = new ArrayList<>();
+    private List<Resource> createPlaceholderReplacingResources(List<Resource> resources) {
+        List<Resource> list = new ArrayList<>();
 
-        for (LoadableResource loadableResource : loadableResources) {
-            LoadableResource placeholderReplacingLoadableResource = new LoadableResource() {
+        for (Resource resource : resources) {
+            Resource placeholderReplacingResource = new Resource() {
                 @Override
-                public Reader read() {
-                    return PlaceholderReplacingReader.create(configuration, parsingContext, loadableResource.read());
+                public String getName() {
+                    return resource.getName();
                 }
 
                 @Override
-                public String getAbsolutePath() {
-                    return loadableResource.getAbsolutePath();
+                public Reader read(Charset charset) {
+                    return PlaceholderReplacingReader.create(configuration, parsingContext, resource.read(charset));
                 }
 
                 @Override
-                public String getAbsolutePathOnDisk() {
-                    return loadableResource.getAbsolutePathOnDisk();
+                public String describeLocation() {
+                    return resource.describeLocation();
                 }
 
                 @Override
-                public String getFilename() {
-                    return loadableResource.getFilename();
-                }
-
-                @Override
-                public String getRelativePath() {
-                    return loadableResource.getRelativePath();
+                public String toString() {
+                    return resource.toString();
                 }
             };
 
-            list.add(placeholderReplacingLoadableResource);
+            list.add(placeholderReplacingResource);
         }
 
-        return list.toArray(new LoadableResource[0]);
+        return list;
     }
 
-    private Integer getChecksumForLoadableResource(boolean repeatable, List<LoadableResource> loadableResources) {
+    private int getChecksumForResource(boolean repeatable, List<Resource> resources) {
         if (repeatable && configuration.isPlaceholderReplacement()) {
-            return ChecksumCalculator.calculate(createPlaceholderReplacingLoadableResources(loadableResources));
+            return ChecksumCalculator.calculate(createPlaceholderReplacingResources(resources));
         }
-
-        return ChecksumCalculator.calculate(loadableResources.toArray(new LoadableResource[0]));
+        return ChecksumCalculator.calculate(resources);
     }
 
-    private Integer getEquivalentChecksumForLoadableResource(boolean repeatable,
-                                                             List<LoadableResource> loadableResources) {
+    private Integer getEquivalentChecksumForResource(boolean repeatable,
+                                                     List<Resource> resources) {
         if (repeatable) {
-            return ChecksumCalculator.calculate(loadableResources.toArray(new LoadableResource[0]));
+            return ChecksumCalculator.calculate(resources);
         }
-
         return null;
     }
 
-    private void addMigrations(List<ResolvedMigration> migrations, String prefix, String[] suffixes,
-                               boolean repeatable
-
-    ) {
+    private void addMigrations(List<ResolvedMigration> migrations,
+                               String prefix,
+                               String[] suffixes,
+                               boolean repeatable) {
         ResourceNameParser resourceNameParser = new ResourceNameParser(configuration);
 
-        for (LoadableResource resource : resourceProvider.getResources(prefix, suffixes)) {
-            String filename = resource.getFilename();
+        for (Resource resource : resourceProvider.getResources(prefix, suffixes)) {
+            String filename = resource.getName();
             ResourceName result = resourceNameParser.parse(filename);
             if (!result.isValid() || isSqlCallback(result) || !prefix.equals(result.getPrefix())) {
                 continue;
@@ -148,26 +132,21 @@ public class SqlMigrationResolver implements MigrationResolver {
 
             SqlScript sqlScript = sqlScriptFactory.createSqlScript(resource, configuration.isMixed(), resourceProvider);
 
-            List<LoadableResource> resources = new ArrayList<>();
+            List<Resource> resources = new ArrayList<>();
             resources.add(resource);
 
-            Integer checksum = getChecksumForLoadableResource(repeatable, resources);
-            Integer equivalentChecksum = getEquivalentChecksumForLoadableResource(repeatable, resources);
+            Integer checksum = getChecksumForResource(repeatable, resources);
+            Integer equivalentChecksum = getEquivalentChecksumForResource(repeatable, resources);
 
             migrations.add(new ResolvedMigrationImpl(
-                result.getVersion(),
-                result.getDescription(),
-                resource.getRelativePath(),
-                checksum,
-                equivalentChecksum,
-
-                MigrationType.SQL,
-                resource.getAbsolutePathOnDisk(),
-                new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript
-
-                    , false, false
-
-                )) {
+                    result.getVersion(),
+                    result.getDescription(),
+                    resource.getName(),
+                    checksum,
+                    equivalentChecksum,
+                    MigrationType.SQL,
+                    resource.getName(),
+                    new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript, false, false)) {
                 @Override
                 public void validate() {
                 }

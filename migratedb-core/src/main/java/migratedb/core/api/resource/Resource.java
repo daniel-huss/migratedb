@@ -16,29 +16,25 @@
  */
 package migratedb.core.api.resource;
 
+import java.io.Reader;
+import java.nio.charset.Charset;
+
 /**
- * A resource (such as a .sql file) used by MigrateDB .
+ * A textual resource (such as a .sql file) used by MigrateDB .
  */
 public interface Resource {
     /**
-     * @return The absolute path and filename of the resource on the classpath or filesystem (path and filename).
+     * @return The path of this resource, separated by forward slashes ({@code "/"} on all platforms. Never ends with a slash.
      */
-    String getAbsolutePath();
+    String getName();
 
     /**
-     * @return The absolute path and filename of this resource on disk, regardless of whether this resources points at
-     * the classpath or filesystem.
+     * @return A hint that describes the physical location of this resource (like a full path to a file on disk)
      */
-    String getAbsolutePathOnDisk();
+    String describeLocation();
 
     /**
-     * @return The filename of this resource, without the path.
+     * @return The contents of the resource.
      */
-    String getFilename();
-
-    /**
-     * @return The filename of this resource, as well as the path relative to the location where the resource was loaded
-     * from.
-     */
-    String getRelativePath();
+    Reader read(Charset charset);
 }

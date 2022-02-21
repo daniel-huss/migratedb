@@ -72,6 +72,7 @@ public class PostgreSQLAdvisoryLockTemplate {
             rethrow = new MigrateDbSqlException("Unable to acquire PostgreSQL advisory lock", e);
             throw rethrow;
         } catch (Exception e) {
+            if (e instanceof InterruptedException) Thread.currentThread().interrupt();
             if (e instanceof RuntimeException) {
                 rethrow = (RuntimeException) e;
             } else {

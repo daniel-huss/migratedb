@@ -33,7 +33,7 @@ import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.resolver.java.FixedJavaMigrationResolver;
-import migratedb.core.internal.resolver.java.ScanningJavaMigrationResolver;
+import migratedb.core.internal.resolver.java.JavaMigrationResolver;
 import migratedb.core.internal.resolver.sql.SqlMigrationResolver;
 import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.internal.sqlscript.SqlScriptFactory;
@@ -67,7 +67,7 @@ public class CompositeMigrationResolver implements MigrationResolver {
                                                             sqlScriptFactory,
                                                             configuration,
                                                             parsingContext));
-            migrationResolvers.add(new ScanningJavaMigrationResolver(classProvider, configuration));
+            migrationResolvers.add(new JavaMigrationResolver(classProvider, configuration));
 
         }
         migrationResolvers.add(new FixedJavaMigrationResolver(configuration.getJavaMigrations()));

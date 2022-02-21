@@ -172,7 +172,7 @@ public class SybaseASEDatabase extends Database<SybaseASEConnection> {
                 }
             }
             return false;
-        } catch (Exception e) {
+        } catch (RuntimeException | SQLException e) {
             throw new MigrateDbException(e);
         }
     }

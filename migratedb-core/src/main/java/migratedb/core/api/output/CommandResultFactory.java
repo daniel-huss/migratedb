@@ -108,7 +108,7 @@ public class CommandResultFactory {
     private static String getDatabaseName(Configuration configuration, Database database) {
         try {
             return database.getCatalog();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             try (Connection connection = configuration.getDataSource().getConnection()) {
                 String catalog = connection.getCatalog();
                 return catalog != null ? catalog : "";
@@ -125,7 +125,6 @@ public class CommandResultFactory {
                               migrationInfo.getType() != null ? migrationInfo.getType().toString() : "",
                               migrationInfo.getInstalledOn() != null ? migrationInfo.getInstalledOn().toString() : "",
                               migrationInfo.getInstalledOn() != null ? migrationInfo.getInstalledOn()
-                                                                                    .toInstant()
                                                                                     .toString() : "",
                               migrationInfo.getState().getDisplayName(),
                               getUndoableStatus(migrationInfo, undoableVersions),

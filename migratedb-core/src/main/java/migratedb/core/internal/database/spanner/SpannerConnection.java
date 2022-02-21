@@ -43,6 +43,7 @@ public class SpannerConnection extends Connection<SpannerDatabase> {
         try {
             return callable.call();
         } catch (Exception e) {
+            if (e instanceof InterruptedException) Thread.currentThread().interrupt();
             RuntimeException rethrow;
             if (e instanceof RuntimeException) {
                 rethrow = (RuntimeException) e;

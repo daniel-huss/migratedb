@@ -16,136 +16,41 @@
  */
 package migratedb.core.internal.resource.classpath;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Enumeration;
-import java.util.Objects;
-import migratedb.core.api.Location;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.logging.Log;
-import migratedb.core.api.resource.LoadableResource;
-import migratedb.core.internal.util.UrlUtils;
+import migratedb.core.api.resource.Resource;
 
-public class ClassPathResource extends LoadableResource {
-    private static final Log LOG = Log.getLog(ClassPathResource.class);
-    private final String fileNameWithAbsolutePath;
-    private final String fileNameWithRelativePath;
+public class ClassPathResource implements Resource {
     private final ClassLoader classLoader;
-    private final Charset encoding;
-    private final boolean detectEncoding;
-    private final String parentURL;
+    private final String name;
 
-    public ClassPathResource(Location location, String fileNameWithAbsolutePath, ClassLoader classLoader,
-                             Charset encoding) {
-        this(location, fileNameWithAbsolutePath, classLoader, encoding, false, "");
-    }
-
-    public ClassPathResource(Location location, String fileNameWithAbsolutePath, ClassLoader classLoader,
-                             Charset encoding, String parentURL) {
-        this(location, fileNameWithAbsolutePath, classLoader, encoding, false, parentURL);
-    }
-
-    public ClassPathResource(Location location, String fileNameWithAbsolutePath, ClassLoader classLoader,
-                             Charset encoding, Boolean detectEncoding, String parentURL) {
-        this.fileNameWithAbsolutePath = fileNameWithAbsolutePath;
-        this.fileNameWithRelativePath = location == null ? fileNameWithAbsolutePath : location.getPathRelativeToThis(
-            fileNameWithAbsolutePath);
+    public ClassPathResource(String name, ClassLoader classLoader) {
+        this.name = name;
         this.classLoader = classLoader;
-        this.encoding = encoding;
-        this.detectEncoding = detectEncoding;
-        this.parentURL = parentURL;
     }
 
     @Override
-    public String getRelativePath() {
-        return fileNameWithRelativePath;
+    public Reader read(Charset charset) {
+        var stream = classLoader.getResourceAsStream(name);
+        if (stream == null) throw new MigrateDbException("No such resource: " + name);
+        return new InputStreamReader(stream, charset);
     }
 
     @Override
-    public String getAbsolutePath() {
-        return fileNameWithAbsolutePath;
+    public String getName() {
+        return name;
     }
 
     @Override
-    public String getAbsolutePathOnDisk() {
-        URL url = getUrl();
-        if (url == null) {
-            throw new MigrateDbException("Unable to find resource on disk: " + fileNameWithAbsolutePath);
-        }
-        return new File(UrlUtils.decodeURL(url.getPath())).getAbsolutePath();
-    }
-
-    private URL getUrl() {
-        try {
-            Enumeration<URL> urls = classLoader.getResources(fileNameWithAbsolutePath);
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                if (url.getPath() != null && url.getPath().contains(parentURL)) {
-                    return url;
-                }
-            }
-        } catch (IOException e) {
-            throw new MigrateDbException(e);
-        }
-
-        return null;
+    public String describeLocation() {
+        var resource = classLoader.getResource(name);
+        return "classpath: " + name + " (" + resource + ")";
     }
 
     @Override
-    public Reader read() {
-        InputStream inputStream = null;
-        try {
-            Enumeration<URL> urls = classLoader.getResources(fileNameWithAbsolutePath);
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                if (url.getPath() != null && url.getPath().contains(parentURL)) {
-                    inputStream = url.openStream();
-                    break;
-                }
-            }
-        } catch (IOException e) {
-            throw new MigrateDbException(e);
-        }
-
-        if (inputStream == null) {
-            throw new MigrateDbException("Unable to obtain inputstream for resource: " + fileNameWithAbsolutePath);
-        }
-
-        Charset charset = encoding;
-
-        return new InputStreamReader(inputStream, charset.newDecoder());
-    }
-
-    @Override
-    public String getFilename() {
-        return fileNameWithAbsolutePath.substring(fileNameWithAbsolutePath.lastIndexOf("/") + 1);
-    }
-
-    public boolean exists() {
-        return getUrl() != null;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        ClassPathResource that = (ClassPathResource) o;
-
-        return fileNameWithAbsolutePath.equals(that.fileNameWithAbsolutePath) && parentURL.equals(that.parentURL);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(fileNameWithAbsolutePath, parentURL);
+    public String toString() {
+        return describeLocation();
     }
 }

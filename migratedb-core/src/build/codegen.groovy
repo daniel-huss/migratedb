@@ -17,7 +17,7 @@ import java.time.Instant
 
 static String sanitize(Object it) { (it?.toString() ?: "").replaceAll(/[^\w_.:-]/, "") }
 
-static File findLicenseFile(Object startDir) {
+static File findLicenseHeaderFile(Object startDir) {
     File dir = startDir as File
     File licenseFile
     do {
@@ -30,7 +30,7 @@ static File findLicenseFile(Object startDir) {
 String lineSeparator = "\n"
 String sourceEncoding = project.properties["project.build.sourceEncoding"]?.toString() ?: "UTF-8"
 String targetPackage = "migratedb.core.internal.info"
-String licenseHeader = findLicenseFile(project.basedir)
+String licenseHeader = findLicenseHeaderFile(project.basedir)
         .readLines(sourceEncoding)
         .collect { "* $it" }
         .with { "/*$lineSeparator${it.join(lineSeparator)}$lineSeparator */" }

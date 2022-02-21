@@ -93,10 +93,6 @@ public class ResolvedMigrationImpl implements ResolvedMigration {
         return executor;
     }
 
-    public int compareTo(ResolvedMigrationImpl o) {
-        return version.compareTo(o.version);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

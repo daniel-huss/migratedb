@@ -16,10 +16,108 @@
  */
 package migratedb.commandline;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static migratedb.core.internal.configuration.ConfigUtils.BASELINE_DESCRIPTION;
+import static migratedb.core.internal.configuration.ConfigUtils.BASELINE_ON_MIGRATE;
+import static migratedb.core.internal.configuration.ConfigUtils.BASELINE_VERSION;
+import static migratedb.core.internal.configuration.ConfigUtils.BATCH;
+import static migratedb.core.internal.configuration.ConfigUtils.CALLBACKS;
+import static migratedb.core.internal.configuration.ConfigUtils.CHERRY_PICK;
+import static migratedb.core.internal.configuration.ConfigUtils.CLEAN_DISABLED;
+import static migratedb.core.internal.configuration.ConfigUtils.CLEAN_ON_VALIDATION_ERROR;
+import static migratedb.core.internal.configuration.ConfigUtils.CONFIG_FILES;
+import static migratedb.core.internal.configuration.ConfigUtils.CONFIG_FILE_ENCODING;
+import static migratedb.core.internal.configuration.ConfigUtils.CONNECT_RETRIES;
+import static migratedb.core.internal.configuration.ConfigUtils.CONNECT_RETRIES_INTERVAL;
+import static migratedb.core.internal.configuration.ConfigUtils.CREATE_SCHEMAS;
+import static migratedb.core.internal.configuration.ConfigUtils.DEFAULT_SCHEMA;
+import static migratedb.core.internal.configuration.ConfigUtils.DRIVER;
+import static migratedb.core.internal.configuration.ConfigUtils.DRYRUN_OUTPUT;
+import static migratedb.core.internal.configuration.ConfigUtils.ENCODING;
+import static migratedb.core.internal.configuration.ConfigUtils.ERROR_OVERRIDES;
+import static migratedb.core.internal.configuration.ConfigUtils.FAIL_ON_MISSING_LOCATIONS;
+import static migratedb.core.internal.configuration.ConfigUtils.GROUP;
+import static migratedb.core.internal.configuration.ConfigUtils.IGNORE_FUTURE_MIGRATIONS;
+import static migratedb.core.internal.configuration.ConfigUtils.IGNORE_IGNORED_MIGRATIONS;
+import static migratedb.core.internal.configuration.ConfigUtils.IGNORE_MIGRATION_PATTERNS;
+import static migratedb.core.internal.configuration.ConfigUtils.IGNORE_MISSING_MIGRATIONS;
+import static migratedb.core.internal.configuration.ConfigUtils.IGNORE_PENDING_MIGRATIONS;
+import static migratedb.core.internal.configuration.ConfigUtils.INIT_SQL;
+import static migratedb.core.internal.configuration.ConfigUtils.INSTALLED_BY;
+import static migratedb.core.internal.configuration.ConfigUtils.JAR_DIRS;
+import static migratedb.core.internal.configuration.ConfigUtils.JDBC_PROPERTIES_PREFIX;
+import static migratedb.core.internal.configuration.ConfigUtils.LOCATIONS;
+import static migratedb.core.internal.configuration.ConfigUtils.LOCK_RETRY_COUNT;
+import static migratedb.core.internal.configuration.ConfigUtils.LOGGERS;
+import static migratedb.core.internal.configuration.ConfigUtils.MIXED;
+import static migratedb.core.internal.configuration.ConfigUtils.ORACLE_KERBEROS_CACHE_FILE;
+import static migratedb.core.internal.configuration.ConfigUtils.ORACLE_KERBEROS_CONFIG_FILE;
+import static migratedb.core.internal.configuration.ConfigUtils.ORACLE_SQLPLUS;
+import static migratedb.core.internal.configuration.ConfigUtils.ORACLE_SQLPLUS_WARN;
+import static migratedb.core.internal.configuration.ConfigUtils.ORACLE_WALLET_LOCATION;
+import static migratedb.core.internal.configuration.ConfigUtils.OUTPUT_QUERY_RESULTS;
+import static migratedb.core.internal.configuration.ConfigUtils.OUT_OF_ORDER;
+import static migratedb.core.internal.configuration.ConfigUtils.PASSWORD;
+import static migratedb.core.internal.configuration.ConfigUtils.PLACEHOLDERS_PROPERTY_PREFIX;
+import static migratedb.core.internal.configuration.ConfigUtils.PLACEHOLDER_PREFIX;
+import static migratedb.core.internal.configuration.ConfigUtils.PLACEHOLDER_REPLACEMENT;
+import static migratedb.core.internal.configuration.ConfigUtils.PLACEHOLDER_SUFFIX;
+import static migratedb.core.internal.configuration.ConfigUtils.REPEATABLE_SQL_MIGRATION_PREFIX;
+import static migratedb.core.internal.configuration.ConfigUtils.RESOLVERS;
+import static migratedb.core.internal.configuration.ConfigUtils.SCHEMAS;
+import static migratedb.core.internal.configuration.ConfigUtils.SCRIPT_PLACEHOLDER_PREFIX;
+import static migratedb.core.internal.configuration.ConfigUtils.SCRIPT_PLACEHOLDER_SUFFIX;
+import static migratedb.core.internal.configuration.ConfigUtils.SKIP_DEFAULT_CALLBACKS;
+import static migratedb.core.internal.configuration.ConfigUtils.SKIP_DEFAULT_RESOLVERS;
+import static migratedb.core.internal.configuration.ConfigUtils.SKIP_EXECUTING_MIGRATIONS;
+import static migratedb.core.internal.configuration.ConfigUtils.SQL_MIGRATION_PREFIX;
+import static migratedb.core.internal.configuration.ConfigUtils.SQL_MIGRATION_SEPARATOR;
+import static migratedb.core.internal.configuration.ConfigUtils.SQL_MIGRATION_SUFFIXES;
+import static migratedb.core.internal.configuration.ConfigUtils.STATE_SCRIPT_PREFIX;
+import static migratedb.core.internal.configuration.ConfigUtils.TABLE;
+import static migratedb.core.internal.configuration.ConfigUtils.TABLESPACE;
+import static migratedb.core.internal.configuration.ConfigUtils.TARGET;
+import static migratedb.core.internal.configuration.ConfigUtils.UNDO_SQL_MIGRATION_PREFIX;
+import static migratedb.core.internal.configuration.ConfigUtils.URL;
+import static migratedb.core.internal.configuration.ConfigUtils.USER;
+import static migratedb.core.internal.configuration.ConfigUtils.VALIDATE_MIGRATION_NAMING;
+import static migratedb.core.internal.configuration.ConfigUtils.VALIDATE_ON_MIGRATE;
+import static migratedb.core.internal.configuration.ConfigUtils.loadConfiguration;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.BufferedReader;
+import java.io.Console;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import migratedb.core.MigrateDb;
-import migratedb.core.api.*;
+import migratedb.core.api.DatabaseTypeRegister;
+import migratedb.core.api.Location;
+import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.MigrationInfo;
+import migratedb.core.api.MigrationInfoService;
+import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.configuration.FluentConfiguration;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.output.CompositeResult;
@@ -33,21 +131,7 @@ import migratedb.core.internal.info.MigrationInfoDumper;
 import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 import migratedb.core.internal.util.StringUtils;
-
-import javax.annotation.Nullable;
-import java.io.*;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static migratedb.core.internal.configuration.ConfigUtils.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 class MigrateDbCommand {
     private static final Log LOG = Log.getLog(MigrateDbCommand.class);
@@ -56,8 +140,7 @@ class MigrateDbCommand {
     private final Console console;
     private final PrintStream stdout;
     private final PrintStream stderr;
-    @Nullable
-    private final InputStream stdin;
+    private final @Nullable InputStream stdin;
     private final Map<String, String> environment;
     private final DatabaseTypeRegister databaseTypeRegister;
 
@@ -219,9 +302,6 @@ class MigrateDbCommand {
         if ("MIGRATEDB_ENCODING".equals(key)) {
             return ENCODING;
         }
-        if ("MIGRATEDB_DETECT_ENCODING".equals(key)) {
-            return DETECT_ENCODING;
-        }
         if ("MIGRATEDB_ERROR_OVERRIDES".equals(key)) {
             return ERROR_OVERRIDES;
         }
@@ -320,9 +400,6 @@ class MigrateDbCommand {
         }
         if ("MIGRATEDB_STATE_SCRIPT_PREFIX".equals(key)) {
             return STATE_SCRIPT_PREFIX;
-        }
-        if ("MIGRATEDB_STREAM".equals(key)) {
-            return STREAM;
         }
         if ("MIGRATEDB_TABLE".equals(key)) {
             return TABLE;
@@ -539,13 +616,13 @@ class MigrateDbCommand {
     private void makeRelativeLocationsBasedOnWorkingDirectory(Map<String, String> config) {
         String[] locations = config.get(ConfigUtils.LOCATIONS).split(",");
         for (int i = 0; i < locations.length; i++) {
-            if (locations[i].startsWith(Location.DefaultFileSystemLocation.PREFIX)) {
-                String newLocation = locations[i].substring(Location.DefaultFileSystemLocation.PREFIX.length());
+            if (locations[i].startsWith(Location.FileSystemLocation.PREFIX)) {
+                String newLocation = locations[i].substring(Location.FileSystemLocation.PREFIX.length());
                 File file = new File(newLocation);
                 if (!file.isAbsolute()) {
                     file = new File(arguments.getWorkingDirectory(), newLocation);
                 }
-                locations[i] = Location.DefaultFileSystemLocation.PREFIX + file.getAbsolutePath();
+                locations[i] = Location.FileSystemLocation.PREFIX + file.getAbsolutePath();
             }
         }
 

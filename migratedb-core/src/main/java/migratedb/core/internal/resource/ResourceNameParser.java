@@ -77,7 +77,7 @@ public class ResourceNameParser {
                     // ... and that must be a legitimate version
                     try {
                         MigrationVersion.fromVersion(splitName.getLeft());
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                         isValid = false;
                         validationMessage = "Invalid versioned migration name format: " + resourceName
                                             + " (could not recognise version number " + splitName.getLeft() + ")";

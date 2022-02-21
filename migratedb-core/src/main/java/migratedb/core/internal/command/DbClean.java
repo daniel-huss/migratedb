@@ -67,7 +67,7 @@ public class DbClean {
             boolean dropSchemas = false;
             try {
                 dropSchemas = schemaHistory.hasSchemasMarker();
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 LOG.error("Error while checking whether the schemas should be dropped", e);
             }
 

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
@@ -262,7 +263,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         for (int i = 1; i <= metadata.getColumnCount(); i++) {
             // Careful - column ordinals in JDBC start at 1
-            String columnNameLower = metadata.getColumnName(i).toLowerCase();
+            String columnNameLower = metadata.getColumnName(i).toLowerCase(Locale.ROOT);
             columnOrdinalMap.put(columnNameLower, i);
         }
         return columnOrdinalMap;

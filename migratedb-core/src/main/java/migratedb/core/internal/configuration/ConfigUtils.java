@@ -50,7 +50,6 @@ public class ConfigUtils {
     public static final String DRIVER = "migratedb.driver";
     public static final String DRYRUN_OUTPUT = "migratedb.dryRunOutput";
     public static final String ENCODING = "migratedb.encoding";
-    public static final String DETECT_ENCODING = "migratedb.detectEncoding";
     public static final String ERROR_OVERRIDES = "migratedb.errorOverrides";
     public static final String GROUP = "migratedb.group";
     public static final String IGNORE_FUTURE_MIGRATIONS = "migratedb.ignoreFutureMigrations";
@@ -83,7 +82,6 @@ public class ConfigUtils {
     public static final String SQL_MIGRATION_SEPARATOR = "migratedb.sqlMigrationSeparator";
     public static final String SQL_MIGRATION_SUFFIXES = "migratedb.sqlMigrationSuffixes";
     public static final String STATE_SCRIPT_PREFIX = "migratedb.stateScriptPrefix";
-    public static final String STREAM = "migratedb.stream";
     public static final String TABLE = "migratedb.table";
     public static final String TABLESPACE = "migratedb.tablespace";
     public static final String TARGET = "migratedb.target";

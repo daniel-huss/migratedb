@@ -16,7 +16,7 @@
  */
 package migratedb.core.internal.sqlscript;
 
-import migratedb.core.api.resource.LoadableResource;
+import migratedb.core.api.resource.Resource;
 
 /**
  * SQL script containing a series of statements terminated by a delimiter (eg: ;). Single-line (--) and multi-line (/* *
@@ -36,7 +36,7 @@ public interface SqlScript extends Comparable<SqlScript> {
     /**
      * @return The resource containing the statements.
      */
-    LoadableResource getResource();
+    Resource getResource();
 
     /**
      * Whether the execution should take place inside a transaction. This is useful for databases like PostgreSQL where

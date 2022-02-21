@@ -26,7 +26,7 @@ public enum MigrationType {
      */
     BASELINE(true, false, false),
     /**
-     * Deleted migration
+     * Deleted migration.
      */
     DELETE(true, false, false),
     /**
@@ -53,21 +53,6 @@ public enum MigrationType {
      * Undo JDBC java-based migrations.
      */
     UNDO_JDBC(false, true, false),
-    /**
-     * Spring JDBC Java-based migrations.
-     *
-     * @deprecated Will be removed in MigrateDb 7.0. Use JDBC instead.
-     */
-    @Deprecated
-    SPRING_JDBC(false, false, false),
-    /**
-     * Undo Spring JDBC java-based migrations.
-     *
-     * @deprecated Will be removed in MigrateDb 7.0. Use UNDO_JDBC instead.
-     */
-    @Deprecated
-    UNDO_SPRING_JDBC(false, true, false),
-
     /**
      * Migrations using custom MigrationResolvers.
      */

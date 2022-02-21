@@ -35,8 +35,7 @@ public abstract class SchemaHistory {
     public static final String NO_DESCRIPTION_MARKER = "<< no description >>";
 
     /**
-     * The schema history table used by MigrateDb. Non-final due to the table name fallback mechanism. Will be made
-     * final in MigrateDb 6.0.
+     * The schema history table used by MigrateDb. Non-final due to the table name fallback mechanism.
      */
     protected Table table;
 

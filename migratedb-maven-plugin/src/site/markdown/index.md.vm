@@ -1,0 +1,66 @@
+#set ( $dollar = "$")
+
+Introduction
+---
+
+In MigrateDB, runtime class path scanning has been replaced with build-time scanning.
+
+This plugin provides the scanning capability for the Maven build system via the `migratedb:scan` goal. A Gradle plugin is also available.
+
+Usage examples
+---
+
+To scan the output of the current artifact when your migrations reside in `db/migration`:
+
+```xml
+<plugin>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>${project.artifactId}</artifactId>
+    <version>${project.version}</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>scan</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+<hr/>
+
+A more complex example that uses non-default configuration options:
+
+```xml
+<plugin>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>${project.artifactId}</artifactId>
+    <version>${project.version}</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>scan</goal>
+            </goals>
+            <configuration>
+                <!-- Also scan the project dependencies for resources -->
+                <includeDependencies>true</includeDependencies>
+                <includes>
+                    <!-- Our migrations live in these packages -->
+                    <include>com/foo/myapp/persistence/sql/migration</include>
+                    <include>com/foo/mylib/db/migrations</include>
+                </includes>
+                <followSymlinks>true</followSymlinks>
+                <outputDirectory>$dollar{project.build.outputDirectory}/migratedb/classpath</outputDirectory>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
+
+For this example, the corresponding MigrateDB configuration would have to be tweaked to work with the changed output
+ directory:
+```java
+MigrateDb.configure()
+         .locations("classpath:migratedb/classpath")
+```
+

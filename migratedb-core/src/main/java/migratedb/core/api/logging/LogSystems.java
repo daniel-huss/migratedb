@@ -19,7 +19,6 @@ package migratedb.core.api.logging;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.annotation.Nullable;
 import migratedb.core.internal.logging.AndroidLogSystem;
 import migratedb.core.internal.logging.ApacheCommonsLogSystem;
 import migratedb.core.internal.logging.JavaUtilLogSystem;
@@ -28,6 +27,7 @@ import migratedb.core.internal.logging.NoLogSystem;
 import migratedb.core.internal.logging.Slf4jLogSystem;
 import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.FeatureDetector;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class LogSystems {
     public static final String ANDROID = "android";

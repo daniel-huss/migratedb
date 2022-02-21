@@ -16,7 +16,6 @@
 
 package migratedb.integrationtest.dsl.internal
 
-import migratedb.core.api.ClassProvider
 import migratedb.core.api.MigrationVersion
 import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.api.migration.Context
@@ -78,7 +77,6 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
     }
 
     fun execute() {
-        config.locations()
-        config.javaMigrationClassProvider(ClassProvider { codeMigrations.map { it.code } })
+        TODO()
     }
 }

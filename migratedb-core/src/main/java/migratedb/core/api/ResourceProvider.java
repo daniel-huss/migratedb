@@ -17,7 +17,8 @@
 package migratedb.core.api;
 
 import java.util.Collection;
-import migratedb.core.api.resource.LoadableResource;
+import java.util.Collections;
+import migratedb.core.api.resource.Resource;
 
 /**
  * A facility to obtain loadable resources.
@@ -27,18 +28,34 @@ public interface ResourceProvider {
      * Retrieves the resource with this name.
      *
      * @param name The name of the resource.
-     *
      * @return The resource or {@code null} if not found.
      */
-    LoadableResource getResource(String name);
+    Resource getResource(String name);
 
     /**
-     * Retrieve all resources whose name begins with this prefix and ends with any of these suffixes.
+     * Retrieve all resources whose last name component begins with this prefix and ends with any of these suffixes.
      *
      * @param prefix   The prefix.
      * @param suffixes The suffixes.
-     *
      * @return The matching resources.
      */
-    Collection<LoadableResource> getResources(String prefix, String[] suffixes);
+    Collection<Resource> getResources(String prefix, String... suffixes);
+
+
+    /**
+     * @return Instance that never provides any resoures.
+     */
+    static ResourceProvider noResources() {
+        return new ResourceProvider() {
+
+            @Override
+            public Resource getResource(String name) {
+                return null;
+            }
+
+            public Collection<Resource> getResources(String prefix, String... suffixes) {
+                return Collections.emptyList();
+            }
+        };
+    }
 }

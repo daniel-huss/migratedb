@@ -20,6 +20,7 @@ import java.io.FilterReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
@@ -49,17 +50,17 @@ public class PlaceholderReplacingReader extends FilterReader {
 
         @Override
         public String put(String key, String value) {
-            return super.put(key.toLowerCase(), value);
+            return super.put(key.toLowerCase(Locale.ROOT), value);
         }
 
         @Override
         public String get(Object key) {
-            return super.get(key.toString().toLowerCase());
+            return super.get(key.toString().toLowerCase(Locale.ROOT));
         }
 
         @Override
         public boolean containsKey(Object key) {
-            return super.containsKey(key.toString().toLowerCase());
+            return super.containsKey(key.toString().toLowerCase(Locale.ROOT));
         }
     }
 
@@ -80,10 +81,10 @@ public class PlaceholderReplacingReader extends FilterReader {
         placeholders.putAll(parsingContextPlaceholders);
 
         return new PlaceholderReplacingReader(
-            configuration.getPlaceholderPrefix(),
-            configuration.getPlaceholderSuffix(),
-            placeholders,
-            reader);
+                configuration.getPlaceholderPrefix(),
+                configuration.getPlaceholderSuffix(),
+                placeholders,
+                reader);
     }
 
     public static PlaceholderReplacingReader createForScriptMigration(Configuration configuration,
@@ -96,10 +97,10 @@ public class PlaceholderReplacingReader extends FilterReader {
         placeholders.putAll(parsingContextPlaceholders);
 
         return new PlaceholderReplacingReader(
-            configuration.getScriptPlaceholderPrefix(),
-            configuration.getScriptPlaceholderSuffix(),
-            placeholders,
-            reader);
+                configuration.getScriptPlaceholderPrefix(),
+                configuration.getScriptPlaceholderSuffix(),
+                placeholders,
+                reader);
     }
 
     @Override
@@ -161,12 +162,12 @@ public class PlaceholderReplacingReader extends FilterReader {
 
                 if (placeholder.contains("migratedb:")) {
                     throw new MigrateDbException("Failed to populate value for default placeholder: "
-                                                 + canonicalPlaceholder);
+                            + canonicalPlaceholder);
                 }
 
                 throw new MigrateDbException("No value provided for placeholder: "
-                                             + canonicalPlaceholder
-                                             + ".  Check your configuration!");
+                        + canonicalPlaceholder
+                        + ".  Check your configuration!");
             }
 
             // set the current placeholder replacement

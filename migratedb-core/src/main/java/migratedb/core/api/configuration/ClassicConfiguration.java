@@ -54,7 +54,6 @@ import migratedb.core.internal.BuiltinFeatures;
 import migratedb.core.internal.configuration.ConfigUtils;
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl;
 import migratedb.core.internal.jdbc.DriverDataSource;
-import migratedb.core.internal.scanner.ClasspathClassScanner;
 import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.Locations;
 import migratedb.core.internal.util.StringUtils;
@@ -75,9 +74,8 @@ public class ClassicConfiguration implements Configuration {
     private int connectRetriesInterval = 120;
     private String initSql;
     private final ClassLoader classLoader;
-    private Locations locations = new Locations("db/migration");
+    private Locations locations;
     private Charset encoding = StandardCharsets.UTF_8;
-    private boolean detectEncoding = false;
     private String defaultSchemaName = null;
     private String[] schemaNames = {};
     private String table = "migratedb_schema_history";
@@ -98,7 +96,7 @@ public class ClassicConfiguration implements Configuration {
     private ResourceProvider resourceProvider = null;
     private ClassProvider<JavaMigration> javaMigrationClassProvider = null;
     private String sqlMigrationSeparator = "__";
-    private String[] sqlMigrationSuffixes = { ".sql" };
+    private String[] sqlMigrationSuffixes = {".sql"};
     private JavaMigration[] javaMigrations = {};
     private boolean ignoreMissingMigrations;
     private boolean ignoreIgnoredMigrations;
@@ -124,7 +122,6 @@ public class ClassicConfiguration implements Configuration {
     private boolean createSchemas = true;
     private String[] errorOverrides = new String[0];
     private OutputStream dryRunOutput;
-    private boolean stream;
     private boolean batch;
     private boolean outputQueryResults = true;
     private int lockRetryCount = 50;
@@ -136,7 +133,6 @@ public class ClassicConfiguration implements Configuration {
     private String oracleWalletLocation;
     private boolean failOnMissingLocations = false;
     private LogSystem logger;
-    private final ClasspathClassScanner classScanner;
     private final DatabaseTypeRegisterImpl databaseTypeRegister = new DatabaseTypeRegisterImpl();
     private final Set<MigrateDbExtension> loadedExtensions = new HashSet<>();
 
@@ -146,11 +142,11 @@ public class ClassicConfiguration implements Configuration {
 
     /**
      * @param classLoader The ClassLoader to use for loading migrations, resolvers, etc from the classpath. (default:
-     *                    Thread.currentThread().getContextClassLoader())
+     *                    Thread.currentThread().getContextClassLoader()). Nullable for compatibility.
      */
     public ClassicConfiguration(@Nullable ClassLoader classLoader) {
         this.classLoader = classLoader == null ? ClassUtils.defaultClassLoader() : classLoader;
-        this.classScanner = new ClasspathClassScanner(this.classLoader);
+        this.locations = new Locations(List.of("db/migration"), classLoader);
         useExtension(BuiltinFeatures.instance());
     }
 
@@ -170,11 +166,6 @@ public class ClassicConfiguration implements Configuration {
     @Override
     public Charset getEncoding() {
         return encoding;
-    }
-
-    @Override
-    public boolean getDetectEncoding() {
-        return detectEncoding;
     }
 
     @Override
@@ -463,11 +454,6 @@ public class ClassicConfiguration implements Configuration {
     }
 
     @Override
-    public boolean isStream() {
-        return stream;
-    }
-
-    @Override
     public boolean isBatch() {
         return batch;
     }
@@ -705,8 +691,8 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setIgnoreMigrationPatterns(String... ignoreMigrationPatterns) {
         this.ignoreMigrationPatterns = Arrays.stream(ignoreMigrationPatterns)
-                                             .map(ValidatePattern::fromPattern)
-                                             .toArray(ValidatePattern[]::new);
+                .map(ValidatePattern::fromPattern)
+                .toArray(ValidatePattern[]::new);
     }
 
     private void setIgnoreMigrationPatterns(ValidatePattern[] ignoreMigrationPatterns) {
@@ -768,7 +754,7 @@ public class ClassicConfiguration implements Configuration {
      * @param locations Locations to scan recursively for migrations. (default: db/migration)
      */
     public void setLocationsAsStrings(String... locations) {
-        this.locations = new Locations(locations);
+        this.locations = new Locations(Arrays.asList(locations), classLoader);
     }
 
     /**
@@ -790,16 +776,6 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setEncoding(Charset encoding) {
         this.encoding = encoding;
-    }
-
-    /**
-     * Whether MigrateDb should try to automatically detect SQL migration file encoding
-     *
-     * @param detectEncoding {@code true} to enable auto detection, {@code false} otherwise
-     *                       <i>MigrateDb Teams only</i>
-     */
-    public void setDetectEncoding(boolean detectEncoding) {
-        this.detectEncoding = detectEncoding;
     }
 
     /**
@@ -928,8 +904,8 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setCherryPick(String... cherryPickAsString) {
         this.cherryPick = Arrays.stream(cherryPickAsString)
-                                .map(MigrationPattern::new)
-                                .toArray(MigrationPattern[]::new);
+                .map(MigrationPattern::new)
+                .toArray(MigrationPattern[]::new);
     }
 
     /**
@@ -1045,19 +1021,6 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Whether to stream SQL migrations when executing them. Streaming doesn't load the entire migration in memory at
-     * once. Instead each statement is loaded individually. This is particularly useful for very large SQL migrations
-     * composed of multiple MB or even GB of reference data, as this dramatically reduces MigrateDb's memory
-     * consumption.
-     *
-     * @param stream {@code true} to stream SQL migrations. {@code false} to fully loaded them in memory instead.
-     *               (default: {@code false})
-     */
-    public void setStream(boolean stream) {
-        this.stream = stream;
-    }
-
-    /**
      * Whether to batch SQL statements when executing them. Batching can save up to 99 percent of network roundtrips by
      * sending up to 100 statements at once over the network to the database, instead of sending each statement
      * individually. This is particularly useful for very large SQL migrations composed of multiple MB or even GB of
@@ -1145,7 +1108,7 @@ public class ClassicConfiguration implements Configuration {
     public void setConnectRetries(int connectRetries) {
         if (connectRetries < 0) {
             throw new MigrateDbException("Invalid number of connectRetries (must be 0 or greater): " + connectRetries,
-                                         ErrorCode.CONFIGURATION);
+                    ErrorCode.CONFIGURATION);
         }
         this.connectRetries = connectRetries;
     }
@@ -1159,8 +1122,8 @@ public class ClassicConfiguration implements Configuration {
     public void setConnectRetriesInterval(int connectRetriesInterval) {
         if (connectRetriesInterval < 0) {
             throw new MigrateDbException(
-                "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
-                ErrorCode.CONFIGURATION);
+                    "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
+                    ErrorCode.CONFIGURATION);
         }
         this.connectRetriesInterval = connectRetriesInterval;
     }
@@ -1254,14 +1217,11 @@ public class ClassicConfiguration implements Configuration {
     /**
      * Set the callbacks for lifecycle notifications.
      *
-     * @param callbacks The fully qualified class names, or full qualified package to scan, of the callbacks for
-     *                  lifecycle notifications. (default: none)
+     * @param callbacks The fully qualified class names of the callbacks for lifecycle notifications. (default: none)
      */
     public void setCallbacksAsClassNames(String... callbacks) {
         this.callbacks.clear();
-        for (String callback : callbacks) {
-            loadCallbackPath(callback);
-        }
+        this.callbacks.addAll(ClassUtils.instantiateAll(callbacks, classLoader));
     }
 
     /**
@@ -1283,52 +1243,6 @@ public class ClassicConfiguration implements Configuration {
     public void useExtensions(Iterable<MigrateDbExtension> extensions) {
         for (var extension : extensions) {
             useExtension(extension);
-        }
-    }
-
-    /**
-     * Load this callback path as a class if it exists, else scan this location for classes that implement Callback.
-     *
-     * @param callbackPath The path to load or scan.
-     */
-    private void loadCallbackPath(String callbackPath) {
-        // try to load it as a classname
-        Object o = null;
-        try {
-            o = ClassUtils.instantiate(callbackPath, classLoader);
-        } catch (MigrateDbException ex) {
-            // If the path failed to load, assume it points to a package instead.
-        }
-
-        if (o != null) {
-            // If we have a non-null o, check that it inherits from the right interface
-            if (o instanceof Callback) {
-                callbacks.add((Callback) o);
-            } else {
-                throw new MigrateDbException(
-                    "Invalid callback: " + callbackPath + " (must implement " + Callback.class.getName() + ")",
-                    ErrorCode.CONFIGURATION);
-            }
-        } else {
-            // else try to scan this location and load all callbacks found within
-            loadCallbackLocation(callbackPath, true);
-        }
-    }
-
-    /**
-     * Scan this location for classes that implement Callback.
-     *
-     * @param path            The path to scan.
-     * @param errorOnNotFound Whether to show an error if the location is not found.
-     */
-    public void loadCallbackLocation(String path, boolean errorOnNotFound) {
-        List<String> callbackClasses = classScanner.scanForType(path, Callback.class, errorOnNotFound);
-        for (String callback : callbackClasses) {
-            Class<? extends Callback> callbackClass = ClassUtils.loadClass(Callback.class, callback, classLoader);
-            if (callbackClass != null) { // Filter out abstract classes
-                Callback callbackObj = ClassUtils.instantiate(callback, classLoader);
-                callbacks.add(callbackObj);
-            }
         }
     }
 
@@ -1540,7 +1454,6 @@ public class ClassicConfiguration implements Configuration {
      * <p>To use a custom ClassLoader, setClassLoader() must be called prior to calling this method.</p>
      *
      * @param properties Properties used for configuration.
-     *
      * @throws MigrateDbException when the configuration failed.
      */
     public void configure(Properties properties) {
@@ -1553,7 +1466,6 @@ public class ClassicConfiguration implements Configuration {
      * <p>To use a custom ClassLoader, it must be passed to the MigrateDb constructor prior to calling this method.</p>
      *
      * @param props Properties used for configuration.
-     *
      * @throws MigrateDbException when the configuration failed.
      */
     public void configure(Map<String, String> props) {
@@ -1643,10 +1555,6 @@ public class ClassicConfiguration implements Configuration {
         String encodingProp = props.remove(ConfigUtils.ENCODING);
         if (encodingProp != null) {
             setEncodingAsString(encodingProp);
-        }
-        Boolean detectEncoding = removeBoolean(props, ConfigUtils.DETECT_ENCODING);
-        if (detectEncoding != null) {
-            setDetectEncoding(detectEncoding);
         }
         String defaultSchemaProp = props.remove(ConfigUtils.DEFAULT_SCHEMA);
         if (defaultSchemaProp != null) {
@@ -1753,8 +1661,8 @@ public class ClassicConfiguration implements Configuration {
             setSkipDefaultCallbacks(skipDefaultCallbacksProp);
         }
         Map<String, String> placeholdersFromProps = getPropertiesUnderNamespace(props,
-                                                                                getPlaceholders(),
-                                                                                ConfigUtils.PLACEHOLDERS_PROPERTY_PREFIX);
+                getPlaceholders(),
+                ConfigUtils.PLACEHOLDERS_PROPERTY_PREFIX);
         setPlaceholders(placeholdersFromProps);
         Boolean mixedProp = removeBoolean(props, ConfigUtils.MIXED);
         if (mixedProp != null) {
@@ -1775,10 +1683,6 @@ public class ClassicConfiguration implements Configuration {
         String errorOverridesProp = props.remove(ConfigUtils.ERROR_OVERRIDES);
         if (errorOverridesProp != null) {
             setErrorOverrides(StringUtils.tokenizeToStringArray(errorOverridesProp, ","));
-        }
-        Boolean streamProp = removeBoolean(props, ConfigUtils.STREAM);
-        if (streamProp != null) {
-            setStream(streamProp);
         }
         Boolean batchProp = removeBoolean(props, ConfigUtils.BATCH);
         if (batchProp != null) {
@@ -1819,22 +1723,22 @@ public class ClassicConfiguration implements Configuration {
 
         // Must be done last, so that any driver-specific config has been done at this point.
         if (StringUtils.hasText(url) && (StringUtils.hasText(urlProp) ||
-                                         StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
-                                         StringUtils.hasText(passwordProp))) {
+                StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
+                StringUtils.hasText(passwordProp))) {
             Map<String, String> jdbcPropertiesFromProps =
-                getPropertiesUnderNamespace(
-                    props,
-                    getPlaceholders(),
-                    ConfigUtils.JDBC_PROPERTIES_PREFIX);
+                    getPropertiesUnderNamespace(
+                            props,
+                            getPlaceholders(),
+                            ConfigUtils.JDBC_PROPERTIES_PREFIX);
 
             setDataSource(new DriverDataSource(classLoader,
-                                               driver,
-                                               url,
-                                               user,
-                                               password,
-                                               this,
-                                               jdbcPropertiesFromProps,
-                                               databaseTypeRegister));
+                    driver,
+                    url,
+                    user,
+                    password,
+                    this,
+                    jdbcPropertiesFromProps,
+                    databaseTypeRegister));
         }
 
         ConfigUtils.reportUnrecognisedProperties(props, "migratedb.");

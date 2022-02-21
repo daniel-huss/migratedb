@@ -16,87 +16,59 @@
  */
 package migratedb.core.internal.resource.filesystem;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.nio.file.StandardOpenOption;
-import migratedb.core.api.Location;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.logging.Log;
-import migratedb.core.api.resource.LoadableResource;
-import migratedb.core.internal.util.BomStrippingReader;
+import migratedb.core.api.resource.Resource;
 
-public class FileSystemResource extends LoadableResource {
-    private static final Log LOG = Log.getLog(FileSystemResource.class);
+public class FileSystemResource implements Resource {
+    private final Path file;
+    private final String relativeName;
 
-    private final File file;
-    private final String relativePath;
-    private final Charset encoding;
-    private final boolean detectEncoding;
-
-    public FileSystemResource(Location location, String fileNameWithPath, Charset encoding, boolean stream) {
-        this(location, fileNameWithPath, encoding, false, stream);
-    }
-
-    public FileSystemResource(Location location, String fileNameWithPath, Charset encoding, boolean detectEncoding,
-                              boolean stream) {
-        this.file = new File(new File(fileNameWithPath).getPath());
-        this.relativePath = location == null ? file.getPath() : location.getPathRelativeToThis(file.getPath()).replace(
-            "\\",
-            "/");
-        this.encoding = encoding;
-        this.detectEncoding = detectEncoding;
-
-    }
-
-    @Override
-    public String getAbsolutePath() {
-        return file.getPath();
-    }
-
-    @Override
-    public String getAbsolutePathOnDisk() {
-        return file.getAbsolutePath();
-    }
-
-    @Override
-    public Reader read() {
-        Charset charSet = encoding;
-
-        try {
-            return Channels.newReader(FileChannel.open(file.toPath(), StandardOpenOption.READ),
-                                      charSet.newDecoder(),
-                                      4096);
-        } catch (IOException e) {
-            LOG.debug("Unable to load filesystem resource" + file.getPath() + " using FileChannel.open." +
-                      " Falling back to FileInputStream implementation. Exception message: " + e.getMessage());
+    public FileSystemResource(Path file, Path relativeTo) {
+        this.file = file.toAbsolutePath().normalize();
+        var relativized = tryRelativize(file, relativeTo.toAbsolutePath().normalize());
+        var segments = new ArrayList<String>();
+        for (var segment : relativized) {
+            segments.add(segment.toString());
         }
+        this.relativeName = String.join("/", segments);
+    }
 
+    private static Path tryRelativize(Path file, Path relativeTo) {
+        if (file.equals(relativeTo)) return file;
         try {
-            return new BufferedReader(new BomStrippingReader(new InputStreamReader(new FileInputStream(file),
-                                                                                   charSet)));
-        } catch (IOException e) {
-            throw new MigrateDbException(
-                "Unable to load filesystem resource: " + file.getPath() + " (encoding: " + charSet + ")", e);
+            return relativeTo.relativize(file);
+        } catch (RuntimeException e) {
+            return file;
         }
     }
 
-    /**
-     * @return The filename of this resource, without the path.
-     */
     @Override
-    public String getFilename() {
-        return file.getName();
+    public Reader read(Charset charset) {
+        try {
+            return Files.newBufferedReader(file, charset);
+        } catch (IOException e) {
+            throw new MigrateDbException("Cannot open file system resource " + getName(), e);
+        }
     }
 
     @Override
-    public String getRelativePath() {
-        return relativePath;
+    public String getName() {
+        return relativeName;
+    }
+
+    @Override
+    public String describeLocation() {
+        return "file: " + file;
+    }
+
+    @Override
+    public String toString() {
+        return describeLocation();
     }
 }

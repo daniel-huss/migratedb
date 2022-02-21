@@ -23,7 +23,6 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.logging.Log;
-import migratedb.core.api.resource.LoadableResource;
 import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.util.StringUtils;
 
@@ -42,13 +41,8 @@ public class ResourceNameValidator {
         ResourceNameParser resourceNameParser = new ResourceNameParser(configuration);
 
         for (Resource resource : getAllSqlResources(provider, configuration)) {
-            String filename = resource.getFilename();
+            String filename = resource.getName();
             LOG.debug("Validating " + filename);
-            // Filter out special purpose files that the parser will not identify.
-            if (isSpecialResourceFile(configuration, filename)) {
-                continue;
-            }
-
             ResourceName result = resourceNameParser.parse(filename);
             if (!result.isValid()) {
                 errorsFound.add(result.getValidityMessage());
@@ -57,16 +51,11 @@ public class ResourceNameValidator {
 
         if (!errorsFound.isEmpty()) {
             throw new MigrateDbException(
-                "Invalid SQL filenames found:\n" + StringUtils.collectionToDelimitedString(errorsFound, "\n"));
+                    "Invalid SQL filenames found:\n" + StringUtils.collectionToDelimitedString(errorsFound, "\n"));
         }
     }
 
-    private Collection<LoadableResource> getAllSqlResources(ResourceProvider provider, Configuration configuration) {
+    private Collection<Resource> getAllSqlResources(ResourceProvider provider, Configuration configuration) {
         return provider.getResources("", configuration.getSqlMigrationSuffixes());
-    }
-
-    private boolean isSpecialResourceFile(Configuration configuration, String filename) {
-
-        return false;
     }
 }

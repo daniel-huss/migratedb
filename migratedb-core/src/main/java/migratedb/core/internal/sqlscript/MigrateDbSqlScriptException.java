@@ -35,7 +35,7 @@ public class MigrateDbSqlScriptException extends MigrateDbSqlException {
      * @param sqlException Cause of the problem.
      */
     public MigrateDbSqlScriptException(Resource resource, SqlStatement statement, SQLException sqlException) {
-        super(resource == null ? "Script failed" : "Migration " + resource.getFilename() + " failed", sqlException);
+        super(resource == null ? "Script failed" : "Migration " + resource.getName() + " failed", sqlException);
         this.resource = resource;
         this.statement = statement;
     }
@@ -78,7 +78,7 @@ public class MigrateDbSqlScriptException extends MigrateDbSqlException {
     public String getMessage() {
         String message = super.getMessage();
         if (resource != null) {
-            message += "Location   : " + resource.getAbsolutePath() + " (" + resource.getAbsolutePathOnDisk() + ")\n";
+            message += "Location   : " + resource.describeLocation() + "\n";
         }
         if (statement != null) {
             message += "Line       : " + getLineNumber() + "\n";

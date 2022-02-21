@@ -73,6 +73,16 @@
             <artifactId>ojdbc8</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.apiguardian</groupId>
+            <artifactId>apiguardian-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -160,8 +170,9 @@
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
+                    <skipReport>true</skipReport>
                     <sourceFileIncludes>
-                        <sourceFileInclude>**/core/MigrateDb.java</sourceFileInclude>
+                        <sourceFileInclude>**/core/*.java</sourceFileInclude>
                         <sourceFileInclude>**/core/api/**/*.java</sourceFileInclude>
                     </sourceFileIncludes>
                 </configuration>

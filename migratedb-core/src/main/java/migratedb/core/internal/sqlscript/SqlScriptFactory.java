@@ -17,11 +17,11 @@
 package migratedb.core.internal.sqlscript;
 
 import migratedb.core.api.ResourceProvider;
-import migratedb.core.api.resource.LoadableResource;
+import migratedb.core.api.resource.Resource;
 
 public interface SqlScriptFactory {
     /**
      * @return A new SQL script.
      */
-    SqlScript createSqlScript(LoadableResource resource, boolean mixed, ResourceProvider resourceProvider);
+    SqlScript createSqlScript(Resource resource, boolean mixed, ResourceProvider resourceProvider);
 }

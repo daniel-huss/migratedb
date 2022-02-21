@@ -278,7 +278,7 @@ public class SQLServerSchema extends Schema<SQLServerDatabase, SQLServerTable> {
     private void dropTablesIgnoringErrors(SQLServerTable[] allTables) {
         try {
             dropTables(allTables);
-        } catch (Exception e) {
+        } catch (RuntimeException | SQLException e) {
             // Ignored
         }
     }

@@ -21,55 +21,42 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
-import migratedb.core.api.Location;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.resource.LoadableResource;
+import migratedb.core.api.resource.Resource;
 
 /**
  * Resource within an Android App.
  */
-public class AndroidResource extends LoadableResource {
+public class AndroidResource implements Resource {
     private final AssetManager assetManager;
     private final String fileName;
-    private final String fileNameWithAbsolutePath;
-    private final String fileNameWithRelativePath;
-    private final Charset encoding;
 
-    public AndroidResource(Location location, AssetManager assetManager, String path, String name, Charset encoding) {
+    public AndroidResource(AssetManager assetManager, String path, String name) {
         this.assetManager = assetManager;
-        this.fileNameWithAbsolutePath = path + "/" + name;
-        this.fileName = name;
-        this.fileNameWithRelativePath = location == null ? fileNameWithAbsolutePath : location.getPathRelativeToThis(
-            fileNameWithAbsolutePath);
-        this.encoding = encoding;
+        this.fileName = path + "/" + name;
     }
 
     @Override
-    public String getRelativePath() {
-        return fileNameWithRelativePath;
-    }
-
-    @Override
-    public String getAbsolutePath() {
-        return fileNameWithAbsolutePath;
-    }
-
-    @Override
-    public String getAbsolutePathOnDisk() {
-        return null;
-    }
-
-    @Override
-    public Reader read() {
+    public Reader read(Charset charset) {
         try {
-            return new InputStreamReader(assetManager.open(fileNameWithAbsolutePath), encoding.newDecoder());
+            return new InputStreamReader(assetManager.open(fileName), charset);
         } catch (IOException e) {
-            throw new MigrateDbException("Unable to read asset: " + getAbsolutePath(), e);
+            throw new MigrateDbException("Unable to read asset: " + fileName, e);
         }
     }
 
     @Override
-    public String getFilename() {
+    public String getName() {
         return fileName;
+    }
+
+    @Override
+    public String describeLocation() {
+        return "android: " + fileName;
+    }
+
+    @Override
+    public String toString() {
+        return describeLocation();
     }
 }

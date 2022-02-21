@@ -29,7 +29,7 @@ import migratedb.core.api.callback.Context;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.logging.Log;
-import migratedb.core.api.resource.LoadableResource;
+import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.resource.ResourceName;
 import migratedb.core.internal.resource.ResourceNameParser;
 import migratedb.core.internal.sqlscript.SqlScript;
@@ -58,12 +58,12 @@ public class SqlScriptCallbackFactory {
         Map<String, SqlScript> callbacksFound = new HashMap<>();
 
         LOG.debug("Scanning for SQL callbacks ...");
-        Collection<LoadableResource> resources = resourceProvider.getResources("",
+        Collection<Resource> resources = resourceProvider.getResources("",
                                                                                configuration.getSqlMigrationSuffixes());
         ResourceNameParser resourceNameParser = new ResourceNameParser(configuration);
 
-        for (LoadableResource resource : resources) {
-            ResourceName parsedName = resourceNameParser.parse(resource.getFilename());
+        for (Resource resource : resources) {
+            ResourceName parsedName = resourceNameParser.parse(resource.getName());
             if (!parsedName.isValid()) {
                 continue;
             }
@@ -75,8 +75,8 @@ public class SqlScriptCallbackFactory {
                 if (existing != null) {
                     throw new MigrateDbException("Found more than 1 SQL callback script called " + name + "!\n" +
                                                  "Offenders:\n" +
-                                                 "-> " + existing.getResource().getAbsolutePathOnDisk() + "\n" +
-                                                 "-> " + resource.getAbsolutePathOnDisk());
+                                                 "-> " + existing.getResource() + "\n" +
+                                                 "-> " + resource);
                 }
                 SqlScript sqlScript = sqlScriptFactory.createSqlScript(resource,
                                                                        configuration.isMixed(),

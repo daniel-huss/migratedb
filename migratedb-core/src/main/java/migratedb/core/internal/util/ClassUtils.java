@@ -17,7 +17,6 @@
 package migratedb.core.internal.util;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
@@ -35,12 +34,10 @@ public class ClassUtils {
      * @param className   The fully qualified name of the class to instantiate.
      * @param classLoader The ClassLoader to use.
      * @param <T>         The type of the new instance.
-     *
      * @return The new instance.
-     *
      * @throws MigrateDbException Thrown when the instantiation failed.
      */
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     public static <T> T instantiate(String className, ClassLoader classLoader) {
         try {
             return (T) Class.forName(className, true, classLoader).getConstructor().newInstance();
@@ -50,12 +47,27 @@ public class ClassUtils {
     }
 
     /**
+     * Creates a new instance of {@code clazz}.
+     *
+     * @param <T> The type of the new instance.
+     * @return The new instance.
+     * @throws MigrateDbException Thrown when the instantiation failed.
+     */
+    public static <T> T instantiate(Class<T> clazz) {
+        try {
+            return clazz.cast(clazz.getConstructor().newInstance());
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            throw new MigrateDbException("Unable to instantiate " + clazz + " : " + e.getMessage(), e);
+        }
+    }
+
+
+    /**
      * Instantiate all these classes.
      *
      * @param classes     Fully qualified class names to instantiate.
      * @param classLoader The ClassLoader to use.
      * @param <T>         The common type for all classes.
-     *
      * @return The list of instances.
      */
     public static <T> List<T> instantiateAll(String[] classes, ClassLoader classLoader) {
@@ -74,7 +86,6 @@ public class ClassUtils {
      *
      * @param className   The name of the class to check.
      * @param classLoader The ClassLoader to use.
-     *
      * @return whether the specified class is present
      */
     public static boolean isPresent(String className, ClassLoader classLoader) {
@@ -94,12 +105,11 @@ public class ClassUtils {
      *
      * @param serviceName The name of the service to check.
      * @param classLoader The ClassLoader to use.
-     *
      * @return whether an implementation of the specified service is present
      */
     public static boolean isImplementationPresent(String serviceName, ClassLoader classLoader) {
         try {
-            Class service = classLoader.loadClass(serviceName);
+            Class<?> service = classLoader.loadClass(serviceName);
             return ServiceLoader.load(service).iterator().hasNext();
         } catch (Throwable ex) {
             // Class or one of its dependencies is not present...
@@ -108,32 +118,18 @@ public class ClassUtils {
     }
 
     /**
-     * Loads the class with this name using the class loader.
+     * Loads {@code className} using the class loader.
      *
-     * @param implementedInterface The interface the class is expected to implement.
-     * @param className            The name of the class to load.
-     * @param classLoader          The ClassLoader to use.
-     *
-     * @return the newly loaded class or {@code null} if it could not be loaded.
+     * @param className   The name of the class to load.
+     * @param classLoader The ClassLoader to use.
+     * @return the newly loaded class
      */
-    public static <I> Class<? extends I> loadClass(Class<I> implementedInterface, String className,
-                                                   ClassLoader classLoader) {
+    public static Class<?> loadClass(String className,
+                                     ClassLoader classLoader) {
         try {
-            Class<?> clazz = classLoader.loadClass(className);
-
-            if (!implementedInterface.isAssignableFrom(clazz)) {
-                return null;
-            }
-
-            if (Modifier.isAbstract(clazz.getModifiers()) || clazz.isEnum() || clazz.isAnonymousClass()) {
-                return null;
-            }
-
-            clazz.getDeclaredConstructor().newInstance();
-            //noinspection unchecked
-            return (Class<? extends I>) clazz;
+            return classLoader.loadClass(className);
         } catch (ReflectiveOperationException | RuntimeException e) {
-            return null;
+            throw new MigrateDbException("Cannot load class " + className);
         }
     }
 
@@ -141,7 +137,6 @@ public class ClassUtils {
      * Tries to get the physical location on disk of {@code aClass}.
      *
      * @param aClass The class to get the location for.
-     *
      * @return The absolute path of the .class file.
      */
     public static String guessLocationOnDisk(Class<?> aClass) {
@@ -166,19 +161,17 @@ public class ClassUtils {
      * @param className   The fully qualified name of the class to instantiate.
      * @param classLoader The ClassLoader to use.
      * @param fieldName   The field name
-     *
      * @return The value of the field.
-     *
      * @throws MigrateDbException Thrown when the instantiation failed.
      */
     public static String getStaticFieldValue(String className, String fieldName, ClassLoader classLoader) {
         try {
-            Class clazz = Class.forName(className, true, classLoader);
+            Class<?> clazz = Class.forName(className, true, classLoader);
             Field field = clazz.getField(fieldName);
             return (String) field.get(null);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException | RuntimeException e) {
             throw new MigrateDbException(
-                "Unable to obtain field value " + className + "." + fieldName + " : " + e.getMessage(), e);
+                    "Unable to obtain field value " + className + "." + fieldName + " : " + e.getMessage(), e);
         }
     }
 

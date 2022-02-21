@@ -16,55 +16,51 @@
  */
 package migratedb.core.internal.resolver;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.zip.CRC32;
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.resource.LoadableResource;
-import migratedb.core.internal.util.BomFilter;
-import migratedb.core.internal.util.IOUtils;
+import migratedb.core.api.resource.Resource;
 
-public class ChecksumCalculator {
-    private ChecksumCalculator() {
-    }
+public enum ChecksumCalculator {
+    ;
 
     /**
-     * Calculates the checksum of these resources. The checksum is encoding and line-ending independent.
+     * Calculates the checksum of these resources. The checksum is line-ending independent.
      *
-     * @return The crc-32 checksum of the bytes.
+     * @return A checksum for the given resources.
      */
-    public static int calculate(LoadableResource... loadableResources) {
-        int checksum;
-
-        checksum = calculateChecksumForResource(loadableResources[0]);
-
-        return checksum;
+    public static int calculate(List<Resource> resources) {
+        var digest = newMessageDigest();
+        for (var resource : resources) {
+            calculateChecksumForResource(resource, digest);
+        }
+        return ByteBuffer.wrap(digest.digest()).getInt(); // what a shame to only use the first 4 bytes...
     }
 
-    private static int calculateChecksumForResource(LoadableResource resource) {
-        CRC32 crc32 = new CRC32();
-
-        BufferedReader bufferedReader = null;
+    private static MessageDigest newMessageDigest() {
         try {
-            bufferedReader = new BufferedReader(resource.read(), 4096);
-            String line = bufferedReader.readLine();
+            return MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException ignored) {
+            // Cannot happen, since every JVM supports MD5
+            throw new AssertionError();
+        }
+    }
 
-            if (line != null) {
-                line = BomFilter.FilterBomFromString(line);
-                do {
-                    //noinspection Since15
-                    crc32.update(line.getBytes(StandardCharsets.UTF_8));
-                } while ((line = bufferedReader.readLine()) != null);
+    private static void calculateChecksumForResource(Resource resource, MessageDigest digest) {
+        // Only ISO_8859_1 provides a mapping for each byte
+        try (var reader = new BufferedReader(resource.read(ISO_8859_1))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                digest.update(line.getBytes(ISO_8859_1));
             }
         } catch (IOException e) {
-            throw new MigrateDbException(
-                "Unable to calculate checksum of " + resource.getFilename() + "\n" + e.getMessage(), e);
-        } finally {
-            IOUtils.close(bufferedReader);
+            throw new MigrateDbException("Unable to calculate checksum of " + resource.getName() + "\n" + e.getMessage(), e);
         }
-
-        return (int) crc32.getValue();
     }
-
 }

@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package migratedb.core.internal.util;
 
-public class IOUtils {
+public enum IOUtils {
+    ;
 
-    private IOUtils() {
-    }
-
-    /**
-     * Closes this closeable and never fail while doing so.
-     *
-     * @param closeable The closeable to close. Can be {@code null}.
-     */
-    public static void close(AutoCloseable closeable) {
-        if (closeable == null) {
-            return;
-        }
-
+    public static void closeAndAddSuppressed(AutoCloseable c, Exception context) {
         try {
-            closeable.close();
-        } catch (Exception e) {
-            // Ignore
+            c.close();
+        } catch (Exception suppressed) {
+            if (suppressed instanceof InterruptedException) Thread.currentThread().interrupt();
+            if (!suppressed.equals(context)) context.addSuppressed(suppressed);
         }
     }
 }

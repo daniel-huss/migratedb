@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.logging.Log;
-import migratedb.core.api.resource.LoadableResource;
+import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.configuration.ConfigUtils;
 import migratedb.core.internal.parser.Parser;
 import migratedb.core.internal.parser.PlaceholderReplacingReader;
@@ -63,22 +63,19 @@ public class SqlScriptMetadata {
         return !line.startsWith(SHOULD_EXECUTE) && (line.contains("==") || line.contains("!="));
     }
 
-    public static SqlScriptMetadata fromResource(LoadableResource resource, Parser parser) {
+    public static SqlScriptMetadata fromResource(Resource resource, Parser parser) {
         if (resource != null) {
-            LOG.debug("Found script configuration: " + resource.getFilename());
-            if (parser == null) {
-                return new SqlScriptMetadata(loadConfiguration(resource.read()));
-            }
+            LOG.debug("Found script configuration: " + resource.getName());
             return new SqlScriptMetadata(loadConfiguration(
-                PlaceholderReplacingReader.create(parser.configuration, parser.parsingContext, resource.read())));
+                    PlaceholderReplacingReader.create(parser.configuration, parser.parsingContext, resource.read(parser.configuration.getEncoding()))));
         }
         return new SqlScriptMetadata(new HashMap<>());
     }
 
-    public static LoadableResource getMetadataResource(ResourceProvider resourceProvider, LoadableResource resource) {
+    public static Resource getMetadataResource(ResourceProvider resourceProvider, Resource resource) {
         if (resourceProvider == null) {
             return null;
         }
-        return resourceProvider.getResource(resource.getRelativePath() + ".conf");
+        return resourceProvider.getResource(resource.getName() + ".conf");
     }
 }

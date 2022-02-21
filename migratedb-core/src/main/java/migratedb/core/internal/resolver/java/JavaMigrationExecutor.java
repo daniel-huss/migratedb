@@ -47,8 +47,8 @@ public class JavaMigrationExecutor implements MigrationExecutor {
     @Override
     public void execute(Context context) throws SQLException {
         DatabaseType databaseType = context.getConfiguration()
-                                           .getDatabaseTypeRegister()
-                                           .getDatabaseTypeForConnection(context.getConnection());
+                .getDatabaseTypeRegister()
+                .getDatabaseTypeForConnection(context.getConnection());
 
         DatabaseExecutionStrategy strategy = databaseType.createExecutionStrategy(context.getConnection());
         strategy.execute(() -> {
@@ -73,6 +73,7 @@ public class JavaMigrationExecutor implements MigrationExecutor {
         } catch (SQLException e) {
             throw e;
         } catch (Exception e) {
+            if (e instanceof InterruptedException) Thread.currentThread().interrupt();
             throw new MigrateDbException("Migration failed !", e);
         }
     }

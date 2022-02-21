@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An Ascii table.
+ * Prints a tabular data structure as ASCII text.
  */
 public class AsciiTable {
     private static final String DEFAULT_COLUMN_NAME = "(No column name)";

@@ -28,21 +28,14 @@ import java.nio.charset.Charset;
 /**
  * Utility class for copying files and their contents. Inspired by Spring's own.
  */
-public class FileCopyUtils {
-    /**
-     * Prevent instantiation.
-     */
-    private FileCopyUtils() {
-        // Do nothing
-    }
+public enum FileCopyUtils {
+    ;
 
     /**
      * Copy the contents of the given Reader into a String. Closes the reader when done.
      *
      * @param in the reader to copy from
-     *
      * @return the String that has been copied to
-     *
      * @throws java.io.IOException in case of I/O errors
      */
     public static String copyToString(Reader in) throws IOException {
@@ -62,9 +55,7 @@ public class FileCopyUtils {
      * Copy the contents of the given InputStream into a new byte array. Closes the stream when done.
      *
      * @param in the stream to copy from
-     *
      * @return the new byte array that has been copied to
-     *
      * @throws IOException in case of I/O errors
      */
     public static byte[] copyToByteArray(InputStream in) throws IOException {
@@ -79,9 +70,7 @@ public class FileCopyUtils {
      *
      * @param in       the stream to copy from
      * @param encoding The encoding to use.
-     *
      * @return The new String.
-     *
      * @throws IOException in case of I/O errors
      */
     public static String copyToString(InputStream in, Charset encoding) throws IOException {
@@ -95,20 +84,16 @@ public class FileCopyUtils {
      *
      * @param in  the Reader to copy from
      * @param out the Writer to copy to
-     *
      * @throws IOException in case of I/O errors
      */
     public static void copy(Reader in, Writer out) throws IOException {
-        try {
+        try (in; out) {
             char[] buffer = new char[4096];
             int bytesRead;
             while ((bytesRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, bytesRead);
             }
             out.flush();
-        } finally {
-            IOUtils.close(in);
-            IOUtils.close(out);
         }
     }
 
@@ -117,13 +102,11 @@ public class FileCopyUtils {
      *
      * @param in  the stream to copy from
      * @param out the stream to copy to
-     *
      * @return the number of bytes copied
-     *
      * @throws IOException in case of I/O errors
      */
     public static int copy(InputStream in, OutputStream out) throws IOException {
-        try {
+        try (in; out) {
             int byteCount = 0;
             byte[] buffer = new byte[4096];
             int bytesRead;
@@ -133,9 +116,6 @@ public class FileCopyUtils {
             }
             out.flush();
             return byteCount;
-        } finally {
-            IOUtils.close(in);
-            IOUtils.close(out);
         }
     }
 }

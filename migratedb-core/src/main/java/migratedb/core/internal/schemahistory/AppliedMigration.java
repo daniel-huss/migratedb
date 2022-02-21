@@ -16,7 +16,8 @@
  */
 package migratedb.core.internal.schemahistory;
 
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.MigrationVersion;
@@ -58,7 +59,7 @@ public class AppliedMigration implements Comparable<AppliedMigration> {
     /**
      * The timestamp when this migration was installed.
      */
-    private final Date installedOn;
+    private final Instant installedOn;
 
     /**
      * The user that installed this migration.
@@ -91,7 +92,7 @@ public class AppliedMigration implements Comparable<AppliedMigration> {
      * @param success       Flag indicating whether the migration was successful or not.
      */
     public AppliedMigration(int installedRank, MigrationVersion version, String description,
-                            MigrationType type, String script, Integer checksum, Date installedOn,
+                            MigrationType type, String script, Integer checksum, Timestamp installedOn,
                             String installedBy, int executionTime, boolean success) {
         this.installedRank = installedRank;
         this.version = version;
@@ -99,7 +100,7 @@ public class AppliedMigration implements Comparable<AppliedMigration> {
         this.type = type;
         this.script = script;
         this.checksum = checksum;
-        this.installedOn = installedOn;
+        this.installedOn = installedOn == null ? null : installedOn.toInstant();
         this.installedBy = installedBy;
         this.executionTime = executionTime;
         this.success = success;
@@ -150,7 +151,7 @@ public class AppliedMigration implements Comparable<AppliedMigration> {
     /**
      * @return The timestamp when this migration was installed.
      */
-    public Date getInstalledOn() {
+    public Instant getInstalledOn() {
         return installedOn;
     }
 
@@ -196,16 +197,16 @@ public class AppliedMigration implements Comparable<AppliedMigration> {
         if (success != that.success) {
             return false;
         }
-        if (checksum != null ? !checksum.equals(that.checksum) : that.checksum != null) {
+        if (!Objects.equals(checksum, that.checksum)) {
             return false;
         }
         if (!description.equals(that.description)) {
             return false;
         }
-        if (installedBy != null ? !installedBy.equals(that.installedBy) : that.installedBy != null) {
+        if (!Objects.equals(installedBy, that.installedBy)) {
             return false;
         }
-        if (installedOn != null ? !installedOn.equals(that.installedOn) : that.installedOn != null) {
+        if (!Objects.equals(installedOn, that.installedOn)) {
             return false;
         }
         if (!script.equals(that.script)) {
@@ -232,7 +233,6 @@ public class AppliedMigration implements Comparable<AppliedMigration> {
         return result;
     }
 
-    @SuppressWarnings("NullableProblems")
     public int compareTo(AppliedMigration o) {
         return installedRank - o.installedRank;
     }

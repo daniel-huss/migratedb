@@ -16,36 +16,21 @@
  */
 package migratedb.core.internal.util;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 import migratedb.core.api.Location;
+import migratedb.core.api.Location.FileSystemLocation;
 import migratedb.core.api.logging.Log;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
- * Encapsulation of a location list.
+ * Encapsulation of a location list. Removes duplicates and sub-locations (for file-based locations).
  */
 public class Locations {
     private static final Log LOG = Log.getLog(Locations.class);
 
-    /**
-     * The backing list.
-     */
-    private final List<Location> locations = new ArrayList<>();
-
-    /**
-     * Creates a new Locations wrapper with these raw locations.
-     *
-     * @param rawLocations The raw locations to process.
-     */
-    public Locations(String... rawLocations) {
-        List<Location> normalizedLocations = new ArrayList<>();
-        for (String rawLocation : rawLocations) {
-            normalizedLocations.add(Location.parse(rawLocation));
-        }
-        processLocations(normalizedLocations);
-    }
+    private final List<Location> locations;
 
     /**
      * Creates a new Locations wrapper with these locations.
@@ -53,29 +38,38 @@ public class Locations {
      * @param rawLocations The locations to process.
      */
     public Locations(List<Location> rawLocations) {
-        processLocations(rawLocations);
+        this.locations = processLocations(rawLocations);
     }
 
-    private void processLocations(List<Location> rawLocations) {
-        List<Location> sortedLocations = new ArrayList<>(rawLocations);
-        Collections.sort(sortedLocations);
+    /**
+     * Creates a new Locations wrapper with these locations.
+     *
+     * @param rawLocations The locations to process.
+     */
+    public Locations(List<String> rawLocations, ClassLoader classLoader) {
+        this.locations = processLocations(rawLocations.stream()
+                .map(it -> Location.parse(it, classLoader))
+                .collect(Collectors.toUnmodifiableList()));
+    }
 
-        for (Location normalizedLocation : sortedLocations) {
-            if (locations.contains(normalizedLocation)) {
-                LOG.warn("Discarding duplicate location '" + normalizedLocation + "'");
+    private static List<Location> processLocations(List<Location> locations) {
+        var processed = new LinkedHashSet<Location>(locations.size());
+        for (Location location : locations) {
+            if (processed.contains(location)) {
+                LOG.warn("Discarding duplicate location '" + location + "'");
                 continue;
             }
 
-            Location parentLocation = getParentLocationIfExists(normalizedLocation, locations);
-            if (parentLocation != null) {
-                LOG.warn(
-                    "Discarding location '" + normalizedLocation + "' as it is a sublocation of '" + parentLocation +
-                    "'");
-                continue;
+            if (location instanceof FileSystemLocation) {
+                Location parentLocation = getParentLocationIfExists((FileSystemLocation) location, processed);
+                if (parentLocation != null) {
+                    LOG.warn("Discarding location '" + location + "' as it is a sublocation of '" + parentLocation + "'");
+                    continue;
+                }
             }
-
-            locations.add(normalizedLocation);
+            processed.add(location);
         }
+        return processed.stream().collect(Collectors.toUnmodifiableList());
     }
 
     /**
@@ -89,16 +83,27 @@ public class Locations {
      * Retrieves this location's parent within this list, if any.
      *
      * @param location       The location to check.
-     * @param finalLocations The list to search.
-     *
+     * @param otherLocations The list to search.
      * @return The parent location. {@code null} if none.
      */
-    private Location getParentLocationIfExists(Location location, List<Location> finalLocations) {
-        for (Location finalLocation : finalLocations) {
-            if (finalLocation.isParentOf(location)) {
-                return finalLocation;
+    private static Location getParentLocationIfExists(FileSystemLocation location, Collection<Location> otherLocations) {
+        for (var otherLocation : otherLocations) {
+            if (otherLocation instanceof FileSystemLocation &&
+                    isParent(((FileSystemLocation) otherLocation), location)) {
+                return otherLocation;
             }
         }
         return null;
+    }
+
+    private static boolean isParent(FileSystemLocation maybeParent, FileSystemLocation maybeChild) {
+        var parentDir = maybeParent.getBaseDirectory();
+        var childDir = maybeChild.getBaseDirectory();
+        if (parentDir.equals(childDir) || childDir.getNameCount() < parentDir.getNameCount()) return false;
+        do {
+            childDir = childDir.getParent();
+            if (parentDir.equals(childDir)) return true;
+        } while (childDir != null && !childDir.equals(childDir.getParent()));
+        return false;
     }
 }

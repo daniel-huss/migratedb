@@ -17,7 +17,7 @@
 package migratedb.core.internal.jdbc;
 
 import java.util.Map;
-import migratedb.core.api.resource.LoadableResource;
+import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.database.base.Database;
 import migratedb.core.internal.database.base.Table;
 import migratedb.core.internal.schemahistory.AppliedMigration;
@@ -32,7 +32,7 @@ public interface StatementInterceptor {
 
     void close();
 
-    void sqlScript(LoadableResource resource);
+    void sqlScript(Resource resource);
 
     void sqlStatement(SqlStatement statement);
 

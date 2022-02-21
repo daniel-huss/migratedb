@@ -31,6 +31,7 @@ public class PlainExecutionTemplate implements ExecutionTemplate {
             LOG.debug("Performing operation in non-transactional context.");
             return callback.call();
         } catch (Exception e) {
+            if (e instanceof InterruptedException) Thread.currentThread().interrupt();
             LOG.error(
                 "Failed to execute operation in non-transactional context. Please restore backups and roll back " +
                 "database and code!");

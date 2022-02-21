@@ -16,7 +16,7 @@
 
 package migratedb.integrationtest
 
-import migratedb.core.api.resource.LoadableResource
+import migratedb.core.api.resource.Resource
 import migratedb.core.internal.database.base.Connection
 import migratedb.core.internal.database.base.Database
 import migratedb.core.internal.database.base.Schema
@@ -38,7 +38,7 @@ object NoOpIntercepter : StatementInterceptor {
     override fun close() {
     }
 
-    override fun sqlScript(resource: LoadableResource?) {
+    override fun sqlScript(resource: Resource?) {
     }
 
     override fun sqlStatement(statement: SqlStatement?) {

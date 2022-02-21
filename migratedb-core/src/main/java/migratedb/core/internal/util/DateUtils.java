@@ -16,82 +16,23 @@
  */
 package migratedb.core.internal.util;
 
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
-public class DateUtils {
-    /**
-     * Prevents instantiation.
-     */
-    private DateUtils() {
-    }
+public enum DateUtils {
+    ;
+    private static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss", Locale.ROOT);
+    private static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ROOT);
 
     /**
-     * Formats this date in the standard ISO yyyy-MM-dd HH:mm:ss format.
-     *
      * @param date The date to format.
-     *
-     * @return The date in ISO format. An empty string if the date is null.
+     * @return The date formatted as {@code yyyy-MM-dd HH:mm:ss}. An empty string if the date is null.
      */
-    public static String formatDateAsIsoString(Date date) {
+    public static String formatDateAsIsoishString(Instant date) {
         if (date == null) {
             return "";
         }
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
-    }
-
-    /**
-     * Formats the time of this date in the standard ISO HH:mm:ss format.
-     *
-     * @param date The date to format.
-     *
-     * @return The time in ISO format. An empty string if the time is null.
-     */
-    public static String formatTimeAsIsoString(Date date) {
-        if (date == null) {
-            return "";
-        }
-        return new SimpleDateFormat("HH:mm:ss").format(date);
-    }
-
-    /**
-     * Create a new date with this year, month and day.
-     *
-     * @param year  The year.
-     * @param month The month (1-12).
-     * @param day   The day (1-31).
-     *
-     * @return The date.
-     */
-    public static Date toDate(int year, int month, int day) {
-        return new GregorianCalendar(year, month - 1, day).getTime();
-    }
-
-    /**
-     * Converts this date into a YYYY-MM-dd string.
-     *
-     * @param date The date.
-     *
-     * @return The matching string.
-     */
-    public static String toDateString(Date date) {
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTime(date);
-        String year = "" + calendar.get(Calendar.YEAR);
-        String month = StringUtils.trimOrLeftPad("" + (calendar.get(Calendar.MONTH) + 1), 2, '0');
-        String day = StringUtils.trimOrLeftPad("" + calendar.get(Calendar.DAY_OF_MONTH), 2, '0');
-        return year + "-" + month + "-" + day;
-    }
-
-    public static Date addDaysToDate(Date fromDate, int days) {
-        return Date.from(fromDate.toInstant()
-                                 .atZone(ZoneId.systemDefault())
-                                 .toLocalDate()
-                                 .plusDays(days)
-                                 .atStartOfDay(ZoneId.systemDefault())
-                                 .toInstant());
+        return dateTimeFormat.format(date);
     }
 }

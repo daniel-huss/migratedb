@@ -339,14 +339,6 @@ public interface Configuration {
     Charset getEncoding();
 
     /**
-     * Whether MigrateDb should try to automatically detect SQL migration file encoding
-     *
-     * @return {@code true} to enable auto detection, {@code false} otherwise
-     * <i>MigrateDb Teams only</i>
-     */
-    boolean getDetectEncoding();
-
-    /**
      * Retrieves the locations to scan recursively for migrations. The location type is determined by its prefix.
      * Unprefixed locations or locations starting with {@code classpath:} point to a package on the classpath and may
      * contain both SQL and Java-based migrations. Locations starting with {@code filesystem:} point to a directory on
@@ -555,18 +547,6 @@ public interface Configuration {
      * @return The stream or {@code null} if the SQL statements are executed against the database directly.
      */
     OutputStream getDryRunOutput();
-
-    /**
-     * Whether to stream SQL migrations when executing them. Streaming doesn't load the entire migration in memory at
-     * once. Instead each statement is loaded individually. This is particularly useful for very large SQL migrations
-     * composed of multiple MB or even GB of reference data, as this dramatically reduces MigrateDb's memory
-     * consumption.
-     * <i>MigrateDb Teams only</i>
-     *
-     * @return {@code true} to stream SQL migrations. {@code false} to fully loaded them in memory instead. (default:
-     * {@code false})
-     */
-    boolean isStream();
 
     /**
      * Whether to batch SQL statements when executing them. Batching can save up to 99 percent of network roundtrips by

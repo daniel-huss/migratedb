@@ -18,9 +18,10 @@ package migratedb.core.internal.resource;
 
 import java.io.Reader;
 import java.io.StringReader;
-import migratedb.core.api.resource.LoadableResource;
+import java.nio.charset.Charset;
+import migratedb.core.api.resource.Resource;
 
-public class StringResource extends LoadableResource {
+public class StringResource implements Resource {
     private final String str;
 
     public StringResource(String str) {
@@ -28,27 +29,22 @@ public class StringResource extends LoadableResource {
     }
 
     @Override
-    public Reader read() {
+    public Reader read(Charset charset) {
         return new StringReader(str);
     }
 
     @Override
-    public String getAbsolutePath() {
+    public String getName() {
         return "";
     }
 
     @Override
-    public String getAbsolutePathOnDisk() {
-        return "";
+    public String describeLocation() {
+        return "<String without location>";
     }
 
     @Override
-    public String getFilename() {
-        return "";
-    }
-
-    @Override
-    public String getRelativePath() {
-        return "";
+    public String toString() {
+        return describeLocation();
     }
 }

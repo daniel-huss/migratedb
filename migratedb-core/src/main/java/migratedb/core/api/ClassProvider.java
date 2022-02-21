@@ -17,6 +17,7 @@
 package migratedb.core.api;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A facility to obtain classes.
@@ -28,4 +29,11 @@ public interface ClassProvider<I> {
      * @return The non-abstract classes that were found.
      */
     Collection<Class<? extends I>> getClasses();
+
+    /**
+     * @return Class provider that always returns an empty set of classes.
+     */
+    static <T> ClassProvider<T> noClasses() {
+        return Collections::emptySet;
+    }
 }

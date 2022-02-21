@@ -54,7 +54,7 @@ public class MigrationInfoDumper {
                 getVersionStr(migrationInfo),
                 migrationInfo.getDescription(),
                 migrationInfo.getType().name(),
-                DateUtils.formatDateAsIsoString(migrationInfo.getInstalledOn()),
+                DateUtils.formatDateAsIsoishString(migrationInfo.getInstalledOn()),
                 migrationInfo.getState().getDisplayName()
 
             );

@@ -37,9 +37,11 @@
 
     <modules>
         <module>migratedb-core</module>
+        <module>migratedb-scanner</module>
         <module>migratedb-commandline</module>
         <module>migratedb-integration-tests</module>
         <module>migratedb-docs</module>
+        <module>migratedb-maven-plugin</module>
     </modules>
 
     <distributionManagement>
@@ -62,12 +64,16 @@
         <gitRepository.url>https://unentscheidbar.de/gitea/hussdl/migratedb.git</gitRepository.url>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.outputTimestamp>2000-01-01T00:00:00Z</project.build.outputTimestamp><!-- for reproducible builds -->
-        <project.build.generatedSources.directory>${project.build.directory}/generated-sources/codegen</project.build.generatedSources.directory>
+        <project.build.outputTimestamp>2000-01-01T00:00:00Z
+        </project.build.outputTimestamp><!-- for reproducible builds -->
+        <project.build.generatedSources.directory>${project.build.directory}/generated-sources/codegen
+        </project.build.generatedSources.directory>
 
         <version.android>4.1.1.4</version.android>
         <version.ant>1.9.14</version.ant>
+        <version.apiguardian>1.1.2</version.apiguardian>
         <version.aws-java-sdk>2.16.61</version.aws-java-sdk>
+        <version.checkerframework>3.21.2</version.checkerframework>
         <version.commonscodec>1.15</version.commonscodec>
         <version.commonslogging>1.2</version.commonslogging>
         <version.db2>11.5.0.0</version.db2>
@@ -90,12 +96,14 @@
         <version.jna>4.5.2</version.jna>
         <version.jtds>1.3.1</version.jtds>
         <version.junit>5.8.2</version.junit>
-        <version.kotlin>1.6.0</version.kotlin>
+        <version.kotest>5.0.3</version.kotest>
+        <version.kotlin>1.6.10</version.kotlin>
+        <version.logback>1.2.8</version.logback>
         <version.mariadb>2.7.2</version.mariadb>
         <version.maven>3.8.1</version.maven>
         <version.msal4j>1.10.1</version.msal4j>
-        <version.mssql>9.2.1</version.mssql>
         <version.mssql-jdbc>${version.mssql}.jre8</version.mssql-jdbc>
+        <version.mssql>9.2.1</version.mssql>
         <version.mysql>8.0.27</version.mysql>
         <version.oracle>19.6.0.0</version.oracle>
         <version.osgi>4.3.1</version.osgi>
@@ -295,11 +303,6 @@
                 <version>${version.gcs}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-cbor</artifactId>
-                <version>2.12.1</version>
-            </dependency>
-            <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${version.commonscodec}</version>
@@ -332,12 +335,22 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.2.8</version>
+                <version>${version.logback}</version>
             </dependency>
             <dependency>
                 <groupId>io.kotest</groupId>
                 <artifactId>kotest-assertions-core-jvm</artifactId>
-                <version>5.0.3</version>
+                <version>${version.kotest}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apiguardian</groupId>
+                <artifactId>apiguardian-api</artifactId>
+                <version>${version.apiguardian}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.checkerframework</groupId>
+                <artifactId>checker-qual</artifactId>
+                <version>${version.checkerframework}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -472,17 +485,10 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.3.2</version>
                     <configuration>
-                        <detectJavaApiLink>false</detectJavaApiLink>
                         <encoding>${project.build.sourceEncoding}</encoding>
-                        <doclint>none</doclint>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -527,6 +533,27 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--pinentry-mode=loopback</arg>
+                            </gpgArguments>
+                            <passphraseServerId>migratedb-gpg</passphraseServerId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencies>
@@ -537,65 +564,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.1</version>
-                <configuration>
-                    <detectJavaApiLink>false</detectJavaApiLink>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <failOnError>false</failOnError>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
-
-    <profiles>
-        <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.0.1</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                                <configuration>
-                                    <gpgArguments>
-                                        <arg>--pinentry-mode=loopback</arg>
-                                    </gpgArguments>
-                                    <passphraseServerId>migratedb-gpg</passphraseServerId>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

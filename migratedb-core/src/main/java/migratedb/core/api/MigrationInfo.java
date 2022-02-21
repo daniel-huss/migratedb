@@ -16,10 +16,11 @@
  */
 package migratedb.core.api;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
- * Info about a migration.
+ * Info about a migration. The natural ordering of this data structure corresponds to the execution order of the
+ * migrations.
  */
 public interface MigrationInfo extends Comparable<MigrationInfo> {
     /**
@@ -55,7 +56,7 @@ public interface MigrationInfo extends Comparable<MigrationInfo> {
     /**
      * @return The timestamp when this migration was installed. (Only for applied migrations)
      */
-    Date getInstalledOn();
+    Instant getInstalledOn();
 
     /**
      * @return The user that installed this migration. (Only for applied migrations)

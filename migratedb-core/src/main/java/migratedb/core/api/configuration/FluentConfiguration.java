@@ -16,8 +16,21 @@
  */
 package migratedb.core.api.configuration;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import javax.sql.DataSource;
 import migratedb.core.MigrateDb;
-import migratedb.core.api.*;
+import migratedb.core.api.ClassProvider;
+import migratedb.core.api.DatabaseTypeRegister;
+import migratedb.core.api.Location;
+import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.MigrationPattern;
+import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.callback.Callback;
 import migratedb.core.api.logging.LogSystem;
 import migratedb.core.api.logging.LogSystems;
@@ -27,14 +40,6 @@ import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.extensibility.MigrateDbExtension;
 import migratedb.core.internal.configuration.ConfigUtils;
 import migratedb.core.internal.util.ClassUtils;
-
-import javax.sql.DataSource;
-import java.io.File;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * Fluent configuration for MigrateDB . This is the preferred means of configuring the MigrateDb API. This configuration
@@ -78,11 +83,6 @@ public class FluentConfiguration implements Configuration {
     @Override
     public Charset getEncoding() {
         return config.getEncoding();
-    }
-
-    @Override
-    public boolean getDetectEncoding() {
-        return config.getDetectEncoding();
     }
 
     @Override
@@ -328,11 +328,6 @@ public class FluentConfiguration implements Configuration {
     @Override
     public OutputStream getDryRunOutput() {
         return config.getDryRunOutput();
-    }
-
-    @Override
-    public boolean isStream() {
-        return config.isStream();
     }
 
     @Override
@@ -705,17 +700,6 @@ public class FluentConfiguration implements Configuration {
      */
     public FluentConfiguration encoding(Charset encoding) {
         config.setEncoding(encoding);
-        return this;
-    }
-
-    /**
-     * Whether MigrateDb should try to automatically detect SQL migration file encoding
-     *
-     * @param detectEncoding {@code true} to enable auto detection, {@code false} otherwise
-     *                       <i>MigrateDb Teams only</i>
-     */
-    public FluentConfiguration detectEncoding(boolean detectEncoding) {
-        config.setDetectEncoding(detectEncoding);
         return this;
     }
 
@@ -1188,21 +1172,6 @@ public class FluentConfiguration implements Configuration {
      */
     public FluentConfiguration skipDefaultResolvers(boolean skipDefaultResolvers) {
         config.setSkipDefaultResolvers(skipDefaultResolvers);
-        return this;
-    }
-
-    /**
-     * Whether to stream SQL migrations when executing them. Streaming doesn't load the entire migration in memory at
-     * once. Instead each statement is loaded individually. This is particularly useful for very large SQL migrations
-     * composed of multiple MB or even GB of reference data, as this dramatically reduces MigrateDb's memory
-     * consumption.
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param stream {@code true} to stream SQL migrations. {@code false} to fully loaded them in memory instead.
-     *               (default: {@code false})
-     */
-    public FluentConfiguration stream(boolean stream) {
-        config.setStream(stream);
         return this;
     }
 
