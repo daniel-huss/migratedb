@@ -20,20 +20,18 @@ import java.io.Writer
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
+import kotlin.io.path.createDirectories
 
 class PathTarget(private val baseDirectory: Path, private val overwrite: Boolean = true) : Target {
     @Throws(IOException::class)
     override fun newWriter(fileName: String): Writer {
+        require(fileName.isNotEmpty())
         val target = baseDirectory.resolve(fileName)
-        if (target.parent != null) {
-            Files.createDirectories(target.parent)
-        }
+        target.parent?.createDirectories()
         var openOption = arrayOf(StandardOpenOption.CREATE, StandardOpenOption.WRITE)
         if (overwrite) openOption += StandardOpenOption.TRUNCATE_EXISTING
         return Files.newBufferedWriter(target, *openOption)
     }
 
-    override fun hashCode() = baseDirectory.hashCode()
-    override fun equals(other: Any?) = (other is PathTarget) && baseDirectory == other.baseDirectory
     override fun toString() = baseDirectory.toString()
 }

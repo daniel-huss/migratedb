@@ -18,10 +18,11 @@ package migratedb.scanner
 import migratedb.core.api.Location.ClassPathLocation
 import java.io.IOException
 import java.io.Writer
+import java.util.Set.copyOf
 
 class ScanResult internal constructor(foundClasses: Collection<String>, foundResources: Collection<String>) {
-    val foundClasses = foundClasses.toSet()
-    val foundResources = foundResources.toSet()
+    val foundClasses: Set<String> = copyOf(foundClasses)
+    val foundResources: Set<String> = copyOf(foundResources)
 
     @Throws(IOException::class)
     fun writeTo(target: Target) {

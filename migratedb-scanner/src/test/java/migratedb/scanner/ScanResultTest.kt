@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package migratedb.scanner
 
-import java.io.IOException
-import java.io.Writer
+import io.kotest.assertions.throwables.shouldThrowAny
+import io.kotest.matchers.collections.shouldContainExactly
+import org.junit.jupiter.api.Test
 
-interface Target {
-    /**
-     * @param fileName A non-empty file name.
-     * @throws IllegalArgumentException If [fileName] is empty.
-     */
-    @Throws(IOException::class)
-    fun newWriter(fileName: String): Writer
+internal class ScanResultTest {
+    @Test
+    fun `Is unmodifiable`() {
+        val mutableSet = mutableSetOf("a")
+        val scanResult = ScanResult(mutableSet, mutableSet)
+        mutableSet.add("b")
+        mutableSet.add("c")
+        scanResult.foundClasses.shouldContainExactly("a")
+        scanResult.foundResources.shouldContainExactly("a")
+        @Suppress("UNCHECKED_CAST")
+        shouldThrowAny { (scanResult.foundClasses as MutableCollection<String>).add("") }
+    }
 }

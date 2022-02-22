@@ -97,6 +97,7 @@ class Scanner(val onUnprocessablePath: (Path) -> Unit = {}) {
                         var slashyName = it.name.trimStart('/')
                         if (slashyName.startsWith(multiReleasePrefix)) {
                             slashyName = slashyName.substring(slashyName.indexOf('/', multiReleasePrefix.length))
+                                .trimStart('/')
                         } else if (slashyName.startsWith("META-INF/")) {
                             // other files under META-INF are not class path resources
                             return@forEach

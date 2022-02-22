@@ -16,8 +16,6 @@ https://no-website-yet.org
 
 == Support
 
-The aim of this spare-time-project is to maintain a library for database migrations.
-We believe the library to be feature-complete.
 Bugs will be fixed, and new database versions will be supported as long as the changes are testable.
 
 New features are unlikely to be added, unless they are requested by a large number of users and are contributed via some excellent merge request.
@@ -48,7 +46,7 @@ See the License for the specific language governing permissions and limitations 
 In alphabetical order:
 
 |===
-|Name |GPG Key
+|Name |GPG Key Fingerprint
 
 |Daniel Huss
 |7DF871E08AA9A9005514E44D8F6800C3B4CCDA0A

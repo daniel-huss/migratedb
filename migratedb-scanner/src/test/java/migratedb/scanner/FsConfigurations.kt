@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package migratedb.scanner
 
-import java.io.IOException
-import java.io.Writer
+import com.google.common.jimfs.Configuration
+import org.junit.jupiter.api.extension.ExtensionContext
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.ArgumentsProvider
+import java.util.stream.Stream
 
-interface Target {
-    /**
-     * @param fileName A non-empty file name.
-     * @throws IllegalArgumentException If [fileName] is empty.
-     */
-    @Throws(IOException::class)
-    fun newWriter(fileName: String): Writer
+class FsConfigurations : ArgumentsProvider {
+    override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
+        return Stream.of(Configuration.unix(), Configuration.windows(), Configuration.osX())
+            .map(Arguments::of)
+    }
 }
