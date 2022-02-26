@@ -15,6 +15,7 @@
  */
 package migratedb.scanner
 
+import org.apiguardian.api.API
 import java.io.IOException
 import java.io.Writer
 import java.nio.file.Files
@@ -22,6 +23,10 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import kotlin.io.path.createDirectories
 
+/**
+ * Writes to files beneath [baseDirectory], automatically creating any missing parent directories.
+ */
+@API(status = API.Status.STABLE, since = "1.0")
 class PathTarget(private val baseDirectory: Path, private val overwrite: Boolean = true) : Target {
     @Throws(IOException::class)
     override fun newWriter(fileName: String): Writer {

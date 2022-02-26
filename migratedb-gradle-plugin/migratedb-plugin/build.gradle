@@ -1,0 +1,40 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.20.0'
+}
+
+group 'de.unentscheidbar'
+
+repositories {
+    mavenLocal()
+    gradlePluginPortal()
+}
+
+gradlePlugin {
+    plugins {
+        migratedbPlugin {
+            id = 'de.unentscheidbar.migratedb'
+            displayName = 'MigrateDB Plugin'
+            description = 'Performs build-time class path scanning.'
+            implementationClass = 'migratedb.gradle.MigrateDbPlugin'
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+dependencies {
+    runtimeOnly gradleApi()
+    implementation 'de.unentscheidbar:migratedb-scanner:0.1-SNAPSHOT'
+}
+
+pluginBundle {
+    website = 'https://unentscheidbar.de/gitea/hussdl/migratedb'
+    vcsUrl = 'https://unentscheidbar.de/gitea/hussdl/migratedb'
+}
+

@@ -6,5 +6,4 @@ target
 *.ids
 
 .*
-!.gitignore
-!.gitattributes
+!.git*

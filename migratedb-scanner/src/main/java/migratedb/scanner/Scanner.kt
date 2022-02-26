@@ -15,6 +15,10 @@
  */
 package migratedb.scanner
 
+import migratedb.core.api.Location.ClassPathLocation.CLASS_LIST_RESOURCE_NAME
+import migratedb.core.api.Location.ClassPathLocation.RESOURCE_LIST_RESOURCE_NAME
+import org.apiguardian.api.API
+import org.apiguardian.api.API.Status.STABLE
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.Opcodes
@@ -34,18 +38,21 @@ import kotlin.io.path.inputStream
 
 /**
  * Scans the class path for resources and classes that might be relevant for database migrations.
+ *
+ * Instances are unmodifiable.
  */
+@API(status = STABLE, since = "1.0")
 class Scanner(val onUnprocessablePath: (Path) -> Unit = {}) {
     data class Config(
         /**
          * Class directories and jar files to include in the scan.
          */
-        val classPath: List<Path>,
+        val scope: Set<Path>,
         /**
          * Resource name prefixes to include in the scan. To include package `com.foo.bar` you specify `com/foo/bar` here.
          * The separator is always a forward slash and does not depend on the file system implementation.
          */
-        val includedPaths: List<String>,
+        val includedPaths: Set<String>,
         /**
          * In addition to [includedPaths] this further filters candidate resources. A resource only becomes part
          * of the result if this returns `true`. The resource name starts with one of [includedPaths] and
@@ -55,11 +62,7 @@ class Scanner(val onUnprocessablePath: (Path) -> Unit = {}) {
         val followSymlinks: Boolean = false
     )
 
-    fun scan(config: Config) = scan(listOf(config)).values.first()
-
-    fun scan(configs: Collection<Config>): Map<Config, ScanResult> {
-        return configs.asSequence().associate { it to ResultBuilder(it).build() }
-    }
+    fun scan(config: Config) = ResultBuilder(config).build()
 
     private inner class ResultBuilder(private val config: Config) {
         private val foundClasses = mutableSetOf<String>()
@@ -75,7 +78,7 @@ class Scanner(val onUnprocessablePath: (Path) -> Unit = {}) {
         }
 
         fun build(): ScanResult {
-            config.classPath.forEach { path ->
+            config.scope.forEach { path ->
                 when {
                     Files.isDirectory(path) -> processDirectory(path)
                     path.fileName.toString().endsWith(".jar") -> processJar(path)
@@ -138,11 +141,16 @@ class Scanner(val onUnprocessablePath: (Path) -> Unit = {}) {
         }
 
         private fun process(slashyPath: String, content: () -> InputStream) {
-            if (slashyPath.isChildOfIncludedPath() && config.nameFilter(slashyPath)) {
-                when {
+            val fileName = slashyPath.substringAfterLast('/')
+            when {
+                fileName == CLASS_LIST_RESOURCE_NAME || fileName == RESOURCE_LIST_RESOURCE_NAME -> {
+                    // Do not include own output in scan result
+                }
+                slashyPath.isChildOfIncludedPath() && config.nameFilter(slashyPath) -> when {
                     slashyPath.endsWith(".class") -> content().use { processClassFile(it) }
                     else -> foundResources.add(slashyPath)
                 }
+                else -> {}
             }
         }
 

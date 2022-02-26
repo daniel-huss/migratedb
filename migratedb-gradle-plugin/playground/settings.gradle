@@ -1,0 +1,7 @@
+pluginManagement {
+    includeBuild '../migratedb-plugin'
+    repositories {
+        mavenLocal()
+    }
+}
+

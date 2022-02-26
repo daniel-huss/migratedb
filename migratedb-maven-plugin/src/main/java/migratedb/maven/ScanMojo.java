@@ -23,7 +23,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import kotlin.Unit;
 import migratedb.scanner.PathTarget;
@@ -113,10 +115,10 @@ public class ScanMojo extends AbstractMojo {
         handle(unprocessableClassPathElements);
     }
 
-    private Scanner.Config crateScannerConfig(List<Path> classPath) {
+    private Scanner.Config crateScannerConfig(Set<Path> classPath) {
         return new Scanner.Config(
             classPath,
-            Arrays.asList(includes),
+            new LinkedHashSet<>(Arrays.asList(includes)),
             it -> true,
             followSymlinks
         );
@@ -134,13 +136,13 @@ public class ScanMojo extends AbstractMojo {
         }
     }
 
-    private List<Path> getProjectClassPath() throws MojoExecutionException {
+    private Set<Path> getProjectClassPath() throws MojoExecutionException {
         try {
             return (includeDependencies ? project.getRuntimeClasspathElements()
                                         : List.of(project.getBuild().getOutputDirectory()))
                 .stream()
                 .map(Paths::get)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         } catch (InvalidPathException | DependencyResolutionRequiredException e) {
             throw new MojoExecutionException("Failed to get project class path", e);
         }

@@ -1,0 +1,26 @@
+plugins {
+    id 'java-library'
+    id 'de.unentscheidbar.migratedb'
+}
+
+group 'de.unentscheidbar'
+
+repositories {
+    mavenLocal()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+dependencies {
+    implementation 'com.google.guava:guava:31.0.1-jre'
+}
+
+migratedb {
+    scan.includes = ['db/migration', 'com/google']
+    scan.scope = configurations.getByName("runtimeClasspath") + sourceSets.getByName("main").output
+    scan.followSymlinks = true
+}

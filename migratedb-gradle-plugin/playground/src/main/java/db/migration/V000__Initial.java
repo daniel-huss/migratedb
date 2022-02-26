@@ -13,19 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.scanner
 
-import org.apiguardian.api.API
-import java.io.IOException
-import java.io.Writer
+package db.migration;
 
-@API(status = API.Status.STABLE, since = "1.0")
-interface Target {
-    /**
-     * @param fileName A non-empty file name.
-     * @throws IllegalArgumentException If [fileName] is empty.
-     * @throws IOException If some file system error occurs, e.g., if the file cannot be opened for writing.
-     */
-    @Throws(IOException::class)
-    fun newWriter(fileName: String): Writer
+public class V000__Initial {
 }

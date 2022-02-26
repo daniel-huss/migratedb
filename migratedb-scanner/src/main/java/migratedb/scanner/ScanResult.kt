@@ -16,10 +16,12 @@
 package migratedb.scanner
 
 import migratedb.core.api.Location.ClassPathLocation
+import org.apiguardian.api.API
 import java.io.IOException
 import java.io.Writer
 import java.util.Set.copyOf
 
+@API(status = API.Status.STABLE, since = "1.0")
 class ScanResult internal constructor(foundClasses: Collection<String>, foundResources: Collection<String>) {
     val foundClasses: Set<String> = copyOf(foundClasses)
     val foundResources: Set<String> = copyOf(foundResources)
