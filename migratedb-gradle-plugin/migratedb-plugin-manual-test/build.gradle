@@ -21,6 +21,6 @@ dependencies {
 
 migratedb {
     scan.includes = ['db/migration', 'com/google']
-    scan.scope = configurations.getByName("runtimeClasspath") + sourceSets.getByName("main").output
+    scan.scope = configurations.runtimeClasspath + sourceSets.main.output
     scan.followSymlinks = true
 }

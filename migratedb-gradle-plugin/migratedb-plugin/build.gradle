@@ -1,5 +1,6 @@
 plugins {
     id 'java-gradle-plugin'
+    id 'groovy'
     id 'maven-publish'
     id 'com.gradle.plugin-publish' version '0.20.0'
 }
@@ -8,6 +9,7 @@ group 'de.unentscheidbar'
 
 repositories {
     mavenLocal()
+    mavenCentral()
     gradlePluginPortal()
 }
 
@@ -22,6 +24,12 @@ gradlePlugin {
     }
 }
 
+
+pluginBundle {
+    website = 'https://unentscheidbar.de/gitea/hussdl/migratedb'
+    vcsUrl = 'https://unentscheidbar.de/gitea/hussdl/migratedb'
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(11)
@@ -31,10 +39,9 @@ java {
 dependencies {
     runtimeOnly gradleApi()
     implementation 'de.unentscheidbar:migratedb-scanner:0.1-SNAPSHOT'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
 }
 
-pluginBundle {
-    website = 'https://unentscheidbar.de/gitea/hussdl/migratedb'
-    vcsUrl = 'https://unentscheidbar.de/gitea/hussdl/migratedb'
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
 }
-

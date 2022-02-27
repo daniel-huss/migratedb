@@ -32,9 +32,11 @@ public final class MigrateDbPlugin implements Plugin<Project> {
             task.getOutputSubPath().set(taskConfig.getOutputSubPath());
             task.getScope().set(taskConfig.getScope());
         });
-        var classesTask = project.getTasks().findByPath("classes");
-        if (classesTask != null) {
-            classesTask.finalizedBy(scanTask.get());
-        }
+        project.afterEvaluate(it -> {
+            var classesTask = project.getTasks().findByPath(":classes");
+            if (classesTask != null) {
+                classesTask.finalizedBy(scanTask.get());
+            }
+        });
     }
 }

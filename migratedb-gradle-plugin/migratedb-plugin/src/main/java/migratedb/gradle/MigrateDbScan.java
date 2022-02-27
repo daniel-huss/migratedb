@@ -48,6 +48,8 @@ public abstract class MigrateDbScan extends DefaultTask implements MigrateDbScan
             unprocessablePaths.add(it);
             return Unit.INSTANCE;
         }).scan(scannerConfig);
+        getLogger().log(LogLevel.INFO, "Found " + scanResult.getFoundClasses().size() + " classes, " +
+                                       scanResult.getFoundResources().size() + " resources");
         var outputRelativePath = getOutputSubPath().getOrElse(DEFAULTS.outputSubPath);
         var outputDirectory = getOutputDirectory();
         scanResult.writeTo(new PathTarget(outputDirectory.toPath(), true));
