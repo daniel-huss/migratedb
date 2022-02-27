@@ -18,15 +18,15 @@ package migratedb.core.internal.database.sqlserver;
 
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 
 /**
  * SQL Server connection.
  */
-public class SQLServerConnection extends Connection<SQLServerDatabase> {
+public class SQLServerConnection extends BaseConnection<SQLServerDatabase> {
     protected final String originalDatabaseName;
     private final String originalAnsiNulls;
     private final boolean azure;

@@ -18,14 +18,14 @@ package migratedb.core.internal.database.hsqldb;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.jdbc.JdbcUtils;
 
 /**
  * HSQLDB connection.
  */
-public class HSQLDBConnection extends Connection<HSQLDBDatabase> {
+public class HSQLDBConnection extends BaseConnection<HSQLDBDatabase> {
     HSQLDBConnection(HSQLDBDatabase database, java.sql.Connection connection) {
         super(database, connection);
     }

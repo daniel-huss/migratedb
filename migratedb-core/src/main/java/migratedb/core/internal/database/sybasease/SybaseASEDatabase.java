@@ -21,15 +21,15 @@ import java.sql.SQLException;
 import java.util.List;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.Results;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.Results;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.sqlscript.Delimiter;
 
-public class SybaseASEDatabase extends Database<SybaseASEConnection> {
+public class SybaseASEDatabase extends BaseDatabase<SybaseASEConnection> {
     private static final Log LOG = Log.getLog(SybaseASEDatabase.class);
 
     private String databaseName = null;

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.jdbc;
+package migratedb.core.api.internal.jdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,7 +28,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.internal.database.DatabaseType;
+import migratedb.core.api.internal.database.base.DatabaseType;
+import migratedb.core.internal.jdbc.JdbcNullTypes;
+import migratedb.core.internal.jdbc.JdbcUtils;
+import migratedb.core.internal.jdbc.Result;
+import migratedb.core.internal.jdbc.WarningImpl;
 
 /**
  * Collection of utility methods for querying the DB. Inspired by Spring's JdbcTemplate.

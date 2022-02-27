@@ -18,15 +18,15 @@ package migratedb.core.internal.database.redshift;
 
 import java.sql.SQLException;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.util.StringUtils;
 
 /**
  * Redshift connection.
  */
-public class RedshiftConnection extends Connection<RedshiftDatabase> {
+public class RedshiftConnection extends BaseConnection<RedshiftDatabase> {
     RedshiftConnection(RedshiftDatabase database, java.sql.Connection connection) {
         super(database, connection);
     }

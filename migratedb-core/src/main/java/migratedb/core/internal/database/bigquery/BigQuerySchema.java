@@ -19,11 +19,11 @@ package migratedb.core.internal.database.bigquery;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 
-public class BigQuerySchema extends Schema<BigQueryDatabase, BigQueryTable> {
+public class BigQuerySchema extends BaseSchema<BigQueryDatabase, BigQueryTable> {
     BigQuerySchema(JdbcTemplate jdbcTemplate, BigQueryDatabase database, String name) {
         super(jdbcTemplate, database, name);
     }

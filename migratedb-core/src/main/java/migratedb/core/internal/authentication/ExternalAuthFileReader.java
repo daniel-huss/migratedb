@@ -18,7 +18,6 @@ package migratedb.core.internal.authentication;
 
 import java.util.List;
 
-@Deprecated
 public interface ExternalAuthFileReader {
     /**
      * @return The contents of all resolved auth files.

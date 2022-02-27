@@ -17,8 +17,8 @@
 package migratedb.core.internal.database.redshift;
 
 import java.sql.SQLException;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.Type;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 
 /**
  * PostgreSQL-specific type.

@@ -19,16 +19,16 @@ package migratedb.core.internal.database.postgresql;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.util.StringUtils;
 
 /**
  * PostgreSQL connection.
  */
-public class PostgreSQLConnection extends Connection<PostgreSQLDatabase> {
+public class PostgreSQLConnection extends BaseConnection<PostgreSQLDatabase> {
     private final String originalRole;
 
     protected PostgreSQLConnection(PostgreSQLDatabase database, java.sql.Connection connection) {

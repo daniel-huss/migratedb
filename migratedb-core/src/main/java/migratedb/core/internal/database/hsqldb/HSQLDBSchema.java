@@ -19,14 +19,14 @@ package migratedb.core.internal.database.hsqldb;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 
 /**
  * HSQLDB implementation of Schema.
  */
-public class HSQLDBSchema extends Schema<HSQLDBDatabase, HSQLDBTable> {
+public class HSQLDBSchema extends BaseSchema<HSQLDBDatabase, HSQLDBTable> {
     /**
      * Creates a new Hsql schema.
      *

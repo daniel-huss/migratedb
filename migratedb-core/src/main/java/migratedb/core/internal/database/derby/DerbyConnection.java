@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.derby;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 
 /**
  * Derby connection.
  */
-public class DerbyConnection extends Connection<DerbyDatabase> {
+public class DerbyConnection extends BaseConnection<DerbyDatabase> {
     DerbyConnection(DerbyDatabase database, java.sql.Connection connection) {
         super(database, connection);
     }

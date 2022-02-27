@@ -19,12 +19,12 @@ package migratedb.core.internal.database.sqlserver;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 
-public class SQLServerSchema extends Schema<SQLServerDatabase, SQLServerTable> {
+public class SQLServerSchema extends BaseSchema<SQLServerDatabase, SQLServerTable> {
     private static final Log LOG = Log.getLog(SQLServerSchema.class);
 
     protected final String databaseName;

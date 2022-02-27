@@ -18,14 +18,14 @@ package migratedb.core.internal.database.firebird;
 
 import java.io.IOException;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PeekingReader;
 import migratedb.core.internal.parser.Token;
 import migratedb.core.internal.parser.TokenType;
 
-public class FirebirdParser extends Parser {
+public class FirebirdParser extends BaseParser {
 
     private static final String TERM_WITH_SPACES = " TERM ";
 

@@ -18,10 +18,10 @@ package migratedb.core.internal.database.snowflake;
 
 import java.sql.SQLException;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 
-public class SnowflakeConnection extends Connection<SnowflakeDatabase> {
+public class SnowflakeConnection extends BaseConnection<SnowflakeDatabase> {
 
     private final String originalRole;
 

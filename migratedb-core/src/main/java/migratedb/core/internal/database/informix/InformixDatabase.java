@@ -19,15 +19,15 @@ package migratedb.core.internal.database.informix;
 import java.sql.Connection;
 import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 
 /**
  * Informix database.
  */
-public class InformixDatabase extends Database<InformixConnection> {
+public class InformixDatabase extends BaseDatabase<InformixConnection> {
     /**
      * Creates a new instance.
      *

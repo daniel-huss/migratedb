@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.h2;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * H2-specific table.
  */
-public class H2Table extends Table<H2Database, H2Schema> {
+public class H2Table extends BaseTable<H2Database, H2Schema> {
     /**
      * Creates a new H2 table.
      *

@@ -17,10 +17,10 @@
 package migratedb.core.internal.database.firebird;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
-public class FirebirdTable extends Table<FirebirdDatabase, FirebirdSchema> {
+public class FirebirdTable extends BaseTable<FirebirdDatabase, FirebirdSchema> {
 
     /**
      * Creates a new Firebird table.

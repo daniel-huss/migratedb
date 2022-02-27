@@ -19,9 +19,9 @@ package migratedb.core.internal.database.sqlserver;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 
 /**
  * Spring-like template for executing with SQL Server application locks.

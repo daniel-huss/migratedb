@@ -17,10 +17,10 @@
 package migratedb.core.internal.database.firebird;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 
-public class FirebirdConnection extends Connection<FirebirdDatabase> {
+public class FirebirdConnection extends BaseConnection<FirebirdDatabase> {
 
     private static final String DUMMY_SCHEMA_NAME = "default";
 

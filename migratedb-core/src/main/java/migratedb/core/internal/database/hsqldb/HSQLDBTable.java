@@ -17,14 +17,14 @@
 package migratedb.core.internal.database.hsqldb;
 
 import java.sql.SQLException;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * HSQLDB-specific table.
  */
-public class HSQLDBTable extends Table<HSQLDBDatabase, HSQLDBSchema> {
+public class HSQLDBTable extends BaseTable<HSQLDBDatabase, HSQLDBSchema> {
     private static final Log LOG = Log.getLog(HSQLDBTable.class);
 
     /**

@@ -17,11 +17,11 @@
 package migratedb.core.internal.jdbc;
 
 import java.util.Map;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.schemahistory.AppliedMigration;
+import migratedb.core.api.internal.sqlscript.SqlStatement;
 import migratedb.core.api.resource.Resource;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.schemahistory.AppliedMigration;
-import migratedb.core.internal.sqlscript.SqlStatement;
 
 public interface StatementInterceptor {
     void init(Database database, Table table);

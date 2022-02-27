@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.saphana;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * SAP HANA-specific table.
  */
-public class SAPHANATable extends Table<SAPHANADatabase, SAPHANASchema> {
+public class SAPHANATable extends BaseTable<SAPHANADatabase, SAPHANASchema> {
     /**
      * Creates a new SAP HANA table.
      *

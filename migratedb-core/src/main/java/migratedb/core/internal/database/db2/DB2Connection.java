@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.db2;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 
 /**
  * DB2 connection.
  */
-public class DB2Connection extends Connection<DB2Database> {
+public class DB2Connection extends BaseConnection<DB2Database> {
     DB2Connection(DB2Database database, java.sql.Connection connection) {
         super(database, connection);
     }

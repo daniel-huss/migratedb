@@ -16,9 +16,9 @@
  */
 package migratedb.core.internal.database.yugabytedb;
 
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.postgresql.PostgreSQLSchema;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 
 public class YugabyteDBSchema extends PostgreSQLSchema {
     /**

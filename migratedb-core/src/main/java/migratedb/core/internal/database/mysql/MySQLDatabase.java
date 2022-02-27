@@ -24,16 +24,16 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.database.base.BaseDatabaseType;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
 import migratedb.core.internal.database.mysql.mariadb.MariaDBDatabaseType;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 
-public class MySQLDatabase extends Database<MySQLConnection> {
+public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
     // See https://mariadb.com/kb/en/version/
     private static final Pattern MARIADB_VERSION_PATTERN = Pattern.compile(
         "(\\d+\\.\\d+)\\.\\d+(-\\d+)*-MariaDB(-\\w+)*");

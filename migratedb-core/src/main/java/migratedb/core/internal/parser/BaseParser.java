@@ -27,14 +27,15 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.Parser;
+import migratedb.core.api.internal.sqlscript.SqlStatement;
+import migratedb.core.api.internal.sqlscript.SqlStatementIterator;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.resource.ResourceName;
 import migratedb.core.internal.resource.ResourceNameParser;
 import migratedb.core.internal.sqlscript.Delimiter;
 import migratedb.core.internal.sqlscript.ParsedSqlStatement;
-import migratedb.core.internal.sqlscript.SqlStatement;
-import migratedb.core.internal.sqlscript.SqlStatementIterator;
 import migratedb.core.internal.util.BomStrippingReader;
 import migratedb.core.internal.util.IOUtils;
 import migratedb.core.internal.util.MigrateDbWebsiteLinks;
@@ -42,9 +43,9 @@ import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 /**
  * The main parser all database-specific parsers derive from.
  */
-public abstract class Parser {
+public abstract class BaseParser implements Parser {
 
-    protected static final Log LOG = Log.getLog(Parser.class);
+    protected static final Log LOG = Log.getLog(BaseParser.class);
 
     public final Configuration configuration;
     private final int peekDepth;
@@ -55,7 +56,7 @@ public abstract class Parser {
     public final ParsingContext parsingContext;
 
 
-    protected Parser(Configuration configuration, ParsingContext parsingContext, int peekDepth) {
+    protected BaseParser(Configuration configuration, ParsingContext parsingContext, int peekDepth) {
         this.configuration = configuration;
         this.peekDepth = peekDepth;
         this.identifierQuote = getIdentifierQuote();
@@ -106,13 +107,7 @@ public abstract class Parser {
     }
 
 
-    /**
-     * Parses this resource into a stream of statements.
-     *
-     * @param resource The resource to parse.
-     * @return The statements.
-     */
-    public final SqlStatementIterator parse(Resource resource) {
+    @Override public final SqlStatementIterator parse(Resource resource) {
 
         PositionTracker tracker = new PositionTracker();
         Recorder recorder = new Recorder();

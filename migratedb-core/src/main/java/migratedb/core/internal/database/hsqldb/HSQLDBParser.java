@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PeekingReader;
 import migratedb.core.internal.parser.Token;
 
-public class HSQLDBParser extends Parser {
+public class HSQLDBParser extends BaseParser {
     /**
      * List of objects which can be dropped with IF EXISTS
      */

@@ -16,9 +16,11 @@
  */
 package migratedb.core.internal.database.base;
 
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 
-public abstract class Type<D extends Database, S extends Schema> extends SchemaObject<D, S> {
+public abstract class Type<D extends Database, S extends Schema> extends BaseSchemaObject<D, S> {
     public Type(JdbcTemplate jdbcTemplate, D database, S schema, String name) {
         super(jdbcTemplate, database, schema, name);
     }

@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PeekingReader;
@@ -30,7 +30,7 @@ import migratedb.core.internal.parser.StatementType;
 import migratedb.core.internal.parser.Token;
 import migratedb.core.internal.parser.TokenType;
 
-public class MySQLParser extends Parser {
+public class MySQLParser extends BaseParser {
     private static final char ALTERNATIVE_SINGLE_LINE_COMMENT = '#';
 
     private static final Pattern STORED_PROGRAM_REGEX = Pattern.compile(

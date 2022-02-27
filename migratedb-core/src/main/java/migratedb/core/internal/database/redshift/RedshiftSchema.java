@@ -20,15 +20,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.database.base.Type;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 
 /**
  * PostgreSQL implementation of Schema.
  */
-public class RedshiftSchema extends Schema<RedshiftDatabase, RedshiftTable> {
+public class RedshiftSchema extends BaseSchema<RedshiftDatabase, RedshiftTable> {
     /**
      * Creates a new PostgreSQL schema.
      *

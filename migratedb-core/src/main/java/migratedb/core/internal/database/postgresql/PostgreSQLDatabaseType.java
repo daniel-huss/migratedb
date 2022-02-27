@@ -21,12 +21,12 @@ import java.sql.Types;
 import java.util.Properties;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.internal.authentication.postgres.PgpassFileReader;
 import migratedb.core.internal.database.base.BaseDatabaseType;
-import migratedb.core.internal.database.base.Database;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.util.Development;
 
@@ -69,8 +69,8 @@ public class PostgreSQLDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Parser createParser(Configuration configuration, ResourceProvider resourceProvider,
-                               ParsingContext parsingContext) {
+    public BaseParser createParser(Configuration configuration, ResourceProvider resourceProvider,
+                                   ParsingContext parsingContext) {
         return new PostgreSQLParser(configuration, parsingContext);
     }
 

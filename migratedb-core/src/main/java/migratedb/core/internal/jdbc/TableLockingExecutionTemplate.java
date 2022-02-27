@@ -17,7 +17,7 @@
 package migratedb.core.internal.jdbc;
 
 import java.util.concurrent.Callable;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
 
 public class TableLockingExecutionTemplate implements ExecutionTemplate {
     private final Table table;

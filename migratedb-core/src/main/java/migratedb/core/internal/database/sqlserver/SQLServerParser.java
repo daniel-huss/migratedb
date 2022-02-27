@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PeekingReader;
@@ -29,7 +29,7 @@ import migratedb.core.internal.parser.Token;
 import migratedb.core.internal.parser.TokenType;
 import migratedb.core.internal.sqlscript.Delimiter;
 
-public class SQLServerParser extends Parser {
+public class SQLServerParser extends BaseParser {
     // #2175, 2298, 2542: Various system sprocs, mostly around replication, cannot be executed within a transaction.
     // These procedures are only present in SQL Server. Not on Azure nor in PDW.
     private static final List<String> SPROCS_INVALID_IN_TRANSACTIONS = Arrays.asList(

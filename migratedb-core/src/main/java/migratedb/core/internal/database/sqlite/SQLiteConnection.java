@@ -16,13 +16,13 @@
  */
 package migratedb.core.internal.database.sqlite;
 
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 
 /**
  * SQLite connection.
  */
-public class SQLiteConnection extends Connection<SQLiteDatabase> {
+public class SQLiteConnection extends BaseConnection<SQLiteDatabase> {
     SQLiteConnection(SQLiteDatabase database, java.sql.Connection connection) {
         super(database, connection);
     }

@@ -17,11 +17,13 @@
 package migratedb.core.internal.sqlscript;
 
 import migratedb.core.api.callback.Warning;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.Results;
+import migratedb.core.api.internal.sqlscript.SqlStatement;
+import migratedb.core.api.internal.sqlscript.SqlStatementIterator;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.callback.CallbackExecutor;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.jdbc.Result;
-import migratedb.core.internal.jdbc.Results;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.util.AsciiTable;
 

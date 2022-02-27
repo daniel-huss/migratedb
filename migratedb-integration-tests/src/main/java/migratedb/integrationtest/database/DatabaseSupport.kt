@@ -16,7 +16,7 @@
 
 package migratedb.integrationtest.database
 
-import migratedb.core.internal.database.DatabaseType
+import migratedb.core.api.internal.database.base.DatabaseType
 import migratedb.integrationtest.SafeIdentifier
 import migratedb.integrationtest.SharedResources
 import org.junit.jupiter.api.extension.ExtensionContext

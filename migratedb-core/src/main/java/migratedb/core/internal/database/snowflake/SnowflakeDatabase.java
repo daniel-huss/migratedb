@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 
-public class SnowflakeDatabase extends Database<SnowflakeConnection> {
+public class SnowflakeDatabase extends BaseDatabase<SnowflakeConnection> {
     private static final Log LOG = Log.getLog(SnowflakeDatabase.class);
 
     /**

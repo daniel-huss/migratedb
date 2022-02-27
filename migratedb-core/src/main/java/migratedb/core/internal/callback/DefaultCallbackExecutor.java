@@ -27,11 +27,11 @@ import migratedb.core.api.callback.Callback;
 import migratedb.core.api.callback.Context;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.Connection;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.output.OperationResult;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Schema;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 
 /**

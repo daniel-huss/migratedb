@@ -17,10 +17,10 @@
 package migratedb.core.internal.database.h2;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 
-public class H2Connection extends Connection<H2Database> {
+public class H2Connection extends BaseConnection<H2Database> {
     private final boolean requiresV2Metadata;
 
     H2Connection(H2Database database, java.sql.Connection connection, boolean requiresV2Metadata) {

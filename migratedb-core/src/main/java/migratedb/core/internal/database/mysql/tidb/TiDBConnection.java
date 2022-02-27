@@ -18,7 +18,7 @@ package migratedb.core.internal.database.mysql.tidb;
 
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.internal.database.mysql.MySQLConnection;
 import migratedb.core.internal.database.mysql.MySQLDatabase;
 import migratedb.core.internal.exception.MigrateDbSqlException;

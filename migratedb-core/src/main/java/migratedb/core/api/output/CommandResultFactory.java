@@ -26,10 +26,10 @@ import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.MigrationState;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.resolver.ResolvedMigration;
-import migratedb.core.internal.database.base.Database;
 import migratedb.core.internal.info.BuildInfo;
-import migratedb.core.internal.schemahistory.AppliedMigration;
 
 public class CommandResultFactory {
     public static InfoResult createInfoResult(Configuration configuration, Database database,

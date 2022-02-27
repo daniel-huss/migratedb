@@ -22,8 +22,8 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.DatabaseType;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 
 /**

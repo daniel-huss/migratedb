@@ -23,8 +23,8 @@ import java.sql.SQLException;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
@@ -32,7 +32,7 @@ import migratedb.core.internal.jdbc.StatementInterceptor;
 /**
  * Apache Ignite database.
  */
-public class IgniteThinDatabase extends Database<IgniteThinConnection> {
+public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
 
     /**
      * Creates a new instance.

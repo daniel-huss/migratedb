@@ -18,14 +18,14 @@ package migratedb.core.internal.database.snowflake;
 
 import java.io.IOException;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PeekingReader;
 import migratedb.core.internal.parser.Token;
 import migratedb.core.internal.parser.TokenType;
 
-public class SnowflakeParser extends Parser {
+public class SnowflakeParser extends BaseParser {
     private final String ALTERNATIVE_QUOTE = "$$";
 
     public SnowflakeParser(Configuration configuration, ParsingContext parsingContext) {

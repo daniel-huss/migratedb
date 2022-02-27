@@ -19,14 +19,14 @@ package migratedb.core.internal.database.saphana;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 
 /**
  * SAP HANA implementation of Schema.
  */
-public class SAPHANASchema extends Schema<SAPHANADatabase, SAPHANATable> {
+public class SAPHANASchema extends BaseSchema<SAPHANADatabase, SAPHANATable> {
     /**
      * Creates a new SAP HANA schema.
      *

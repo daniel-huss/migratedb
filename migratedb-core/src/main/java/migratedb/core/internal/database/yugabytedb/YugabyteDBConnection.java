@@ -16,7 +16,7 @@
  */
 package migratedb.core.internal.database.yugabytedb;
 
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.postgresql.PostgreSQLConnection;
 
 public class YugabyteDBConnection extends PostgreSQLConnection {

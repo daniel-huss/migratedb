@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 /**
- * Interfaces for Migration executors.
+ * Interface part of internals which must exist to use these types from extensions. Unless you are an extension author
+ * you probably won't be using this package.
  */
 package migratedb.core.api.executor;

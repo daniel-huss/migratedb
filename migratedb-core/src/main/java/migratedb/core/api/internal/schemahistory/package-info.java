@@ -14,14 +14,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.util;
 
-import java.util.Iterator;
-
-/**
- * Iterator that can be used to close underlying resources.
- *
- * @param <T> The typo of element to iterate on.
- */
-public interface CloseableIterator<T> extends Iterator<T>, AutoCloseable {
-}
+package migratedb.core.api.internal.schemahistory;

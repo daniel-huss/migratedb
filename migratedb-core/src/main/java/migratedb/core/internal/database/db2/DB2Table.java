@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.db2;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * Db2-specific table.
  */
-public class DB2Table extends Table<DB2Database, DB2Schema> {
+public class DB2Table extends BaseTable<DB2Database, DB2Schema> {
     /**
      * Creates a new Db2 table.
      *

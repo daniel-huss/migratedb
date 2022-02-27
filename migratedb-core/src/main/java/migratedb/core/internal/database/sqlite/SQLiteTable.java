@@ -17,14 +17,14 @@
 package migratedb.core.internal.database.sqlite;
 
 import java.sql.SQLException;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * SQLite-specific table.
  */
-public class SQLiteTable extends Table<SQLiteDatabase, SQLiteSchema> {
+public class SQLiteTable extends BaseTable<SQLiteDatabase, SQLiteSchema> {
     private static final Log LOG = Log.getLog(SQLiteTable.class);
 
     /**

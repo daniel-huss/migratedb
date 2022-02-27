@@ -22,9 +22,9 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.executor.Context;
 import migratedb.core.api.executor.MigrationExecutor;
+import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.internal.database.DatabaseExecutionStrategy;
-import migratedb.core.internal.database.DatabaseType;
 
 /**
  * Adapter for executing migrations implementing JavaMigration.

@@ -17,14 +17,14 @@
 package migratedb.core.internal.database.sybasease;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.SchemaObject;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchemaObject;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * Sybase ASE table.
  */
-public class SybaseASETable extends Table<SybaseASEDatabase, SybaseASESchema> {
+public class SybaseASETable extends BaseTable<SybaseASEDatabase, SybaseASESchema> {
     /**
      * Creates a new SAP ASE table.
      *
@@ -61,7 +61,7 @@ public class SybaseASETable extends Table<SybaseASEDatabase, SybaseASESchema> {
     /**
      * Since Sybase ASE does not support schema, dropping out the schema name for toString method
      *
-     * @see SchemaObject#toString()
+     * @see BaseSchemaObject#toString()
      */
     @Override
     public String toString() {

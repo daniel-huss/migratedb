@@ -16,18 +16,21 @@
  */
 package migratedb.core.internal.database.base;
 
-import java.io.Closeable;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.Connection;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.DatabaseType;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.DatabaseType;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.exception.MigrateDbUpgradeRequiredException;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.resource.StringResource;
 import migratedb.core.internal.sqlscript.Delimiter;
@@ -38,8 +41,8 @@ import migratedb.core.internal.util.AbbreviationUtils;
 /**
  * Abstraction for database-specific functionality.
  */
-public abstract class Database<C extends Connection> implements Closeable {
-    private static final Log LOG = Log.getLog(Database.class);
+public abstract class BaseDatabase<C extends Connection> implements Database<C> {
+    private static final Log LOG = Log.getLog(BaseDatabase.class);
 
     protected final DatabaseType databaseType;
     protected final Configuration configuration;
@@ -62,8 +65,8 @@ public abstract class Database<C extends Connection> implements Closeable {
      */
     private String installedBy;
 
-    public Database(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                    StatementInterceptor statementInterceptor) {
+    public BaseDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                        StatementInterceptor statementInterceptor) {
         this.databaseType = jdbcConnectionFactory.getDatabaseType();
         this.configuration = configuration;
         this.rawMainJdbcConnection = jdbcConnectionFactory.openConnection();
@@ -89,14 +92,7 @@ public abstract class Database<C extends Connection> implements Closeable {
      */
     protected abstract C doGetConnection(java.sql.Connection connection);
 
-    /**
-     * Ensure MigrateDb supports this version of this database.
-     */
-    public abstract void ensureSupported();
-
-    /**
-     * @return The 'major.minor' version of this database.
-     */
+    @Override
     public final MigrationVersion getVersion() {
         if (version == null) {
             version = determineVersion();
@@ -140,13 +136,12 @@ public abstract class Database<C extends Connection> implements Closeable {
         return version.getVersion();
     }
 
+    @Override
     public Delimiter getDefaultDelimiter() {
         return Delimiter.SEMICOLON;
     }
 
-    /**
-     * @return The name of the database, by default as determined by JDBC.
-     */
+    @Override
     public final String getCatalog() {
         try {
             return doGetCatalog();
@@ -159,6 +154,7 @@ public abstract class Database<C extends Connection> implements Closeable {
         return getMainConnection().getJdbcConnection().getCatalog();
     }
 
+    @Override
     public final String getCurrentUser() {
         try {
             return doGetCurrentUser();
@@ -171,23 +167,7 @@ public abstract class Database<C extends Connection> implements Closeable {
         return jdbcMetaData.getUserName();
     }
 
-    public abstract boolean supportsDdlTransactions();
-
-    public abstract boolean supportsChangingCurrentSchema();
-
-    /**
-     * @return The representation of the value {@code true} in a boolean column.
-     */
-    public abstract String getBooleanTrue();
-
-    /**
-     * @return The representation of the value {@code false} in a boolean column.
-     */
-    public abstract String getBooleanFalse();
-
-    /**
-     * Quotes these identifiers for use in SQL queries. Multiple identifiers will be quoted and separated by a dot.
-     */
+    @Override
     public final String quote(String... identifiers) {
         StringBuilder result = new StringBuilder();
 
@@ -208,26 +188,17 @@ public abstract class Database<C extends Connection> implements Closeable {
      */
     protected abstract String doQuote(String identifier);
 
-    /**
-     * @return {@code true} if this database uses a catalog to represent a schema, or {@code false} if a schema is
-     * simply a schema.
-     */
-    public abstract boolean catalogIsSchema();
-
-    /**
-     * @return Whether to use a single connection for both schema history table management and applying migrations.
-     */
+    @Override
     public boolean useSingleConnection() {
         return false;
     }
 
+    @Override
     public DatabaseMetaData getJdbcMetaData() {
         return jdbcMetaData;
     }
 
-    /**
-     * @return The main connection used to manipulate the schema history.
-     */
+    @Override
     public final C getMainConnection() {
         if (mainConnection == null) {
             this.mainConnection = getConnection(rawMainJdbcConnection);
@@ -235,9 +206,7 @@ public abstract class Database<C extends Connection> implements Closeable {
         return mainConnection;
     }
 
-    /**
-     * @return The migration connection used to apply migrations.
-     */
+    @Override
     public final C getMigrationConnection() {
         if (migrationConnection == null) {
             if (useSingleConnection()) {
@@ -261,19 +230,12 @@ public abstract class Database<C extends Connection> implements Closeable {
         }
     }
 
-    /**
-     * Retrieves the script used to create the schema history table.
-     *
-     * @param sqlScriptFactory The factory used to create the SQL script.
-     * @param table            The table to create.
-     * @param baseline         Whether to include the creation of a baseline marker.
-     */
+    @Override
     public final SqlScript getCreateScript(SqlScriptFactory sqlScriptFactory, Table table, boolean baseline) {
         return sqlScriptFactory.createSqlScript(new StringResource(getRawCreateScript(table, baseline)), false, null);
     }
 
-    public abstract String getRawCreateScript(Table table, boolean baseline);
-
+    @Override
     public String getInsertStatement(Table table) {
         return "INSERT INTO " + table
                + " (" + quote("installed_rank")
@@ -289,6 +251,7 @@ public abstract class Database<C extends Connection> implements Closeable {
                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
 
+    @Override
     public final String getBaselineStatement(Table table) {
         return String.format(getInsertStatement(table).replace("?", "%s"),
                              1,
@@ -304,6 +267,7 @@ public abstract class Database<C extends Connection> implements Closeable {
         );
     }
 
+    @Override
     public String getSelectStatement(Table table) {
         return "SELECT " + quote("installed_rank")
                + "," + quote("version")
@@ -320,6 +284,7 @@ public abstract class Database<C extends Connection> implements Closeable {
                + " ORDER BY " + quote("installed_rank");
     }
 
+    @Override
     public final String getInstalledBy() {
         if (installedBy == null) {
             installedBy = configuration.getInstalledBy() == null ? getCurrentUser() : configuration.getInstalledBy();
@@ -336,21 +301,22 @@ public abstract class Database<C extends Connection> implements Closeable {
         }
     }
 
+    @Override
     public DatabaseType getDatabaseType() {
         return databaseType;
     }
 
+    @Override
     public boolean supportsEmptyMigrationDescription() {
         return true;
     }
 
+    @Override
     public boolean supportsMultiStatementTransactions() {
         return true;
     }
 
-    /**
-     * Cleans all the objects in this database that need to be cleaned before each schema.
-     */
+    @Override
     public void cleanPreSchemas() {
         try {
             doCleanPreSchemas();
@@ -367,11 +333,7 @@ public abstract class Database<C extends Connection> implements Closeable {
     protected void doCleanPreSchemas() throws SQLException {
     }
 
-    /**
-     * Cleans all the objects in this database that need to be cleaned after each schema.
-     *
-     * @param schemas The list of schemas managed by MigrateDb.
-     */
+    @Override
     public void cleanPostSchemas(Schema[] schemas) {
         try {
             doCleanPostSchemas(schemas);

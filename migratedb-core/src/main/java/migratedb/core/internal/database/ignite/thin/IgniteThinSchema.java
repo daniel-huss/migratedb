@@ -19,16 +19,16 @@ package migratedb.core.internal.database.ignite.thin;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.util.StringUtils;
 
 /**
  * Apache Ignite implementation of Schema.
  */
-public class IgniteThinSchema extends Schema<IgniteThinDatabase, IgniteThinTable> {
+public class IgniteThinSchema extends BaseSchema<IgniteThinDatabase, IgniteThinTable> {
     private static final Log LOG = Log.getLog(IgniteThinSchema.class);
 
     /**

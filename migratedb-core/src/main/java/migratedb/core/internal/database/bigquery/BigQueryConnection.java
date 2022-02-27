@@ -19,11 +19,11 @@ package migratedb.core.internal.database.bigquery;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.util.StringUtils;
 
-public class BigQueryConnection extends Connection<BigQueryDatabase> {
+public class BigQueryConnection extends BaseConnection<BigQueryDatabase> {
     /*
      *   BigQuery has no concept of a default dataset, but the JDBC driver does (albeit not advertised through the
      *   normal metadata means) - so we can parse it out of the URL

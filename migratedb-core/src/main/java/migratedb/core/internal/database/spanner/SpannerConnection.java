@@ -18,11 +18,11 @@ package migratedb.core.internal.database.spanner;
 
 import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseConnection;
 
-public class SpannerConnection extends Connection<SpannerDatabase> {
+public class SpannerConnection extends BaseConnection<SpannerDatabase> {
     protected SpannerConnection(SpannerDatabase database, java.sql.Connection connection) {
         super(database, connection);
         this.jdbcTemplate = new SpannerJdbcTemplate(connection, database.getDatabaseType());

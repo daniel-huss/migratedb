@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +14,11 @@
  * limitations under the License.
  */
 
-package migratedb.core.internal;
+package migratedb.core.internal.extension;
 
 import java.util.Set;
-import migratedb.core.extensibility.MigrateDbExtension;
-import migratedb.core.internal.database.DatabaseType;
+import migratedb.core.api.MigrateDbExtension;
+import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.internal.database.bigquery.BigQueryDatabaseType;
 import migratedb.core.internal.database.cockroachdb.CockroachDBDatabaseType;
 import migratedb.core.internal.database.db2.DB2DatabaseType;

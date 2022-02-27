@@ -20,12 +20,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
-import migratedb.core.internal.jdbc.RowMapper;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.RowMapper;
+import migratedb.core.internal.database.base.BaseSchema;
 
-public class FirebirdSchema extends Schema<FirebirdDatabase, FirebirdTable> {
+public class FirebirdSchema extends BaseSchema<FirebirdDatabase, FirebirdTable> {
     /**
      * Creates a new Firebird schema.
      *

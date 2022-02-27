@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PeekingReader;
@@ -28,7 +28,7 @@ import migratedb.core.internal.parser.StatementType;
 import migratedb.core.internal.parser.Token;
 import migratedb.core.internal.parser.TokenType;
 
-public class SAPHANAParser extends Parser {
+public class SAPHANAParser extends BaseParser {
     private static final StatementType FUNCTION_OR_PROCEDURE_STATEMENT = new StatementType();
     private static final Pattern FUNCTION_OR_PROCEDURE_REGEX = Pattern.compile(
         "^CREATE(\\sOR\\sREPLACE)?\\s(FUNCTION|PROCEDURE)");

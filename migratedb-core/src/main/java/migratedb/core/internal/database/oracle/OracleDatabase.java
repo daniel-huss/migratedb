@@ -22,13 +22,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.util.StringUtils;
 
-public class OracleDatabase extends Database<OracleConnection> {
+public class OracleDatabase extends BaseDatabase<OracleConnection> {
     private static final String ORACLE_NET_TNS_ADMIN = "oracle.net.tns_admin";
 
     /**

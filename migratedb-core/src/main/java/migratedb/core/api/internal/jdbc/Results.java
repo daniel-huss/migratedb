@@ -14,13 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.jdbc;
+package migratedb.core.api.internal.jdbc;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import migratedb.core.api.callback.Error;
 import migratedb.core.api.callback.Warning;
+import migratedb.core.internal.jdbc.Result;
 
 /**
  * Container for all results, warnings, errors and remaining side-effects of a sql statement.

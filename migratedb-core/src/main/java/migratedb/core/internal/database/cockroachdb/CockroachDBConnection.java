@@ -20,13 +20,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.util.StringUtils;
 
-public class CockroachDBConnection extends Connection<CockroachDBDatabase> {
+public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
     private static final Log LOG = Log.getLog(CockroachDBConnection.class);
 
     public CockroachDBConnection(CockroachDBDatabase database, java.sql.Connection connection) {

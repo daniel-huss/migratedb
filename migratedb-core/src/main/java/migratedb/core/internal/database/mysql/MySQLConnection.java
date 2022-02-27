@@ -20,14 +20,14 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.util.StringUtils;
 
-public class MySQLConnection extends Connection<MySQLDatabase> {
+public class MySQLConnection extends BaseConnection<MySQLDatabase> {
     private static final Log LOG = Log.getLog(MySQLConnection.class);
 
     private static final String USER_VARIABLES_TABLE_MARIADB = "information_schema.user_variables";

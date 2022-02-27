@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.oracle;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 
 /**
  * Oracle connection.
  */
-public class OracleConnection extends Connection<OracleDatabase> {
+public class OracleConnection extends BaseConnection<OracleDatabase> {
     OracleConnection(OracleDatabase database, java.sql.Connection connection) {
         super(database, connection);
     }

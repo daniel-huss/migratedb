@@ -19,11 +19,11 @@ package migratedb.core.internal.database.snowflake;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
-import migratedb.core.internal.jdbc.RowMapper;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.RowMapper;
+import migratedb.core.internal.database.base.BaseTable;
 
-public class SnowflakeTable extends Table<SnowflakeDatabase, SnowflakeSchema> {
+public class SnowflakeTable extends BaseTable<SnowflakeDatabase, SnowflakeSchema> {
     SnowflakeTable(JdbcTemplate jdbcTemplate, SnowflakeDatabase database, SnowflakeSchema schema, String name) {
         super(jdbcTemplate, database, schema, name);
     }

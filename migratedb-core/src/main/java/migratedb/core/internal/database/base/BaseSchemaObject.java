@@ -17,10 +17,13 @@
 package migratedb.core.internal.database.base;
 
 import java.sql.SQLException;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.SchemaObject;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.exception.MigrateDbSqlException;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 
-public abstract class SchemaObject<D extends Database, S extends Schema> {
+public abstract class BaseSchemaObject<D extends Database, S extends Schema> implements SchemaObject<D, S> {
     protected final JdbcTemplate jdbcTemplate;
     protected final D database;
     protected final S schema;
@@ -32,24 +35,24 @@ public abstract class SchemaObject<D extends Database, S extends Schema> {
      * @param schema       The schema the object lives in.
      * @param name         The name of the object.
      */
-    SchemaObject(JdbcTemplate jdbcTemplate, D database, S schema, String name) {
+    BaseSchemaObject(JdbcTemplate jdbcTemplate, D database, S schema, String name) {
         this.name = name;
         this.jdbcTemplate = jdbcTemplate;
         this.database = database;
         this.schema = schema;
     }
 
-    /**
-     * @return The schema this object lives in.
-     */
+    @Override
     public final S getSchema() {
         return schema;
     }
 
+    @Override
     public final String getName() {
         return name;
     }
 
+    @Override
     public final void drop() {
         try {
             doDrop();

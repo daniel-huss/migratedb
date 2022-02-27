@@ -16,13 +16,13 @@
  */
 package migratedb.core.internal.database.sybasease;
 
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 
 /**
  * Sybase ASE Connection.
  */
-public class SybaseASEConnection extends Connection<SybaseASEDatabase> {
+public class SybaseASEConnection extends BaseConnection<SybaseASEDatabase> {
     SybaseASEConnection(SybaseASEDatabase database, java.sql.Connection connection) {
         super(database, connection);
     }

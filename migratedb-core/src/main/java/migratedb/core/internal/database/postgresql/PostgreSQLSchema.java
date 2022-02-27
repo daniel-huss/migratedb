@@ -22,15 +22,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.database.base.Type;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 
 /**
  * PostgreSQL implementation of Schema.
  */
-public class PostgreSQLSchema extends Schema<PostgreSQLDatabase, PostgreSQLTable> {
+public class PostgreSQLSchema extends BaseSchema<PostgreSQLDatabase, PostgreSQLTable> {
     /**
      * Creates a new PostgreSQL schema.
      *

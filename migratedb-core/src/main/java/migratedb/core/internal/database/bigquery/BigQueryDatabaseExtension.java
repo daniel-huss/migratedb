@@ -16,7 +16,7 @@
  */
 package migratedb.core.internal.database.bigquery;
 
-import migratedb.core.extensibility.MigrateDbExtension;
+import migratedb.core.api.MigrateDbExtension;
 
 public class BigQueryDatabaseExtension implements MigrateDbExtension {
     public String getDescription() {

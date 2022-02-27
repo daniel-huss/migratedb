@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.callback.Event;
+import migratedb.core.api.internal.database.base.Connection;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.callback.CallbackExecutor;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Schema;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 

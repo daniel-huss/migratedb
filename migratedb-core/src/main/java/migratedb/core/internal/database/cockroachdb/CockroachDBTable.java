@@ -17,9 +17,9 @@
 package migratedb.core.internal.database.cockroachdb;
 
 import java.sql.SQLException;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.InsertRowLock;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 import migratedb.core.internal.util.SqlCallable;
 
 /**
@@ -29,7 +29,7 @@ import migratedb.core.internal.util.SqlCallable;
  * if another process has inserted such a row we wait (potentially indefinitely) for it to be removed before carrying
  * out a migration.
  */
-public class CockroachDBTable extends Table<CockroachDBDatabase, CockroachDBSchema> {
+public class CockroachDBTable extends BaseTable<CockroachDBDatabase, CockroachDBSchema> {
     private final InsertRowLock insertRowLock;
 
     CockroachDBTable(JdbcTemplate jdbcTemplate, CockroachDBDatabase database, CockroachDBSchema schema, String name) {

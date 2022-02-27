@@ -18,11 +18,15 @@ package migratedb.core.internal.database.base;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.exception.MigrateDbSqlException;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.jdbc.JdbcUtils;
 
-public abstract class Table<D extends Database, S extends Schema> extends SchemaObject<D, S> {
+public abstract class BaseTable<D extends Database, S extends Schema> extends BaseSchemaObject<D, S> implements
+                                                                                                     Table<D, S> {
     /**
      * Keeps track of the locks on a table since calls to lock the table can be nested.
      */
@@ -34,10 +38,11 @@ public abstract class Table<D extends Database, S extends Schema> extends Schema
      * @param schema       The schema this table lives in.
      * @param name         The name of the table.
      */
-    public Table(JdbcTemplate jdbcTemplate, D database, S schema, String name) {
+    public BaseTable(JdbcTemplate jdbcTemplate, D database, S schema, String name) {
         super(jdbcTemplate, database, schema, name);
     }
 
+    @Override
     public boolean exists() {
         try {
             return doExists();
@@ -72,7 +77,7 @@ public abstract class Table<D extends Database, S extends Schema> extends Schema
         ResultSet resultSet = null;
         boolean found;
         try {
-            resultSet = database.jdbcMetaData.getTables(
+            resultSet = database.getJdbcMetaData().getTables(
                 catalog == null ? null : catalog.getName(),
                 schema == null ? null : schema.getName(),
                 table,
@@ -85,11 +90,7 @@ public abstract class Table<D extends Database, S extends Schema> extends Schema
         return found;
     }
 
-    /**
-     * Locks this table in this schema using a read/write pessimistic lock until the end of the current transaction.
-     * Note that {@code unlock()} still needs to be called even if your database unlocks the table implicitly (in which
-     * case {@code doUnlock()} may be a no-op) in order to maintain the lock count correctly.
-     */
+    @Override
     public void lock() {
         if (!exists()) {
             return;
@@ -111,9 +112,7 @@ public abstract class Table<D extends Database, S extends Schema> extends Schema
      */
     protected abstract void doLock() throws SQLException;
 
-    /**
-     * For databases that require an explicit unlocking, not an implicit end-of-transaction one.
-     */
+    @Override
     public void unlock() {
         // lockDepth can be zero if this table didn't exist at the time of the call to lock()
         if (!exists() || lockDepth == 0) {

@@ -21,10 +21,11 @@ import java.util.concurrent.Callable;
 import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.output.RepairResult;
 import migratedb.core.api.resolver.ResolvedMigration;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
 import migratedb.core.internal.util.AbbreviationUtils;
 import migratedb.core.internal.util.StringUtils;
 

@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.derby;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * Derby-specific table.
  */
-public class DerbyTable extends Table<DerbyDatabase, DerbySchema> {
+public class DerbyTable extends BaseTable<DerbyDatabase, DerbySchema> {
     /**
      * Creates a new Derby table.
      *

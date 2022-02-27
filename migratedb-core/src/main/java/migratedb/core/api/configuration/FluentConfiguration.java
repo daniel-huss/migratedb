@@ -28,6 +28,7 @@ import migratedb.core.api.ClassProvider;
 import migratedb.core.api.DatabaseTypeRegister;
 import migratedb.core.api.Location;
 import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.MigrateDbExtension;
 import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.ResourceProvider;
@@ -37,7 +38,6 @@ import migratedb.core.api.logging.LogSystems;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.pattern.ValidatePattern;
 import migratedb.core.api.resolver.MigrationResolver;
-import migratedb.core.extensibility.MigrateDbExtension;
 import migratedb.core.internal.configuration.ConfigUtils;
 import migratedb.core.internal.util.ClassUtils;
 

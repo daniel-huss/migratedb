@@ -20,13 +20,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Function;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.jdbc.JdbcUtils;
 
-public abstract class Schema<D extends Database, T extends Table> {
-    private static final Log LOG = Log.getLog(Schema.class);
+public abstract class BaseSchema<D extends Database, T extends Table> implements Schema<D, T> {
+    private static final Log LOG = Log.getLog(BaseSchema.class);
     protected final JdbcTemplate jdbcTemplate;
     protected final D database;
     protected final String name;
@@ -36,16 +40,18 @@ public abstract class Schema<D extends Database, T extends Table> {
      * @param database     The database-specific support.
      * @param name         The name of the schema.
      */
-    public Schema(JdbcTemplate jdbcTemplate, D database, String name) {
+    public BaseSchema(JdbcTemplate jdbcTemplate, D database, String name) {
         this.jdbcTemplate = jdbcTemplate;
         this.database = database;
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public boolean exists() {
         try {
             return doExists();
@@ -61,6 +67,7 @@ public abstract class Schema<D extends Database, T extends Table> {
      */
     protected abstract boolean doExists() throws SQLException;
 
+    @Override
     public boolean empty() {
         try {
             return doEmpty();
@@ -76,9 +83,7 @@ public abstract class Schema<D extends Database, T extends Table> {
      */
     protected abstract boolean doEmpty() throws SQLException;
 
-    /**
-     * Creates this schema in the database.
-     */
+    @Override
     public void create() {
         try {
             LOG.info("Creating schema " + this + " ...");
@@ -95,9 +100,7 @@ public abstract class Schema<D extends Database, T extends Table> {
      */
     protected abstract void doCreate() throws SQLException;
 
-    /**
-     * Drops this schema from the database.
-     */
+    @Override
     public void drop() {
         try {
             doDrop();
@@ -113,9 +116,7 @@ public abstract class Schema<D extends Database, T extends Table> {
      */
     protected abstract void doDrop() throws SQLException;
 
-    /**
-     * Cleans all the objects in this schema.
-     */
+    @Override
     public void clean() {
         try {
             doClean();
@@ -131,9 +132,7 @@ public abstract class Schema<D extends Database, T extends Table> {
      */
     protected abstract void doClean() throws SQLException;
 
-    /**
-     * Retrieves all the tables in this schema.
-     */
+    @Override
     public T[] allTables() {
         try {
             return doAllTables();
@@ -155,7 +154,7 @@ public abstract class Schema<D extends Database, T extends Table> {
     protected final Type[] allTypes() {
         ResultSet resultSet = null;
         try {
-            resultSet = database.jdbcMetaData.getUDTs(null, name, null, null);
+            resultSet = database.getJdbcMetaData().getUDTs(null, name, null, null);
 
             List<Type> types = new ArrayList<>();
             while (resultSet.next()) {
@@ -177,14 +176,7 @@ public abstract class Schema<D extends Database, T extends Table> {
         return null;
     }
 
-    /**
-     * Retrieves the table with this name in this schema.
-     */
-    public abstract Table getTable(String tableName);
-
-    /**
-     * Retrieves the function with this name in this schema.
-     */
+    @Override
     public Function getFunction(String functionName, String... args) {
         throw new UnsupportedOperationException("getFunction()");
     }
@@ -226,7 +218,7 @@ public abstract class Schema<D extends Database, T extends Table> {
             return false;
         }
 
-        Schema schema = (Schema) o;
+        BaseSchema schema = (BaseSchema) o;
         return name.equals(schema.name);
     }
 

@@ -19,8 +19,8 @@ package migratedb.core.internal.database.redshift;
 import java.sql.Connection;
 import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.util.StringUtils;
@@ -28,7 +28,7 @@ import migratedb.core.internal.util.StringUtils;
 /**
  * Redshift database.
  */
-public class RedshiftDatabase extends Database<RedshiftConnection> {
+public class RedshiftDatabase extends BaseDatabase<RedshiftConnection> {
     /**
      * Creates a new instance.
      *

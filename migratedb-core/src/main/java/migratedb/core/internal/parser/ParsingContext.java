@@ -22,9 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Schema;
 import migratedb.core.internal.resource.ResourceName;
 
 public class ParsingContext {

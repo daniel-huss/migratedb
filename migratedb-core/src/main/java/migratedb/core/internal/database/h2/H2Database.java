@@ -20,13 +20,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 
-public class H2Database extends Database<H2Connection> {
+public class H2Database extends BaseDatabase<H2Connection> {
     /**
      * A dummy user used in Oracle mode, where USER() can return null but nulls can't be inserted into the schema
      * history table

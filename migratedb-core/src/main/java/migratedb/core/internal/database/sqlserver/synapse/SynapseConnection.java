@@ -17,8 +17,8 @@
 package migratedb.core.internal.database.sqlserver.synapse;
 
 import java.util.concurrent.Callable;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.internal.database.sqlserver.SQLServerConnection;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 

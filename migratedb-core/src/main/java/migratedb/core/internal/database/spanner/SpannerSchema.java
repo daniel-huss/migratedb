@@ -22,14 +22,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.Results;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.jdbc.Result;
-import migratedb.core.internal.jdbc.Results;
 
-public class SpannerSchema extends Schema<SpannerDatabase, SpannerTable> {
+public class SpannerSchema extends BaseSchema<SpannerDatabase, SpannerTable> {
     private static final Log LOG = Log.getLog(SpannerSchema.class);
 
     public SpannerSchema(JdbcTemplate jdbcTemplate, SpannerDatabase database, String name) {

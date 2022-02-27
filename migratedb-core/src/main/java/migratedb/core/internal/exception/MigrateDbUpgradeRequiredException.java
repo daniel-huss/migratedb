@@ -17,7 +17,7 @@
 package migratedb.core.internal.exception;
 
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.internal.database.DatabaseType;
+import migratedb.core.api.internal.database.base.DatabaseType;
 
 /**
  * Thrown when an attempt was made to migrate an outdated database version not supported by MigrateDB .

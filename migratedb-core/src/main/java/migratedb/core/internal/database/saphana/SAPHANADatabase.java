@@ -18,15 +18,15 @@ package migratedb.core.internal.database.saphana;
 
 import java.sql.Connection;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 
 /**
  * SAP HANA database.
  */
-public class SAPHANADatabase extends Database<SAPHANAConnection> {
+public class SAPHANADatabase extends BaseDatabase<SAPHANAConnection> {
     /**
      * Creates a new instance.
      */

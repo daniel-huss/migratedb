@@ -18,14 +18,14 @@ package migratedb.core.internal.database.sybasease;
 
 import java.sql.SQLException;
 import java.util.List;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 
 /**
  * Sybase ASE schema (database).
  */
-public class SybaseASESchema extends Schema<SybaseASEDatabase, SybaseASETable> {
+public class SybaseASESchema extends BaseSchema<SybaseASEDatabase, SybaseASETable> {
     SybaseASESchema(JdbcTemplate jdbcTemplate, SybaseASEDatabase database, String name) {
         super(jdbcTemplate, database, name);
     }
@@ -60,7 +60,7 @@ public class SybaseASESchema extends Schema<SybaseASEDatabase, SybaseASETable> {
     /**
      * This clean method is equivalent to cleaning the whole database.
      *
-     * @see Schema#doClean()
+     * @see BaseSchema#doClean()
      */
     @Override
     protected void doClean() throws SQLException {

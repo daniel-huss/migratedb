@@ -19,12 +19,12 @@ package migratedb.core.internal.database.firebird;
 import java.sql.Connection;
 import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 
-public class FirebirdDatabase extends Database<FirebirdConnection> {
+public class FirebirdDatabase extends BaseDatabase<FirebirdConnection> {
     /**
      * Creates a new FirebirdDatabase instance with this JdbcTemplate.
      *

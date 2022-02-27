@@ -28,18 +28,19 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.DatabaseType;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.database.DatabaseExecutionStrategy;
-import migratedb.core.internal.database.DatabaseType;
 import migratedb.core.internal.database.DefaultExecutionStrategy;
 import migratedb.core.internal.jdbc.ExecutionTemplate;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.jdbc.JdbcUtils;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.jdbc.TransactionalExecutionTemplate;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.sqlscript.DefaultSqlScriptExecutor;
 import migratedb.core.internal.sqlscript.ParserSqlScript;
@@ -150,8 +151,8 @@ public abstract class BaseDatabaseType implements DatabaseType {
     public abstract Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
                                             StatementInterceptor statementInterceptor);
 
-    public abstract Parser createParser(Configuration configuration, ResourceProvider resourceProvider,
-                                        ParsingContext parsingContext);
+    public abstract BaseParser createParser(Configuration configuration, ResourceProvider resourceProvider,
+                                            ParsingContext parsingContext);
 
     public SqlScriptFactory createSqlScriptFactory(Configuration configuration, ParsingContext parsingContext) {
         return (resource, mixed, resourceProvider) -> new ParserSqlScript(createParser(configuration,

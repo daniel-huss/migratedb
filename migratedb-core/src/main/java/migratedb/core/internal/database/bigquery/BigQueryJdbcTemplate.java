@@ -21,9 +21,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.internal.database.DatabaseType;
+import migratedb.core.api.internal.database.base.DatabaseType;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.jdbc.JdbcNullTypes;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 
 public class BigQueryJdbcTemplate extends JdbcTemplate {
 

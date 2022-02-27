@@ -20,11 +20,11 @@ import java.sql.Connection;
 import java.util.regex.Pattern;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.internal.database.postgresql.PostgreSQLDatabaseType;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParsingContext;
 
 public class YugabyteDBDatabaseType extends PostgreSQLDatabaseType {
@@ -60,8 +60,8 @@ public class YugabyteDBDatabaseType extends PostgreSQLDatabaseType {
     }
 
     @Override
-    public Parser createParser(Configuration configuration, ResourceProvider resourceProvider,
-                               ParsingContext parsingContext) {
+    public BaseParser createParser(Configuration configuration, ResourceProvider resourceProvider,
+                                   ParsingContext parsingContext) {
         return new YugabyteDBParser(configuration, parsingContext);
     }
 }

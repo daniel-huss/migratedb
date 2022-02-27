@@ -16,14 +16,14 @@
 
 package migratedb.integrationtest
 
+import migratedb.core.api.internal.database.base.Connection
+import migratedb.core.api.internal.database.base.Database
+import migratedb.core.api.internal.database.base.Schema
+import migratedb.core.api.internal.database.base.Table
+import migratedb.core.api.internal.schemahistory.AppliedMigration
+import migratedb.core.api.internal.sqlscript.SqlStatement
 import migratedb.core.api.resource.Resource
-import migratedb.core.internal.database.base.Connection
-import migratedb.core.internal.database.base.Database
-import migratedb.core.internal.database.base.Schema
-import migratedb.core.internal.database.base.Table
 import migratedb.core.internal.jdbc.StatementInterceptor
-import migratedb.core.internal.schemahistory.AppliedMigration
-import migratedb.core.internal.sqlscript.SqlStatement
 
 object NoOpIntercepter : StatementInterceptor {
     override fun init(database: Database<out Connection<*>>?, table: Table<out Database<*>, out Schema<*, *>>?) {

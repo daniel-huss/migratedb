@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PeekingReader;
@@ -34,7 +34,7 @@ import migratedb.core.internal.sqlscript.Delimiter;
 import migratedb.core.internal.sqlscript.ParsedSqlStatement;
 import migratedb.core.internal.util.StringUtils;
 
-public class OracleParser extends Parser {
+public class OracleParser extends BaseParser {
 
     /**
      * Delimiter of PL/SQL blocks and statements.

@@ -29,7 +29,7 @@ import migratedb.core.api.DatabaseTypeRegister;
 import migratedb.core.api.ErrorCode;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.DatabaseType;
+import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.StringUtils;
 

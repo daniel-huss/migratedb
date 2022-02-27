@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.sqlscript;
+package migratedb.core.api.internal.sqlscript;
 
-import migratedb.core.internal.jdbc.JdbcTemplate;
-import migratedb.core.internal.jdbc.Results;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.Results;
 
 /**
  * A sql statement from a script that can be executed at once against a database.
@@ -54,7 +54,4 @@ public interface SqlStatement {
      *
      * @return the result of the execution.
      */
-    Results execute(JdbcTemplate jdbcTemplate
-
-    );
-}
+    Results execute(JdbcTemplate jdbcTemplate);}

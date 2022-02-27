@@ -24,7 +24,7 @@ import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.configuration.ConfigUtils;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.PlaceholderReplacingReader;
 
 public class SqlScriptMetadata {
@@ -63,7 +63,7 @@ public class SqlScriptMetadata {
         return !line.startsWith(SHOULD_EXECUTE) && (line.contains("==") || line.contains("!="));
     }
 
-    public static SqlScriptMetadata fromResource(Resource resource, Parser parser) {
+    public static SqlScriptMetadata fromResource(Resource resource, BaseParser parser) {
         if (resource != null) {
             LOG.debug("Found script configuration: " + resource.getName());
             return new SqlScriptMetadata(loadConfiguration(

@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.informix;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * Informix-specific table.
  */
-public class InformixTable extends Table<InformixDatabase, InformixSchema> {
+public class InformixTable extends BaseTable<InformixDatabase, InformixSchema> {
     /**
      * Creates a new Informix table.
      *

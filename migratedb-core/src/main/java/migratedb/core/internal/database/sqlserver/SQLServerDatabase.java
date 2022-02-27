@@ -25,15 +25,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.sqlscript.Delimiter;
 import migratedb.core.internal.util.StringUtils;
 
-public class SQLServerDatabase extends Database<SQLServerConnection> {
+public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
     public SQLServerDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
                              StatementInterceptor statementInterceptor) {
         super(configuration, jdbcConnectionFactory, statementInterceptor);

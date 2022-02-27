@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.postgresql;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * PostgreSQL-specific table.
  */
-public class PostgreSQLTable extends Table<PostgreSQLDatabase, PostgreSQLSchema> {
+public class PostgreSQLTable extends BaseTable<PostgreSQLDatabase, PostgreSQLSchema> {
     /**
      * Creates a new PostgreSQL table.
      *

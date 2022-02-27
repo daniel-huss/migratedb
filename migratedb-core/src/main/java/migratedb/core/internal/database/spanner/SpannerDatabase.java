@@ -18,12 +18,12 @@ package migratedb.core.internal.database.spanner;
 
 import java.sql.Connection;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 
-public class SpannerDatabase extends Database<SpannerConnection> {
+public class SpannerDatabase extends BaseDatabase<SpannerConnection> {
     public SpannerDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
                            StatementInterceptor statementInterceptor) {
         super(configuration, jdbcConnectionFactory, statementInterceptor);

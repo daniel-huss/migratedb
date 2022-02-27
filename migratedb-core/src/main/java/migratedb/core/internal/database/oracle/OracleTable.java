@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.oracle;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * Oracle-specific table.
  */
-public class OracleTable extends Table<OracleDatabase, OracleSchema> {
+public class OracleTable extends BaseTable<OracleDatabase, OracleSchema> {
     /**
      * Creates a new Oracle table.
      *

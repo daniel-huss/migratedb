@@ -20,10 +20,10 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfoService;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.callback.CallbackExecutor;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Schema;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 

@@ -19,12 +19,12 @@ package migratedb.core.internal.database.db2;
 import java.sql.Connection;
 import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 
-public class DB2Database extends Database<DB2Connection> {
+public class DB2Database extends BaseDatabase<DB2Connection> {
     public DB2Database(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
                        StatementInterceptor statementInterceptor) {
         super(configuration, jdbcConnectionFactory, statementInterceptor);

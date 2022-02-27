@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.schemahistory;
+package migratedb.core.api.internal.schemahistory;
 
 import java.sql.Timestamp;
 import java.time.Instant;

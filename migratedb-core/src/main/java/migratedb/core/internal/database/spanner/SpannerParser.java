@@ -19,11 +19,11 @@ package migratedb.core.internal.database.spanner;
 import java.util.List;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.Token;
 
-public class SpannerParser extends Parser {
+public class SpannerParser extends BaseParser {
     private static final Log LOG = Log.getLog(SpannerParser.class);
 
     public SpannerParser(Configuration configuration, ParsingContext parsingContext) {

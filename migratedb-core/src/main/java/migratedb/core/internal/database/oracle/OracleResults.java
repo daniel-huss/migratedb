@@ -16,7 +16,7 @@
  */
 package migratedb.core.internal.database.oracle;
 
-import migratedb.core.internal.jdbc.Results;
+import migratedb.core.api.internal.jdbc.Results;
 
 /**
  * Oracle-specific results and side-effects.

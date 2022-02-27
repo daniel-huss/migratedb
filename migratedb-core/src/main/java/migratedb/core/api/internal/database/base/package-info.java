@@ -14,11 +14,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.sqlscript;
 
-import migratedb.core.internal.util.CloseableIterator;
-
-public interface SqlStatementIterator extends CloseableIterator<SqlStatement> {
-    @Override
-    void close();
-}
+package migratedb.core.api.internal.database.base;

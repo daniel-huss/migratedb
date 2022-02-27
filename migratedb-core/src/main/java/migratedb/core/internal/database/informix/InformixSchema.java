@@ -18,14 +18,14 @@ package migratedb.core.internal.database.informix;
 
 import java.sql.SQLException;
 import java.util.List;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 
 /**
  * Informix implementation of Schema.
  */
-public class InformixSchema extends Schema<InformixDatabase, InformixTable> {
+public class InformixSchema extends BaseSchema<InformixDatabase, InformixTable> {
     /**
      * Creates a new Informix schema.
      *

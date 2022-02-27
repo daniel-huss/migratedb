@@ -19,7 +19,7 @@ package migratedb.core.api;
 
 import java.sql.Connection;
 import java.util.List;
-import migratedb.core.internal.database.DatabaseType;
+import migratedb.core.api.internal.database.base.DatabaseType;
 
 public interface DatabaseTypeRegister {
     /**

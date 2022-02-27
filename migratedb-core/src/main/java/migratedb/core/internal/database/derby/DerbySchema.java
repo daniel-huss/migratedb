@@ -20,15 +20,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.util.StringUtils;
 
 /**
  * Derby implementation of Schema.
  */
-public class DerbySchema extends Schema<DerbyDatabase, DerbyTable> {
+public class DerbySchema extends BaseSchema<DerbyDatabase, DerbyTable> {
     /**
      * Creates a new Derby schema.
      *

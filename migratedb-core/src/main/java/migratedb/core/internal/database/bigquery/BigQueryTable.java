@@ -17,11 +17,11 @@
 package migratedb.core.internal.database.bigquery;
 
 import java.sql.SQLException;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.InsertRowLock;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
-public class BigQueryTable extends Table<BigQueryDatabase, BigQuerySchema> {
+public class BigQueryTable extends BaseTable<BigQueryDatabase, BigQuerySchema> {
     private final InsertRowLock insertRowLock;
 
     BigQueryTable(JdbcTemplate jdbcTemplate, BigQueryDatabase database, BigQuerySchema schema, String name) {

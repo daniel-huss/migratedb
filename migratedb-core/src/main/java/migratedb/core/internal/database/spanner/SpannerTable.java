@@ -20,10 +20,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
-public class SpannerTable extends Table<SpannerDatabase, SpannerSchema> {
+public class SpannerTable extends BaseTable<SpannerDatabase, SpannerSchema> {
 
     public SpannerTable(JdbcTemplate jdbcTemplate, SpannerDatabase database, SpannerSchema schema, String name) {
         super(jdbcTemplate, database, schema, name);

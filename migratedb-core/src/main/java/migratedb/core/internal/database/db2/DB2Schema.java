@@ -19,16 +19,16 @@ package migratedb.core.internal.database.db2;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import migratedb.core.internal.database.base.Function;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Function;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.database.base.Type;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 
 /**
  * DB2 implementation of Schema.
  */
-public class DB2Schema extends Schema<DB2Database, DB2Table> {
+public class DB2Schema extends BaseSchema<DB2Database, DB2Table> {
     /**
      * Creates a new DB2 schema.
      *

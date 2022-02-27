@@ -20,11 +20,11 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.TimeZone;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.InsertRowLock;
 import migratedb.core.internal.database.sqlserver.SQLServerDatabase;
 import migratedb.core.internal.database.sqlserver.SQLServerSchema;
 import migratedb.core.internal.database.sqlserver.SQLServerTable;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 
 public class SynapseTable extends SQLServerTable {
     private final InsertRowLock insertRowLock;

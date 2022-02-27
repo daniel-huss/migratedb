@@ -20,9 +20,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.internal.parser.Parser;
+import migratedb.core.api.internal.sqlscript.SqlStatement;
+import migratedb.core.api.internal.sqlscript.SqlStatementIterator;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.resource.Resource;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 
 public class ParserSqlScript implements SqlScript {
     private static final Log LOG = Log.getLog(ParserSqlScript.class);
@@ -57,7 +60,7 @@ public class ParserSqlScript implements SqlScript {
      * @param mixed            Whether to allow mixing transactional and non-transactional statements within the same
      *                         migration.
      */
-    public ParserSqlScript(Parser parser, Resource resource, Resource metadataResource, boolean mixed) {
+    public ParserSqlScript(BaseParser parser, Resource resource, Resource metadataResource, boolean mixed) {
         this.resource = resource;
         this.metadata = SqlScriptMetadata.fromResource(metadataResource, parser);
         this.parser = parser;

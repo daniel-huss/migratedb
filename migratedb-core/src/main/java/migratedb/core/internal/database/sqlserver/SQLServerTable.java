@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.sqlserver;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * SQLServer-specific table.
  */
-public class SQLServerTable extends Table<SQLServerDatabase, SQLServerSchema> {
+public class SQLServerTable extends BaseTable<SQLServerDatabase, SQLServerSchema> {
     private final String databaseName;
 
     /**

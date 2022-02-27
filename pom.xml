@@ -23,22 +23,32 @@
     <packaging>pom</packaging>
     <name>MigrateDB</name>
     <description>MigrateDB: Database Migrations, Easy and Free.</description>
+    <url>https://github.com/daniel-huss/migratedb</url>
+
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
-            <distribution>repo</distribution>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
+
     <scm>
         <url>${gitRepository.browsableUrl}</url>
         <connection>scm:git:${gitRepository.url}</connection>
         <developerConnection>scm:git:${gitRepository.url}</developerConnection>
     </scm>
 
+    <developers>
+        <developer>
+            <name>Daniel Huss</name>
+            <url>https://github.com/daniel-huss/</url>
+        </developer>
+    </developers>
+
     <modules>
         <module>migratedb-core</module>
         <module>migratedb-scanner</module>
-        <module>migratedb-commandline</module>
+        <!--        <module>migratedb-commandline</module>-->
         <module>migratedb-integration-tests</module>
         <module>migratedb-docs</module>
         <module>migratedb-maven-plugin</module>
@@ -444,7 +454,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>3.3.0</version>
@@ -458,7 +467,7 @@
                     <version>3.0.0-M1</version>
                     <configuration>
                         <deployAtEnd>true</deployAtEnd>
-                        <retryFailedDeploymentCount>3</retryFailedDeploymentCount>
+                        <retryFailedDeploymentCount>2</retryFailedDeploymentCount>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -564,4 +573,36 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>mavenCentral</id>
+            <properties>
+                <snapshotRepository.id>ossrh</snapshotRepository.id>
+                <snapshotRepository.name>Maven Central Snapshots (Staging)</snapshotRepository.name>
+                <snapshotRepository.url>https://s01.oss.sonatype.org/content/repositories/snapshots</snapshotRepository.url>
+
+                <releaseRepository.id>ossrh</releaseRepository.id>
+                <releaseRepository.name>Maven Central Releases (Staging)</releaseRepository.name>
+                <releaseRepository.url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2</releaseRepository.url>
+
+                <gpg.skip>false</gpg.skip>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.12</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

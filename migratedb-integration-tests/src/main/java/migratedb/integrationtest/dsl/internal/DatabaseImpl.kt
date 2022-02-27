@@ -19,9 +19,9 @@ package migratedb.integrationtest.dsl.internal
 import migratedb.core.api.MigrationType
 import migratedb.core.api.MigrationVersion
 import migratedb.core.api.configuration.FluentConfiguration
+import migratedb.core.api.internal.database.base.Database
+import migratedb.core.api.internal.database.base.Schema
 import migratedb.core.internal.callback.NoopCallbackExecutor
-import migratedb.core.internal.database.base.Database
-import migratedb.core.internal.database.base.Schema
 import migratedb.core.internal.jdbc.JdbcConnectionFactory
 import migratedb.core.internal.parser.ParsingContext
 import migratedb.core.internal.resolver.MigrationInfoHelper

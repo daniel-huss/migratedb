@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.extensibility;
+package migratedb.core.api;
 
 import java.util.Collections;
 import java.util.Set;
 import migratedb.core.api.configuration.FluentConfiguration;
-import migratedb.core.internal.database.DatabaseType;
+import migratedb.core.api.internal.database.base.DatabaseType;
 
 /**
  * Third-party extensions can contribute additional features through implementations of this interface. To enable an

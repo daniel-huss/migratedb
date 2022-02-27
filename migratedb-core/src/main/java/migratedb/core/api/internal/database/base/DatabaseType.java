@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.database;
+package migratedb.core.api.internal.database.base;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -23,12 +23,12 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.Parser;
 import migratedb.core.internal.callback.CallbackExecutor;
-import migratedb.core.internal.database.base.Database;
+import migratedb.core.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.internal.jdbc.ExecutionTemplate;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
-import migratedb.core.internal.parser.Parser;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.internal.sqlscript.SqlScriptFactory;
@@ -265,5 +265,8 @@ public interface DatabaseType {
      */
     Connection alterConnectionAsNeeded(Connection connection, Configuration configuration);
 
+    /**
+     * @return A hint on the requirements for creating database instances (libs on class path, etc.)
+     */
     String instantiateClassExtendedErrorMessage();
 }

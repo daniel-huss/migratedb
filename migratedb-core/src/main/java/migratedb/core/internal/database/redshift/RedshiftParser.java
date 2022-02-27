@@ -20,14 +20,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PeekingReader;
 import migratedb.core.internal.parser.Token;
 import migratedb.core.internal.parser.TokenType;
 
-public class RedshiftParser extends Parser {
+public class RedshiftParser extends BaseParser {
     private static final Pattern CREATE_LIBRARY_REGEX = Pattern.compile("^(CREATE|DROP) LIBRARY");
     private static final Pattern CREATE_EXTERNAL_TABLE_REGEX = Pattern.compile("^CREATE EXTERNAL TABLE");
     private static final Pattern VACUUM_REGEX = Pattern.compile("^VACUUM");

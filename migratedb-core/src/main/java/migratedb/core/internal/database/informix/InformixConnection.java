@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.informix;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 
 /**
  * Informix connection.
  */
-public class InformixConnection extends Connection<InformixDatabase> {
+public class InformixConnection extends BaseConnection<InformixDatabase> {
     InformixConnection(InformixDatabase database, java.sql.Connection connection) {
         super(database, connection);
     }

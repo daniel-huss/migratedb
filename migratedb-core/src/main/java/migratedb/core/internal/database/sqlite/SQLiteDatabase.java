@@ -18,12 +18,12 @@ package migratedb.core.internal.database.sqlite;
 
 import java.sql.Connection;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 
-public class SQLiteDatabase extends Database<SQLiteConnection> {
+public class SQLiteDatabase extends BaseDatabase<SQLiteConnection> {
     public SQLiteDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
                           StatementInterceptor statementInterceptor) {
         super(configuration, jdbcConnectionFactory, statementInterceptor);

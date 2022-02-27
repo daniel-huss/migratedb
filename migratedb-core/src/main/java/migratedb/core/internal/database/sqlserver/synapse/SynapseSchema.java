@@ -19,10 +19,10 @@ package migratedb.core.internal.database.sqlserver.synapse;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.sqlserver.SQLServerDatabase;
 import migratedb.core.internal.database.sqlserver.SQLServerSchema;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 
 /**
  * Synapse implementation of Schema.

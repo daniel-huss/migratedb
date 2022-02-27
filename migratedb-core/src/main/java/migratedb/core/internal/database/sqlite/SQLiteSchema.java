@@ -20,15 +20,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 
 /**
  * SQLite implementation of Schema.
  */
-public class SQLiteSchema extends Schema<SQLiteDatabase, SQLiteTable> {
+public class SQLiteSchema extends BaseSchema<SQLiteDatabase, SQLiteTable> {
     private static final Log LOG = Log.getLog(SQLiteSchema.class);
 
     private static final List<String> IGNORED_SYSTEM_TABLE_NAMES =

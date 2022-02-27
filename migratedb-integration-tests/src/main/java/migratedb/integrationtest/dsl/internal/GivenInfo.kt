@@ -16,7 +16,7 @@
 
 package migratedb.integrationtest.dsl.internal
 
-import migratedb.core.internal.database.base.Database
+import migratedb.core.api.internal.database.base.Database
 import migratedb.integrationtest.SafeIdentifier
 import migratedb.integrationtest.database.DatabaseSupport
 

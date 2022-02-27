@@ -20,7 +20,7 @@ import java.sql.Connection;
 import java.util.Date;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.internal.database.sqlserver.SQLServerConnection;
 import migratedb.core.internal.database.sqlserver.SQLServerDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;

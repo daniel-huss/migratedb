@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.ignite.thin;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 
 /**
  * Apache Ignite Thin connection.
  */
-public class IgniteThinConnection extends Connection<IgniteThinDatabase> {
+public class IgniteThinConnection extends BaseConnection<IgniteThinDatabase> {
 
     IgniteThinConnection(IgniteThinDatabase database, java.sql.Connection connection) {
         super(database, connection);

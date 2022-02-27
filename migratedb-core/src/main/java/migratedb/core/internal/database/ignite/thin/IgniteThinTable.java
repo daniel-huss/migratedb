@@ -19,15 +19,15 @@ package migratedb.core.internal.database.ignite.thin;
 import java.sql.SQLException;
 import java.util.UUID;
 import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.Results;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
-import migratedb.core.internal.jdbc.Results;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * Ignite Thin-specific table.
  */
-public class IgniteThinTable extends Table<IgniteThinDatabase, IgniteThinSchema> {
+public class IgniteThinTable extends BaseTable<IgniteThinDatabase, IgniteThinSchema> {
     private static final Log LOG = Log.getLog(IgniteThinTable.class);
 
     private final String tableLockString = UUID.randomUUID().toString();

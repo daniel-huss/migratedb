@@ -16,10 +16,14 @@
 
 package migratedb.integrationtest.database
 
-import migratedb.core.internal.database.DatabaseType
+import migratedb.core.api.internal.database.base.DatabaseType
 import migratedb.core.internal.database.postgresql.PostgreSQLDatabaseType
-import migratedb.integrationtest.*
+import migratedb.integrationtest.Lease
+import migratedb.integrationtest.Names
+import migratedb.integrationtest.SafeIdentifier
 import migratedb.integrationtest.SafeIdentifier.Companion.asSafeIdentifier
+import migratedb.integrationtest.SharedResources
+import migratedb.integrationtest.awaitConnectivity
 import org.postgresql.ds.PGSimpleDataSource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName

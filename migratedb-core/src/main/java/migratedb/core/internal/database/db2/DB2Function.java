@@ -17,15 +17,15 @@
 package migratedb.core.internal.database.db2;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Function;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseFunction;
 
 /**
  * DB2-specific function.
  */
-public class DB2Function extends Function {
+public class DB2Function extends BaseFunction {
     /**
      * Creates a new Db2 function.
      *

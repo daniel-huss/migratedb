@@ -16,22 +16,25 @@
  */
 package migratedb.core.internal.database.base;
 
-import java.io.Closeable;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
+import migratedb.core.api.internal.database.base.Connection;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.jdbc.JdbcUtils;
 
-public abstract class Connection<D extends Database> implements Closeable {
+public abstract class BaseConnection<D extends Database> implements Connection<D> {
     protected final D database;
     protected JdbcTemplate jdbcTemplate;
     private final java.sql.Connection jdbcConnection;
     protected final String originalSchemaNameOrSearchPath;
     private final boolean originalAutoCommit;
 
-    protected Connection(D database, java.sql.Connection connection) {
+    protected BaseConnection(D database, java.sql.Connection connection) {
         this.database = database;
 
         try {
@@ -57,6 +60,7 @@ public abstract class Connection<D extends Database> implements Closeable {
      */
     protected abstract String getCurrentSchemaNameOrSearchPath() throws SQLException;
 
+    @Override
     public final Schema getCurrentSchema() {
         try {
             return doGetCurrentSchema();
@@ -69,11 +73,7 @@ public abstract class Connection<D extends Database> implements Closeable {
         return getSchema(getCurrentSchemaNameOrSearchPath());
     }
 
-    /**
-     * Retrieves the schema with this name in the database.
-     */
-    public abstract Schema getSchema(String name);
-
+    @Override
     public void changeCurrentSchemaTo(Schema schema) {
         try {
             if (!schema.exists()) {
@@ -93,17 +93,14 @@ public abstract class Connection<D extends Database> implements Closeable {
     protected void doChangeCurrentSchemaOrSearchPathTo(String schemaNameOrSearchPath) throws SQLException {
     }
 
-    /**
-     * Locks this table and executes this callable.
-     *
-     * @return The result of the callable.
-     */
+    @Override
     public <T> T lock(Table table, Callable<T> callable) {
         return ExecutionTemplateFactory
             .createTableExclusiveExecutionTemplate(jdbcTemplate.getConnection(), table, database)
             .execute(callable);
     }
 
+    @Override
     public final JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
     }
@@ -127,6 +124,7 @@ public abstract class Connection<D extends Database> implements Closeable {
         });
     }
 
+    @Override
     public final void restoreOriginalState() {
         try {
             doRestoreOriginalState();
@@ -146,6 +144,7 @@ public abstract class Connection<D extends Database> implements Closeable {
     protected void doRestoreOriginalState() throws SQLException {
     }
 
+    @Override
     public final java.sql.Connection getJdbcConnection() {
         return jdbcConnection;
     }

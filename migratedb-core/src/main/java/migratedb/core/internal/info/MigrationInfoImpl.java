@@ -24,9 +24,9 @@ import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.MigrationState;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.resolver.ResolvedMigrationImpl;
-import migratedb.core.internal.schemahistory.AppliedMigration;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.AbbreviationUtils;
 

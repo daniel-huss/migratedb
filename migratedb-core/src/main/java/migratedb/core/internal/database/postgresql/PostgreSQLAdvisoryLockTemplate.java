@@ -20,9 +20,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
-import migratedb.core.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.strategy.RetryStrategy;
 import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 

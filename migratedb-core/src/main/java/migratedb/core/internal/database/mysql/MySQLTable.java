@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.mysql;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * MySQL-specific table.
  */
-public class MySQLTable extends Table<MySQLDatabase, MySQLSchema> {
+public class MySQLTable extends BaseTable<MySQLDatabase, MySQLSchema> {
     /**
      * Creates a new MySQL table.
      *

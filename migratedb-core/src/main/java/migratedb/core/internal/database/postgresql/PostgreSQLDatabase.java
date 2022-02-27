@@ -16,17 +16,16 @@
  */
 package migratedb.core.internal.database.postgresql;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.database.base.Database;
-import migratedb.core.internal.database.base.Table;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.util.StringUtils;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-public class PostgreSQLDatabase extends Database<PostgreSQLConnection> {
+public class PostgreSQLDatabase extends BaseDatabase<PostgreSQLConnection> {
     public PostgreSQLDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
                               StatementInterceptor statementInterceptor) {
         super(configuration, jdbcConnectionFactory, statementInterceptor);

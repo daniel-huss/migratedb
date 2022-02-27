@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import migratedb.core.internal.database.base.Schema;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
 
-public class MySQLSchema extends Schema<MySQLDatabase, MySQLTable> {
+public class MySQLSchema extends BaseSchema<MySQLDatabase, MySQLTable> {
 
     MySQLSchema(JdbcTemplate jdbcTemplate, MySQLDatabase database, String name) {
         super(jdbcTemplate, database, name);

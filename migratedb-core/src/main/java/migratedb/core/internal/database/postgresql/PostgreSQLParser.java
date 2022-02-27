@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 import migratedb.core.api.configuration.Configuration;
-import migratedb.core.internal.parser.Parser;
+import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
 import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PeekingReader;
@@ -31,7 +31,7 @@ import migratedb.core.internal.parser.TokenType;
 import migratedb.core.internal.sqlscript.Delimiter;
 import migratedb.core.internal.sqlscript.ParsedSqlStatement;
 
-public class PostgreSQLParser extends Parser {
+public class PostgreSQLParser extends BaseParser {
     private static final Pattern COPY_FROM_STDIN_REGEX = Pattern.compile("^COPY( .*)? FROM STDIN");
     private static final Pattern CREATE_DATABASE_TABLESPACE_SUBSCRIPTION_REGEX = Pattern.compile(
         "^(CREATE|DROP) (DATABASE|TABLESPACE|SUBSCRIPTION)");

@@ -14,21 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.database.base;
+package migratedb.core.api.internal.jdbc;
 
-import migratedb.core.internal.jdbc.JdbcTemplate;
-import migratedb.core.internal.util.StringUtils;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public abstract class Function<D extends Database, S extends Schema> extends SchemaObject<D, S> {
-    protected String[] args;
-
-    public Function(JdbcTemplate jdbcTemplate, D database, S schema, String name, String... args) {
-        super(jdbcTemplate, database, schema, name);
-        this.args = args == null ? new String[0] : args;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + "(" + StringUtils.arrayToCommaDelimitedString(args) + ")";
-    }
+/**
+ * Mapper from ResultSet row to object.
+ *
+ * @param <T> The type of object to map to.
+ */
+public interface RowMapper<T> {
+    /**
+     * Maps a row in this resultSet to an object.
+     *
+     * @param rs The resultset, already positioned on the row to map.
+     *
+     * @return The corresponding object.
+     *
+     * @throws SQLException when reading the resultset failed.
+     */
+    T mapRow(ResultSet rs) throws SQLException;
 }

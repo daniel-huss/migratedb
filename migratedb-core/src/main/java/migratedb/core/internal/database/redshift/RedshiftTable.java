@@ -17,13 +17,13 @@
 package migratedb.core.internal.database.redshift;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Table;
-import migratedb.core.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * Redshift-specific table.
  */
-public class RedshiftTable extends Table<RedshiftDatabase, RedshiftSchema> {
+public class RedshiftTable extends BaseTable<RedshiftDatabase, RedshiftSchema> {
     /**
      * Creates a new Redshift table.
      *

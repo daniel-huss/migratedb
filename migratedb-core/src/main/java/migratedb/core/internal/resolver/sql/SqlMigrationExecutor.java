@@ -19,8 +19,8 @@ package migratedb.core.internal.resolver.sql;
 import java.sql.SQLException;
 import migratedb.core.api.executor.Context;
 import migratedb.core.api.executor.MigrationExecutor;
+import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.internal.database.DatabaseExecutionStrategy;
-import migratedb.core.internal.database.DatabaseType;
 import migratedb.core.internal.sqlscript.SqlScript;
 import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
 

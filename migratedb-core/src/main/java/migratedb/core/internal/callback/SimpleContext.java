@@ -23,8 +23,8 @@ import migratedb.core.api.callback.Error;
 import migratedb.core.api.callback.Statement;
 import migratedb.core.api.callback.Warning;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.database.base.Connection;
 import migratedb.core.api.output.OperationResult;
-import migratedb.core.internal.database.base.Connection;
 
 public class SimpleContext implements Context {
     private final Configuration configuration;

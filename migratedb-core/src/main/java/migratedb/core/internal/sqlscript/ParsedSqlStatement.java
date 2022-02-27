@@ -16,8 +16,9 @@
  */
 package migratedb.core.internal.sqlscript;
 
-import migratedb.core.internal.jdbc.JdbcTemplate;
-import migratedb.core.internal.jdbc.Results;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.Results;
+import migratedb.core.api.internal.sqlscript.SqlStatement;
 
 /**
  * A sql statement from a script that can be executed at once against a database.

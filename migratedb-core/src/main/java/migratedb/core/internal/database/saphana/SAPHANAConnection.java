@@ -17,11 +17,11 @@
 package migratedb.core.internal.database.saphana;
 
 import java.sql.SQLException;
-import migratedb.core.internal.database.base.Connection;
-import migratedb.core.internal.database.base.Schema;
+import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 
-public class SAPHANAConnection extends Connection<SAPHANADatabase> {
+public class SAPHANAConnection extends BaseConnection<SAPHANADatabase> {
     private final boolean isCloud;
 
     SAPHANAConnection(SAPHANADatabase database, java.sql.Connection connection) {

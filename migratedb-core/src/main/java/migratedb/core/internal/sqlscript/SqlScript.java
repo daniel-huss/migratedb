@@ -16,6 +16,7 @@
  */
 package migratedb.core.internal.sqlscript;
 
+import migratedb.core.api.internal.sqlscript.SqlStatementIterator;
 import migratedb.core.api.resource.Resource;
 
 /**
