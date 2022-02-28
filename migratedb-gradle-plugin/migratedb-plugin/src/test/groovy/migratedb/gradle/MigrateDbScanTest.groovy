@@ -15,6 +15,7 @@
  */
 package migratedb.gradle
 
+import groovy.transform.Canonical
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -34,10 +35,10 @@ import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 class MigrateDbScanTest {
 
     @ParameterizedTest
-    @ArgumentsSource(CompilingPlugins)
-    void "Scans project build output by default"(String compilingPlugin) {
+    @ArgumentsSource(Params)
+    void "Scans project build output by default"(P p) {
         // given
-        plugins << compilingPlugin
+        plugins << p.compilingPlugin
         resources['src/main/resources/db/migration/V000__Foo.sql'] = ''
         resources['src/main/java/db/migration/V001__Bar.java'] = """
             package db.migration;
@@ -45,7 +46,7 @@ class MigrateDbScanTest {
         """
 
         // when
-        def result = buildProject()
+        def result = buildProject(gradleVersion: p.gradleVersion)
 
         // then
         assert result.task(':migratedbScan')?.outcome == SUCCESS
@@ -54,10 +55,10 @@ class MigrateDbScanTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(CompilingPlugins)
-    void "Can include entire runtime class path"(String compilingPlugin) {
+    @ArgumentsSource(Params)
+    void "Can include entire runtime class path"(P p) {
         // given
-        plugins << compilingPlugin
+        plugins << p.compilingPlugin
         dependencies << "implementation 'org.apache.commons:commons-lang3:3.12.0'"
         resources['src/main/resources/foo/migration/V000__Foo.sql'] = ''
         resources['src/main/java/foo/migration/V001__Bar.java'] = """
@@ -72,7 +73,7 @@ class MigrateDbScanTest {
         """
 
         // when
-        def result = buildProject()
+        def result = buildProject(gradleVersion: p.gradleVersion)
 
         // then
         assert result.task(':migratedbScan')?.outcome == SUCCESS
@@ -84,10 +85,10 @@ class MigrateDbScanTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(CompilingPlugins)
-    void "Unprocessable file fails build by default"(String compilingPlugin) {
+    @ArgumentsSource(Params)
+    void "Unprocessable file fails build by default"(P p) {
         // given
-        plugins << compilingPlugin
+        plugins << p.compilingPlugin
         resources['unprocessable.war'] = ''
         pluginConfig = """
             migratedb {
@@ -96,7 +97,7 @@ class MigrateDbScanTest {
         """
 
         // when
-        def result = buildProject(expectFailure: true)
+        def result = buildProject(gradleVersion: p.gradleVersion, expectFailure: true)
 
         // then
         assert result.task(':migratedbScan')?.outcome == FAILED: result.output
@@ -121,15 +122,33 @@ class MigrateDbScanTest {
     String pluginConfig = ''
     Map<String, Object> resources = [:]
 
-    static class CompilingPlugins implements ArgumentsProvider {
+    @Canonical
+    static class P {
+        String compilingPlugin
+        String gradleVersion
+
+        @Override
+        String toString() {
+            return "$gradleVersion / $compilingPlugin"
+        }
+    }
+
+    static class Params implements ArgumentsProvider {
         @Override
         Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-            return [
+            def gradleVersions = ['7.4', '7.3', '7.2', '7.1', '7.0']
+            def compilingPlugins = [
                     "id 'java'",
                     "id 'java-library'",
                     "id 'application'",
                     "id 'org.jetbrains.kotlin.jvm' version '1.6.10'"
-            ].stream().map(Arguments::arguments)
+            ]
+            return gradleVersions.stream()
+                    .flatMap { v ->
+                        compilingPlugins.stream()
+                                .map { p -> new P(p, v) }
+                    }
+                    .map(Arguments::arguments)
         }
     }
 
@@ -156,12 +175,18 @@ class MigrateDbScanTest {
             }                               
             dependencies {
                 ${dependencies.join(nextLine)}
-            }                                 
-            $pluginConfig
+            }                 
+                
+            $pluginConfig            
+
+            tasks.findByPath(':startScripts')?.configure {
+                mainClassName = 'Main'
+            }
         """
         resources.each { createResource(it) }
 
         def runner = GradleRunner.create()
+                .withGradleVersion(args['gradleVersion']?.toString() ?: '7.4')
                 .withDebug(true)
                 .withProjectDir(testProjectDir)
                 .withArguments(args['task']?.toString() ?: 'build')
