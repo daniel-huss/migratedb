@@ -2,6 +2,7 @@ plugins {
     id 'java-gradle-plugin'
     id 'groovy'
     id 'com.gradle.plugin-publish' version '0.20.0'
+    id 'maven-publish'
 }
 
 group 'de.unentscheidbar'
@@ -27,6 +28,15 @@ gradlePlugin {
 pluginBundle {
     website = 'https://unentscheidbar.de/gitea/hussdl/migratedb'
     vcsUrl = 'https://unentscheidbar.de/gitea/hussdl/migratedb'
+}
+
+publishing {
+    repositories {
+        maven {
+            name = 'localPluginRepository'
+            url = 'build/local-plugin-repository'
+        }
+    }
 }
 
 java {
