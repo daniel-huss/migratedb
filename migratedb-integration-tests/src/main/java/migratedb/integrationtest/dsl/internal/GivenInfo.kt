@@ -17,11 +17,11 @@
 package migratedb.integrationtest.dsl.internal
 
 import migratedb.core.api.internal.database.base.Database
-import migratedb.integrationtest.database.DatabaseSupport
+import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.util.base.SafeIdentifier
 
 data class GivenInfo(
-    val databaseHandle: DatabaseSupport.Handle,
+    val databaseHandle: DbSystem.Handle,
     val database: Database<*>,
     val databaseName: SafeIdentifier,
     val schemaName: SafeIdentifier,

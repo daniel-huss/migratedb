@@ -17,16 +17,17 @@
 package migratedb.integrationtest.dsl.internal
 
 import migratedb.integrationtest.dsl.Dsl
+import migratedb.integrationtest.util.base.awaitConnectivity
+import migratedb.integrationtest.util.base.work
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.datasource.SingleConnectionDataSource
 
 class ThenStepImpl<G : Any>(override val given: G, private val givenInfo: GivenInfo) : Dsl.ThenStep<G> {
     override fun withConnection(block: (JdbcTemplate) -> Unit) {
         givenInfo.databaseHandle
             .newAdminConnection(givenInfo.databaseName, givenInfo.schemaName)
-            .connection
-            .use {
-                block(JdbcTemplate(SingleConnectionDataSource(it, true)))
+            .awaitConnectivity()
+            .use { connection ->
+                connection.work(givenInfo.schemaName, block)
             }
     }
 }

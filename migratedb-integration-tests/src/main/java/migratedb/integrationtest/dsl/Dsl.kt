@@ -16,7 +16,7 @@
 
 package migratedb.integrationtest.dsl
 
-import migratedb.integrationtest.database.DatabaseSupport
+import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.dsl.internal.GivenStepImpl
 import migratedb.integrationtest.dsl.internal.ThenStepImpl
 import migratedb.integrationtest.dsl.internal.WhenStepImpl
@@ -52,7 +52,7 @@ class Dsl(sharedResources: SharedResources) : AutoCloseable {
     }
 
     interface GivenStep {
-        fun database(db: DatabaseSupport, block: DatabaseSpec.() -> Unit)
+        fun database(dbSystem: DbSystem, block: DatabaseSpec.() -> Unit)
     }
 
     interface GivenStepResult<G : Any> {

@@ -34,7 +34,7 @@ import javax.sql.DataSource
 import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteIfExists
 
-enum class Sqlite : DatabaseSupport {
+enum class Sqlite : DbSystem {
     V3_8_11_2,
     V3_14_2_1,
     V3_15_1,
@@ -82,11 +82,11 @@ enum class Sqlite : DatabaseSupport {
 
     override fun toString() = "SQLite $name"
 
-    override fun get(sharedResources: SharedResources): DatabaseSupport.Handle {
+    override fun get(sharedResources: SharedResources): DbSystem.Handle {
         return Handle()
     }
 
-    private inner class Handle : DatabaseSupport.Handle {
+    private inner class Handle : DbSystem.Handle {
         override val type: DatabaseType get() = Companion.databaseType
 
         override fun createDatabaseIfNotExists(databaseName: SafeIdentifier): DataSource {

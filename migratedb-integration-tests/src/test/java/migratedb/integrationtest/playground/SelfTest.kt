@@ -16,32 +16,34 @@
 
 package migratedb.integrationtest.playground
 
+import io.kotest.matchers.shouldBe
 import migratedb.core.api.MigrationType.JDBC
-import migratedb.integrationtest.database.DatabaseSupport
+import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
 
 internal class SelfTest : IntegrationTest() {
-
     @ParameterizedTest
-    @ArgumentsSource(DatabaseSupport.All::class)
-    fun databaseIsSupported(databaseSupport: DatabaseSupport) = withDsl {
+    @ArgumentsSource(DbSystem.All::class)
+    fun databaseIsSupported(dbSystem: DbSystem) = withDsl {
         given {
-            database(databaseSupport) {
+            database(dbSystem) {
                 existingSchemaHistory("migratedb") {
                     entry(name = "V001__Test", type = JDBC, success = true)
                 }
             }
         }.`when` {
             migrate {
-                config {
+                withConfig {
                     it.table("migratedb")
+                    it.ignoreMissingMigrations(true)
                 }
+                script("V002__Foo", "-- This script does nothing")
             }
         }.then {
             withConnection {
-                it.query("select * from migratedb") { }
+                it.queryForList("select * from migratedb").size.shouldBe(2)
             }
         }
     }

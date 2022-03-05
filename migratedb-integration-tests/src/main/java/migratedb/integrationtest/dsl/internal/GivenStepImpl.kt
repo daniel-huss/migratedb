@@ -16,18 +16,18 @@
 
 package migratedb.integrationtest.dsl.internal
 
-import migratedb.integrationtest.database.DatabaseSupport
+import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.dsl.DatabaseSpec
 import migratedb.integrationtest.dsl.Dsl
 import migratedb.integrationtest.util.container.SharedResources
 
 class GivenStepImpl(private val sharedResources: SharedResources) : AutoCloseable, Dsl.GivenStep {
     private var database: DatabaseImpl? = null
-    private var databaseHandle: DatabaseSupport.Handle? = null
+    private var databaseHandle: DbSystem.Handle? = null
 
-    override fun database(db: DatabaseSupport, block: (DatabaseSpec).() -> Unit) {
+    override fun database(dbSystem: DbSystem, block: (DatabaseSpec).() -> Unit) {
         check(databaseHandle == null) { "Only one database, please" }
-        databaseHandle = db.get(sharedResources).also {
+        databaseHandle = dbSystem.get(sharedResources).also {
             database = DatabaseImpl(it).also(block)
         }
     }

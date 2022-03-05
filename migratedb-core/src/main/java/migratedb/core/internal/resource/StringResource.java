@@ -23,8 +23,10 @@ import migratedb.core.api.resource.Resource;
 
 public class StringResource implements Resource {
     private final String str;
+    private final String name;
 
-    public StringResource(String str) {
+    public StringResource(String name, String str) {
+        this.name = name;
         this.str = str;
     }
 
@@ -35,12 +37,12 @@ public class StringResource implements Resource {
 
     @Override
     public String getName() {
-        return "";
+        return name;
     }
 
     @Override
     public String describeLocation() {
-        return "<String without location>";
+        return "<String>";
     }
 
     @Override

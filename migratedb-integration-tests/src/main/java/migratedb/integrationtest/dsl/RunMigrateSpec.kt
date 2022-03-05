@@ -16,14 +16,12 @@
 
 package migratedb.integrationtest.dsl
 
-import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.api.migration.JavaMigration
 import java.sql.Connection
 
-interface RunMigrateSpec {
+interface RunMigrateSpec : RunWithConfigSpec {
     fun script(name: String, sql: String)
     fun code(name: String, code: (Connection) -> Unit)
     fun code(name: String, code: JavaMigration)
     fun code(name: String)
-    fun config(classLoader: ClassLoader? = null, block: (FluentConfiguration) -> Unit)
 }

@@ -31,7 +31,7 @@ import org.testcontainers.utility.DockerImageName
 import java.sql.Connection
 import javax.sql.DataSource
 
-enum class Postgres(image: String) : DatabaseSupport {
+enum class Postgres(image: String) : DbSystem {
     V9_6("postgres:9.6-alpine"),
     V10("postgres:10-alpine"),
     V11("postgres:11-alpine"),
@@ -75,11 +75,11 @@ enum class Postgres(image: String) : DatabaseSupport {
         }
     }
 
-    override fun get(sharedResources: SharedResources): DatabaseSupport.Handle {
+    override fun get(sharedResources: SharedResources): DbSystem.Handle {
         return Handle(sharedResources.container(containerAlias) { Container(image) })
     }
 
-    private class Handle(private val container: Lease<Container>) : DatabaseSupport.Handle {
+    private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
         override val type: DatabaseType = PostgreSQLDatabaseType()
         private val internalDs = container().dataSource(Container.defaultDatabase.toString())
 

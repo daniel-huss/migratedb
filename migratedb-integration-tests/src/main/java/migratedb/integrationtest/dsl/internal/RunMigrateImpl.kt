@@ -72,7 +72,7 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
         givenInfo.databaseHandle.nextMutation(givenInfo.schemaName).apply(it)
     }
 
-    override fun config(classLoader: ClassLoader?, block: (FluentConfiguration) -> Unit) {
+    override fun withConfig(classLoader: ClassLoader?, block: (FluentConfiguration) -> Unit) {
         config = when (classLoader) {
             null -> FluentConfiguration()
             else -> FluentConfiguration(classLoader)
@@ -81,7 +81,8 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
 
     fun execute() {
         val scriptMap = scriptMigrations.associate {
-            "${it.name}.sql" to StringResource(it.sql)
+            val name = "${it.name}.sql"
+            name to StringResource(name, it.sql)
         }
         FluentConfiguration(config.classLoader)
             .configuration(config)

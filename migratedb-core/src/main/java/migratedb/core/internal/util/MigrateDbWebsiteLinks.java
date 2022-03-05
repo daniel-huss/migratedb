@@ -21,7 +21,6 @@ public class MigrateDbWebsiteLinks {
     public static final String FILTER_INFO_OUTPUT = "";
     public static final String USAGE_COMMANDLINE = "";
     public static final String STAYING_UP_TO_DATE = "";
-    public static final String CUSTOM_VALIDATE_RULES = "";
     public static final String IGNORE_MIGRATION_PATTERNS = "";
     public static final String RESET_THE_BASELINE_MIGRATION = "";
     public static final String ORACLE_SQL_PLUS = "";

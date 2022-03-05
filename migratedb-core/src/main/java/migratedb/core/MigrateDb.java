@@ -127,6 +127,7 @@ public class MigrateDb {
      * MigrateDb functionality such as migrate() or clean().</p>
      *
      * @param classLoader The class loader to use when loading classes and resources.
+     *
      * @return A new configuration from which MigrateDb can be loaded.
      */
     public static FluentConfiguration configure(ClassLoader classLoader) {
@@ -156,6 +157,7 @@ public class MigrateDb {
      * <img src="https://no-website-yet.org/assets/balsamiq/command-migrate.png" alt="migrate">
      *
      * @return An object summarising the successfully applied migrations.
+     *
      * @throws MigrateDbException when the migration failed.
      */
     public MigrateResult migrate() throws MigrateDbException {
@@ -166,14 +168,14 @@ public class MigrateDb {
                                          StatementInterceptor statementInterceptor) {
                 if (configuration.isValidateOnMigrate()) {
                     ValidateResult validateResult = doValidate(database,
-                            migrationResolver,
-                            schemaHistory,
-                            schemas,
-                            callbackExecutor,
-                            true);
+                                                               migrationResolver,
+                                                               schemaHistory,
+                                                               schemas,
+                                                               callbackExecutor,
+                                                               true);
                     if (!validateResult.validationSuccessful && !configuration.isCleanOnValidationError()) {
                         throw new MigrateDbValidateException(validateResult.errorDetails,
-                                validateResult.getAllErrorMessages());
+                                                             validateResult.getAllErrorMessages());
                     }
                 }
 
@@ -194,12 +196,12 @@ public class MigrateDb {
                             // Second check for MySQL which is sometimes flaky otherwise
                             if (!schemaHistory.exists()) {
                                 throw new MigrateDbException("Found non-empty schema(s) "
-                                        + StringUtils.collectionToCommaDelimitedString(
-                                        nonEmptySchemas)
-                                        + " but no schema history table. Use baseline()"
-                                        +
-                                        " or set baselineOnMigrate to true to initialize the " +
-                                        "schema history table.");
+                                                             + StringUtils.collectionToCommaDelimitedString(
+                                    nonEmptySchemas)
+                                                             + " but no schema history table. Use baseline()"
+                                                             +
+                                                             " or set baselineOnMigrate to true to initialize the " +
+                                                             "schema history table.");
                             }
                         }
                     } else {
@@ -207,9 +209,9 @@ public class MigrateDb {
                             new DbSchemas(database, schemas, schemaHistory, callbackExecutor).create(false);
                         } else if (!schemas[0].exists()) {
                             LOG.warn("The configuration option 'createSchemas' is false.\n" +
-                                    "However, the schema history table still needs a schema to reside in.\n" +
-                                    "You must manually create a schema for the schema history table to reside in.\n" +
-                                    "See " + MigrateDbWebsiteLinks.CREATE_SCHEMAS);
+                                     "However, the schema history table still needs a schema to reside in.\n" +
+                                     "You must manually create a schema for the schema history table to reside in.\n" +
+                                     "See " + MigrateDbWebsiteLinks.CREATE_SCHEMAS);
                         }
 
                         schemaHistory.create(false);
@@ -217,11 +219,11 @@ public class MigrateDb {
                 }
 
                 MigrateResult result = new DbMigrate(database,
-                        schemaHistory,
-                        schemas[0],
-                        migrationResolver,
-                        configuration,
-                        callbackExecutor).migrate();
+                                                     schemaHistory,
+                                                     schemas[0],
+                                                     migrationResolver,
+                                                     configuration,
+                                                     callbackExecutor).migrate();
 
                 callbackExecutor.onOperationFinishEvent(Event.AFTER_MIGRATE_OPERATION_FINISH, result);
 
@@ -233,7 +235,7 @@ public class MigrateDb {
     private BaselineResult doBaseline(SchemaHistory schemaHistory, CallbackExecutor callbackExecutor,
                                       Database database) {
         return new DbBaseline(schemaHistory, configuration.getBaselineVersion(), configuration.getBaselineDescription(),
-                callbackExecutor, database).baseline();
+                              callbackExecutor, database).baseline();
     }
 
     /**
@@ -244,6 +246,7 @@ public class MigrateDb {
      * <img src="https://no-website-yet.org/assets/balsamiq/command-undo.png" alt="undo">
      *
      * @return An object summarising the successfully undone migrations.
+     *
      * @throws MigrateDbException when the undo failed.
      */
     public UndoResult undo() throws MigrateDbException {
@@ -270,17 +273,17 @@ public class MigrateDb {
                                 Schema[] schemas, CallbackExecutor callbackExecutor,
                                 StatementInterceptor statementInterceptor) {
                 ValidateResult validateResult = doValidate(database,
-                        migrationResolver,
-                        schemaHistory,
-                        schemas,
-                        callbackExecutor,
-                        configuration.isIgnorePendingMigrations());
+                                                           migrationResolver,
+                                                           schemaHistory,
+                                                           schemas,
+                                                           callbackExecutor,
+                                                           configuration.isIgnorePendingMigrations());
 
                 callbackExecutor.onOperationFinishEvent(Event.AFTER_VALIDATE_OPERATION_FINISH, validateResult);
 
                 if (!validateResult.validationSuccessful && !configuration.isCleanOnValidationError()) {
                     throw new MigrateDbValidateException(validateResult.errorDetails,
-                            validateResult.getAllErrorMessages());
+                                                         validateResult.getAllErrorMessages());
                 }
 
                 return null;
@@ -310,11 +313,11 @@ public class MigrateDb {
                                           Schema[] schemas, CallbackExecutor callbackExecutor,
                                           StatementInterceptor statementInterceptor) {
                 ValidateResult validateResult = doValidate(database,
-                        migrationResolver,
-                        schemaHistory,
-                        schemas,
-                        callbackExecutor,
-                        configuration.isIgnorePendingMigrations());
+                                                           migrationResolver,
+                                                           schemaHistory,
+                                                           schemas,
+                                                           callbackExecutor,
+                                                           configuration.isIgnorePendingMigrations());
 
                 callbackExecutor.onOperationFinishEvent(Event.AFTER_VALIDATE_OPERATION_FINISH, validateResult);
 
@@ -337,7 +340,7 @@ public class MigrateDb {
                                       SchemaHistory schemaHistory,
                                       Schema[] schemas, CallbackExecutor callbackExecutor, boolean ignorePending) {
         ValidateResult validateResult = new DbValidate(database, schemaHistory, schemas[0], migrationResolver,
-                configuration, ignorePending, callbackExecutor).validate();
+                                                       configuration, ignorePending, callbackExecutor).validate();
 
         if (!validateResult.validationSuccessful && configuration.isCleanOnValidationError()) {
             doClean(database, schemaHistory, schemas, callbackExecutor);
@@ -357,6 +360,7 @@ public class MigrateDb {
      * <img src="https://no-website-yet.org/assets/balsamiq/command-clean.png" alt="clean">
      *
      * @return An object summarising the actions taken
+     *
      * @throws MigrateDbException when the clean fails.
      */
     public CleanResult clean() {
@@ -380,6 +384,7 @@ public class MigrateDb {
      * <img src="https://no-website-yet.org/assets/balsamiq/command-info.png" alt="info">
      *
      * @return All migrations sorted by version, oldest first.
+     *
      * @throws MigrateDbException when the info retrieval failed.
      */
     public MigrationInfoService info() {
@@ -388,14 +393,14 @@ public class MigrateDb {
                                                 Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
                                                 StatementInterceptor statementInterceptor) {
                 MigrationInfoService migrationInfoService = new DbInfo(migrationResolver,
-                        schemaHistory,
-                        configuration,
-                        database,
-                        callbackExecutor,
-                        schemas).info();
+                                                                       schemaHistory,
+                                                                       configuration,
+                                                                       database,
+                                                                       callbackExecutor,
+                                                                       schemas).info();
 
                 callbackExecutor.onOperationFinishEvent(Event.AFTER_INFO_OPERATION_FINISH,
-                        migrationInfoService.getInfoResult());
+                                                        migrationInfoService.getInfoResult());
 
                 return migrationInfoService;
             }
@@ -408,6 +413,7 @@ public class MigrateDb {
      * <img src="https://no-website-yet.org/assets/balsamiq/command-baseline.png" alt="baseline">
      *
      * @return An object summarising the actions taken
+     *
      * @throws MigrateDbException when the schema baselining failed.
      */
     public BaselineResult baseline() throws MigrateDbException {
@@ -420,10 +426,10 @@ public class MigrateDb {
                     new DbSchemas(database, schemas, schemaHistory, callbackExecutor).create(true);
                 } else {
                     LOG.warn("The configuration option 'createSchemas' is false.\n" +
-                            "Even though MigrateDb is configured not to create any schemas, the schema history table" +
-                            " still needs a schema to reside in.\n" +
-                            "You must manually create a schema for the schema history table to reside in.\n" +
-                            "See " + MigrateDbWebsiteLinks.CREATE_SCHEMAS);
+                             "Even though MigrateDb is configured not to create any schemas, the schema history table" +
+                             " still needs a schema to reside in.\n" +
+                             "You must manually create a schema for the schema history table to reside in.\n" +
+                             "See " + MigrateDbWebsiteLinks.CREATE_SCHEMAS);
                 }
 
                 BaselineResult baselineResult = doBaseline(schemaHistory, callbackExecutor, database);
@@ -446,6 +452,7 @@ public class MigrateDb {
      * <img src="https://no-website-yet.org/assets/balsamiq/command-repair.png" alt="repair">
      *
      * @return An object summarising the actions taken
+     *
      * @throws MigrateDbException when the schema history table repair failed.
      */
     public RepairResult repair() throws MigrateDbException {
@@ -455,10 +462,10 @@ public class MigrateDb {
                                         CallbackExecutor callbackExecutor,
                                         StatementInterceptor statementInterceptor) {
                 RepairResult repairResult = new DbRepair(database,
-                        migrationResolver,
-                        schemaHistory,
-                        callbackExecutor,
-                        configuration).repair();
+                                                         migrationResolver,
+                                                         schemaHistory,
+                                                         callbackExecutor,
+                                                         configuration).repair();
 
                 callbackExecutor.onOperationFinishEvent(Event.AFTER_REPAIR_OPERATION_FINISH, repairResult);
 
@@ -474,6 +481,7 @@ public class MigrateDb {
      * @param classProvider    The class provider.
      * @param sqlScriptFactory The SQL statement builder factory.
      * @param parsingContext   The parsing context.
+     *
      * @return A new, fully configured, MigrationResolver instance.
      */
     private MigrationResolver createMigrationResolver(ResourceProvider resourceProvider,
@@ -482,12 +490,12 @@ public class MigrateDb {
                                                       SqlScriptFactory sqlScriptFactory,
                                                       ParsingContext parsingContext) {
         return new CompositeMigrationResolver(resourceProvider,
-                classProvider,
-                configuration,
-                sqlScriptExecutorFactory,
-                sqlScriptFactory,
-                parsingContext,
-                configuration.getResolvers());
+                                              classProvider,
+                                              configuration,
+                                              sqlScriptExecutorFactory,
+                                              sqlScriptFactory,
+                                              parsingContext,
+                                              configuration.getResolvers());
     }
 
     /**
@@ -495,6 +503,7 @@ public class MigrateDb {
      *
      * @param command The command to execute.
      * @param <T>     The type of the result.
+     *
      * @return The result of the command.
      */
     /*private -> testing*/ <T> T execute(Command<T> command, boolean scannerRequired) {
@@ -513,9 +522,9 @@ public class MigrateDb {
         }
 
         JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory(
-                configuration.getDataSource(),
-                configuration,
-                statementInterceptor
+            configuration.getDataSource(),
+            configuration,
+            statementInterceptor
         );
 
         DatabaseType databaseType = jdbcConnectionFactory.getDatabaseType();
@@ -524,9 +533,9 @@ public class MigrateDb {
         RetryStrategy.setNumberOfRetries(configuration.getLockRetryCount());
 
         SqlScriptExecutorFactory noCallbackSqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
-                jdbcConnectionFactory,
-                NoopCallbackExecutor.INSTANCE,
-                null
+            jdbcConnectionFactory,
+            NoopCallbackExecutor.INSTANCE,
+            null
         );
 
         jdbcConnectionFactory.setConnectionInitializer(new JdbcConnectionFactory.ConnectionInitializer() {
@@ -535,21 +544,21 @@ public class MigrateDb {
                 if (configuration.getInitSql() == null) {
                     return;
                 }
-                StringResource resource = new StringResource(configuration.getInitSql());
+                StringResource resource = new StringResource("", configuration.getInitSql());
 
                 SqlScript sqlScript = sqlScriptFactory.createSqlScript(resource, true, resourceProvider);
 
                 boolean outputQueryResults = false;
 
                 noCallbackSqlScriptExecutorFactory.createSqlScriptExecutor(connection, false, false, outputQueryResults)
-                        .execute(sqlScript);
+                                                  .execute(sqlScript);
             }
         });
 
         try (var database = databaseType.createDatabase(configuration,
-                !dbConnectionInfoPrinted,
-                jdbcConnectionFactory,
-                statementInterceptor)) {
+                                                        !dbConnectionInfoPrinted,
+                                                        jdbcConnectionFactory,
+                                                        statementInterceptor)) {
             dbConnectionInfoPrinted = true;
             LOG.debug("DDL Transactions Supported: " + database.supportsDdlTransactions());
 
@@ -560,41 +569,41 @@ public class MigrateDb {
             database.ensureSupported();
 
             DefaultCallbackExecutor callbackExecutor =
-                    new DefaultCallbackExecutor(configuration, database, schemas.defaultSchema,
-                            prepareCallbacks(
-                                    database,
-                                    resourceProvider,
-                                    jdbcConnectionFactory,
-                                    sqlScriptFactory,
-                                    statementInterceptor,
-                                    schemas.defaultSchema,
-                                    parsingContext
-                            ));
+                new DefaultCallbackExecutor(configuration, database, schemas.defaultSchema,
+                                            prepareCallbacks(
+                                                database,
+                                                resourceProvider,
+                                                jdbcConnectionFactory,
+                                                sqlScriptFactory,
+                                                statementInterceptor,
+                                                schemas.defaultSchema,
+                                                parsingContext
+                                            ));
 
             SqlScriptExecutorFactory sqlScriptExecutorFactory =
-                    databaseType.createSqlScriptExecutorFactory(jdbcConnectionFactory,
-                            callbackExecutor,
-                            statementInterceptor);
+                databaseType.createSqlScriptExecutorFactory(jdbcConnectionFactory,
+                                                            callbackExecutor,
+                                                            statementInterceptor);
 
             SchemaHistory schemaHistory = SchemaHistoryFactory.getSchemaHistory(
-                    configuration,
-                    noCallbackSqlScriptExecutorFactory,
-                    sqlScriptFactory,
-                    database,
-                    schemas.defaultSchema,
-                    statementInterceptor);
+                configuration,
+                noCallbackSqlScriptExecutorFactory,
+                sqlScriptFactory,
+                database,
+                schemas.defaultSchema,
+                statementInterceptor);
 
             result = command.execute(
-                    createMigrationResolver(resourceProvider,
-                            classProvider,
-                            sqlScriptExecutorFactory,
-                            sqlScriptFactory,
-                            parsingContext),
-                    schemaHistory,
-                    database,
-                    schemas.all.toArray(new Schema[0]),
-                    callbackExecutor,
-                    statementInterceptor);
+                createMigrationResolver(resourceProvider,
+                                        classProvider,
+                                        sqlScriptExecutorFactory,
+                                        sqlScriptFactory,
+                                        parsingContext),
+                schemaHistory,
+                database,
+                schemas.all.toArray(new Schema[0]),
+                callbackExecutor,
+                statementInterceptor);
         } finally {
             showMemoryUsage();
         }
@@ -605,14 +614,15 @@ public class MigrateDb {
         public final ResourceProvider resourceProvider;
         public final ClassProvider<JavaMigration> classProvider;
 
-        private ResourceAndClassProviders(ResourceProvider resourceProvider, ClassProvider<JavaMigration> classProvider) {
+        private ResourceAndClassProviders(ResourceProvider resourceProvider,
+                                          ClassProvider<JavaMigration> classProvider) {
             this.resourceProvider = resourceProvider;
             this.classProvider = classProvider;
         }
     }
 
     private ResourceAndClassProviders createResourceAndClassProviders(
-            boolean scannerRequired) {
+        boolean scannerRequired) {
         ResourceProvider resourceProvider;
         ClassProvider<JavaMigration> classProvider;
         if (!scannerRequired && configuration.isSkipDefaultResolvers() && configuration.isSkipDefaultCallbacks()) {
@@ -624,10 +634,10 @@ public class MigrateDb {
                 classProvider = configuration.getJavaMigrationClassProvider();
             } else {
                 LocationScanner<JavaMigration> scanner = new LocationScanner<>(
-                        JavaMigration.class,
-                        Arrays.asList(configuration.getLocations()),
-                        configuration.getClassLoader(),
-                        configuration.getFailOnMissingLocations()
+                    JavaMigration.class,
+                    Arrays.asList(configuration.getLocations()),
+                    configuration.getClassLoader(),
+                    configuration.getFailOnMissingLocations()
                 );
                 // set the defaults
                 resourceProvider = scanner;
@@ -668,18 +678,18 @@ public class MigrateDb {
 
         if (!configuration.isSkipDefaultCallbacks()) {
             SqlScriptExecutorFactory sqlScriptExecutorFactory =
-                    jdbcConnectionFactory.getDatabaseType().createSqlScriptExecutorFactory(jdbcConnectionFactory,
-                            callbackExecutor,
-                            statementInterceptor
-                    );
+                jdbcConnectionFactory.getDatabaseType().createSqlScriptExecutorFactory(jdbcConnectionFactory,
+                                                                                       callbackExecutor,
+                                                                                       statementInterceptor
+                );
 
             effectiveCallbacks.addAll(
-                    new SqlScriptCallbackFactory(
-                            resourceProvider,
-                            sqlScriptExecutorFactory,
-                            sqlScriptFactory,
-                            configuration
-                    ).getCallbacks());
+                new SqlScriptCallbackFactory(
+                    resourceProvider,
+                    sqlScriptExecutorFactory,
+                    sqlScriptFactory,
+                    configuration
+                ).getCallbacks());
         }
 
         return effectiveCallbacks;
@@ -699,6 +709,7 @@ public class MigrateDb {
          * @param database          The database-specific support for these connections.
          * @param schemas           The schemas managed by MigrateDb.
          * @param callbackExecutor  The callback executor.
+         *
          * @return The result of the operation.
          */
         T execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,

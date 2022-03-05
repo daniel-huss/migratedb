@@ -232,7 +232,9 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
 
     @Override
     public final SqlScript getCreateScript(SqlScriptFactory sqlScriptFactory, Table table, boolean baseline) {
-        return sqlScriptFactory.createSqlScript(new StringResource(getRawCreateScript(table, baseline)), false, null);
+        return sqlScriptFactory.createSqlScript(new StringResource("", getRawCreateScript(table, baseline)),
+                                                false,
+                                                null);
     }
 
     @Override

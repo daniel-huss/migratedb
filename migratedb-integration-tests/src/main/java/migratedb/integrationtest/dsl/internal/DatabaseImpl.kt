@@ -26,7 +26,7 @@ import migratedb.core.internal.jdbc.JdbcConnectionFactory
 import migratedb.core.internal.parser.ParsingContext
 import migratedb.core.internal.resolver.MigrationInfoHelper
 import migratedb.core.internal.schemahistory.SchemaHistoryFactory
-import migratedb.integrationtest.database.DatabaseSupport
+import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.dsl.DatabaseSpec
 import migratedb.integrationtest.dsl.SchemaHistorySpec
 import migratedb.integrationtest.util.base.Names
@@ -35,7 +35,7 @@ import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 
 class DatabaseImpl(
-    private val databaseHandle: DatabaseSupport.Handle
+    private val databaseHandle: DbSystem.Handle
 ) : DatabaseSpec, AutoCloseable {
     private var name: SafeIdentifier = Names.nextDatabase()
     private var schemaName: SafeIdentifier? = Names.nextSchema()

@@ -26,7 +26,7 @@ import java.util.*
 import java.util.stream.Stream
 import javax.sql.DataSource
 
-interface DatabaseSupport {
+interface DbSystem {
     interface Handle : AutoCloseable {
         val type: DatabaseType
 

@@ -29,7 +29,7 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
-enum class MariaDb(image: String) : DatabaseSupport {
+enum class MariaDb(image: String) : DbSystem {
     V10_2("mariadb:10.2"),
     V10_3("mariadb:10.3"),
     V10_4("mariadb:10.4"),
@@ -70,11 +70,11 @@ enum class MariaDb(image: String) : DatabaseSupport {
         }
     }
 
-    override fun get(sharedResources: SharedResources): DatabaseSupport.Handle {
+    override fun get(sharedResources: SharedResources): DbSystem.Handle {
         return Handle(sharedResources.container(containerAlias) { Container(image) })
     }
 
-    private class Handle(private val container: Lease<Container>) : DatabaseSupport.Handle {
+    private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
         override val type = MariaDBDatabaseType()
 
         private val internalDs = container().dataSource(Container.adminUser, Container.defaultDatabase.toString())
