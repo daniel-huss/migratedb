@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest
+package migratedb.integrationtest.util.base
 
 /**
  * A database identifier that doesn't need quoting or escaping.

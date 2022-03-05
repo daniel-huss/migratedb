@@ -17,7 +17,6 @@
 package migratedb.integrationtest.dsl
 
 interface DatabaseSpec {
-    fun name(name: String)
     fun schemaName(schemaName: String)
     fun existingSchemaHistory(table: String, block: SchemaHistorySpec.() -> Unit)
 }

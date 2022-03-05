@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest
+package migratedb.integrationtest.util.base
 
 import migratedb.core.api.internal.database.base.Connection
 import migratedb.core.api.internal.database.base.Database

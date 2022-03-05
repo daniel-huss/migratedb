@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest
+package migratedb.integrationtest.util.container
 
-import migratedb.integrationtest.SafeIdentifier.Companion.asSafeIdentifier
-import java.util.concurrent.atomic.AtomicLong
-
-object Names {
-    private val counter = AtomicLong(0)
-    fun nextDatabase() = "db_${counter.incrementAndGet()}".asSafeIdentifier()
-    fun nextSchema() = "schema_${counter.incrementAndGet()}".asSafeIdentifier()
-    fun nextTable() = "tbl_${counter.incrementAndGet()}".asSafeIdentifier()
-}
+/**
+ * Holding a lease guarantees that a pooled resource is not going to be closed.
+ */
+interface Lease<T : AutoCloseable> : AutoCloseable, () -> T

@@ -16,33 +16,19 @@
 
 package migratedb.core.internal.resource.classpath;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.resource.Resource;
+import migratedb.core.internal.resource.NameListResourceProvider;
 
-public class ClassPathResourceProvider implements ResourceProvider {
+public class ClassPathResourceProvider extends NameListResourceProvider {
     private final ClassLoader classLoader;
-    private final String[] resourceNames;
 
     public ClassPathResourceProvider(ClassLoader classLoader, List<String> resourceNames) {
+        super(resourceNames);
         this.classLoader = classLoader;
-        this.resourceNames = resourceNames.toArray(String[]::new);
-        Arrays.sort(this.resourceNames);
     }
 
-    @Override
-    public Resource getResource(String name) {
-        var idx = Arrays.binarySearch(resourceNames, name);
-        if (idx < 0) {
-            return null;
-        }
-        return new ClassPathResource(resourceNames[idx], classLoader);
-    }
-
-    @Override
-    public Collection<Resource> getResources(String prefix, String... suffixes) {
-        return null;
+    protected Resource toResource(String resourceName) {
+        return new ClassPathResource(resourceName, classLoader);
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest
+package migratedb.integrationtest.util.container
 
 import org.testcontainers.containers.output.OutputFrame
 import org.testcontainers.containers.output.OutputFrame.OutputType.STDERR

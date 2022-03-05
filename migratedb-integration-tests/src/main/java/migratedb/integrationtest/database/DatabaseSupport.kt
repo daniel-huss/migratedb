@@ -17,8 +17,8 @@
 package migratedb.integrationtest.database
 
 import migratedb.core.api.internal.database.base.DatabaseType
-import migratedb.integrationtest.SafeIdentifier
-import migratedb.integrationtest.SharedResources
+import migratedb.integrationtest.util.base.SafeIdentifier
+import migratedb.integrationtest.util.container.SharedResources
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
@@ -33,12 +33,12 @@ interface DatabaseSupport {
         /**
          * Creates a database and returns a connection to that database (with admin privileges).
          */
-        fun createDatabaseIfNotExists(dbName: SafeIdentifier): DataSource
+        fun createDatabaseIfNotExists(databaseName: SafeIdentifier): DataSource
 
         /**
          * Drops an existing database.
          */
-        fun dropDatabaseIfExists(dbName: SafeIdentifier)
+        fun dropDatabaseIfExists(databaseName: SafeIdentifier)
 
         /**
          * Connects to a database/schema combination with administrative privileges.
@@ -49,6 +49,12 @@ interface DatabaseSupport {
          * Generates a new database mutation that is independent from all previously generated database mutations.
          */
         fun nextMutation(schemaName: SafeIdentifier): IndependentDatabaseMutation
+
+        /**
+         * Creates the schema with the given name if the schema doesn't exist. Returns [schemaName] if the schema exists
+         * or has been created. Returns `null` if the database system does not support schemas.
+         */
+        fun createSchemaIfNotExists(databaseName: SafeIdentifier, schemaName: SafeIdentifier): SafeIdentifier?
     }
 
     fun get(sharedResources: SharedResources): Handle
@@ -58,6 +64,7 @@ interface DatabaseSupport {
         override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(
             MariaDb.values(),
             Postgres.values(),
+            Sqlite.values(),
         ).flatMap { Arrays.stream(it) }.map { Arguments.arguments(it) }
     }
 }

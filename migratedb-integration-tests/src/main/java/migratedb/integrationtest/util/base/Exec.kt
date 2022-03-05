@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest
+package migratedb.integrationtest.util.base
 
 import java.util.concurrent.Executors
 import java.util.concurrent.Future

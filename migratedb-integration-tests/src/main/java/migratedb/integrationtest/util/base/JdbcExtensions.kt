@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest
+package migratedb.integrationtest.util.base
 
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.SingleConnectionDataSource
@@ -22,12 +22,11 @@ import java.sql.Connection
 import java.sql.SQLException
 import java.time.Duration
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 import javax.sql.DataSource
 
-fun <T> Connection.with(schema: CharSequence, action: (JdbcTemplate) -> T): T {
+fun <T> Connection.work(schema: CharSequence? = null, action: (JdbcTemplate) -> T): T {
     val oldSchema = this.schema
-    this.schema = schema.toString()
+    schema?.let { this.schema = it.toString() }
     try {
         return action(JdbcTemplate(SingleConnectionDataSource(this, true)))
     } finally {
@@ -46,7 +45,7 @@ fun DataSource.awaitConnectivity(timeout: Duration = Duration.ofSeconds(10)): Co
             conn = connection
             if (!conn.isValid(1)) throw SQLException()
             return conn
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             runCatching { conn?.close() }.exceptionOrNull()?.takeUnless { it == e }
                 ?.let {
                     e.addSuppressed(it)
@@ -59,7 +58,7 @@ fun DataSource.awaitConnectivity(timeout: Duration = Duration.ofSeconds(10)): Co
                 Thread.sleep(delay)
                 i++
             } else {
-                throw TimeoutException()
+                throw IllegalStateException("Timeout waiting for connectivity", e)
             }
         }
     }

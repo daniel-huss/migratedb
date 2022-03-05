@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.integrationtest
+package migratedb.integrationtest.util.container
 
-import migratedb.integrationtest.Exec.tryAll
+import migratedb.integrationtest.util.base.Exec.tryAll
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 

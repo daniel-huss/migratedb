@@ -48,7 +48,7 @@
     <modules>
         <module>migratedb-core</module>
         <module>migratedb-scanner</module>
-        <!--        <module>migratedb-commandline</module>-->
+        <module>migratedb-commandline</module>
         <module>migratedb-integration-tests</module>
         <module>migratedb-docs</module>
         <module>migratedb-maven-plugin</module>
@@ -74,10 +74,8 @@
         <gitRepository.url>https://unentscheidbar.de/gitea/hussdl/migratedb.git</gitRepository.url>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.outputTimestamp>2000-01-01T00:00:00Z
-        </project.build.outputTimestamp><!-- for reproducible builds -->
-        <project.build.generatedSources.directory>${project.build.directory}/generated-sources/codegen
-        </project.build.generatedSources.directory>
+        <project.build.outputTimestamp>2000-01-01T00:00:00Z</project.build.outputTimestamp><!-- for reproducible builds -->
+        <project.build.generatedSources.directory>${project.build.directory}/generated-sources/codegen</project.build.generatedSources.directory>
 
         <version.android>4.1.1.4</version.android>
         <version.ant>1.9.14</version.ant>

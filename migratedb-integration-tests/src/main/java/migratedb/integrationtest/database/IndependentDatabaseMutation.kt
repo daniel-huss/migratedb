@@ -16,13 +16,12 @@
 
 package migratedb.integrationtest.database
 
-import migratedb.integrationtest.SafeIdentifier
 import java.sql.Connection
 
 /**
  * An arbitrary database schema mutation that does not interfere with or depend on other such mutations.
  */
-abstract class IndependentDatabaseMutation(val schemaName: SafeIdentifier) {
+abstract class IndependentDatabaseMutation {
     /**
      * @return `true` iff the mutation has been applied and its effects are visible to [connection].
      */

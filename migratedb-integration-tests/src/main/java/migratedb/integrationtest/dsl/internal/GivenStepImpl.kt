@@ -16,10 +16,10 @@
 
 package migratedb.integrationtest.dsl.internal
 
-import migratedb.integrationtest.SharedResources
 import migratedb.integrationtest.database.DatabaseSupport
 import migratedb.integrationtest.dsl.DatabaseSpec
 import migratedb.integrationtest.dsl.Dsl
+import migratedb.integrationtest.util.container.SharedResources
 
 class GivenStepImpl(private val sharedResources: SharedResources) : AutoCloseable, Dsl.GivenStep {
     private var database: DatabaseImpl? = null
@@ -33,8 +33,8 @@ class GivenStepImpl(private val sharedResources: SharedResources) : AutoCloseabl
     }
 
     override fun close() {
-        database.use {
-            databaseHandle.use { }
+        databaseHandle.use {
+            database.use {}
         }
     }
 

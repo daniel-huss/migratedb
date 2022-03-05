@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest
+package migratedb.integrationtest.util.container
 
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.testcontainers.containers.GenericContainer

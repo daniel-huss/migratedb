@@ -16,19 +16,19 @@
 
 package migratedb.integrationtest.dsl
 
-import migratedb.integrationtest.SharedResources
 import migratedb.integrationtest.database.DatabaseSupport
 import migratedb.integrationtest.dsl.internal.GivenStepImpl
 import migratedb.integrationtest.dsl.internal.ThenStepImpl
 import migratedb.integrationtest.dsl.internal.WhenStepImpl
+import migratedb.integrationtest.util.container.SharedResources
 import org.springframework.jdbc.core.JdbcTemplate
 
 class Dsl(sharedResources: SharedResources) : AutoCloseable {
-
     private val givenStep = GivenStepImpl(sharedResources)
 
+
     override fun close() {
-        givenStep.close()
+        givenStep.use { }
     }
 
     fun <G : Any> given(block: (GivenStep).() -> G): GivenStepResult<G> {
@@ -36,7 +36,7 @@ class Dsl(sharedResources: SharedResources) : AutoCloseable {
         return object : GivenStepResult<G> {
             override fun <W : Any> `when`(block: WhenStep<G>.() -> W): WhenStepResult<G, W> {
                 givenStep.executeActions().let { givenInfo ->
-                    WhenStepImpl(g, givenInfo).use { whenStep ->
+                    WhenStepImpl(g, givenInfo).let { whenStep ->
                         val w = whenStep.block()
                         return object : WhenStepResult<G, W> {
                             override fun then(block: (ThenStep<G>).(W) -> Unit) {

@@ -16,18 +16,19 @@
 
 package migratedb.integrationtest.database
 
-import migratedb.integrationtest.SafeIdentifier
-import migratedb.integrationtest.with
+import migratedb.integrationtest.util.base.SafeIdentifier
+import migratedb.integrationtest.util.base.work
 import java.sql.Connection
 
 /**
- * Creates / drops a table whose name is not shared with other instances of this mutation.
+ * Creates / drops a table whose name is not shared with other instances of this mutation. Works with SQL databases
+ * that support `information_schema.tables`.
  */
-class BasicCreateTableMutation(schemaName: SafeIdentifier, private val tableName: SafeIdentifier) :
-    IndependentDatabaseMutation(schemaName) {
+class BasicCreateTableMutation(private val schemaName: SafeIdentifier?, private val tableName: SafeIdentifier) :
+    IndependentDatabaseMutation() {
 
     override fun isApplied(connection: Connection): Boolean {
-        return connection.with(schemaName) {
+        return connection.work(schemaName) {
             it.query("select table_name from information_schema.tables where table_name = $tableName") { _, _ ->
                 true
             }.isNotEmpty()
@@ -35,13 +36,13 @@ class BasicCreateTableMutation(schemaName: SafeIdentifier, private val tableName
     }
 
     override fun apply(connection: Connection) {
-        connection.with(schemaName) {
+        connection.work(schemaName) {
             it.execute("create table $tableName(id int not null primary key)")
         }
     }
 
     override fun undo(connection: Connection) {
-        connection.with(schemaName) {
+        connection.work(schemaName) {
             it.execute("drop table $tableName")
         }
     }

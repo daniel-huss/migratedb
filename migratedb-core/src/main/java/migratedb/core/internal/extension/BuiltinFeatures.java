@@ -37,6 +37,7 @@ import migratedb.core.internal.database.redshift.RedshiftDatabaseType;
 import migratedb.core.internal.database.saphana.SAPHANADatabaseType;
 import migratedb.core.internal.database.snowflake.SnowflakeDatabaseType;
 import migratedb.core.internal.database.spanner.SpannerDatabaseType;
+import migratedb.core.internal.database.sqlite.SQLiteDatabaseType;
 import migratedb.core.internal.database.sqlserver.SQLServerDatabaseType;
 import migratedb.core.internal.database.sqlserver.synapse.SynapseDatabaseType;
 import migratedb.core.internal.database.sybasease.SybaseASEJTDSDatabaseType;
@@ -85,6 +86,7 @@ public final class BuiltinFeatures implements MigrateDbExtension {
             new SnowflakeDatabaseType(),
             new SpannerDatabaseType(),
             new SQLServerDatabaseType(),
+            new SQLiteDatabaseType(),
             new SynapseDatabaseType(),
             new SybaseASEJTDSDatabaseType(),
             new YugabyteDBDatabaseType()

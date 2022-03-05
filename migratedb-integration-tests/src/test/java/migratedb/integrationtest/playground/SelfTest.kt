@@ -17,29 +17,32 @@
 package migratedb.integrationtest.playground
 
 import migratedb.core.api.MigrationType.JDBC
-import migratedb.integrationtest.IntegrationTest
-import migratedb.integrationtest.database.Postgres
+import migratedb.integrationtest.database.DatabaseSupport
+import migratedb.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ArgumentsSource
 
-internal class DoesThisWork : IntegrationTest() {
+internal class SelfTest : IntegrationTest() {
 
     @ParameterizedTest
-    @EnumSource(Postgres::class)
-    fun test(postgres: Postgres) = withDsl {
+    @ArgumentsSource(DatabaseSupport.All::class)
+    fun databaseIsSupported(databaseSupport: DatabaseSupport) = withDsl {
         given {
-            database(postgres) {
-                name("test")
+            database(databaseSupport) {
                 existingSchemaHistory("migratedb") {
                     entry(name = "V001__Test", type = JDBC, success = true)
                 }
             }
         }.`when` {
             migrate {
-
+                config {
+                    it.table("migratedb")
+                }
             }
         }.then {
-
+            withConnection {
+                it.query("select * from migratedb") { }
+            }
         }
     }
 }

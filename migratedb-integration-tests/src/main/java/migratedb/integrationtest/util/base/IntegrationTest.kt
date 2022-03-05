@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest
+package migratedb.integrationtest.util.base
 
-import migratedb.integrationtest.SharedResources.Companion.resources
 import migratedb.integrationtest.dsl.Dsl
+import migratedb.integrationtest.util.container.SharedResources
+import migratedb.integrationtest.util.container.SharedResources.Companion.resources
 import org.junit.jupiter.api.Timeout
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace
+import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 
 @ExtendWith(IntegrationTest.Extension::class)
@@ -44,4 +46,13 @@ abstract class IntegrationTest {
     }
 
     fun withDsl(block: (Dsl).() -> (Unit)) = Dsl(Extension.resources()).use(block)
+
+    companion object {
+        init {
+            synchronized(IntegrationTest::class.java) {
+                // Eagerly init the logging system before multi-threading kicks in
+                LoggerFactory.getLogger(IntegrationTest::class.java)
+            }
+        }
+    }
 }

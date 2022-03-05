@@ -18,12 +18,13 @@ package migratedb.integrationtest.database
 
 import migratedb.core.api.internal.database.base.DatabaseType
 import migratedb.core.internal.database.postgresql.PostgreSQLDatabaseType
-import migratedb.integrationtest.Lease
-import migratedb.integrationtest.Names
-import migratedb.integrationtest.SafeIdentifier
-import migratedb.integrationtest.SafeIdentifier.Companion.asSafeIdentifier
-import migratedb.integrationtest.SharedResources
-import migratedb.integrationtest.awaitConnectivity
+import migratedb.integrationtest.util.base.Names
+import migratedb.integrationtest.util.base.SafeIdentifier
+import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
+import migratedb.integrationtest.util.base.awaitConnectivity
+import migratedb.integrationtest.util.base.work
+import migratedb.integrationtest.util.container.Lease
+import migratedb.integrationtest.util.container.SharedResources
 import org.postgresql.ds.PGSimpleDataSource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
@@ -31,9 +32,13 @@ import java.sql.Connection
 import javax.sql.DataSource
 
 enum class Postgres(image: String) : DatabaseSupport {
-    V9_6("postgres:9.6-alpine"), V10("postgres:10-alpine"), V11("postgres:11-alpine"), V12("postgres:12-alpine"), V13("postgres:13-alpine"), V14(
-        "postgres:14-alpine"
-    ), ;
+    V9_6("postgres:9.6-alpine"),
+    V10("postgres:10-alpine"),
+    V11("postgres:11-alpine"),
+    V12("postgres:12-alpine"),
+    V13("postgres:13-alpine"),
+    V14("postgres:14-alpine"),
+    ;
 
     private val containerAlias = "postgres_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
@@ -76,35 +81,40 @@ enum class Postgres(image: String) : DatabaseSupport {
 
     private class Handle(private val container: Lease<Container>) : DatabaseSupport.Handle {
         override val type: DatabaseType = PostgreSQLDatabaseType()
+        private val internalDs = container().dataSource(Container.defaultDatabase.toString())
 
+        override fun createDatabaseIfNotExists(databaseName: SafeIdentifier): DataSource {
+            check(databaseName != Container.defaultDatabase) { "Tests cannot use the default database" }
+            internalDs.awaitConnectivity().use {
+                createDatabaseIfNotExists(it, databaseName)
+            }
+            return container().dataSource(databaseName.toString())
+        }
 
-        override fun createDatabaseIfNotExists(dbName: SafeIdentifier): DataSource {
-            check(dbName != Container.defaultDatabase) { "Tests cannot use the default database" }
-            return container().dataSource(Container.defaultDatabase.toString()).also { ds ->
-                ds.awaitConnectivity().use {
-                    createDatabaseIfNotExists(it, dbName)
+        private fun createDatabaseIfNotExists(connection: Connection, databaseName: SafeIdentifier) {
+            connection.work {
+                val rows = it.queryForList("select 1 from pg_database where datname='$databaseName'")
+                if (rows.isEmpty()) {
+                    it.update("create database $databaseName")
                 }
             }
         }
 
-        private fun createDatabaseIfNotExists(connection: Connection, dbName: SafeIdentifier) {
-            check(dbName != Container.defaultDatabase) { "Tests cannot use the default database" }
-            connection.prepareStatement("select 1 from pg_database where datname=?").use { s ->
-                s.setString(1, dbName.toString())
-                s.executeQuery().use { resultSet ->
-                    if (!resultSet.next()) {
-                        // no result row -> DB does not exist
-                        connection.createStatement().use { it.executeUpdate("create database $dbName") }
+        override fun dropDatabaseIfExists(databaseName: SafeIdentifier) {
+            require(databaseName != Container.defaultDatabase) { "Cannot drop the default database" }
+            internalDs.awaitConnectivity().use { connection ->
+                connection.work {
+                    it.update("drop database if exists $databaseName")
+                }
+            }
+        }
+
+        override fun createSchemaIfNotExists(databaseName: SafeIdentifier, schemaName: SafeIdentifier): SafeIdentifier {
+            return schemaName.also {
+                container().dataSource(databaseName.toString()).awaitConnectivity().use { connection ->
+                    connection.work {
+                        it.update("create schema if not exists $schemaName")
                     }
-                }
-            }
-        }
-
-        override fun dropDatabaseIfExists(dbName: SafeIdentifier) {
-            check(dbName != Container.defaultDatabase) { "Cannot drop the default database" }
-            container().dataSource(Container.defaultDatabase.toString()).awaitConnectivity().use { connection ->
-                connection.createStatement().use { s ->
-                    s.executeUpdate("drop database if exists $dbName")
                 }
             }
         }

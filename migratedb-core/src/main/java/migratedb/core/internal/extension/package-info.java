@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl.internal
-
-import migratedb.core.api.internal.database.base.Database
-import migratedb.integrationtest.database.DatabaseSupport
-import migratedb.integrationtest.util.base.SafeIdentifier
-
-data class GivenInfo(
-    val databaseHandle: DatabaseSupport.Handle,
-    val database: Database<*>,
-    val databaseName: SafeIdentifier,
-    val schemaName: SafeIdentifier,
-)
+package migratedb.core.internal.extension;

@@ -19,7 +19,6 @@ package migratedb.core.api.migration;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.internal.resolver.MigrationInfoHelper;
-import migratedb.core.internal.util.Pair;
 
 /**
  * <p>This is the recommended class to extend for implementing Java-based Migrations.</p>
@@ -69,10 +68,9 @@ public abstract class BaseJavaMigration implements JavaMigration {
                                          "non-default naming");
         }
 
-        Pair<MigrationVersion, String> info =
-                MigrationInfoHelper.extractVersionAndDescription(shortName, prefix, "__", repeatable);
-        version = info.getLeft();
-        description = info.getRight();
+        var info = MigrationInfoHelper.extractVersionAndDescription(shortName, prefix, "__", repeatable);
+        version = info.version;
+        description = info.description;
     }
 
     @Override

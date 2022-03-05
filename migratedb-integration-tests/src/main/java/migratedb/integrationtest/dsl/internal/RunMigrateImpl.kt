@@ -20,7 +20,10 @@ import migratedb.core.api.MigrationVersion
 import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.api.migration.Context
 import migratedb.core.api.migration.JavaMigration
+import migratedb.core.api.resource.Resource
 import migratedb.core.internal.resolver.MigrationInfoHelper.extractVersionAndDescription
+import migratedb.core.internal.resource.NameListResourceProvider
+import migratedb.core.internal.resource.StringResource
 import migratedb.integrationtest.dsl.RunMigrateSpec
 import java.sql.Connection
 
@@ -30,7 +33,7 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
 
     private val scriptMigrations = mutableListOf<ScriptMigration>()
     private val codeMigrations = mutableListOf<CodeMigration>()
-    private var config = FluentConfiguration()
+    private var config = FluentConfiguration().schemas(givenInfo.schemaName.toString())
 
     override fun script(name: String, sql: String) {
         scriptMigrations.add(ScriptMigration(name, sql))
@@ -43,9 +46,9 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
             private val prefix = name[0].uppercase()
 
             init {
-                extractVersionAndDescription(name, prefix, "__", prefix == "R").let { (v, d) ->
-                    version = v
-                    description = d
+                extractVersionAndDescription(name, prefix, "__", prefix == "R").let {
+                    version = it.version!!
+                    description = it.description
                 }
             }
 
@@ -77,6 +80,24 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
     }
 
     fun execute() {
-        TODO()
+        val scriptMap = scriptMigrations.associate {
+            "${it.name}.sql" to StringResource(it.sql)
+        }
+        FluentConfiguration(config.classLoader)
+            .configuration(config)
+            .dataSource(
+                givenInfo.databaseHandle.newAdminConnection(
+                    givenInfo.databaseName,
+                    givenInfo.schemaName
+                )
+            )
+            .javaMigrations(*codeMigrations.map { it.code }.toTypedArray())
+            .resourceProvider(object : NameListResourceProvider(scriptMap.keys) {
+                override fun toResource(name: String): Resource {
+                    return scriptMap.getValue(name)
+                }
+            })
+            .load()
+            .migrate()
     }
 }

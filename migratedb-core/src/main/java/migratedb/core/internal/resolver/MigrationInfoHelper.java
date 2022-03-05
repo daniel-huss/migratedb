@@ -18,8 +18,8 @@ package migratedb.core.internal.resolver;
 
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationVersion;
-import migratedb.core.internal.util.Pair;
 import migratedb.core.internal.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Parsing support for migrations that use the standard MigrateDB version + description embedding in their name. These
@@ -31,6 +31,16 @@ public class MigrationInfoHelper {
      */
     private MigrationInfoHelper() {
         //Do nothing.
+    }
+
+    public static final class VersionAndDescription {
+        public final @Nullable MigrationVersion version;
+        public final String description;
+
+        public VersionAndDescription(@Nullable MigrationVersion version, String description) {
+            this.version = version;
+            this.description = description;
+        }
     }
 
     /**
@@ -45,10 +55,10 @@ public class MigrationInfoHelper {
      *
      * @throws MigrateDbException if the migration name does not follow the standard conventions.
      */
-    public static Pair<MigrationVersion, String> extractVersionAndDescription(String migrationName,
-                                                                              String prefix,
-                                                                              String separator,
-                                                                              boolean repeatable) {
+    public static VersionAndDescription extractVersionAndDescription(String migrationName,
+                                                                     String prefix,
+                                                                     String separator,
+                                                                     boolean repeatable) {
         int separatorPos = migrationName.indexOf(separator);
 
         String version;
@@ -64,23 +74,23 @@ public class MigrationInfoHelper {
         if (StringUtils.hasText(version)) {
             if (repeatable) {
                 throw new MigrateDbException("Wrong repeatable migration name format: " + migrationName
-                        + " (It cannot contain a version and should look like this: "
-                        + prefix + separator + description + ")");
+                                             + " (It cannot contain a version and should look like this: "
+                                             + prefix + separator + description + ")");
             }
             try {
-                return Pair.of(MigrationVersion.fromVersion(version), description);
+                return new VersionAndDescription(MigrationVersion.fromVersion(version), description);
             } catch (RuntimeException e) {
                 throw new MigrateDbException("Wrong versioned migration name format: " + migrationName
-                        + " (could not recognise version number " + version + ")", e);
+                                             + " (could not recognise version number " + version + ")", e);
             }
         }
 
         if (!repeatable) {
             throw new MigrateDbException("Wrong versioned migration name format: " + migrationName
-                    + " (It must contain a version and should look like this: "
-                    + prefix + "1.2" + separator + description + ")");
+                                         + " (It must contain a version and should look like this: "
+                                         + prefix + "1.2" + separator + description + ")");
         }
-        return Pair.of(null, description);
+        return new VersionAndDescription(null, description);
     }
 
 }

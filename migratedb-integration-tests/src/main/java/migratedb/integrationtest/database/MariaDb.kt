@@ -17,11 +17,16 @@
 package migratedb.integrationtest.database
 
 import migratedb.core.internal.database.mysql.mariadb.MariaDBDatabaseType
-import migratedb.integrationtest.*
+import migratedb.integrationtest.util.base.Names
+import migratedb.integrationtest.util.base.SafeIdentifier
+import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
+import migratedb.integrationtest.util.base.awaitConnectivity
+import migratedb.integrationtest.util.base.work
+import migratedb.integrationtest.util.container.Lease
+import migratedb.integrationtest.util.container.SharedResources
 import org.mariadb.jdbc.MariaDbDataSource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
-import java.sql.Connection
 import javax.sql.DataSource
 
 enum class MariaDb(image: String) : DatabaseSupport {
@@ -44,15 +49,15 @@ enum class MariaDb(image: String) : DatabaseSupport {
             private const val password = "test"
             const val adminUser = "root"
             const val regularUser = "mariadb"
-            const val defaultDatabase = "mariadb"
+            val defaultDatabase = "mariadb".asSafeIdentifier()
         }
 
-        fun dataSource(user: String, databaseAndSchema: String): DataSource {
+        fun dataSource(user: String, database: String): DataSource {
             return MariaDbDataSource().also {
                 it.user = user
                 it.setPassword(password)
-                it.port = port
-                it.databaseName = databaseAndSchema
+                it.port = getMappedPort(port)
+                it.databaseName = database
             }
         }
 
@@ -60,6 +65,7 @@ enum class MariaDb(image: String) : DatabaseSupport {
             withEnv("MARIADB_USER", regularUser)
             withEnv("MARIADB_PASSWORD", password)
             withEnv("MARIADB_ROOT_PASSWORD", password)
+            withEnv("MARIADB_DATABASE", defaultDatabase.toString())
             withExposedPorts(port)
         }
     }
@@ -71,30 +77,26 @@ enum class MariaDb(image: String) : DatabaseSupport {
     private class Handle(private val container: Lease<Container>) : DatabaseSupport.Handle {
         override val type = MariaDBDatabaseType()
 
-        private val adminDataSource = container().dataSource(Container.adminUser, Container.defaultDatabase)
+        private val internalDs = container().dataSource(Container.adminUser, Container.defaultDatabase.toString())
 
-        override fun createDatabaseIfNotExists(dbName: SafeIdentifier): DataSource {
-            return adminDataSource.also { ds ->
-                ds.awaitConnectivity().use {
-                    createDatabaseIfNotExists(it, dbName)
+        override fun createDatabaseIfNotExists(databaseName: SafeIdentifier): DataSource {
+            internalDs.awaitConnectivity().use { connection ->
+                connection.work {
+                    it.update("create database if not exists $databaseName")
                 }
             }
-        }
-
-        private fun createDatabaseIfNotExists(connection: Connection, dbName: SafeIdentifier) {
-            connection.createStatement().use { s ->
-                s.executeUpdate("create database if not exists $dbName")
-            }
+            return container().dataSource(Container.adminUser, "$databaseName")
         }
 
         override fun newAdminConnection(databaseName: SafeIdentifier, schemaName: SafeIdentifier): DataSource {
-            return container().dataSource(Container.adminUser, "${databaseName}_${schemaName}")
+            return container().dataSource(Container.adminUser, "$databaseName")
         }
 
-        override fun dropDatabaseIfExists(dbName: SafeIdentifier) {
-            adminDataSource.awaitConnectivity().use { connection ->
-                connection.createStatement().use { s ->
-                    s.executeUpdate("drop database if exists $dbName")
+        override fun dropDatabaseIfExists(databaseName: SafeIdentifier) {
+            require(databaseName != Container.defaultDatabase) { "Cannot drop the default database" }
+            internalDs.awaitConnectivity().use { connection ->
+                connection.work {
+                    it.update("drop database if exists $databaseName")
                 }
             }
         }
@@ -102,6 +104,8 @@ enum class MariaDb(image: String) : DatabaseSupport {
         override fun nextMutation(schemaName: SafeIdentifier): IndependentDatabaseMutation {
             return BasicCreateTableMutation(schemaName, Names.nextTable())
         }
+
+        override fun createSchemaIfNotExists(databaseName: SafeIdentifier, schemaName: SafeIdentifier): SafeIdentifier? = null
 
         override fun close() = container.close()
     }
