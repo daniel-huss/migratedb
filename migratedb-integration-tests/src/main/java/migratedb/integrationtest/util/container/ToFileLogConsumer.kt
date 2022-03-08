@@ -20,24 +20,22 @@ import org.testcontainers.containers.output.OutputFrame
 import org.testcontainers.containers.output.OutputFrame.OutputType.STDERR
 import org.testcontainers.containers.output.OutputFrame.OutputType.STDOUT
 import java.io.File
-import java.io.OutputStream
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.function.Consumer
 import kotlin.io.path.createDirectories
 import kotlin.io.path.outputStream
 
 /**
- * Places container logs in `target/log/fileName.(out|err)`.
+ * Places container logs in `target/container-logs/fileName.txt`.
  */
-class ToFileLogConsumer(fileName: String) : Consumer<OutputFrame>, AutoCloseable {
+class ToFileLogConsumer constructor(fileName: String) : Consumer<OutputFrame>, AutoCloseable {
 
     private companion object {
         private val invalidFileNameChars = Regex("[^ \\w_.-]")
 
         fun toFileName(s: String): Array<String> {
             return s.split("/", File.separator)
-                .filterNot { it.isEmpty() }
+                .filterNot { it.isBlank() }
                 .map { it.replace(invalidFileNameChars, "_") }
                 .filterNot { it == "." || it == ".." }
                 .toTypedArray()
@@ -45,33 +43,22 @@ class ToFileLogConsumer(fileName: String) : Consumer<OutputFrame>, AutoCloseable
     }
 
     private val lock = Any()
-    private val basePath = Paths.get("target", "log", *toFileName(fileName))
+    private val pathWithoutExtension = Paths.get("target", "container-logs", *toFileName(fileName))
 
-    private val outStream = lazy(lock) {
-        basePath.resolveSibling("${basePath.fileName}.out.txt").createAndOpenStream()
+    private val stream = lazy(lock) {
+        val pathWithExtension = pathWithoutExtension.resolveSibling("${pathWithoutExtension.fileName}.txt")
+        pathWithExtension.parent?.createDirectories()
+        pathWithExtension.outputStream()
     }
-
-    private val errStream = lazy(lock) {
-        basePath.resolveSibling("${basePath.fileName}.err.txt").createAndOpenStream()
-    }
-
-    private fun Path.createAndOpenStream(): OutputStream {
-        parent?.createDirectories()
-        return this.outputStream()
-    }
-
 
     override fun accept(t: OutputFrame) {
         when (t.type) {
-            STDERR -> errStream.value.write(t.bytes)
-            STDOUT -> outStream.value.write(t.bytes)
+            STDERR, STDOUT -> stream.value.write(t.bytes)
             else -> {}
         }
     }
 
     override fun close() = synchronized(lock) {
-        outStream.takeIf { it.isInitialized() }?.value.use {
-            errStream.takeIf { it.isInitialized() }?.value.use { }
-        }
+        stream.takeIf { it.isInitialized() }?.value.use {}
     }
 }

@@ -30,15 +30,15 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
-enum class MsSqlServer(image: String) : DbSystem {
+enum class SqlServer(image: String) : DbSystem {
     V2017_CU28("mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04"),
     V2019_CU15("mcr.microsoft.com/mssql/server:2019-CU15-ubuntu-20.04"),
     ;
 
-    private val containerAlias = "mssql_${name.lowercase()}"
+    private val containerAlias = "sql_server_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
-    override fun toString() = "SQL Server $name"
+    override fun toString() = "SQL Server ${name.replace('_', '.')}"
 
     companion object {
         private const val port = 1433

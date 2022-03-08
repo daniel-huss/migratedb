@@ -72,8 +72,9 @@ interface DbSystem {
         override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(
             Db2.values(),
             MariaDb.values(),
-            MsSqlServer.values(),
+            SqlServer.values(),
             MySql.values(),
+            Oracle.values(),
             Postgres.values(),
             Sqlite.values(),
         ).flatMap { Arrays.stream(it) }.map { Arguments.arguments(it) }

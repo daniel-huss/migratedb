@@ -42,7 +42,7 @@ enum class MariaDb(image: String) : DbSystem {
     private val containerAlias = "mariadb_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
-    override fun toString() = "MariaDB $name"
+    override fun toString() = "MariaDB ${name.replace('_', '.')}"
 
     companion object {
         private const val port = 3306

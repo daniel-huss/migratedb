@@ -41,7 +41,7 @@ enum class Db2(image: String) : DbSystem {
     private val containerAlias = "db2_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
-    override fun toString() = "DB2 $name"
+    override fun toString() = "DB2 ${name.replace('_', '.')}"
 
     companion object {
         private const val password = "testtest1234"

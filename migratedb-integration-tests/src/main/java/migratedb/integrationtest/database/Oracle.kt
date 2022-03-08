@@ -16,53 +16,49 @@
 
 package migratedb.integrationtest.database
 
-import com.mysql.cj.jdbc.MysqlDataSource
-import migratedb.core.internal.database.mysql.MySQLDatabaseType
+import migratedb.core.internal.database.oracle.OracleDatabaseType
 import migratedb.integrationtest.database.mutation.BasicCreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
-import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
+import migratedb.integrationtest.util.base.rethrowUnless
 import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.Lease
 import migratedb.integrationtest.util.container.SharedResources
+import oracle.jdbc.pool.OracleDataSource
+import org.springframework.dao.DataAccessException
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
+import java.time.Duration
 import javax.sql.DataSource
 
-enum class MySql(image: String) : DbSystem {
-    V8_0("mysql:8.0"),
-    V5_7("mysql:5.7"),
+enum class Oracle(image: String) : DbSystem {
+    V18_4_0("gvenzl/oracle-xe:18.4.0-slim"),
+    V21_3_0("gvenzl/oracle-xe:21.3.0-slim"),
     ;
 
-    private val containerAlias = "mysql_${name.lowercase()}"
+    private val containerAlias = "oracle_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
-    override fun toString() = "MySQL ${name.replace('_', '.')}"
+    override fun toString() = "Oracle ${name.replace('_', '.')}"
 
     companion object {
-        private const val port = 3306
-        private const val password = "test"
-        const val adminUser = "root"
-        const val regularUser = "mysql"
-        val defaultDatabase = "mysql".asSafeIdentifier()
+        private const val port = 1521
+        private const val adminUser = "system"
+        private const val password = "insecure"
     }
 
     class Container(image: DockerImageName) : GenericContainer<Container>(image) {
-        fun dataSource(user: String, database: String): DataSource {
-            return MysqlDataSource().also {
+        fun dataSource(user: String = adminUser): DataSource {
+            return OracleDataSource().also {
                 it.user = user
-                it.password = password
-                it.port = getMappedPort(port)
-                it.databaseName = database
+                it.setPassword(password)
+                it.url = "jdbc:oracle:thin:@$host:${getMappedPort(port)}/XEPDB1"
             }
         }
 
         init {
-            withEnv("MYSQL_USER", regularUser)
-            withEnv("MYSQL_PASSWORD", password)
-            withEnv("MYSQL_ROOT_PASSWORD", password)
-            withEnv("MYSQL_DATABASE", defaultDatabase.toString())
+            withEnv("ORACLE_PASSWORD", password)
             withExposedPorts(port)
         }
     }
@@ -72,25 +68,33 @@ enum class MySql(image: String) : DbSystem {
     }
 
     private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
-        override val type = MySQLDatabaseType()
+        override val type = OracleDatabaseType()
 
-        private val internalDs = container().dataSource(adminUser, defaultDatabase.toString())
+        private val internalDs = container().dataSource()
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
-            internalDs.work {
-                it.update("create database if not exists $namespace")
+            internalDs.work(timeout = Duration.ofMinutes(1)) {
+                try {
+                    it.execute("create user $namespace identified by $password")
+                    it.execute("grant all privileges to $namespace")
+                } catch (e: DataAccessException) {
+                    e.rethrowUnless { sqlException -> sqlException.errorCode == 1920 }
+                }
             }
             return namespace
         }
 
         override fun newAdminConnection(namespace: SafeIdentifier): DataSource {
-            return container().dataSource(MariaDb.adminUser, "$namespace")
+            return container().dataSource(user = namespace.toString())
         }
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
-            require(namespace != MariaDb.defaultDatabase) { "Cannot drop the default database" }
             internalDs.work {
-                it.update("drop database if exists $namespace")
+                try {
+                    it.update("drop user $namespace cascade")
+                } catch (e: DataAccessException) {
+                    e.rethrowUnless { sqlException -> sqlException.errorCode == 1918 }
+                }
             }
         }
 

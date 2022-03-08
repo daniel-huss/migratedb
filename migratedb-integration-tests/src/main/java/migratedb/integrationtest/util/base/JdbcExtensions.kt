@@ -16,6 +16,7 @@
 
 package migratedb.integrationtest.util.base
 
+import org.springframework.dao.DataAccessException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.SingleConnectionDataSource
 import java.sql.Connection
@@ -23,6 +24,12 @@ import java.sql.SQLException
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
+
+fun DataAccessException.rethrowUnless(matcher: (SQLException) -> Boolean) {
+    if (!matcher((cause as? SQLException) ?: throw this)) {
+        throw this
+    }
+}
 
 fun <T> Connection.work(schema: CharSequence? = null, commit: Boolean = true, action: (JdbcTemplate) -> T): T {
     val oldSchema = this.schema

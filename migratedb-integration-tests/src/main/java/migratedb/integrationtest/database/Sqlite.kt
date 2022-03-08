@@ -80,7 +80,7 @@ enum class Sqlite : DbSystem {
         DependencyResolver.resolve(driverCoordinates).toClassLoader()
     }
 
-    override fun toString() = "SQLite $name"
+    override fun toString() = "SQLite ${name.replace('_', '.')}"
 
     override fun get(sharedResources: SharedResources): DbSystem.Handle {
         return Handle()

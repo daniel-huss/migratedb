@@ -43,7 +43,7 @@ enum class Postgres(image: String) : DbSystem {
     private val containerAlias = "postgres_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
-    override fun toString() = "PostgreSQL $name"
+    override fun toString() = "PostgreSQL ${name.replace('_', '.')}"
 
     companion object {
         const val port = 5432

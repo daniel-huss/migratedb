@@ -126,7 +126,7 @@ class DatabaseImpl(
                         it.version,
                         it.description,
                         it.type,
-                        "",
+                        "n/a",
                         it.checksum,
                         0,
                         it.success
@@ -136,7 +136,7 @@ class DatabaseImpl(
                         it.version,
                         it.description,
                         it.type,
-                        "",
+                        "n/a",
                         it.checksum,
                         0,
                         it.success

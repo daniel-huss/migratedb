@@ -111,7 +111,7 @@
         <version.mssql-jdbc>${version.mssql}.jre11</version.mssql-jdbc>
         <version.mssql>10.2.0</version.mssql>
         <version.mysql>8.0.27</version.mysql>
-        <version.oracle>19.6.0.0</version.oracle>
+        <version.oracle>19.13.0.0.1</version.oracle>
         <version.osgi>4.3.1</version.osgi>
         <version.p6spy>3.9.1</version.p6spy>
         <version.postgresql>42.2.19</version.postgresql>
@@ -255,7 +255,7 @@
             </dependency>
             <dependency>
                 <groupId>com.oracle.database.jdbc</groupId>
-                <artifactId>ojdbc8</artifactId>
+                <artifactId>ojdbc10</artifactId>
                 <version>${version.oracle}</version>
             </dependency>
             <dependency>
