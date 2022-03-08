@@ -71,11 +71,13 @@ interface DbSystem {
     class All : ArgumentsProvider {
         override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(
             Db2.values(),
+            H2.values(),
+            Hsqldb.values(),
             MariaDb.values(),
-            SqlServer.values(),
             MySql.values(),
             Oracle.values(),
             Postgres.values(),
+            SqlServer.values(),
             Sqlite.values(),
         ).flatMap { Arrays.stream(it) }.map { Arguments.arguments(it) }
     }

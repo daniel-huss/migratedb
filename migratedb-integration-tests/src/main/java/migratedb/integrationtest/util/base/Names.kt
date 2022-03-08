@@ -23,4 +23,5 @@ object Names {
     private val counter = AtomicLong(0)
     fun nextNamespace() = "NS_${counter.incrementAndGet()}".asSafeIdentifier()
     fun nextTable() = "TABLE_${counter.incrementAndGet()}".asSafeIdentifier()
+    fun nextDatabase() = "DB_${counter.incrementAndGet()}".asSafeIdentifier()
 }

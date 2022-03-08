@@ -16,7 +16,7 @@
 
 package migratedb.integrationtest.playground
 
-import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.collections.shouldContainAll
 import migratedb.core.api.MigrationType.JDBC
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.util.base.IntegrationTest
@@ -44,9 +44,10 @@ internal class SelfTest : IntegrationTest() {
                 code("V003__Bar", arbitraryMutation()::apply)
             }
         }.then {
-            withConnection {
-                it.queryForList("select * from $schemaName.${tableName("migratedb")}")
-                    .shouldHaveSize(3)
+            withConnection { sql ->
+                sql.queryForList("select * from $schemaName.${tableName("migratedb")}")
+                    .map { it.getValue("description") }
+                    .shouldContainAll("Test", "Foo", "Bar")
             }
         }
     }

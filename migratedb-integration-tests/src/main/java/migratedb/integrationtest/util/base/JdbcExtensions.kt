@@ -32,14 +32,19 @@ fun DataAccessException.rethrowUnless(matcher: (SQLException) -> Boolean) {
 }
 
 fun <T> Connection.work(schema: CharSequence? = null, commit: Boolean = true, action: (JdbcTemplate) -> T): T {
-    val oldSchema = this.schema
-    schema?.let { this.schema = it.toString() }
+    var oldSchema: String? = null
+    schema?.let {
+        oldSchema = this.schema
+        this.schema = it.toString()
+    }
     try {
         return action(JdbcTemplate(SingleConnectionDataSource(this, true))).also {
             if (commit && !autoCommit) commit()
         }
     } finally {
-        this.schema = oldSchema
+        oldSchema?.let {
+            this.schema = it
+        }
     }
 }
 

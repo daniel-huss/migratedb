@@ -78,8 +78,8 @@ enum class SqlServer(image: String) : DbSystem {
                 if (it.queryForObject("select DB_ID('$namespace')", Int::class.java) == null) {
                     it.update("create database $namespace")
                 }
-                it.queryForObject("select SCHEMA_NAME()", String::class.java)
-            }!!.asSafeIdentifier()
+                it.queryForObject("select SCHEMA_NAME()", String::class.java)!!.asSafeIdentifier()
+            }
         }
 
         override fun newAdminConnection(namespace: SafeIdentifier): DataSource {
