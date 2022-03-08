@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.database
+package migratedb.integrationtest.database.mutation
 
 import java.sql.Connection
 
 /**
  * An arbitrary database schema mutation that does not interfere with or depend on other such mutations.
  */
-abstract class IndependentDatabaseMutation {
+interface IndependentDatabaseMutation {
     /**
      * @return `true` iff the mutation has been applied and its effects are visible to [connection].
      */
-    abstract fun isApplied(connection: Connection): Boolean
+    fun isApplied(connection: Connection): Boolean
 
     /**
      * Performs the mutation on [connection], so calling [isApplied] on the same connection will return `true`.
      */
-    abstract fun apply(connection: Connection)
+    fun apply(connection: Connection)
 
     /**
      * Undoes the database mutation on [connection], so if [isApplied] returned `true` before, it will afterwards return
      * `false`.
      */
-    abstract fun undo(connection: Connection)
+    fun undo(connection: Connection)
 }

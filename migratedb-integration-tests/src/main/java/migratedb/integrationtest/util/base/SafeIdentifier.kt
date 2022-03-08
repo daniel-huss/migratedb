@@ -17,7 +17,7 @@
 package migratedb.integrationtest.util.base
 
 /**
- * A database identifier that doesn't need quoting or escaping.
+ * A database identifier that doesn't need quoting or escaping .
  */
 class SafeIdentifier private constructor(private val s: String) : CharSequence by s {
     companion object {

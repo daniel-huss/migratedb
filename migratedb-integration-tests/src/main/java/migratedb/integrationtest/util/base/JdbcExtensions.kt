@@ -24,14 +24,24 @@ import java.time.Duration
 import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
 
-fun <T> Connection.work(schema: CharSequence? = null, action: (JdbcTemplate) -> T): T {
+fun <T> Connection.work(schema: CharSequence? = null, commit: Boolean = true, action: (JdbcTemplate) -> T): T {
     val oldSchema = this.schema
     schema?.let { this.schema = it.toString() }
     try {
-        return action(JdbcTemplate(SingleConnectionDataSource(this, true)))
+        return action(JdbcTemplate(SingleConnectionDataSource(this, true))).also {
+            if (commit && !autoCommit) commit()
+        }
     } finally {
         this.schema = oldSchema
     }
+}
+
+fun <T> DataSource.work(
+    timeout: Duration = Duration.ofSeconds(10),
+    schema: CharSequence? = null,
+    action: (JdbcTemplate) -> T
+): T {
+    return awaitConnectivity(timeout).use { it.work(schema, true, action) }
 }
 
 fun DataSource.awaitConnectivity(timeout: Duration = Duration.ofSeconds(10)): Connection {

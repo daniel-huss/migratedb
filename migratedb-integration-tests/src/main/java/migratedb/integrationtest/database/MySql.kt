@@ -16,7 +16,8 @@
 
 package migratedb.integrationtest.database
 
-import migratedb.core.internal.database.mysql.mariadb.MariaDBDatabaseType
+import com.mysql.cj.jdbc.MysqlDataSource
+import migratedb.core.internal.database.mysql.MySQLDatabaseType
 import migratedb.integrationtest.database.mutation.BasicCreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.Names
@@ -25,48 +26,43 @@ import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdenti
 import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.Lease
 import migratedb.integrationtest.util.container.SharedResources
-import org.mariadb.jdbc.MariaDbDataSource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
-enum class MariaDb(image: String) : DbSystem {
-    V10_2("mariadb:10.2"),
-    V10_3("mariadb:10.3"),
-    V10_4("mariadb:10.4"),
-    V10_5("mariadb:10.5"),
-    V10_6("mariadb:10.6"),
-    V10_7("mariadb:10.7"),
+enum class MySql(image: String) : DbSystem {
+    V8_0("mysql:8.0"),
+    V5_7("mysql:5.7"),
     ;
 
-    private val containerAlias = "mariadb_${name.lowercase()}"
+    private val containerAlias = "mysql_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
-    override fun toString() = "MariaDB $name"
+    override fun toString() = "MySQL $name"
 
     companion object {
         private const val port = 3306
         private const val password = "test"
         const val adminUser = "root"
-        const val regularUser = "mariadb"
-        val defaultDatabase = "mariadb".asSafeIdentifier()
+        const val regularUser = "mysql"
+        val defaultDatabase = "mysql".asSafeIdentifier()
     }
 
     class Container(image: DockerImageName) : GenericContainer<Container>(image) {
         fun dataSource(user: String, database: String): DataSource {
-            return MariaDbDataSource().also {
+            return MysqlDataSource().also {
                 it.user = user
-                it.setPassword(password)
+                it.password = password
                 it.port = getMappedPort(port)
                 it.databaseName = database
             }
         }
 
         init {
-            withEnv("MARIADB_USER", regularUser)
-            withEnv("MARIADB_PASSWORD", password)
-            withEnv("MARIADB_ROOT_PASSWORD", password)
-            withEnv("MARIADB_DATABASE", defaultDatabase.toString())
+            withEnv("MYSQL_USER", regularUser)
+            withEnv("MYSQL_PASSWORD", password)
+            withEnv("MYSQL_ROOT_PASSWORD", password)
+            withEnv("MYSQL_DATABASE", defaultDatabase.toString())
             withExposedPorts(port)
         }
     }
@@ -76,7 +72,7 @@ enum class MariaDb(image: String) : DbSystem {
     }
 
     private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
-        override val type = MariaDBDatabaseType()
+        override val type = MySQLDatabaseType()
 
         private val internalDs = container().dataSource(adminUser, defaultDatabase.toString())
 
@@ -88,11 +84,11 @@ enum class MariaDb(image: String) : DbSystem {
         }
 
         override fun newAdminConnection(namespace: SafeIdentifier): DataSource {
-            return container().dataSource(adminUser, "$namespace")
+            return container().dataSource(MariaDb.adminUser, "$namespace")
         }
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
-            require(namespace != defaultDatabase) { "Cannot drop the default database" }
+            require(namespace != MariaDb.defaultDatabase) { "Cannot drop the default database" }
             internalDs.work {
                 it.update("drop database if exists $namespace")
             }

@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl.internal
+package migratedb.integrationtest.dsl
 
-import migratedb.core.api.internal.database.base.Database
-import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.util.base.SafeIdentifier
+import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 
-data class GivenInfo(
-    val databaseHandle: DbSystem.Handle,
-    val database: Database<*>,
-    val namespace: SafeIdentifier,
-    val schemaName: SafeIdentifier,
-)
+interface CanNormalizeCase {
+    /**
+     * Normalizes the case of a table name.
+     */
+    fun tableName(s: SafeIdentifier) = tableName(s.toString()).asSafeIdentifier()
+
+    /**
+     * Normalizes the case of a table name.
+     */
+    fun tableName(s: CharSequence): String
+}

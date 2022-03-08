@@ -84,10 +84,8 @@
         <version.checkerframework>3.21.2</version.checkerframework>
         <version.commonscodec>1.15</version.commonscodec>
         <version.commonslogging>1.2</version.commonslogging>
-        <version.db2>11.5.0.0</version.db2>
+        <version.db2-jdbc>11.5.7.0</version.db2-jdbc>
         <version.derby>10.15.2.0</version.derby>
-        <version.equinox>3.15.200</version.equinox>
-        <version.equinoxcommon>3.10.600</version.equinoxcommon>
         <version.gcs>1.113.13</version.gcs>
         <version.groovy>3.0.9</version.groovy>
         <version.gson>2.8.6</version.gson>
@@ -110,8 +108,8 @@
         <version.mariadb>2.7.2</version.mariadb>
         <version.maven>3.8.1</version.maven>
         <version.msal4j>1.10.1</version.msal4j>
-        <version.mssql-jdbc>${version.mssql}.jre8</version.mssql-jdbc>
-        <version.mssql>9.2.1</version.mssql>
+        <version.mssql-jdbc>${version.mssql}.jre11</version.mssql-jdbc>
+        <version.mssql>10.2.0</version.mssql>
         <version.mysql>8.0.27</version.mysql>
         <version.oracle>19.6.0.0</version.oracle>
         <version.osgi>4.3.1</version.osgi>
@@ -164,16 +162,6 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${version.slf4j}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.equinox.common</artifactId>
-                <version>${version.equinoxcommon}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.osgi</artifactId>
-                <version>${version.equinox}</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
@@ -359,6 +347,11 @@
                 <groupId>org.checkerframework</groupId>
                 <artifactId>checker-qual</artifactId>
                 <version>${version.checkerframework}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ibm.db2</groupId>
+                <artifactId>jcc</artifactId>
+                <version>${version.db2-jdbc}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

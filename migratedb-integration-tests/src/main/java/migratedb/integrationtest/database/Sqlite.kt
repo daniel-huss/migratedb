@@ -20,16 +20,16 @@ import migratedb.core.api.internal.database.base.DatabaseType
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl
 import migratedb.core.internal.database.sqlite.SQLiteDatabaseType
 import migratedb.core.internal.jdbc.DriverDataSource
+import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
+import migratedb.integrationtest.database.mutation.SqliteCreateTableMutation
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
-import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.SharedResources
 import migratedb.integrationtest.util.dependencies.DependencyResolver
 import migratedb.integrationtest.util.dependencies.DependencyResolver.toClassLoader
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.sql.Connection
 import javax.sql.DataSource
 import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteIfExists
@@ -66,12 +66,12 @@ enum class Sqlite : DbSystem {
             Paths.get("target", "sqlite").also { sqliteDir ->
                 sqliteDir.createDirectories()
             },
-            "d"
+            "it"
         ).also { tmpDir ->
             Runtime.getRuntime().addShutdownHook(Thread {
                 tmpDir.toFile().deleteRecursively()
             })
-            System.setProperty("org.sqlite.tmpdir ", tmpDir.toString())
+            System.setProperty("org.sqlite.tmpdir ", tmpDir.toAbsolutePath().toString())
         }
     }
 
@@ -89,67 +89,31 @@ enum class Sqlite : DbSystem {
     private inner class Handle : DbSystem.Handle {
         override val type: DatabaseType get() = Companion.databaseType
 
-        override fun createDatabaseIfNotExists(databaseName: SafeIdentifier): DataSource {
+        override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             // A db exists as soon as we connect to it
-            return newAdminConnection(databaseName, defaultSchema)
+            return defaultSchema
         }
 
-        override fun dropDatabaseIfExists(databaseName: SafeIdentifier) {
-            baseDir.resolve("$databaseName.db").deleteIfExists()
+        override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
+            baseDir.resolve("$namespace.db").deleteIfExists()
         }
 
-        override fun newAdminConnection(databaseName: SafeIdentifier, schemaName: SafeIdentifier): DataSource {
-            requireDefaultSchema(schemaName)
+        override fun newAdminConnection(namespace: SafeIdentifier): DataSource {
             return DriverDataSource(
                 classLoader,
                 driverClass,
-                "jdbc:sqlite:${baseDir.resolve("$databaseName.db")}",
+                "jdbc:sqlite:${baseDir.resolve("$namespace.db")}",
                 "sa",
                 "",
                 databaseTypeRegister
             )
         }
 
-        override fun nextMutation(schemaName: SafeIdentifier): IndependentDatabaseMutation {
-            requireDefaultSchema(schemaName)
-            return CreateTableMutation(Names.nextTable())
+        override fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation {
+            return SqliteCreateTableMutation(Names.nextTable())
         }
-
-        private fun requireDefaultSchema(schemaName: SafeIdentifier) {
-            require(schemaName == defaultSchema) { "SQLite does not support schemas" }
-        }
-
-        override fun createSchemaIfNotExists(databaseName: SafeIdentifier, schemaName: SafeIdentifier): SafeIdentifier? = null
 
         override fun close() {}
-    }
-
-
-    /**
-     * Creates / drops a table whose name is not shared with other instances of this mutation.
-     */
-    private class CreateTableMutation(private val tableName: SafeIdentifier) :
-        IndependentDatabaseMutation() {
-
-        override fun isApplied(connection: Connection): Boolean {
-            return connection.work {
-                it.query("select name from sqlite_master where type='table' and name='$tableName'") { _, _ ->
-                    true
-                }.isNotEmpty()
-            }
-        }
-
-        override fun apply(connection: Connection) {
-            connection.work {
-                it.execute("create table $tableName(id int not null primary key)")
-            }
-        }
-
-        override fun undo(connection: Connection) {
-            connection.work {
-                it.execute("drop table $tableName")
-            }
-        }
     }
 
 }

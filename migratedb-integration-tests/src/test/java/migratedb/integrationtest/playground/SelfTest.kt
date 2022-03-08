@@ -16,7 +16,7 @@
 
 package migratedb.integrationtest.playground
 
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.collections.shouldHaveSize
 import migratedb.core.api.MigrationType.JDBC
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.util.base.IntegrationTest
@@ -26,24 +26,27 @@ import org.junit.jupiter.params.provider.ArgumentsSource
 internal class SelfTest : IntegrationTest() {
     @ParameterizedTest
     @ArgumentsSource(DbSystem.All::class)
-    fun databaseIsSupported(dbSystem: DbSystem) = withDsl {
+    fun `Database system is supported by test DSL`(dbSystem: DbSystem) = withDsl {
         given {
             database(dbSystem) {
-                existingSchemaHistory("migratedb") {
+                existingSchemaHistory(table = tableName("migratedb")) {
                     entry(name = "V001__Test", type = JDBC, success = true)
                 }
             }
         }.`when` {
             migrate {
                 withConfig {
-                    it.table("migratedb")
-                    it.ignoreMissingMigrations(true)
+                    it.schemas(schemaName.toString())
+                        .table(tableName("migratedb"))
+                        .ignoreMissingMigrations(true)
                 }
                 script("V002__Foo", "-- This script does nothing")
+                code("V003__Bar", arbitraryMutation()::apply)
             }
         }.then {
             withConnection {
-                it.queryForList("select * from migratedb").size.shouldBe(2)
+                it.queryForList("select * from $schemaName.${tableName("migratedb")}")
+                    .shouldHaveSize(3)
             }
         }
     }

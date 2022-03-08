@@ -17,9 +17,11 @@
 package migratedb.integrationtest.dsl
 
 import migratedb.integrationtest.database.DbSystem
+import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.dsl.internal.GivenStepImpl
 import migratedb.integrationtest.dsl.internal.ThenStepImpl
 import migratedb.integrationtest.dsl.internal.WhenStepImpl
+import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.container.SharedResources
 import org.springframework.jdbc.core.JdbcTemplate
 
@@ -59,17 +61,21 @@ class Dsl(sharedResources: SharedResources) : AutoCloseable {
         fun <W : Any> `when`(block: (WhenStep<G>).() -> W): WhenStepResult<G, W>
     }
 
-    interface WhenStep<G> {
+    interface AfterGiven<G> : CanNormalizeCase {
         val given: G
+        val schemaName: SafeIdentifier
+    }
+
+    interface WhenStep<G> : AfterGiven<G> {
         fun migrate(block: RunMigrateSpec.() -> Unit)
+        fun arbitraryMutation(): IndependentDatabaseMutation
     }
 
     interface WhenStepResult<G : Any, W : Any> {
         fun then(block: (ThenStep<G>).(W) -> Unit)
     }
 
-    interface ThenStep<G : Any> {
-        val given: G
+    interface ThenStep<G : Any> : AfterGiven<G> {
         fun withConnection(block: (JdbcTemplate) -> Unit)
     }
 }

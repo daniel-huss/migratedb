@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.database
+package migratedb.integrationtest.database.mutation
 
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.work
@@ -22,16 +22,18 @@ import java.sql.Connection
 
 /**
  * Creates / drops a table whose name is not shared with other instances of this mutation. Works with SQL databases
- * that support `information_schema.tables`.
+ * that support `information_schema.tables` and are case insensitive.
  */
-class BasicCreateTableMutation(private val schemaName: SafeIdentifier?, private val tableName: SafeIdentifier) :
-    IndependentDatabaseMutation() {
+class BasicCreateTableMutation(private val schemaName: SafeIdentifier, private val tableName: SafeIdentifier) :
+    IndependentDatabaseMutation {
 
     override fun isApplied(connection: Connection): Boolean {
         return connection.work(schemaName) {
-            it.query("select table_name from information_schema.tables where table_name = $tableName") { _, _ ->
-                true
-            }.isNotEmpty()
+            it.query(
+                """select table_name from information_schema.tables 
+                    |where lower(table_name) = lower('$tableName')
+                    |and lower(table_schema) = lower('$schemaName')""".trimMargin()
+            ) { _, _ -> true }.isNotEmpty()
         }
     }
 

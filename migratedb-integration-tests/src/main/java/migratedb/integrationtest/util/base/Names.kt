@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicLong
 
 object Names {
     private val counter = AtomicLong(0)
-    fun nextDatabase() = "db_${counter.incrementAndGet()}".asSafeIdentifier()
-    fun nextSchema() = "schema_${counter.incrementAndGet()}".asSafeIdentifier()
-    fun nextTable() = "tbl_${counter.incrementAndGet()}".asSafeIdentifier()
+    fun nextNamespace() = "NS_${counter.incrementAndGet()}".asSafeIdentifier()
+    fun nextTable() = "TABLE_${counter.incrementAndGet()}".asSafeIdentifier()
 }

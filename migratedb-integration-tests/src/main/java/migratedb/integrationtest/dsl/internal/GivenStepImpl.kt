@@ -42,8 +42,8 @@ class GivenStepImpl(private val sharedResources: SharedResources) : AutoCloseabl
         GivenInfo(
             databaseHandle = databaseHandle!!,
             database = it.database,
-            databaseName = it.databaseName,
-            schemaName = it.schemaName
+            schemaName = it.schemaName,
+            namespace = it.namespace
         )
     }
 }

@@ -16,7 +16,8 @@
 
 package migratedb.integrationtest.database
 
-import migratedb.core.internal.database.mysql.mariadb.MariaDBDatabaseType
+import com.microsoft.sqlserver.jdbc.SQLServerDataSource
+import migratedb.core.internal.database.sqlserver.SQLServerDatabaseType
 import migratedb.integrationtest.database.mutation.BasicCreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.Names
@@ -25,48 +26,40 @@ import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdenti
 import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.Lease
 import migratedb.integrationtest.util.container.SharedResources
-import org.mariadb.jdbc.MariaDbDataSource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
-enum class MariaDb(image: String) : DbSystem {
-    V10_2("mariadb:10.2"),
-    V10_3("mariadb:10.3"),
-    V10_4("mariadb:10.4"),
-    V10_5("mariadb:10.5"),
-    V10_6("mariadb:10.6"),
-    V10_7("mariadb:10.7"),
+enum class MsSqlServer(image: String) : DbSystem {
+    V2017_CU28("mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04"),
+    V2019_CU15("mcr.microsoft.com/mssql/server:2019-CU15-ubuntu-20.04"),
     ;
 
-    private val containerAlias = "mariadb_${name.lowercase()}"
+    private val containerAlias = "mssql_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
-    override fun toString() = "MariaDB $name"
+    override fun toString() = "SQL Server $name"
 
     companion object {
-        private const val port = 3306
-        private const val password = "test"
-        const val adminUser = "root"
-        const val regularUser = "mariadb"
-        val defaultDatabase = "mariadb".asSafeIdentifier()
+        private const val port = 1433
+        private const val password = "0_AaaBbb"
+        const val adminUser = "sa"
     }
 
     class Container(image: DockerImageName) : GenericContainer<Container>(image) {
-        fun dataSource(user: String, database: String): DataSource {
-            return MariaDbDataSource().also {
+        fun dataSource(user: String, database: String?): DataSource {
+            return SQLServerDataSource().also {
                 it.user = user
                 it.setPassword(password)
-                it.port = getMappedPort(port)
+                it.portNumber = getMappedPort(port)
                 it.databaseName = database
+                it.encrypt = false
             }
         }
 
         init {
-            withEnv("MARIADB_USER", regularUser)
-            withEnv("MARIADB_PASSWORD", password)
-            withEnv("MARIADB_ROOT_PASSWORD", password)
-            withEnv("MARIADB_DATABASE", defaultDatabase.toString())
+            withEnv("ACCEPT_EULA", "Y")
+            withEnv("SA_PASSWORD", password)
             withExposedPorts(port)
         }
     }
@@ -76,15 +69,17 @@ enum class MariaDb(image: String) : DbSystem {
     }
 
     private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
-        override val type = MariaDBDatabaseType()
+        override val type = SQLServerDatabaseType()
 
-        private val internalDs = container().dataSource(adminUser, defaultDatabase.toString())
+        private val internalDs = container().dataSource(adminUser, null)
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
-            internalDs.work {
-                it.update("create database if not exists $namespace")
-            }
-            return namespace
+            return internalDs.work {
+                if (it.queryForObject("select DB_ID('$namespace')", Int::class.java) == null) {
+                    it.update("create database $namespace")
+                }
+                it.queryForObject("select SCHEMA_NAME()", String::class.java)
+            }!!.asSafeIdentifier()
         }
 
         override fun newAdminConnection(namespace: SafeIdentifier): DataSource {
@@ -92,7 +87,6 @@ enum class MariaDb(image: String) : DbSystem {
         }
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
-            require(namespace != defaultDatabase) { "Cannot drop the default database" }
             internalDs.work {
                 it.update("drop database if exists $namespace")
             }

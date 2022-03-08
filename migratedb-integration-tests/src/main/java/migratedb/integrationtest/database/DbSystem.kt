@@ -17,6 +17,7 @@
 package migratedb.integrationtest.database
 
 import migratedb.core.api.internal.database.base.DatabaseType
+import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.container.SharedResources
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -26,35 +27,42 @@ import java.util.*
 import java.util.stream.Stream
 import javax.sql.DataSource
 
+/**
+ * Adapter for the various supported database systems.
+ */
 interface DbSystem {
     interface Handle : AutoCloseable {
         val type: DatabaseType
 
         /**
-         * Creates a database and returns a connection to that database (with admin privileges).
+         * Creates the schema or database with the given name if it doesn't exist. Some database systems don't support
+         * either schema-level or database-level isolation, so it's undefined whether the namespace will be implemented
+         * at the schema or at the database level.
+         *
+         * @return The identifier that must be used to qualify items in the namespace.
          */
-        fun createDatabaseIfNotExists(databaseName: SafeIdentifier): DataSource
+        fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier
 
         /**
-         * Drops an existing database.
+         * Drops an existing schema or database.
          */
-        fun dropDatabaseIfExists(databaseName: SafeIdentifier)
+        fun dropNamespaceIfExists(namespace: SafeIdentifier)
 
         /**
-         * Connects to a database/schema combination with administrative privileges.
+         * Connects to the database with administrative privileges.
          */
-        fun newAdminConnection(databaseName: SafeIdentifier, schemaName: SafeIdentifier): DataSource
+        fun newAdminConnection(namespace: SafeIdentifier): DataSource
 
         /**
-         * Generates a new database mutation that is independent from all previously generated database mutations.
+         * Generates a new database mutation within [namespace] that is independent from all previously generated
+         * database mutations in the same namespace.
          */
-        fun nextMutation(schemaName: SafeIdentifier): IndependentDatabaseMutation
+        fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation
 
         /**
-         * Creates the schema with the given name if the schema doesn't exist. Returns [schemaName] if the schema exists
-         * or has been created. Returns `null` if the database system does not support schemas.
+         * Normalizes the case of an identifier.
          */
-        fun createSchemaIfNotExists(databaseName: SafeIdentifier, schemaName: SafeIdentifier): SafeIdentifier?
+        fun normalizeCase(s: CharSequence): String = s.toString().uppercase()
     }
 
     fun get(sharedResources: SharedResources): Handle
@@ -62,7 +70,10 @@ interface DbSystem {
 
     class All : ArgumentsProvider {
         override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(
+            Db2.values(),
             MariaDb.values(),
+            MsSqlServer.values(),
+            MySql.values(),
             Postgres.values(),
             Sqlite.values(),
         ).flatMap { Arrays.stream(it) }.map { Arguments.arguments(it) }

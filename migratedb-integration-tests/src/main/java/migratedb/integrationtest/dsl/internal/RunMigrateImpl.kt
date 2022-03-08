@@ -86,12 +86,7 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
         }
         FluentConfiguration(config.classLoader)
             .configuration(config)
-            .dataSource(
-                givenInfo.databaseHandle.newAdminConnection(
-                    givenInfo.databaseName,
-                    givenInfo.schemaName
-                )
-            )
+            .dataSource(givenInfo.databaseHandle.newAdminConnection(givenInfo.namespace))
             .javaMigrations(*codeMigrations.map { it.code }.toTypedArray())
             .resourceProvider(object : NameListResourceProvider(scriptMap.keys) {
                 override fun toResource(name: String): Resource {

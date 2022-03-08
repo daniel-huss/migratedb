@@ -19,8 +19,8 @@ package migratedb.integrationtest.util.container
 import org.testcontainers.containers.output.OutputFrame
 import org.testcontainers.containers.output.OutputFrame.OutputType.STDERR
 import org.testcontainers.containers.output.OutputFrame.OutputType.STDOUT
-import java.io.BufferedOutputStream
 import java.io.File
+import java.io.OutputStream
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.function.Consumer
@@ -48,16 +48,16 @@ class ToFileLogConsumer(fileName: String) : Consumer<OutputFrame>, AutoCloseable
     private val basePath = Paths.get("target", "log", *toFileName(fileName))
 
     private val outStream = lazy(lock) {
-        basePath.resolveSibling("${basePath.fileName}.out").createAndOpenStream()
+        basePath.resolveSibling("${basePath.fileName}.out.txt").createAndOpenStream()
     }
 
     private val errStream = lazy(lock) {
-        basePath.resolveSibling("${basePath.fileName}.err").createAndOpenStream()
+        basePath.resolveSibling("${basePath.fileName}.err.txt").createAndOpenStream()
     }
 
-    private fun Path.createAndOpenStream(): BufferedOutputStream {
+    private fun Path.createAndOpenStream(): OutputStream {
         parent?.createDirectories()
-        return this.outputStream().buffered()
+        return this.outputStream()
     }
 
 

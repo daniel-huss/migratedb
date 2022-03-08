@@ -37,43 +37,37 @@ import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdenti
 class DatabaseImpl(
     private val databaseHandle: DbSystem.Handle
 ) : DatabaseSpec, AutoCloseable {
-    private var name: SafeIdentifier = Names.nextDatabase()
-    private var schemaName: SafeIdentifier? = Names.nextSchema()
+    private var namespace: SafeIdentifier = Names.nextNamespace()
     private var schemaHistory: SchemaHistorySpecImpl? = null
     private var database: Database<*>? = null
-
-    override fun schemaName(schemaName: String) {
-        this.schemaName = schemaName.asSafeIdentifier()
-    }
 
     override fun existingSchemaHistory(table: String, block: (SchemaHistorySpec).() -> Unit) {
         schemaHistory = SchemaHistorySpecImpl(table).also(block)
     }
 
+    override fun tableName(s: CharSequence) = databaseHandle.normalizeCase(s)
+
     data class MaterializeResult(
+        val namespace: SafeIdentifier,
         val database: Database<*>,
-        val databaseName: SafeIdentifier,
         val schemaName: SafeIdentifier,
     )
 
     fun materialize(): MaterializeResult {
-        val dataSource = databaseHandle.createDatabaseIfNotExists(name)
-        schemaName = schemaName?.let { databaseHandle.createSchemaIfNotExists(name, it) }
-        val configuration = FluentConfiguration().also { conf ->
-            schemaName?.let { conf.schemas(it.toString()) }
-        }
+        val schemaName = databaseHandle.normalizeCase(databaseHandle.createNamespaceIfNotExists(namespace))
+        val dataSource = databaseHandle.newAdminConnection(namespace)
+        val configuration = FluentConfiguration().schemas(schemaName)
         val connectionFactory = JdbcConnectionFactory(dataSource, configuration, NoOpIntercepter)
-        database = databaseHandle.type.createDatabase(configuration, connectionFactory, NoOpIntercepter).also {
-            val schema = SchemaHistoryFactory.scanSchemas(configuration, it).defaultSchema
-            schemaName = schema.name.asSafeIdentifier()
-            schemaHistory?.materializeInto(it, schema, connectionFactory)
-        }
-        return MaterializeResult(database!!, name, schemaName!!)
+        val db = databaseHandle.type.createDatabase(configuration, connectionFactory, NoOpIntercepter)
+        val schema = SchemaHistoryFactory.scanSchemas(configuration, db).defaultSchema
+        schemaHistory?.materializeInto(db, schema, connectionFactory)
+        database = db
+        return MaterializeResult(namespace = namespace, database = db, schemaName = schemaName.asSafeIdentifier())
     }
 
     override fun close() {
         database.use { }
-        databaseHandle.dropDatabaseIfExists(name)
+        databaseHandle.dropNamespaceIfExists(namespace)
     }
 
     private data class SchemaHistoryEntry(
@@ -105,7 +99,7 @@ class DatabaseImpl(
         }
 
         fun materializeInto(database: Database<*>, schema: Schema<*, *>, connectionFactory: JdbcConnectionFactory) {
-            val configuration = FluentConfiguration().schemas(schemaName.toString()).table(table)
+            val configuration = FluentConfiguration().schemas(schema.name).table(table)
             val sqlScriptExecutorFactory = database.databaseType.createSqlScriptExecutorFactory(
                 connectionFactory,
                 NoopCallbackExecutor.INSTANCE,
