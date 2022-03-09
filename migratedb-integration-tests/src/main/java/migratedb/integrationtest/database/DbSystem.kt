@@ -77,6 +77,7 @@ interface DbSystem {
 
     class All : ArgumentsProvider {
         override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(
+            CockroachDb.values(),
             Db2.values(),
             Derby.values(),
             Firebird.values(),

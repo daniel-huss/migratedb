@@ -129,7 +129,7 @@ public class CockroachDBDatabaseType extends BaseDatabaseType {
         PgpassFileReader pgpassFileReader = new PgpassFileReader();
 
         if (pgpassFileReader.getPgpassFilePath() != null) {
-            Development.TODO("Support PGPASSFILE password file");
+            Development.TODO("Support PGPASSFILE password file?");
         }
         return super.getExternalAuthProperties(url, username);
 

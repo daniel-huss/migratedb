@@ -46,7 +46,7 @@ public class CockroachDBDatabase extends BaseDatabase<CockroachDBConnection> {
     @Override
     public final void ensureSupported() {
         ensureDatabaseIsRecentEnough("1.1");
-        recommendMigrateDbUpgradeIfNecessary("21.1");
+        recommendMigrateDbUpgradeIfNecessary("21.2");
     }
 
     @Override
