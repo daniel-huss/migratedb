@@ -78,6 +78,7 @@ interface DbSystem {
     class All : ArgumentsProvider {
         override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(
             Db2.values(),
+            Derby.values(),
             Firebird.values(),
             H2.values(),
             Hsqldb.values(),

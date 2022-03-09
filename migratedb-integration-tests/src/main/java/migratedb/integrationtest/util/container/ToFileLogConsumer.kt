@@ -16,10 +16,10 @@
 
 package migratedb.integrationtest.util.container
 
+import migratedb.integrationtest.util.base.FileNames.toSafeFileName
 import org.testcontainers.containers.output.OutputFrame
 import org.testcontainers.containers.output.OutputFrame.OutputType.STDERR
 import org.testcontainers.containers.output.OutputFrame.OutputType.STDOUT
-import java.io.File
 import java.nio.file.Paths
 import java.util.function.Consumer
 import kotlin.io.path.createDirectories
@@ -30,20 +30,8 @@ import kotlin.io.path.outputStream
  */
 class ToFileLogConsumer constructor(fileName: String) : Consumer<OutputFrame>, AutoCloseable {
 
-    private companion object {
-        private val invalidFileNameChars = Regex("[^ \\w_.-]")
-
-        fun toFileName(s: String): Array<String> {
-            return s.split("/", File.separator)
-                .filterNot { it.isBlank() }
-                .map { it.replace(invalidFileNameChars, "_") }
-                .filterNot { it == "." || it == ".." }
-                .toTypedArray()
-        }
-    }
-
     private val lock = Any()
-    private val pathWithoutExtension = Paths.get("target", "container-logs", *toFileName(fileName))
+    private val pathWithoutExtension = Paths.get("target", "container-logs", *fileName.toSafeFileName())
 
     private val stream = lazy(lock) {
         val pathWithExtension = pathWithoutExtension.resolveSibling("${pathWithoutExtension.fileName}.txt")

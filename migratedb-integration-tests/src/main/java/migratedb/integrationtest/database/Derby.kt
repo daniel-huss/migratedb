@@ -18,65 +18,58 @@ package migratedb.integrationtest.database
 
 import migratedb.core.api.internal.database.base.DatabaseType
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl
-import migratedb.core.internal.database.sqlite.SQLiteDatabaseType
+import migratedb.core.internal.database.derby.DerbyDatabaseType
 import migratedb.core.internal.jdbc.DriverDataSource
+import migratedb.integrationtest.database.mutation.DerbyCreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
-import migratedb.integrationtest.database.mutation.SqliteCreateTableMutation
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
-import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 import migratedb.integrationtest.util.base.createDatabaseTempDir
+import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.SharedResources
 import migratedb.integrationtest.util.dependencies.DependencyResolver
 import migratedb.integrationtest.util.dependencies.DependencyResolver.toClassLoader
 import java.nio.file.Path
+import java.sql.Driver
+import java.util.*
 import javax.sql.DataSource
-import kotlin.io.path.deleteIfExists
+import kotlin.io.path.exists
 
-enum class Sqlite : DbSystem {
-    V3_8_11_2,
-    V3_14_2_1,
-    V3_15_1,
-    V3_16_1,
-    V3_18_0,
-    V3_19_3,
-    V3_20_1,
-    V3_21_0_1,
-    V3_23_1,
-    V3_25_2,
-    V3_27_2_1,
-    V3_28_0,
-    V3_30_1,
-    V3_31_1,
-    V3_32_3_3,
-    V3_34_0,
-    V3_35_0_1,
-    V3_36_0_3,
+enum class Derby : DbSystem {
+    V10_15_2_0,
+    V10_14_2_0,
+    V10_13_1_1,
+    V10_12_1_1,
     ;
 
     // Relevant idiosyncracies:
-    //  - Doesn't really support schemas, although other databases can be "attached" with a custom alias to qualify
-    //    its tables (we don't use that feature here)
+    //  - None
 
     companion object {
-        private const val driverClass = "org.sqlite.JDBC"
-        private val databaseType = SQLiteDatabaseType()
+        private val databaseType = DerbyDatabaseType()
         private val databaseTypeRegister = DatabaseTypeRegisterImpl().also {
             it.registerDatabaseTypes(listOf(databaseType))
         }
-        private val defaultSchema = "main".asSafeIdentifier()
 
         init {
-            System.setProperty("org.sqlite.tmpdir", createDatabaseTempDir("sqlite-driver").toString())
+            System.setProperty("derby.stream.error.file", createDatabaseTempDir("derby").resolve("derby.log").toString())
+            System.setProperty("derby.infolog.append", "true")
         }
     }
 
-    private val driverCoordinates = "org.xerial:sqlite-jdbc:${name.drop(1).replace('_', '.')}"
+    private val driverCoordinates = "org.apache.derby:derby:${name.drop(1).replace('_', '.')}"
     private val classLoader: ClassLoader by lazy {
         DependencyResolver.resolve(driverCoordinates).toClassLoader()
     }
+    private val driverClass: String by lazy {
+        ServiceLoader.load(Driver::class.java, classLoader)
+            .stream()
+            .filter { it.type().name.startsWith("org.apache.derby") }
+            .findFirst().orElseThrow()
+            .type().name
+    }
 
-    override fun toString() = "SQLite ${name.replace('_', '.')}"
+    override fun toString() = "Derby ${name.replace('_', '.')}"
 
     override fun get(sharedResources: SharedResources): DbSystem.Handle {
         return Handle()
@@ -84,34 +77,48 @@ enum class Sqlite : DbSystem {
 
     private inner class Handle : DbSystem.Handle {
         override val type: DatabaseType get() = Companion.databaseType
-        private val dataDir = createDatabaseTempDir("sqlite-$name", deleteOnExit = false)
+        private val dataDir = createDatabaseTempDir("derby-$name", deleteOnExit = false)
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
-            // A db exists as soon as we connect to it
-            return defaultSchema
+            val dbPath = dbPath(namespace)
+            if (!dbPath.exists()) {
+                dataSource(dbPath, create = true).work {
+                    it.execute("create schema $namespace")
+                }
+            }
+            return namespace
         }
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
-            databaseFile(namespace).deleteIfExists()
+            val dbPath = dbPath(namespace)
+            if (dbPath.exists()) {
+                dbPath.toFile().deleteRecursively()
+            }
         }
 
         override fun newAdminConnection(namespace: SafeIdentifier): DataSource {
+            return dataSource(dbPath(namespace))
+        }
+
+        private fun dataSource(dbPath: Path, create: Boolean = false): DataSource {
+            val url = "jdbc:derby:${dbPath.toAbsolutePath()}"
             return DriverDataSource(
                 classLoader,
                 driverClass,
-                "jdbc:sqlite:${databaseFile(namespace)}",
-                "sa",
+                url,
                 "",
+                "",
+                mapOf("create" to "$create"),
                 databaseTypeRegister
             )
         }
 
-        private fun databaseFile(namespace: SafeIdentifier): Path {
-            return dataDir.resolve("$namespace.db")
+        private fun dbPath(namespace: SafeIdentifier): Path {
+            return dataDir.resolve(normalizeCase(namespace).toString()).toAbsolutePath()
         }
 
         override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
-            return SqliteCreateTableMutation(normalizeCase(Names.nextTable()))
+            return DerbyCreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
         }
 
         override fun close() {
