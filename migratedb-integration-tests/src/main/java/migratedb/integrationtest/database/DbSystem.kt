@@ -82,6 +82,7 @@ interface DbSystem {
             Firebird.values(),
             H2.values(),
             Hsqldb.values(),
+            Informix.values(),
             MariaDb.values(),
             MySql.values(),
             Oracle.values(),

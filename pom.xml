@@ -93,7 +93,7 @@
         <version.hsqldb>2.6.0</version.hsqldb>
         <version.httpclient>4.5.13</version.httpclient>
         <version.ignite>2.9.0</version.ignite>
-        <version.informix>4.50.3</version.informix>
+        <version.informix>4.50.7.1</version.informix>
         <version.jansi>1.18</version.jansi>
         <version.java>11</version.java>
         <version.jaxb>2.3.1</version.jaxb>
@@ -352,6 +352,11 @@
                 <groupId>com.ibm.db2</groupId>
                 <artifactId>jcc</artifactId>
                 <version>${version.db2-jdbc}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>1.7.30</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

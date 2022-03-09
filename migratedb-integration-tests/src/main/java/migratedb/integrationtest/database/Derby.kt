@@ -30,6 +30,7 @@ import migratedb.integrationtest.util.container.SharedResources
 import migratedb.integrationtest.util.dependencies.DependencyResolver
 import migratedb.integrationtest.util.dependencies.DependencyResolver.toClassLoader
 import java.nio.file.Path
+import java.sql.Connection
 import java.sql.Driver
 import java.util.*
 import javax.sql.DataSource
@@ -43,7 +44,7 @@ enum class Derby : DbSystem {
     ;
 
     // Relevant idiosyncracies:
-    //  - None
+    //  - Does not normalize database names because it's just a file name
 
     companion object {
         private val databaseType = DerbyDatabaseType()
@@ -102,7 +103,7 @@ enum class Derby : DbSystem {
 
         private fun dataSource(dbPath: Path, create: Boolean = false): DataSource {
             val url = "jdbc:derby:${dbPath.toAbsolutePath()}"
-            return DriverDataSource(
+            return object : DriverDataSource(
                 classLoader,
                 driverClass,
                 url,
@@ -110,7 +111,14 @@ enum class Derby : DbSystem {
                 "",
                 mapOf("create" to "$create"),
                 databaseTypeRegister
-            )
+            ) {
+                // There seems to be some sort of concurrency issue with this driver, so we synchronize getConnection()
+                override fun getConnection(): Connection {
+                    return synchronized(Derby::class) {
+                        super.getConnection()
+                    }
+                }
+            }
         }
 
         private fun dbPath(namespace: SafeIdentifier): Path {

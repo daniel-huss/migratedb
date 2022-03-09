@@ -16,18 +16,22 @@
 
 package migratedb.integrationtest.util.base
 
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+import kotlin.reflect.full.isSubclassOf
 
 object Exec {
-    private val executor = Executors.newCachedThreadPool {
+    @PublishedApi
+    internal val executor: ExecutorService = Executors.newCachedThreadPool {
         Thread(it).apply { isDaemon = true }
     }
 
-    fun <T> async(block: () -> T): CloseableFuture<T> {
-        return CloseableFuture(executor.submit(block))
+    inline fun <reified T> async(waitOnClose: Boolean = false, noinline block: () -> T): CloseableFuture<T> {
+        return CloseableFuture(waitOnClose, T::class.isSubclassOf(AutoCloseable::class), executor.submit(block))
     }
 
     fun tryAll(vararg blocks: () -> Unit) = tryAll(blocks.toList())
@@ -46,7 +50,13 @@ object Exec {
         thrown?.let { throw it }
     }
 
-    class CloseableFuture<T>(private val f: Future<T>) : Future<T> by f, AutoCloseable, ReadOnlyProperty<Any, T>, () -> T {
+    class CloseableFuture<T>(
+        private val waitOnClose: Boolean,
+        private val valueIsCloseable: Boolean,
+        private val f: Future<T>
+    ) : Future<T> by f, AutoCloseable, ReadOnlyProperty<Any, T>, () -> T {
+        private val closed = AtomicBoolean(false)
+
         override fun invoke(): T {
             return f.get()
         }
@@ -56,11 +66,23 @@ object Exec {
         }
 
         override fun close() {
-            if (f.isDone) {
-                runCatching { (f.get() as? AutoCloseable).use { } }
-                    .exceptionOrNull()
-                    ?.takeIf { it is InterruptedException }
-                    ?.let { Thread.currentThread().interrupt() }
+            if (valueIsCloseable && !closed.getAndSet(true)) {
+                if (waitOnClose) handleInterruptionOnly {
+                    (f.get() as AutoCloseable).close()
+                } else if (f.isDone) {
+                    handleInterruptionOnly {
+                        (f.get() as AutoCloseable).close()
+                    }
+                }
+            }
+        }
+
+        private fun handleInterruptionOnly(block: () -> Unit) {
+            try {
+                block()
+            } catch (e: InterruptedException) {
+                Thread.currentThread().interrupt()
+            } catch (e: Exception) {
             }
         }
     }

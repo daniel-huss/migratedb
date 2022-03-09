@@ -15,6 +15,7 @@
  */
 package migratedb.integrationtest.util.container
 
+import migratedb.integrationtest.util.base.Exec.async
 import migratedb.integrationtest.util.base.Exec.tryAll
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -46,33 +47,27 @@ class ContainerPool(private val size: Int) : AutoCloseable {
     }
 
     private inner class Slot<T : AutoCloseable>(containerInitializer: () -> T) : AutoCloseable {
-        private val lazyContainer = lazy(this, containerInitializer)
-
         // @GuardedBy("leaseLock")
         private var leases: Int = 0
-        private var closed = false
+        private val futureContainer = async<AutoCloseable>(waitOnClose = true, containerInitializer)
 
-        val container get() = lazyContainer.value
+        @Suppress("UNCHECKED_CAST")
+        val container
+            get() = futureContainer.get() as T
 
         fun lease(): LeaseImpl<T> = leaseLock.withLock {
             leases++
             LeaseImpl(this)
         }
 
-        fun leases() = leases
+        fun leases() = leaseLock.withLock { leases }
 
         fun unlease() = leaseLock.withLock {
             leases = (leases - 1).coerceAtLeast(0)
             if (leases == 0) maybeOneUnusedSlot.signalAll()
         }
 
-        override fun close() = synchronized(this) {
-            if (closed) return
-            closed = true
-            if (lazyContainer.isInitialized()) {
-                lazyContainer.value.close()
-            }
-        }
+        override fun close() = futureContainer.close()
     }
 
     private var closed = false
