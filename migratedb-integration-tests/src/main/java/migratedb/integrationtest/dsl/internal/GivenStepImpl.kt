@@ -19,28 +19,22 @@ package migratedb.integrationtest.dsl.internal
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.dsl.DatabaseSpec
 import migratedb.integrationtest.dsl.Dsl
-import migratedb.integrationtest.util.container.SharedResources
 
-class GivenStepImpl(private val sharedResources: SharedResources) : AutoCloseable, Dsl.GivenStep {
+class GivenStepImpl(private val databaseHandle: DbSystem.Handle) : AutoCloseable, Dsl.GivenStep {
     private var database: DatabaseImpl? = null
-    private var databaseHandle: DbSystem.Handle? = null
 
-    override fun database(dbSystem: DbSystem, block: (DatabaseSpec).() -> Unit) {
-        check(databaseHandle == null) { "Only one database, please" }
-        databaseHandle = dbSystem.get(sharedResources).also {
-            database = DatabaseImpl(it).also(block)
-        }
+    override fun database(block: (DatabaseSpec).() -> Unit) {
+        check(database == null) { "Only one database spec, please" }
+        database = DatabaseImpl(databaseHandle).also(block)
     }
 
     override fun close() {
-        databaseHandle.use {
-            database.use {}
-        }
+        database.use {}
     }
 
     fun executeActions() = database!!.materialize().let {
         GivenInfo(
-            databaseHandle = databaseHandle!!,
+            databaseHandle = databaseHandle,
             database = it.database,
             schemaName = it.schemaName,
             namespace = it.namespace

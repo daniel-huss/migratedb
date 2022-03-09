@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl
+package migratedb.integrationtest.dsl.internal
 
+import migratedb.integrationtest.dsl.Dsl
 import migratedb.integrationtest.util.base.SafeIdentifier
-import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 
-interface CanNormalizeCase {
-    /**
-     * Normalizes the case of a table name.
-     */
-    fun tableName(s: SafeIdentifier) = tableName(s.toString()).asSafeIdentifier()
+abstract class AbstractAfterGiven<G>(
+    override val given: G,
+    protected val givenInfo: GivenInfo
+) : Dsl.AfterGiven<G> {
+    final override val schemaName: SafeIdentifier? get() = givenInfo.schemaName
 
-    /**
-     * Normalizes the case of a table name.
-     */
-    fun tableName(s: CharSequence): String
+    override fun qualTable(s: CharSequence): String {
+        val table = givenInfo.databaseHandle.normalizeCase(s)
+        return when (val schema = schemaName) {
+            null -> table
+            else -> "${givenInfo.databaseHandle.normalizeCase(schema)}.$table"
+        }
+    }
 }

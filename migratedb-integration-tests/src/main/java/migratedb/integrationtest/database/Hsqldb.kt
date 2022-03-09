@@ -37,6 +37,9 @@ enum class Hsqldb : DbSystem {
     V2_3_6,
     ;
 
+    // Relevant idiosyncracies:
+    //  - None
+
     companion object {
         private const val driverClass = "org.hsqldb.jdbc.JDBCDriver"
         private val databaseType = HSQLDBDatabaseType()
@@ -58,7 +61,7 @@ enum class Hsqldb : DbSystem {
 
     private inner class Handle : DbSystem.Handle {
         override val type: DatabaseType get() = Companion.databaseType
-        private val databaseName = Names.nextDatabase()
+        private val databaseName = Names.nextFile()
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             dataSource().work {
@@ -85,8 +88,8 @@ enum class Hsqldb : DbSystem {
             )
         }
 
-        override fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation {
-            return BasicCreateTableMutation(namespace, Names.nextTable())
+        override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
+            return BasicCreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
         }
 
         override fun close() {

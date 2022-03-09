@@ -16,6 +16,6 @@
 
 package migratedb.integrationtest.dsl
 
-interface DatabaseSpec : CanNormalizeCase {
+interface DatabaseSpec {
     fun existingSchemaHistory(table: String, block: SchemaHistorySpec.() -> Unit)
 }

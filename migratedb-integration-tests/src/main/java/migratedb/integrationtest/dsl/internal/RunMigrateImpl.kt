@@ -33,7 +33,11 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
 
     private val scriptMigrations = mutableListOf<ScriptMigration>()
     private val codeMigrations = mutableListOf<CodeMigration>()
-    private var config = FluentConfiguration().schemas(givenInfo.schemaName.toString())
+    private var config = FluentConfiguration().also { cfg ->
+        givenInfo.schemaName?.let {
+            cfg.schemas(it.toString())
+        }
+    }
 
     override fun script(name: String, sql: String) {
         scriptMigrations.add(ScriptMigration(name, sql))

@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl.internal
+package migratedb.integrationtest.dsl
 
-import migratedb.integrationtest.dsl.Dsl
-import migratedb.integrationtest.util.base.work
-import org.springframework.jdbc.core.JdbcTemplate
+interface QualifiedTableNameProvider {
 
-class ThenStepImpl<G : Any>(given: G, givenInfo: GivenInfo) : Dsl.ThenStep<G>, AbstractAfterGiven<G>(given, givenInfo) {
-    override fun withConnection(block: (JdbcTemplate) -> Unit) {
-        givenInfo.databaseHandle
-            .newAdminConnection(givenInfo.namespace)
-            .work(schema = givenInfo.schemaName, action = block)
-    }
+    /**
+     * Normalizes the case of a table name and qualifies it with a schema name if needed.
+     */
+    fun qualTable(s: CharSequence): String
 }

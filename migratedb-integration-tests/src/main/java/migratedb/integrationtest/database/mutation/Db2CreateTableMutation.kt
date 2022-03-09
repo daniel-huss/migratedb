@@ -21,30 +21,32 @@ import migratedb.integrationtest.util.base.work
 import java.sql.Connection
 
 /**
- * (DB2 only) Creates / drops a table whose name is not shared with other instances of this mutation.
+ * (DB2 only) Creates / drops a table.
  */
-class Db2CreateTableMutation(private val schemaName: SafeIdentifier, private val tableName: SafeIdentifier) :
-    IndependentDatabaseMutation {
+class Db2CreateTableMutation(
+    private val normalizedSchema: SafeIdentifier?,
+    private val normalizedTable: SafeIdentifier
+) : IndependentDatabaseMutation {
 
     override fun isApplied(connection: Connection): Boolean {
-        return connection.work(schemaName) {
-            it.query(
-                """select tabname from syscat.tables 
-                    |where lower(tabname) = lower('$tableName')
-                    |and lower(tabschema) = lower('$schemaName')""".trimMargin()
-            ) { _, _ -> true }.isNotEmpty()
+        return connection.work(normalizedSchema) {
+            var query = "select tabname from syscat.tables where tabname = '$normalizedTable"
+            if (normalizedSchema != null) {
+                query += " and tabschema = '$normalizedSchema'"
+            }
+            it.query(query) { _, _ -> true }.isNotEmpty()
         }
     }
 
     override fun apply(connection: Connection) {
-        connection.work(schemaName) {
-            it.execute("create table $tableName(id int not null primary key)")
+        connection.work(normalizedSchema) {
+            it.execute("create table $normalizedTable(id int not null primary key)")
         }
     }
 
     override fun undo(connection: Connection) {
-        connection.work(schemaName) {
-            it.execute("drop table $tableName")
+        connection.work(normalizedSchema) {
+            it.execute("drop table $normalizedTable")
         }
     }
 }

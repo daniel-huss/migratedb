@@ -24,5 +24,5 @@ data class GivenInfo(
     val databaseHandle: DbSystem.Handle,
     val database: Database<*>,
     val namespace: SafeIdentifier,
-    val schemaName: SafeIdentifier,
+    val schemaName: SafeIdentifier?,
 )

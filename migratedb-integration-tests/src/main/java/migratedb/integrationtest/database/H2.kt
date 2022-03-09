@@ -35,6 +35,9 @@ enum class H2 : DbSystem {
     V1_4_200,
     ;
 
+    // Relevant idiosyncracies:
+    //  - None
+
     companion object {
         private const val driverClass = "org.h2.Driver"
         private val databaseType = H2DatabaseType()
@@ -56,7 +59,7 @@ enum class H2 : DbSystem {
 
     private inner class Handle : DbSystem.Handle {
         override val type: DatabaseType get() = Companion.databaseType
-        private val databaseName = Names.nextDatabase()
+        private val databaseName = Names.nextFile()
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             dataSource().work {
@@ -88,8 +91,8 @@ enum class H2 : DbSystem {
             )
         }
 
-        override fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation {
-            return BasicCreateTableMutation(namespace, Names.nextTable())
+        override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
+            return BasicCreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
         }
 
         override fun close() {

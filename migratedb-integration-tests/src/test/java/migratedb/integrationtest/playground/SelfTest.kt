@@ -26,26 +26,26 @@ import org.junit.jupiter.params.provider.ArgumentsSource
 internal class SelfTest : IntegrationTest() {
     @ParameterizedTest
     @ArgumentsSource(DbSystem.All::class)
-    fun `Database system is supported by test DSL`(dbSystem: DbSystem) = withDsl {
+    fun `Database system is supported by test DSL`(dbSystem: DbSystem) = withDsl(dbSystem) {
         given {
-            database(dbSystem) {
-                existingSchemaHistory(table = tableName("migratedb")) {
+            database {
+                existingSchemaHistory(table = table("migratedb")) {
                     entry(name = "V001__Test", type = JDBC, success = true)
                 }
             }
         }.`when` {
             migrate {
-                withConfig {
-                    it.schemas(schemaName.toString())
-                        .table(tableName("migratedb"))
-                        .ignoreMissingMigrations(true)
+                withConfig { config ->
+                    schemaName?.let { config.schemas(it.toString()) }
+                    config.table(table("migratedb"))
+                    config.ignoreMissingMigrations(true)
                 }
                 script("V002__Foo", "-- This script does nothing")
                 code("V003__Bar", arbitraryMutation()::apply)
             }
         }.then {
             withConnection { sql ->
-                sql.queryForList("select * from $schemaName.${tableName("migratedb")}")
+                sql.queryForList("select * from ${table("migratedb")}")
                     .map { it.getValue("description") }
                     .shouldContainAll("Test", "Foo", "Bar")
             }

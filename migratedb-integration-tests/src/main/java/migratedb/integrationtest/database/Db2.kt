@@ -38,6 +38,9 @@ enum class Db2(image: String) : DbSystem {
     V11_5_7_0("ibmcom/db2:11.5.7.0"),
     ;
 
+    // Relevant idiosyncracies:
+    //  - When a table/column is created as "quoted_lower_case" it cannot be referenced using an unquoted identifier
+
     private val containerAlias = "db2_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
@@ -125,8 +128,8 @@ enum class Db2(image: String) : DbSystem {
             return container().dataSource(adminUser, namespace.toString())
         }
 
-        override fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation {
-            return Db2CreateTableMutation(namespace, Names.nextTable())
+        override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
+            return Db2CreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
         }
 
         override fun close() {

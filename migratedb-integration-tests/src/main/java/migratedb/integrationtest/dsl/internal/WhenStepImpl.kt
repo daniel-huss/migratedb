@@ -20,12 +20,7 @@ import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.dsl.Dsl
 import migratedb.integrationtest.dsl.RunMigrateSpec
 
-class WhenStepImpl<G : Any>(
-    override val given: G,
-    private val givenInfo: GivenInfo
-) : Dsl.WhenStep<G> {
-    override val schemaName get() = givenInfo.schemaName
-
+class WhenStepImpl<G : Any>(given: G, givenInfo: GivenInfo) : Dsl.WhenStep<G>, AbstractAfterGiven<G>(given, givenInfo) {
     private val executableActions = mutableListOf<() -> Unit>()
 
     override fun migrate(block: (RunMigrateSpec).() -> Unit) {
@@ -35,10 +30,8 @@ class WhenStepImpl<G : Any>(
     }
 
     override fun arbitraryMutation(): IndependentDatabaseMutation {
-        return givenInfo.databaseHandle.nextMutation(schemaName)
+        return givenInfo.databaseHandle.nextMutation(givenInfo.schemaName)
     }
-
-    override fun tableName(s: CharSequence) = givenInfo.databaseHandle.normalizeCase(s)
 
     fun executeActions() {
         executableActions.forEach { it() }

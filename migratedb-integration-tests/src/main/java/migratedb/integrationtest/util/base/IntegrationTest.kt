@@ -16,6 +16,7 @@
 
 package migratedb.integrationtest.util.base
 
+import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.dsl.Dsl
 import migratedb.integrationtest.util.container.SharedResources
 import migratedb.integrationtest.util.container.SharedResources.Companion.resources
@@ -45,7 +46,7 @@ abstract class IntegrationTest {
         }
     }
 
-    fun withDsl(block: (Dsl).() -> (Unit)) = Dsl(Extension.resources()).use(block)
+    fun withDsl(dbSystem: DbSystem, block: (Dsl).() -> (Unit)) = Dsl(dbSystem, Extension.resources()).use(block)
 
     companion object {
         init {

@@ -55,6 +55,10 @@ enum class Sqlite : DbSystem {
     V3_36_0_3,
     ;
 
+    // Relevant idiosyncracies:
+    //  - Doesn't really support schemas, although other databases can be "attached" with a custom alias to qualify
+    //    its tables (we don't use that feature here)
+
     companion object {
         private const val driverClass = "org.sqlite.JDBC"
         private val databaseType = SQLiteDatabaseType()
@@ -109,11 +113,10 @@ enum class Sqlite : DbSystem {
             )
         }
 
-        override fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation {
-            return SqliteCreateTableMutation(Names.nextTable())
+        override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
+            return SqliteCreateTableMutation(normalizeCase(Names.nextTable()))
         }
 
         override fun close() {}
     }
-
 }

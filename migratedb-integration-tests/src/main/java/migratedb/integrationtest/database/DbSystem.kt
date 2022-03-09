@@ -19,6 +19,7 @@ package migratedb.integrationtest.database
 import migratedb.core.api.internal.database.base.DatabaseType
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.SafeIdentifier
+import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 import migratedb.integrationtest.util.container.SharedResources
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.provider.Arguments
@@ -39,9 +40,10 @@ interface DbSystem {
          * either schema-level or database-level isolation, so it's undefined whether the namespace will be implemented
          * at the schema or at the database level.
          *
-         * @return The identifier that must be used to qualify items in the namespace.
+         * @return The identifier that must be used to qualify tables in the namespace. This can be null, which means
+         * that qualified names are not supported.
          */
-        fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier
+        fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier?
 
         /**
          * Drops an existing schema or database.
@@ -54,15 +56,20 @@ interface DbSystem {
         fun newAdminConnection(namespace: SafeIdentifier): DataSource
 
         /**
-         * Generates a new database mutation within [namespace] that is independent from all previously generated
-         * database mutations in the same namespace.
+         * Generates a new database mutation within [schema] (or the current schema, if null) that is independent from
+         * all previously generated database mutations in the same schema.
          */
-        fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation
+        fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation
 
         /**
          * Normalizes the case of an identifier.
          */
         fun normalizeCase(s: CharSequence): String = s.toString().uppercase()
+
+        /**
+         * Normalizes the case of an identifier.
+         */
+        fun normalizeCase(s: SafeIdentifier): SafeIdentifier = normalizeCase(s.toString()).asSafeIdentifier()
     }
 
     fun get(sharedResources: SharedResources): Handle
@@ -71,6 +78,7 @@ interface DbSystem {
     class All : ArgumentsProvider {
         override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(
             Db2.values(),
+            Firebird.values(),
             H2.values(),
             Hsqldb.values(),
             MariaDb.values(),

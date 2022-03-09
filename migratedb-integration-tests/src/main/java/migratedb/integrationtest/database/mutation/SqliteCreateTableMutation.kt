@@ -21,13 +21,13 @@ import migratedb.integrationtest.util.base.work
 import java.sql.Connection
 
 /**
- * (SQLite only) Creates / drops a table whose name is not shared with other instances of this mutation.
+ * (SQLite only) Creates / drops a table.
  */
-class SqliteCreateTableMutation(private val tableName: SafeIdentifier) : IndependentDatabaseMutation {
+class SqliteCreateTableMutation(private val normalizedTable: SafeIdentifier) : IndependentDatabaseMutation {
 
     override fun isApplied(connection: Connection): Boolean {
         return connection.work(commit = false) {
-            it.query("select name from sqlite_master where type='table' and name='$tableName'") { _, _ ->
+            it.query("select name from sqlite_master where type='table' and name='$normalizedTable'") { _, _ ->
                 true
             }.isNotEmpty()
         }
@@ -35,13 +35,13 @@ class SqliteCreateTableMutation(private val tableName: SafeIdentifier) : Indepen
 
     override fun apply(connection: Connection) {
         connection.work(commit = false) {
-            it.execute("create table $tableName(id int not null primary key)")
+            it.execute("create table $normalizedTable(id int not null primary key)")
         }
     }
 
     override fun undo(connection: Connection) {
         connection.work(commit = false) {
-            it.execute("drop table $tableName")
+            it.execute("drop table $normalizedTable")
         }
     }
 }

@@ -40,6 +40,9 @@ enum class Postgres(image: String) : DbSystem {
     V14("postgres:14-alpine"),
     ;
 
+    // Relevant idiosyncracies:
+    //  - Normalizes identifiers to lower case instead of upper case
+
     private val containerAlias = "postgres_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
@@ -100,8 +103,8 @@ enum class Postgres(image: String) : DbSystem {
             return container().dataSource(currentSchema = namespace.toString())
         }
 
-        override fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation {
-            return BasicCreateTableMutation(namespace, Names.nextTable())
+        override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
+            return BasicCreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
         }
 
         override fun normalizeCase(s: CharSequence) = s.toString().lowercase()

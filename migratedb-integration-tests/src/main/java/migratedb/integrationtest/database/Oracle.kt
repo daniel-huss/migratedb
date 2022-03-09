@@ -37,6 +37,11 @@ enum class Oracle(image: String) : DbSystem {
     V21_3_0("gvenzl/oracle-xe:21.3.0-slim"),
     ;
 
+    // Relevant idiosyncracies:
+    //  - Treats the empty string as NULL
+    //  - Schemas and users are kinda the same thing
+    //  - Passwords must be valid table/column identifiers
+
     private val containerAlias = "oracle_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
@@ -98,8 +103,8 @@ enum class Oracle(image: String) : DbSystem {
             }
         }
 
-        override fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation {
-            return BasicCreateTableMutation(namespace, Names.nextTable())
+        override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
+            return BasicCreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
         }
 
         override fun close() = container.close()

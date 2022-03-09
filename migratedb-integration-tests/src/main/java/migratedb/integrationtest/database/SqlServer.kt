@@ -35,6 +35,9 @@ enum class SqlServer(image: String) : DbSystem {
     V2019_CU15("mcr.microsoft.com/mssql/server:2019-CU15-ubuntu-20.04"),
     ;
 
+    // Relevant idiosyncracies:
+    //  - Makes it really hard to change the "current" schema, so we just use databases for namespacing
+
     private val containerAlias = "sql_server_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
@@ -42,7 +45,7 @@ enum class SqlServer(image: String) : DbSystem {
 
     companion object {
         private const val port = 1433
-        private const val password = "0_AaaBbb"
+        private const val password = "AaaBbb0_"
         const val adminUser = "sa"
     }
 
@@ -92,8 +95,8 @@ enum class SqlServer(image: String) : DbSystem {
             }
         }
 
-        override fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation {
-            return BasicCreateTableMutation(namespace, Names.nextTable())
+        override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
+            return BasicCreateTableMutation(schema, normalizeCase(Names.nextTable()))
         }
 
         override fun close() = container.close()

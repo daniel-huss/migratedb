@@ -21,35 +21,26 @@ import migratedb.integrationtest.util.base.work
 import java.sql.Connection
 
 /**
- * Creates / drops a table in a schema. Works with SQL databases that support `information_schema.tables`.
+ * (Firebird only) Creates / drops a table.
  */
-class BasicCreateTableMutation(private val normalizedSchema: SafeIdentifier?, private val normalizedTable: SafeIdentifier) :
-    IndependentDatabaseMutation {
-
-    private val qualifiedTable = when (normalizedSchema) {
-        null -> normalizedTable
-        else -> "$normalizedSchema.$normalizedTable"
-    }
+class FirebirdCreateTableMutation(private val normalizedTable: SafeIdentifier) : IndependentDatabaseMutation {
 
     override fun isApplied(connection: Connection): Boolean {
         return connection.work(commit = false) {
-            var query = "select table_name from information_schema.tables where table_name = '$normalizedTable'"
-            if (normalizedSchema != null) {
-                query += " and table_schema = '$normalizedSchema'"
-            }
-            it.query(query) { _, _ -> true }.isNotEmpty()
+            val sql = "select 1 from RDB\$RELATIONS where RDB\$SYSTEM_FLAG=0 and RDB\$RELATION_NAME = '$normalizedTable'"
+            it.query(sql) { _, _ -> true }.isNotEmpty()
         }
     }
 
     override fun apply(connection: Connection) {
-        connection.work(commit = true) {
-            it.execute("create table $qualifiedTable(id int not null primary key)")
+        connection.work(commit = false) {
+            it.execute("create table $normalizedTable(id int not null primary key)")
         }
     }
 
     override fun undo(connection: Connection) {
-        connection.work(commit = true) {
-            it.execute("drop table $qualifiedTable")
+        connection.work(commit = false) {
+            it.execute("drop table $normalizedTable")
         }
     }
 }

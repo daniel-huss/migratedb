@@ -39,6 +39,9 @@ enum class MariaDb(image: String) : DbSystem {
     V10_7("mariadb:10.7"),
     ;
 
+    // Relevant idiosyncracies:
+    //  - Same as MySQL
+
     private val containerAlias = "mariadb_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
@@ -82,24 +85,24 @@ enum class MariaDb(image: String) : DbSystem {
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             internalDs.work {
-                it.update("create database if not exists $namespace")
+                it.update("create database if not exists ${normalizeCase(namespace)}")
             }
             return namespace
         }
 
         override fun newAdminConnection(namespace: SafeIdentifier): DataSource {
-            return container().dataSource(adminUser, "$namespace")
+            return container().dataSource(adminUser, normalizeCase(namespace).toString())
         }
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
             require(namespace != defaultDatabase) { "Cannot drop the default database" }
             internalDs.work {
-                it.update("drop database if exists $namespace")
+                it.update("drop database if exists ${normalizeCase(namespace)}")
             }
         }
 
-        override fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation {
-            return BasicCreateTableMutation(namespace, Names.nextTable())
+        override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
+            return BasicCreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
         }
 
         override fun close() = container.close()

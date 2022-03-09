@@ -35,6 +35,11 @@ enum class MySql(image: String) : DbSystem {
     V5_7("mysql:5.7"),
     ;
 
+    // Relevant idiosyncracies:
+    //  - Doesn't use single quotes for string literals
+    //  - Calls schemas "databases"
+    //  - Doesn't normalize unquoted schema/database names
+
     private val containerAlias = "mysql_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
 
@@ -78,24 +83,24 @@ enum class MySql(image: String) : DbSystem {
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             internalDs.work {
-                it.update("create database if not exists $namespace")
+                it.update("create database if not exists ${normalizeCase(namespace)}")
             }
             return namespace
         }
 
         override fun newAdminConnection(namespace: SafeIdentifier): DataSource {
-            return container().dataSource(MariaDb.adminUser, "$namespace")
+            return container().dataSource(MariaDb.adminUser, normalizeCase(namespace).toString())
         }
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
             require(namespace != MariaDb.defaultDatabase) { "Cannot drop the default database" }
             internalDs.work {
-                it.update("drop database if exists $namespace")
+                it.update("drop database if exists ${normalizeCase(namespace)}")
             }
         }
 
-        override fun nextMutation(namespace: SafeIdentifier): IndependentDatabaseMutation {
-            return BasicCreateTableMutation(namespace, Names.nextTable())
+        override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
+            return BasicCreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
         }
 
         override fun close() = container.close()

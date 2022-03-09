@@ -22,16 +22,29 @@ import migratedb.integrationtest.dsl.internal.GivenStepImpl
 import migratedb.integrationtest.dsl.internal.ThenStepImpl
 import migratedb.integrationtest.dsl.internal.WhenStepImpl
 import migratedb.integrationtest.util.base.SafeIdentifier
+import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 import migratedb.integrationtest.util.container.SharedResources
 import org.springframework.jdbc.core.JdbcTemplate
 
-class Dsl(sharedResources: SharedResources) : AutoCloseable {
-    private val givenStep = GivenStepImpl(sharedResources)
-
+class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable {
+    private val databaseHandle = dbSystem.get(sharedResources)
+    private val givenStep = GivenStepImpl(databaseHandle)
 
     override fun close() {
-        givenStep.use { }
+        databaseHandle.use {
+            givenStep.use { }
+        }
     }
+
+    /**
+     * Normalizes the case of a table name.
+     */
+    fun table(s: SafeIdentifier) = table(s.toString()).asSafeIdentifier()
+
+    /**
+     * Normalizes the case of a table name.
+     */
+    fun table(s: CharSequence): String = databaseHandle.normalizeCase(s)
 
     fun <G : Any> given(block: (GivenStep).() -> G): GivenStepResult<G> {
         val g = givenStep.block()
@@ -54,16 +67,16 @@ class Dsl(sharedResources: SharedResources) : AutoCloseable {
     }
 
     interface GivenStep {
-        fun database(dbSystem: DbSystem, block: DatabaseSpec.() -> Unit)
+        fun database(block: DatabaseSpec.() -> Unit)
     }
 
     interface GivenStepResult<G : Any> {
         fun <W : Any> `when`(block: (WhenStep<G>).() -> W): WhenStepResult<G, W>
     }
 
-    interface AfterGiven<G> : CanNormalizeCase {
+    interface AfterGiven<G> : QualifiedTableNameProvider {
         val given: G
-        val schemaName: SafeIdentifier
+        val schemaName: SafeIdentifier?
     }
 
     interface WhenStep<G> : AfterGiven<G> {

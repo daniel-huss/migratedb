@@ -32,7 +32,6 @@ import migratedb.integrationtest.dsl.SchemaHistorySpec
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.NoOpIntercepter
 import migratedb.integrationtest.util.base.SafeIdentifier
-import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 
 class DatabaseImpl(
     private val databaseHandle: DbSystem.Handle
@@ -45,24 +44,24 @@ class DatabaseImpl(
         schemaHistory = SchemaHistorySpecImpl(table).also(block)
     }
 
-    override fun tableName(s: CharSequence) = databaseHandle.normalizeCase(s)
-
     data class MaterializeResult(
         val namespace: SafeIdentifier,
         val database: Database<*>,
-        val schemaName: SafeIdentifier,
+        val schemaName: SafeIdentifier?,
     )
 
     fun materialize(): MaterializeResult {
-        val schemaName = databaseHandle.normalizeCase(databaseHandle.createNamespaceIfNotExists(namespace))
+        val schemaName = databaseHandle.createNamespaceIfNotExists(namespace)?.let(databaseHandle::normalizeCase)
         val dataSource = databaseHandle.newAdminConnection(namespace)
-        val configuration = FluentConfiguration().schemas(schemaName)
+        val configuration = FluentConfiguration().also {
+            if (schemaName != null) it.schemas(schemaName.toString())
+        }
         val connectionFactory = JdbcConnectionFactory(dataSource, configuration, NoOpIntercepter)
         val db = databaseHandle.type.createDatabase(configuration, connectionFactory, NoOpIntercepter)
         val schema = SchemaHistoryFactory.scanSchemas(configuration, db).defaultSchema
         schemaHistory?.materializeInto(db, schema, connectionFactory)
         database = db
-        return MaterializeResult(namespace = namespace, database = db, schemaName = schemaName.asSafeIdentifier())
+        return MaterializeResult(namespace = namespace, database = db, schemaName = schemaName)
     }
 
     override fun close() {
@@ -99,7 +98,10 @@ class DatabaseImpl(
         }
 
         fun materializeInto(database: Database<*>, schema: Schema<*, *>, connectionFactory: JdbcConnectionFactory) {
-            val configuration = FluentConfiguration().schemas(schema.name).table(table)
+            val configuration = FluentConfiguration().also {
+                if (schema.name != null) it.schemas(schema.name)
+                it.table(table)
+            }
             val sqlScriptExecutorFactory = database.databaseType.createSqlScriptExecutorFactory(
                 connectionFactory,
                 NoopCallbackExecutor.INSTANCE,
