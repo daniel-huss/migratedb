@@ -126,14 +126,16 @@ public class MigrateDb {
      * @throws MigrateDbException when the migration failed.
      */
     public MigrateResult migrate() throws MigrateDbException {
-        return migratedbExecutor.execute(new Command<MigrateResult>() {
+        return migratedbExecutor.execute(new MigrateDbExecutor.Command<MigrateResult>() {
             public MigrateResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                         Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
+                                         Database database,
+                                         Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
                                          StatementInterceptor statementInterceptor) {
                 if (configuration.isValidateOnMigrate()) {
                     ValidateResult validateResult = doValidate(database,
                                                                migrationResolver,
                                                                schemaHistory,
+                                                               defaultSchema,
                                                                schemas,
                                                                callbackExecutor,
                                                                true);
@@ -170,7 +172,7 @@ public class MigrateDb {
                     } else {
                         if (configuration.getCreateSchemas()) {
                             new DbSchemas(database, schemas, schemaHistory, callbackExecutor).create(false);
-                        } else if (!schemas[0].exists()) {
+                        } else if (!defaultSchema.exists()) {
                             LOG.warn("The configuration option 'createSchemas' is false.\n" +
                                      "However, the schema history table still needs a schema to reside in.\n" +
                                      "You must manually create a schema for the schema history table to reside in.\n" +
@@ -183,7 +185,7 @@ public class MigrateDb {
 
                 MigrateResult result = new DbMigrate(database,
                                                      schemaHistory,
-                                                     schemas[0],
+                                                     defaultSchema,
                                                      migrationResolver,
                                                      configuration,
                                                      callbackExecutor).migrate();
@@ -205,9 +207,10 @@ public class MigrateDb {
      * @throws MigrateDbException when the info retrieval failed.
      */
     public MigrationInfoService info() {
-        return migratedbExecutor.execute(new Command<MigrationInfoService>() {
+        return migratedbExecutor.execute(new MigrateDbExecutor.Command<MigrationInfoService>() {
             public MigrationInfoService execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                                Database database, Schema[] schemas,
+                                                Database database,
+                                                Schema defaultSchema, Schema[] schemas,
                                                 CallbackExecutor callbackExecutor,
                                                 StatementInterceptor statementInterceptor) {
                 MigrationInfoService migrationInfoService = new DbInfo(migrationResolver,
@@ -235,11 +238,12 @@ public class MigrateDb {
      * @throws MigrateDbException when the clean fails.
      */
     public CleanResult clean() {
-        return migratedbExecutor.execute(new Command<CleanResult>() {
+        return migratedbExecutor.execute(new MigrateDbExecutor.Command<CleanResult>() {
             public CleanResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                       Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
+                                       Database database,
+                                       Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
                                        StatementInterceptor statementInterceptor) {
-                CleanResult cleanResult = doClean(database, schemaHistory, schemas, callbackExecutor);
+                CleanResult cleanResult = doClean(database, schemaHistory, defaultSchema, schemas, callbackExecutor);
 
                 callbackExecutor.onOperationFinishEvent(Event.AFTER_CLEAN_OPERATION_FINISH, cleanResult);
 
@@ -263,13 +267,14 @@ public class MigrateDb {
      * @throws MigrateDbException when the validation failed.
      */
     public void validate() throws MigrateDbException {
-        migratedbExecutor.execute(new Command<Void>() {
+        migratedbExecutor.execute(new MigrateDbExecutor.Command<Void>() {
             public Void execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory, Database database,
-                                Schema[] schemas, CallbackExecutor callbackExecutor,
+                                Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
                                 StatementInterceptor statementInterceptor) {
                 ValidateResult validateResult = doValidate(database,
                                                            migrationResolver,
                                                            schemaHistory,
+                                                           defaultSchema,
                                                            schemas,
                                                            callbackExecutor,
                                                            configuration.isIgnorePendingMigrations());
@@ -302,13 +307,15 @@ public class MigrateDb {
      * @returns An object summarising the validation results
      */
     public ValidateResult validateWithResult() throws MigrateDbException {
-        return migratedbExecutor.execute(new Command<ValidateResult>() {
+        return migratedbExecutor.execute(new MigrateDbExecutor.Command<ValidateResult>() {
             public ValidateResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                          Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
+                                          Database database,
+                                          Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
                                           StatementInterceptor statementInterceptor) {
                 ValidateResult validateResult = doValidate(database,
                                                            migrationResolver,
                                                            schemaHistory,
+                                                           defaultSchema,
                                                            schemas,
                                                            callbackExecutor,
                                                            configuration.isIgnorePendingMigrations());
@@ -330,9 +337,10 @@ public class MigrateDb {
      * @throws MigrateDbException when the schema baselining failed.
      */
     public BaselineResult baseline() throws MigrateDbException {
-        return migratedbExecutor.execute(new Command<BaselineResult>() {
+        return migratedbExecutor.execute(new MigrateDbExecutor.Command<BaselineResult>() {
             public BaselineResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                          Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
+                                          Database database,
+                                          Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
                                           StatementInterceptor statementInterceptor) {
                 if (configuration.getCreateSchemas()) {
                     new DbSchemas(database, schemas, schemaHistory, callbackExecutor).create(true);
@@ -368,9 +376,10 @@ public class MigrateDb {
      * @throws MigrateDbException when the schema history table repair failed.
      */
     public RepairResult repair() throws MigrateDbException {
-        return migratedbExecutor.execute(new Command<RepairResult>() {
+        return migratedbExecutor.execute(new MigrateDbExecutor.Command<RepairResult>() {
             public RepairResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                        Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
+                                        Database database,
+                                        Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
                                         StatementInterceptor statementInterceptor) {
                 RepairResult repairResult = new DbRepair(database,
                                                          migrationResolver,
@@ -400,9 +409,9 @@ public class MigrateDb {
         return Development.TODO("Implement Undo");
     }
 
-    private CleanResult doClean(Database database, SchemaHistory schemaHistory, Schema[] schemas,
+    private CleanResult doClean(Database database, SchemaHistory schemaHistory, Schema defaultSchema, Schema[] schemas,
                                 CallbackExecutor callbackExecutor) {
-        return new DbClean(database, schemaHistory, schemas, callbackExecutor, configuration).clean();
+        return new DbClean(database, schemaHistory, defaultSchema, schemas, callbackExecutor, configuration).clean();
     }
 
     /**
@@ -416,18 +425,19 @@ public class MigrateDb {
      * @param ignorePending     Whether to ignore pending migrations.
      */
     private ValidateResult doValidate(Database database, MigrationResolver migrationResolver,
-                                      SchemaHistory schemaHistory, Schema[] schemas, CallbackExecutor callbackExecutor,
+                                      SchemaHistory schemaHistory,
+                                      Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
                                       boolean ignorePending) {
         ValidateResult validateResult = new DbValidate(database,
                                                        schemaHistory,
-                                                       schemas[0],
+                                                       defaultSchema,
                                                        migrationResolver,
                                                        configuration,
                                                        ignorePending,
                                                        callbackExecutor).validate();
 
         if (!validateResult.validationSuccessful && configuration.isCleanOnValidationError()) {
-            doClean(database, schemaHistory, schemas, callbackExecutor);
+            doClean(database, schemaHistory, defaultSchema, schemas, callbackExecutor);
         }
 
         return validateResult;

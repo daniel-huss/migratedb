@@ -51,6 +51,12 @@ import migratedb.core.internal.util.LocationScanner;
 final class MigrateDbExecutor {
     private static final Log LOG = Log.getLog(MigrateDbExecutor.class);
 
+    interface Command<T> {
+        T execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory, Database database,
+                  Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
+                  StatementInterceptor statementInterceptor);
+    }
+
     /**
      * Designed so we can fail fast if the configuration is invalid
      */
@@ -94,11 +100,9 @@ final class MigrateDbExecutor {
             resourceNameValidator.validateSQLMigrationNaming(resourceProvider, configuration);
         }
 
-        JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory(
-            configuration.getDataSource(),
-            configuration,
-            statementInterceptor
-        );
+        JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory(configuration.getDataSource(),
+                                                                                configuration,
+                                                                                statementInterceptor);
 
         DatabaseType databaseType = jdbcConnectionFactory.getDatabaseType();
         ParsingContext parsingContext = new ParsingContext();
@@ -141,22 +145,22 @@ final class MigrateDbExecutor {
 
             database.ensureSupported();
 
-            DefaultCallbackExecutor callbackExecutor =
-                new DefaultCallbackExecutor(configuration, database, schemas.defaultSchema,
-                                            prepareCallbacks(
-                                                database,
-                                                resourceProvider,
-                                                jdbcConnectionFactory,
-                                                sqlScriptFactory,
-                                                statementInterceptor,
-                                                schemas.defaultSchema,
-                                                parsingContext
-                                            ));
+            DefaultCallbackExecutor callbackExecutor = new DefaultCallbackExecutor(configuration,
+                                                                                   database,
+                                                                                   schemas.defaultSchema,
+                                                                                   prepareCallbacks(
+                                                                                       database,
+                                                                                       resourceProvider,
+                                                                                       jdbcConnectionFactory,
+                                                                                       sqlScriptFactory,
+                                                                                       statementInterceptor,
+                                                                                       schemas.defaultSchema,
+                                                                                       parsingContext));
 
-            SqlScriptExecutorFactory sqlScriptExecutorFactory =
-                databaseType.createSqlScriptExecutorFactory(jdbcConnectionFactory,
-                                                            callbackExecutor,
-                                                            statementInterceptor);
+            SqlScriptExecutorFactory sqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
+                jdbcConnectionFactory,
+                callbackExecutor,
+                statementInterceptor);
 
             SchemaHistory schemaHistory = SchemaHistoryFactory.getSchemaHistory(
                 configuration,
@@ -174,6 +178,7 @@ final class MigrateDbExecutor {
                                         parsingContext),
                 schemaHistory,
                 database,
+                schemas.defaultSchema,
                 schemas.all.toArray(new Schema[0]),
                 callbackExecutor,
                 statementInterceptor);
@@ -239,19 +244,16 @@ final class MigrateDbExecutor {
         effectiveCallbacks.addAll(Arrays.asList(configuration.getCallbacks()));
 
         if (!configuration.isSkipDefaultCallbacks()) {
-            SqlScriptExecutorFactory sqlScriptExecutorFactory =
-                jdbcConnectionFactory.getDatabaseType().createSqlScriptExecutorFactory(jdbcConnectionFactory,
-                                                                                       callbackExecutor,
-                                                                                       statementInterceptor
-                );
+            SqlScriptExecutorFactory sqlScriptExecutorFactory = jdbcConnectionFactory.getDatabaseType()
+                                                                                     .createSqlScriptExecutorFactory(
+                                                                                         jdbcConnectionFactory,
+                                                                                         callbackExecutor,
+                                                                                         statementInterceptor);
 
-            effectiveCallbacks.addAll(
-                new SqlScriptCallbackFactory(
-                    resourceProvider,
-                    sqlScriptExecutorFactory,
-                    sqlScriptFactory,
-                    configuration
-                ).getCallbacks());
+            effectiveCallbacks.addAll(new SqlScriptCallbackFactory(resourceProvider,
+                                                                   sqlScriptExecutorFactory,
+                                                                   sqlScriptFactory,
+                                                                   configuration).getCallbacks());
         }
 
         return effectiveCallbacks;

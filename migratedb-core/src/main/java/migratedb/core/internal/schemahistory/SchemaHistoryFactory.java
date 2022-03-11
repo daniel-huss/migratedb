@@ -21,14 +21,10 @@ import java.util.List;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
-import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.callback.NoopCallbackExecutor;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
-import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.internal.util.StringUtils;
@@ -46,44 +42,12 @@ public class SchemaHistoryFactory {
                                                  Database database, Schema schema,
                                                  StatementInterceptor statementInterceptor) {
         Table table = schema.getTable(configuration.getTable());
-        JdbcTableSchemaHistory jdbcTableSchemaHistory =
-            new JdbcTableSchemaHistory(sqlScriptExecutorFactory, sqlScriptFactory, database, table);
+        JdbcTableSchemaHistory jdbcTableSchemaHistory = new JdbcTableSchemaHistory(sqlScriptExecutorFactory,
+                                                                                   sqlScriptFactory,
+                                                                                   database,
+                                                                                   table);
 
         return jdbcTableSchemaHistory;
-    }
-
-    public static SchemaHistory getSchemaHistory(Configuration configuration) {
-        JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory(
-            configuration.getDataSource(),
-            configuration,
-            null);
-
-        DatabaseType databaseType = jdbcConnectionFactory.getDatabaseType();
-        ParsingContext parsingContext = new ParsingContext();
-        SqlScriptFactory sqlScriptFactory = databaseType.createSqlScriptFactory(configuration, parsingContext);
-
-        SqlScriptExecutorFactory noCallbackSqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
-            jdbcConnectionFactory,
-            NoopCallbackExecutor.INSTANCE,
-            null);
-
-        Database database = databaseType.createDatabase(
-            configuration,
-            true,
-            jdbcConnectionFactory,
-            null);
-
-        var schemas = scanSchemas(configuration, database);
-
-        SchemaHistory schemaHistory = SchemaHistoryFactory.getSchemaHistory(
-            configuration,
-            noCallbackSqlScriptExecutorFactory,
-            sqlScriptFactory,
-            database,
-            schemas.defaultSchema,
-            null);
-
-        return schemaHistory;
     }
 
     public static final class SchemasWithDefault {
@@ -97,54 +61,37 @@ public class SchemaHistoryFactory {
     }
 
     public static SchemasWithDefault scanSchemas(Configuration configuration, Database database) {
-        String defaultSchemaName = configuration.getDefaultSchema();
         String[] schemaNames = configuration.getSchemas();
 
-        if (!isDefaultSchemaValid(defaultSchemaName, schemaNames)) {
-            throw new MigrateDbException(
-                "The defaultSchema property is specified but is not a member of the schemas property");
-        }
+        String defaultSchemaName = configuration.getDefaultSchema();
 
         LOG.debug("Schemas: " + StringUtils.arrayToCommaDelimitedString(schemaNames));
         LOG.debug("Default schema: " + defaultSchemaName);
 
         List<Schema> schemas = new ArrayList<>();
+        for (String schemaName : schemaNames) {
+            schemas.add(database.getMainConnection().getSchema(schemaName));
+        }
 
-        if (schemaNames.length == 0) {
-            Schema currentSchema = database.getMainConnection().getCurrentSchema();
-            if (currentSchema == null) {
-                throw new MigrateDbException("Unable to determine schema for the schema history table." +
-                                             " Set a default schema for the connection or specify one using the " +
-                                             "defaultSchema property!");
-            }
-            schemas.add(currentSchema);
-        } else {
-            for (String schemaName : schemaNames) {
-                schemas.add(database.getMainConnection().getSchema(schemaName));
-            }
-            if (defaultSchemaName == null) {
+        if (defaultSchemaName == null) {
+            if (schemaNames.length == 0) {
+                Schema currentSchema = database.getMainConnection().getCurrentSchema();
+                if (currentSchema == null || currentSchema.getName() == null) {
+                    throw new MigrateDbException(
+                        "Unable to determine schema for the schema history table. Set a default schema for the " +
+                        "connection or specify one using the 'defaultSchema' property");
+                }
+                defaultSchemaName = currentSchema.getName();
+            } else {
                 defaultSchemaName = schemaNames[0];
             }
         }
 
-        var defaultSchema = (defaultSchemaName != null)
-                            ? database.getMainConnection().getSchema(defaultSchemaName)
-                            : database.getMainConnection().getCurrentSchema();
+        Schema defaultSchema = database.getMainConnection().getSchema(defaultSchemaName);
+        if (!schemas.contains(defaultSchema)) {
+            schemas.add(0, defaultSchema);
+        }
 
         return new SchemasWithDefault(schemas, defaultSchema);
-    }
-
-    private static boolean isDefaultSchemaValid(String defaultSchema, String[] schemas) {
-        // No default schema specified
-        if (defaultSchema == null) {
-            return true;
-        }
-        // Default schema is one of those MigrateDb is managing
-        for (String schema : schemas) {
-            if (defaultSchema.equals(schema)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
