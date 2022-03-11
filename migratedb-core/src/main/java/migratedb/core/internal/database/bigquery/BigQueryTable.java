@@ -47,7 +47,8 @@ public class BigQueryTable extends BaseTable<BigQueryDatabase, BigQuerySchema> {
     @Override
     protected void doLock() throws SQLException {
         String updateLockStatement =
-            "UPDATE " + this + " SET installed_on = now() WHERE version = '?' AND DESCRIPTION = 'migratedb-lock'";
+            "UPDATE " + this +
+            " SET installed_on = CURRENT_TIMESTAMP() WHERE version = '?' AND DESCRIPTION = 'migratedb-lock'";
         String deleteExpiredLockStatement =
             " DELETE FROM " + this +
             " WHERE DESCRIPTION = 'migratedb-lock'" +
