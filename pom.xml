@@ -114,7 +114,7 @@
         <version.oracle>19.13.0.0.1</version.oracle>
         <version.osgi>4.3.1</version.osgi>
         <version.p6spy>3.9.1</version.p6spy>
-        <version.postgresql>42.2.19</version.postgresql>
+        <version.postgresql>42.2.25</version.postgresql>
         <version.redshift>1.2.10.1009</version.redshift>
         <version.slf4j>1.7.30</version.slf4j>
         <version.snowflake>3.13.1</version.snowflake>
