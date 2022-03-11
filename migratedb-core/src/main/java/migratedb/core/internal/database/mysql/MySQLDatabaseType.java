@@ -71,9 +71,6 @@ public class MySQLDatabaseType extends BaseDatabaseType {
         }
 
         if (ClassUtils.isPresent(MARIADB_JDBC_DRIVER, classLoader)) {
-            LOG.warn("You are attempting to connect to a MySQL database using the MariaDB driver." +
-                     " This is known to cause issues." +
-                     " An upgrade to Oracle's MySQL JDBC driver is highly recommended.");
             return MARIADB_JDBC_DRIVER;
         }
 
