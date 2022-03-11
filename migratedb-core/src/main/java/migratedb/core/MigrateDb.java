@@ -16,25 +16,18 @@
  */
 package migratedb.core;
 
-import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import migratedb.core.api.ClassProvider;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfoService;
-import migratedb.core.api.ResourceProvider;
-import migratedb.core.api.callback.Callback;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.ClassicConfiguration;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.configuration.FluentConfiguration;
 import migratedb.core.api.exception.MigrateDbValidateException;
 import migratedb.core.api.internal.database.base.Database;
-import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.logging.Log;
-import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.output.BaselineResult;
 import migratedb.core.api.output.CleanResult;
 import migratedb.core.api.output.MigrateResult;
@@ -43,9 +36,6 @@ import migratedb.core.api.output.UndoResult;
 import migratedb.core.api.output.ValidateResult;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.callback.CallbackExecutor;
-import migratedb.core.internal.callback.DefaultCallbackExecutor;
-import migratedb.core.internal.callback.NoopCallbackExecutor;
-import migratedb.core.internal.callback.SqlScriptCallbackFactory;
 import migratedb.core.internal.command.DbBaseline;
 import migratedb.core.internal.command.DbClean;
 import migratedb.core.internal.command.DbInfo;
@@ -53,21 +43,9 @@ import migratedb.core.internal.command.DbMigrate;
 import migratedb.core.internal.command.DbRepair;
 import migratedb.core.internal.command.DbSchemas;
 import migratedb.core.internal.command.DbValidate;
-import migratedb.core.internal.configuration.ConfigurationValidator;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.StatementInterceptor;
-import migratedb.core.internal.parser.ParsingContext;
-import migratedb.core.internal.resolver.CompositeMigrationResolver;
-import migratedb.core.internal.resource.ResourceNameValidator;
-import migratedb.core.internal.resource.StringResource;
 import migratedb.core.internal.schemahistory.SchemaHistory;
-import migratedb.core.internal.schemahistory.SchemaHistoryFactory;
-import migratedb.core.internal.sqlscript.SqlScript;
-import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
-import migratedb.core.internal.sqlscript.SqlScriptFactory;
-import migratedb.core.internal.strategy.RetryStrategy;
 import migratedb.core.internal.util.Development;
-import migratedb.core.internal.util.LocationScanner;
 import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 import migratedb.core.internal.util.StringUtils;
 
@@ -88,21 +66,7 @@ public class MigrateDb {
     private static final Log LOG = Log.getLog(MigrateDb.class);
 
     private final ClassicConfiguration configuration;
-
-    /**
-     * Whether the database connection info has already been printed in the logs.
-     */
-    private boolean dbConnectionInfoPrinted;
-
-    /**
-     * Designed so we can fail fast if the configuration is invalid.
-     */
-    private final ConfigurationValidator configurationValidator = new ConfigurationValidator();
-
-    /**
-     * Designed so we can fail fast if the SQL file resources are invalid.
-     */
-    private final ResourceNameValidator resourceNameValidator = new ResourceNameValidator();
+    private final MigrateDbExecutor migratedbExecutor;
 
     /**
      * This is your starting point. This creates a configuration which can be customized to your needs before being
@@ -142,6 +106,7 @@ public class MigrateDb {
      */
     public MigrateDb(Configuration configuration) {
         this.configuration = new ClassicConfiguration(configuration);
+        this.migratedbExecutor = new MigrateDbExecutor(configuration);
     }
 
     /**
@@ -161,10 +126,9 @@ public class MigrateDb {
      * @throws MigrateDbException when the migration failed.
      */
     public MigrateResult migrate() throws MigrateDbException {
-        return execute(new Command<MigrateResult>() {
-            public MigrateResult execute(MigrationResolver migrationResolver,
-                                         SchemaHistory schemaHistory, Database database, Schema[] schemas,
-                                         CallbackExecutor callbackExecutor,
+        return migratedbExecutor.execute(new Command<MigrateResult>() {
+            public MigrateResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
+                                         Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
                                          StatementInterceptor statementInterceptor) {
                 if (configuration.isValidateOnMigrate()) {
                     ValidateResult validateResult = doValidate(database,
@@ -195,11 +159,10 @@ public class MigrateDb {
                         } else {
                             // Second check for MySQL which is sometimes flaky otherwise
                             if (!schemaHistory.exists()) {
-                                throw new MigrateDbException("Found non-empty schema(s) "
-                                                             + StringUtils.collectionToCommaDelimitedString(
-                                    nonEmptySchemas)
-                                                             + " but no schema history table. Use baseline()"
-                                                             +
+                                throw new MigrateDbException("Found non-empty schema(s) " +
+                                                             StringUtils.collectionToCommaDelimitedString(
+                                                                 nonEmptySchemas) +
+                                                             " but no schema history table. Use baseline()" +
                                                              " or set baselineOnMigrate to true to initialize the " +
                                                              "schema history table.");
                             }
@@ -232,25 +195,57 @@ public class MigrateDb {
         }, true);
     }
 
-    private BaselineResult doBaseline(SchemaHistory schemaHistory, CallbackExecutor callbackExecutor,
-                                      Database database) {
-        return new DbBaseline(schemaHistory, configuration.getBaselineVersion(), configuration.getBaselineDescription(),
-                              callbackExecutor, database).baseline();
+    /**
+     * <p>Retrieves the complete information about all the migrations including applied, pending and current migrations
+     * with details and status.</p>
+     * <img src="https://no-website-yet.org/assets/balsamiq/command-info.png" alt="info">
+     *
+     * @return All migrations sorted by version, oldest first.
+     *
+     * @throws MigrateDbException when the info retrieval failed.
+     */
+    public MigrationInfoService info() {
+        return migratedbExecutor.execute(new Command<MigrationInfoService>() {
+            public MigrationInfoService execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
+                                                Database database, Schema[] schemas,
+                                                CallbackExecutor callbackExecutor,
+                                                StatementInterceptor statementInterceptor) {
+                MigrationInfoService migrationInfoService = new DbInfo(migrationResolver,
+                                                                       schemaHistory,
+                                                                       configuration,
+                                                                       database,
+                                                                       callbackExecutor,
+                                                                       schemas).info();
+
+                callbackExecutor.onOperationFinishEvent(Event.AFTER_INFO_OPERATION_FINISH,
+                                                        migrationInfoService.getInfoResult());
+
+                return migrationInfoService;
+            }
+        }, true);
     }
 
     /**
-     * <p>Undoes the most recently applied versioned migration. If target is specified, MigrateDb will attempt to undo
-     * versioned migrations in the order they were applied until it hits one with a version below the target. If there
-     * is no versioned migration to undo, calling undo has no effect.</p>
+     * <p>Drops all objects (tables, views, procedures, triggers, ...) in the configured schemas.
+     * The schemas are cleaned in the order specified by the {@code schemas} property.</p>
+     * <img src="https://no-website-yet.org/assets/balsamiq/command-clean.png" alt="clean">
      *
-     * <img src="https://no-website-yet.org/assets/balsamiq/command-undo.png" alt="undo">
+     * @return An object summarising the actions taken
      *
-     * @return An object summarising the successfully undone migrations.
-     *
-     * @throws MigrateDbException when the undo failed.
+     * @throws MigrateDbException when the clean fails.
      */
-    public UndoResult undo() throws MigrateDbException {
-        return Development.TODO("Implement Undo");
+    public CleanResult clean() {
+        return migratedbExecutor.execute(new Command<CleanResult>() {
+            public CleanResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
+                                       Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
+                                       StatementInterceptor statementInterceptor) {
+                CleanResult cleanResult = doClean(database, schemaHistory, schemas, callbackExecutor);
+
+                callbackExecutor.onOperationFinishEvent(Event.AFTER_CLEAN_OPERATION_FINISH, cleanResult);
+
+                return cleanResult;
+            }
+        }, false);
     }
 
     /**
@@ -268,7 +263,7 @@ public class MigrateDb {
      * @throws MigrateDbException when the validation failed.
      */
     public void validate() throws MigrateDbException {
-        execute(new Command<Void>() {
+        migratedbExecutor.execute(new Command<Void>() {
             public Void execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory, Database database,
                                 Schema[] schemas, CallbackExecutor callbackExecutor,
                                 StatementInterceptor statementInterceptor) {
@@ -307,10 +302,9 @@ public class MigrateDb {
      * @returns An object summarising the validation results
      */
     public ValidateResult validateWithResult() throws MigrateDbException {
-        return execute(new Command<ValidateResult>() {
+        return migratedbExecutor.execute(new Command<ValidateResult>() {
             public ValidateResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                          Database database,
-                                          Schema[] schemas, CallbackExecutor callbackExecutor,
+                                          Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
                                           StatementInterceptor statementInterceptor) {
                 ValidateResult validateResult = doValidate(database,
                                                            migrationResolver,
@@ -327,87 +321,6 @@ public class MigrateDb {
     }
 
     /**
-     * Performs the actual validation. All set up must have taken place beforehand.
-     *
-     * @param database          The database-specific support.
-     * @param migrationResolver The migration resolver;
-     * @param schemaHistory     The schema history table.
-     * @param schemas           The schemas managed by MigrateDb.
-     * @param callbackExecutor  The callback executor.
-     * @param ignorePending     Whether to ignore pending migrations.
-     */
-    private ValidateResult doValidate(Database database, MigrationResolver migrationResolver,
-                                      SchemaHistory schemaHistory,
-                                      Schema[] schemas, CallbackExecutor callbackExecutor, boolean ignorePending) {
-        ValidateResult validateResult = new DbValidate(database, schemaHistory, schemas[0], migrationResolver,
-                                                       configuration, ignorePending, callbackExecutor).validate();
-
-        if (!validateResult.validationSuccessful && configuration.isCleanOnValidationError()) {
-            doClean(database, schemaHistory, schemas, callbackExecutor);
-        }
-
-        return validateResult;
-    }
-
-    private CleanResult doClean(Database database, SchemaHistory schemaHistory, Schema[] schemas,
-                                CallbackExecutor callbackExecutor) {
-        return new DbClean(database, schemaHistory, schemas, callbackExecutor, configuration).clean();
-    }
-
-    /**
-     * <p>Drops all objects (tables, views, procedures, triggers, ...) in the configured schemas.
-     * The schemas are cleaned in the order specified by the {@code schemas} property.</p>
-     * <img src="https://no-website-yet.org/assets/balsamiq/command-clean.png" alt="clean">
-     *
-     * @return An object summarising the actions taken
-     *
-     * @throws MigrateDbException when the clean fails.
-     */
-    public CleanResult clean() {
-        return execute(new Command<CleanResult>() {
-            public CleanResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                       Database database,
-                                       Schema[] schemas, CallbackExecutor callbackExecutor,
-                                       StatementInterceptor statementInterceptor) {
-                CleanResult cleanResult = doClean(database, schemaHistory, schemas, callbackExecutor);
-
-                callbackExecutor.onOperationFinishEvent(Event.AFTER_CLEAN_OPERATION_FINISH, cleanResult);
-
-                return cleanResult;
-            }
-        }, false);
-    }
-
-    /**
-     * <p>Retrieves the complete information about all the migrations including applied, pending and current migrations
-     * with details and status.</p>
-     * <img src="https://no-website-yet.org/assets/balsamiq/command-info.png" alt="info">
-     *
-     * @return All migrations sorted by version, oldest first.
-     *
-     * @throws MigrateDbException when the info retrieval failed.
-     */
-    public MigrationInfoService info() {
-        return execute(new Command<MigrationInfoService>() {
-            public MigrationInfoService execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                                Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
-                                                StatementInterceptor statementInterceptor) {
-                MigrationInfoService migrationInfoService = new DbInfo(migrationResolver,
-                                                                       schemaHistory,
-                                                                       configuration,
-                                                                       database,
-                                                                       callbackExecutor,
-                                                                       schemas).info();
-
-                callbackExecutor.onOperationFinishEvent(Event.AFTER_INFO_OPERATION_FINISH,
-                                                        migrationInfoService.getInfoResult());
-
-                return migrationInfoService;
-            }
-        }, true);
-    }
-
-    /**
      * <p>Baselines an existing database, excluding all migrations up to and including baselineVersion.</p>
      *
      * <img src="https://no-website-yet.org/assets/balsamiq/command-baseline.png" alt="baseline">
@@ -417,10 +330,9 @@ public class MigrateDb {
      * @throws MigrateDbException when the schema baselining failed.
      */
     public BaselineResult baseline() throws MigrateDbException {
-        return execute(new Command<BaselineResult>() {
-            public BaselineResult execute(MigrationResolver migrationResolver,
-                                          SchemaHistory schemaHistory, Database database, Schema[] schemas,
-                                          CallbackExecutor callbackExecutor,
+        return migratedbExecutor.execute(new Command<BaselineResult>() {
+            public BaselineResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
+                                          Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
                                           StatementInterceptor statementInterceptor) {
                 if (configuration.getCreateSchemas()) {
                     new DbSchemas(database, schemas, schemaHistory, callbackExecutor).create(true);
@@ -428,8 +340,8 @@ public class MigrateDb {
                     LOG.warn("The configuration option 'createSchemas' is false.\n" +
                              "Even though MigrateDb is configured not to create any schemas, the schema history table" +
                              " still needs a schema to reside in.\n" +
-                             "You must manually create a schema for the schema history table to reside in.\n" +
-                             "See " + MigrateDbWebsiteLinks.CREATE_SCHEMAS);
+                             "You must manually create a schema for the schema history table to reside in.\n" + "See " +
+                             MigrateDbWebsiteLinks.CREATE_SCHEMAS);
                 }
 
                 BaselineResult baselineResult = doBaseline(schemaHistory, callbackExecutor, database);
@@ -456,10 +368,9 @@ public class MigrateDb {
      * @throws MigrateDbException when the schema history table repair failed.
      */
     public RepairResult repair() throws MigrateDbException {
-        return execute(new Command<RepairResult>() {
-            public RepairResult execute(MigrationResolver migrationResolver,
-                                        SchemaHistory schemaHistory, Database database, Schema[] schemas,
-                                        CallbackExecutor callbackExecutor,
+        return migratedbExecutor.execute(new Command<RepairResult>() {
+            public RepairResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
+                                        Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
                                         StatementInterceptor statementInterceptor) {
                 RepairResult repairResult = new DbRepair(database,
                                                          migrationResolver,
@@ -475,246 +386,59 @@ public class MigrateDb {
     }
 
     /**
-     * Creates the MigrationResolver.
+     * <p>Undoes the most recently applied versioned migration. If target is specified, MigrateDb will attempt to undo
+     * versioned migrations in the order they were applied until it hits one with a version below the target. If there
+     * is no versioned migration to undo, calling undo has no effect.</p>
      *
-     * @param resourceProvider The resource provider.
-     * @param classProvider    The class provider.
-     * @param sqlScriptFactory The SQL statement builder factory.
-     * @param parsingContext   The parsing context.
+     * <img src="https://no-website-yet.org/assets/balsamiq/command-undo.png" alt="undo">
      *
-     * @return A new, fully configured, MigrationResolver instance.
+     * @return An object summarising the successfully undone migrations.
+     *
+     * @throws MigrateDbException when the undo failed.
      */
-    private MigrationResolver createMigrationResolver(ResourceProvider resourceProvider,
-                                                      ClassProvider<JavaMigration> classProvider,
-                                                      SqlScriptExecutorFactory sqlScriptExecutorFactory,
-                                                      SqlScriptFactory sqlScriptFactory,
-                                                      ParsingContext parsingContext) {
-        return new CompositeMigrationResolver(resourceProvider,
-                                              classProvider,
-                                              configuration,
-                                              sqlScriptExecutorFactory,
-                                              sqlScriptFactory,
-                                              parsingContext,
-                                              configuration.getResolvers());
+    public UndoResult undo() throws MigrateDbException {
+        return Development.TODO("Implement Undo");
+    }
+
+    private CleanResult doClean(Database database, SchemaHistory schemaHistory, Schema[] schemas,
+                                CallbackExecutor callbackExecutor) {
+        return new DbClean(database, schemaHistory, schemas, callbackExecutor, configuration).clean();
     }
 
     /**
-     * Executes this command with proper resource handling and cleanup.
+     * Performs the actual validation. All set up must have taken place beforehand.
      *
-     * @param command The command to execute.
-     * @param <T>     The type of the result.
-     *
-     * @return The result of the command.
+     * @param database          The database-specific support.
+     * @param migrationResolver The migration resolver;
+     * @param schemaHistory     The schema history table.
+     * @param schemas           The schemas managed by MigrateDb.
+     * @param callbackExecutor  The callback executor.
+     * @param ignorePending     Whether to ignore pending migrations.
      */
-    /*private -> testing*/ <T> T execute(Command<T> command, boolean scannerRequired) {
-        T result;
+    private ValidateResult doValidate(Database database, MigrationResolver migrationResolver,
+                                      SchemaHistory schemaHistory, Schema[] schemas, CallbackExecutor callbackExecutor,
+                                      boolean ignorePending) {
+        ValidateResult validateResult = new DbValidate(database,
+                                                       schemaHistory,
+                                                       schemas[0],
+                                                       migrationResolver,
+                                                       configuration,
+                                                       ignorePending,
+                                                       callbackExecutor).validate();
 
-        configurationValidator.validate(configuration);
-
-        StatementInterceptor statementInterceptor = null;
-
-        var resourceProviderClassProviders = createResourceAndClassProviders(scannerRequired);
-        ResourceProvider resourceProvider = resourceProviderClassProviders.resourceProvider;
-        ClassProvider<JavaMigration> classProvider = resourceProviderClassProviders.classProvider;
-
-        if (configuration.isValidateMigrationNaming()) {
-            resourceNameValidator.validateSQLMigrationNaming(resourceProvider, configuration);
+        if (!validateResult.validationSuccessful && configuration.isCleanOnValidationError()) {
+            doClean(database, schemaHistory, schemas, callbackExecutor);
         }
 
-        JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory(
-            configuration.getDataSource(),
-            configuration,
-            statementInterceptor
-        );
-
-        DatabaseType databaseType = jdbcConnectionFactory.getDatabaseType();
-        ParsingContext parsingContext = new ParsingContext();
-        SqlScriptFactory sqlScriptFactory = databaseType.createSqlScriptFactory(configuration, parsingContext);
-        RetryStrategy.setNumberOfRetries(configuration.getLockRetryCount());
-
-        SqlScriptExecutorFactory noCallbackSqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
-            jdbcConnectionFactory,
-            NoopCallbackExecutor.INSTANCE,
-            null
-        );
-
-        jdbcConnectionFactory.setConnectionInitializer(new JdbcConnectionFactory.ConnectionInitializer() {
-            @Override
-            public void initialize(JdbcConnectionFactory jdbcConnectionFactory, Connection connection) {
-                if (configuration.getInitSql() == null) {
-                    return;
-                }
-                StringResource resource = new StringResource("", configuration.getInitSql());
-
-                SqlScript sqlScript = sqlScriptFactory.createSqlScript(resource, true, resourceProvider);
-
-                boolean outputQueryResults = false;
-
-                noCallbackSqlScriptExecutorFactory.createSqlScriptExecutor(connection, false, false, outputQueryResults)
-                                                  .execute(sqlScript);
-            }
-        });
-
-        try (var database = databaseType.createDatabase(configuration,
-                                                        !dbConnectionInfoPrinted,
-                                                        jdbcConnectionFactory,
-                                                        statementInterceptor)) {
-            dbConnectionInfoPrinted = true;
-            LOG.debug("DDL Transactions Supported: " + database.supportsDdlTransactions());
-
-            var schemas = SchemaHistoryFactory.scanSchemas(configuration, database);
-
-            parsingContext.populate(database, configuration);
-
-            database.ensureSupported();
-
-            DefaultCallbackExecutor callbackExecutor =
-                new DefaultCallbackExecutor(configuration, database, schemas.defaultSchema,
-                                            prepareCallbacks(
-                                                database,
-                                                resourceProvider,
-                                                jdbcConnectionFactory,
-                                                sqlScriptFactory,
-                                                statementInterceptor,
-                                                schemas.defaultSchema,
-                                                parsingContext
-                                            ));
-
-            SqlScriptExecutorFactory sqlScriptExecutorFactory =
-                databaseType.createSqlScriptExecutorFactory(jdbcConnectionFactory,
-                                                            callbackExecutor,
-                                                            statementInterceptor);
-
-            SchemaHistory schemaHistory = SchemaHistoryFactory.getSchemaHistory(
-                configuration,
-                noCallbackSqlScriptExecutorFactory,
-                sqlScriptFactory,
-                database,
-                schemas.defaultSchema,
-                statementInterceptor);
-
-            result = command.execute(
-                createMigrationResolver(resourceProvider,
-                                        classProvider,
-                                        sqlScriptExecutorFactory,
-                                        sqlScriptFactory,
-                                        parsingContext),
-                schemaHistory,
-                database,
-                schemas.all.toArray(new Schema[0]),
-                callbackExecutor,
-                statementInterceptor);
-        } finally {
-            showMemoryUsage();
-        }
-        return result;
+        return validateResult;
     }
 
-    private static final class ResourceAndClassProviders {
-        public final ResourceProvider resourceProvider;
-        public final ClassProvider<JavaMigration> classProvider;
-
-        private ResourceAndClassProviders(ResourceProvider resourceProvider,
-                                          ClassProvider<JavaMigration> classProvider) {
-            this.resourceProvider = resourceProvider;
-            this.classProvider = classProvider;
-        }
-    }
-
-    private ResourceAndClassProviders createResourceAndClassProviders(
-        boolean scannerRequired) {
-        ResourceProvider resourceProvider;
-        ClassProvider<JavaMigration> classProvider;
-        if (!scannerRequired && configuration.isSkipDefaultResolvers() && configuration.isSkipDefaultCallbacks()) {
-            resourceProvider = ResourceProvider.noResources();
-            classProvider = ClassProvider.noClasses();
-        } else {
-            if (configuration.getResourceProvider() != null && configuration.getJavaMigrationClassProvider() != null) {
-                resourceProvider = configuration.getResourceProvider();
-                classProvider = configuration.getJavaMigrationClassProvider();
-            } else {
-                LocationScanner<JavaMigration> scanner = new LocationScanner<>(
-                    JavaMigration.class,
-                    Arrays.asList(configuration.getLocations()),
-                    configuration.getClassLoader(),
-                    configuration.getFailOnMissingLocations()
-                );
-                // set the defaults
-                resourceProvider = scanner;
-                classProvider = scanner;
-                if (configuration.getResourceProvider() != null) {
-                    resourceProvider = configuration.getResourceProvider();
-                }
-                if (configuration.getJavaMigrationClassProvider() != null) {
-                    classProvider = configuration.getJavaMigrationClassProvider();
-                }
-            }
-        }
-
-        return new ResourceAndClassProviders(resourceProvider, classProvider);
-    }
-
-    private void showMemoryUsage() {
-        Runtime runtime = Runtime.getRuntime();
-        long free = runtime.freeMemory();
-        long total = runtime.totalMemory();
-        long used = total - free;
-
-        long totalMB = total / (1024 * 1024);
-        long usedMB = used / (1024 * 1024);
-        LOG.debug("Memory usage: " + usedMB + " of " + totalMB + "M");
-    }
-
-    private List<Callback> prepareCallbacks(Database database, ResourceProvider resourceProvider,
-                                            JdbcConnectionFactory jdbcConnectionFactory,
-                                            SqlScriptFactory sqlScriptFactory,
-                                            StatementInterceptor statementInterceptor,
-                                            Schema schema,
-                                            ParsingContext parsingContext) {
-        List<Callback> effectiveCallbacks = new ArrayList<>();
-        CallbackExecutor callbackExecutor = NoopCallbackExecutor.INSTANCE;
-
-        effectiveCallbacks.addAll(Arrays.asList(configuration.getCallbacks()));
-
-        if (!configuration.isSkipDefaultCallbacks()) {
-            SqlScriptExecutorFactory sqlScriptExecutorFactory =
-                jdbcConnectionFactory.getDatabaseType().createSqlScriptExecutorFactory(jdbcConnectionFactory,
-                                                                                       callbackExecutor,
-                                                                                       statementInterceptor
-                );
-
-            effectiveCallbacks.addAll(
-                new SqlScriptCallbackFactory(
-                    resourceProvider,
-                    sqlScriptExecutorFactory,
-                    sqlScriptFactory,
-                    configuration
-                ).getCallbacks());
-        }
-
-        return effectiveCallbacks;
-    }
-
-    /**
-     * A MigrateDb command that can be executed.
-     *
-     * @param <T> The result type of the command.
-     */
-    /*private -> testing*/ interface Command<T> {
-        /**
-         * Execute the operation.
-         *
-         * @param migrationResolver The migration resolver to use.
-         * @param schemaHistory     The schema history table.
-         * @param database          The database-specific support for these connections.
-         * @param schemas           The schemas managed by MigrateDb.
-         * @param callbackExecutor  The callback executor.
-         *
-         * @return The result of the operation.
-         */
-        T execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                  Database database, Schema[] schemas, CallbackExecutor callbackExecutor,
-                  StatementInterceptor statementInterceptor
-        );
+    private BaselineResult doBaseline(SchemaHistory schemaHistory, CallbackExecutor callbackExecutor,
+                                      Database database) {
+        return new DbBaseline(schemaHistory,
+                              configuration.getBaselineVersion(),
+                              configuration.getBaselineDescription(),
+                              callbackExecutor,
+                              database).baseline();
     }
 }
