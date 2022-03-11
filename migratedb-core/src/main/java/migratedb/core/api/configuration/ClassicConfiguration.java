@@ -1408,6 +1408,7 @@ public class ClassicConfiguration implements Configuration {
         setEncoding(configuration.getEncoding());
         setGroup(configuration.isGroup());
         setValidateMigrationNaming(configuration.isValidateMigrationNaming());
+        setIgnoreMigrationPatterns(configuration.getIgnoreMigrationPatterns());
         setIgnoreFutureMigrations(configuration.isIgnoreFutureMigrations());
         setIgnoreMissingMigrations(configuration.isIgnoreMissingMigrations());
         setIgnoreIgnoredMigrations(configuration.isIgnoreIgnoredMigrations());
