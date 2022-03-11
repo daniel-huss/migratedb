@@ -854,7 +854,7 @@ public class ClassicConfiguration implements Configuration {
      * <ul>
      * <li>{@code current}: Designates the current version of the schema</li>
      * <li>{@code latest}: The latest version of the schema, as defined by the migration with the highest version</li>
-     * <li>{@code next}: Next version after currently applied version</li>
+     * <li>{@code next}: The next version of the schema, as defined by the first pending migration</li>
      * </ul>
      * Defaults to {@code latest}.
      */
@@ -868,6 +868,7 @@ public class ClassicConfiguration implements Configuration {
      * <ul>
      * <li>{@code current}: Designates the current version of the schema</li>
      * <li>{@code latest}: The latest version of the schema, as defined by the migration with the highest version</li>
+     * <li>{@code next}: The next version of the schema, as defined by the first pending migration</li>
      * <li>
      *     &lt;version&gt;? (end with a '?'): Instructs MigrateDb not to fail if the target version doesn't exist.
      *     In this case, MigrateDb will go up to but not beyond the specified target
