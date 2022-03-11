@@ -30,7 +30,7 @@ import migratedb.core.internal.util.AsciiTable;
 public class DefaultSqlScriptExecutor implements SqlScriptExecutor {
     private static final Log LOG = Log.getLog(DefaultSqlScriptExecutor.class);
 
-    private final JdbcTemplate jdbcTemplate;
+    protected final JdbcTemplate jdbcTemplate;
 
     public DefaultSqlScriptExecutor(JdbcTemplate jdbcTemplate,
                                     CallbackExecutor callbackExecutor, boolean undo, boolean batch,
