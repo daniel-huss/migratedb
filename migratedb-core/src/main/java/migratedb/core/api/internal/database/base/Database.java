@@ -123,6 +123,8 @@ public interface Database<C extends Connection> extends Closeable {
      */
     void cleanPostSchemas(Schema[] schemas);
 
+    Schema[] getAllSchemas();
+
     @Override
     void close();
 }

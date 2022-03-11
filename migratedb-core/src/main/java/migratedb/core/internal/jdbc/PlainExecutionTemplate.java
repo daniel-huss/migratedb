@@ -25,16 +25,30 @@ import migratedb.core.internal.exception.MigrateDbSqlException;
 public class PlainExecutionTemplate implements ExecutionTemplate {
     private static final Log LOG = Log.getLog(PlainExecutionTemplate.class);
 
+    private final boolean skipErrorLog;
+
+    public PlainExecutionTemplate() {
+        this.skipErrorLog = false;
+    }
+
+    public PlainExecutionTemplate(boolean skipErrorLog) {
+        this.skipErrorLog = skipErrorLog;
+    }
+
     @Override
     public <T> T execute(Callable<T> callback) {
         try {
             LOG.debug("Performing operation in non-transactional context.");
             return callback.call();
         } catch (Exception e) {
-            if (e instanceof InterruptedException) Thread.currentThread().interrupt();
-            LOG.error(
-                "Failed to execute operation in non-transactional context. Please restore backups and roll back " +
-                "database and code!");
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            if (!skipErrorLog) {
+                LOG.error(
+                    "Failed to execute operation in non-transactional context. Please restore backups and roll back " +
+                    "database and code!");
+            }
 
             if (e instanceof SQLException) {
                 throw new MigrateDbSqlException("Failed to execute operation.", (SQLException) e);

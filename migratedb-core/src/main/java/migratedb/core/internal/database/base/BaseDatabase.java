@@ -353,4 +353,8 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
      */
     protected void doCleanPostSchemas(Schema[] schemas) throws SQLException {
     }
+
+    public Schema[] getAllSchemas() {
+        throw new UnsupportedOperationException("Getting all schemas not supported for " + getDatabaseType().getName());
+    }
 }
