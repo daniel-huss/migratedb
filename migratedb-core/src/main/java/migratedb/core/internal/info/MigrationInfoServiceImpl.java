@@ -486,7 +486,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
     }
 
     public void setAllSchemasEmpty(Schema[] schemas) {
-        allSchemasEmpty = Arrays.stream(schemas).allMatch(Schema::empty);
+        allSchemasEmpty = Arrays.stream(schemas).filter(Schema::exists).allMatch(Schema::empty);
     }
 
     @Override

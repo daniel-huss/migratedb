@@ -38,13 +38,7 @@ public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTabl
 
     @Override
     protected boolean doExists() throws SQLException {
-        String sql = "SHOW SCHEMAS LIKE '" + name + "'";
-        List<Boolean> results = jdbcTemplate.query(sql, new RowMapper<Boolean>() {
-            @Override
-            public Boolean mapRow(ResultSet rs) throws SQLException {
-                return true;
-            }
-        });
+        List<Boolean> results = jdbcTemplate.query("SHOW SCHEMAS LIKE '" + name + "'", rs -> true);
         return !results.isEmpty();
     }
 
@@ -57,13 +51,7 @@ public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTabl
     }
 
     private int getObjectCount(String objectType) throws SQLException {
-        return jdbcTemplate.query("SHOW " + objectType + "S IN SCHEMA " + database.quote(name),
-                                  new RowMapper<Integer>() {
-                                      @Override
-                                      public Integer mapRow(ResultSet rs) throws SQLException {
-                                          return 1;
-                                      }
-                                  }).size();
+        return jdbcTemplate.query("SHOW " + objectType + "S IN SCHEMA " + database.quote(name), rs -> 1).size();
     }
 
     @Override
@@ -119,15 +107,10 @@ public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTabl
     }
 
     private List<String> generateDropStatements(String objectType) throws SQLException {
-        return jdbcTemplate.query("SHOW " + objectType + "S IN SCHEMA " + database.quote(name),
-                                  new RowMapper<String>() {
-                                      @Override
-                                      public String mapRow(ResultSet rs) throws SQLException {
-                                          String tableName = rs.getString("name");
-                                          return "DROP " + objectType + " " + database.quote(name) + "." +
-                                                 database.quote(tableName);
-                                      }
-                                  });
+        return jdbcTemplate.query("SHOW " + objectType + "S IN SCHEMA " + database.quote(name), rs -> {
+            String tableName = rs.getString("name");
+            return "DROP " + objectType + " " + database.quote(name) + "." + database.quote(tableName);
+        });
     }
 
     private List<String> generateDropStatementsWithArgs(String showObjectType, String dropObjectType)
