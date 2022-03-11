@@ -42,7 +42,8 @@ public class SAPHANAParser extends BaseParser {
     }
 
     @Override
-    protected StatementType detectStatementType(String simplifiedStatement, ParserContext context) {
+    protected StatementType detectStatementType(String simplifiedStatement, ParserContext context,
+                                                PeekingReader reader) {
         if (FUNCTION_OR_PROCEDURE_REGEX.matcher(simplifiedStatement).matches()) {
             return FUNCTION_OR_PROCEDURE_STATEMENT;
         }
@@ -50,7 +51,7 @@ public class SAPHANAParser extends BaseParser {
             return ANONYMOUS_BLOCK_STATEMENT;
         }
 
-        return super.detectStatementType(simplifiedStatement, context);
+        return super.detectStatementType(simplifiedStatement, context, reader);
     }
 
     @Override

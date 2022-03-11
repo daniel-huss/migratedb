@@ -64,7 +64,7 @@ public class OracleParser extends BaseParser {
     private static final StatementType PLSQL_VIEW_STATEMENT = new StatementType();
 
     private static final Pattern PLSQL_REGEX = Pattern.compile(
-        "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\s(FUNCTION|PROCEDURE|TYPE|TRIGGER)");
+        "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\s(FUNCTION(\\s\\S*)|PROCEDURE|TYPE|TRIGGER)");
     private static final Pattern DECLARE_BEGIN_REGEX = Pattern.compile("^DECLARE|BEGIN|WITH");
     private static final StatementType PLSQL_STATEMENT = new StatementType();
 
@@ -73,11 +73,11 @@ public class OracleParser extends BaseParser {
     private static final StatementType PLSQL_JAVA_STATEMENT = new StatementType();
 
     private static final Pattern PLSQL_PACKAGE_BODY_WRAPPED_REGEX = Pattern.compile(
-        "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\sPACKAGE\\sBODY\\sWRAPPED(\\s[^\\s]*)*");
+        "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\sPACKAGE\\sBODY(\\s\\S*)?\\sWRAPPED(\\s\\S*)*");
     private static final Pattern PLSQL_PACKAGE_DEFINITION_WRAPPED_REGEX = Pattern.compile(
-        "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\sPACKAGE\\sWRAPPED(\\s[^\\s]*)*");
+        "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\sPACKAGE(\\s\\S*)?\\sWRAPPED(\\s\\S*)*");
     private static final Pattern PLSQL_WRAPPED_REGEX = Pattern.compile(
-        "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\s(FUNCTION|PROCEDURE|TYPE)\\sWRAPPED(\\s[^\\s]*)*");
+        "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\s(FUNCTION|PROCEDURE|TYPE)(\\s\\S*)?\\sWRAPPED(\\s\\S*)*");
 
     private static final StatementType PLSQL_WRAPPED_STATEMENT = new StatementType();
     private int initialWrappedBlockDepth = -1;
@@ -124,7 +124,8 @@ public class OracleParser extends BaseParser {
     }
 
     @Override
-    protected StatementType detectStatementType(String simplifiedStatement, ParserContext context) {
+    protected StatementType detectStatementType(String simplifiedStatement, ParserContext context,
+                                                PeekingReader reader) {
         if (PLSQL_PACKAGE_BODY_WRAPPED_REGEX.matcher(simplifiedStatement).matches()
             || PLSQL_PACKAGE_DEFINITION_WRAPPED_REGEX.matcher(simplifiedStatement).matches()
             || PLSQL_WRAPPED_REGEX.matcher(simplifiedStatement).matches()) {
@@ -141,7 +142,14 @@ public class OracleParser extends BaseParser {
         if (PLSQL_REGEX.matcher(simplifiedStatement).matches()
             || PLSQL_PACKAGE_DEFINITION_REGEX.matcher(simplifiedStatement).matches()
             || DECLARE_BEGIN_REGEX.matcher(simplifiedStatement).matches()) {
-            return PLSQL_STATEMENT;
+            try {
+                String wrappedKeyword = " WRAPPED";
+                if (!reader.peek(wrappedKeyword.length()).equalsIgnoreCase(wrappedKeyword)) {
+                    return PLSQL_STATEMENT;
+                }
+            } catch (IOException e) {
+                return PLSQL_STATEMENT;
+            }
         }
 
         if (JAVA_REGEX.matcher(simplifiedStatement).matches()) {
@@ -152,7 +160,7 @@ public class OracleParser extends BaseParser {
             return PLSQL_VIEW_STATEMENT;
         }
 
-        return super.detectStatementType(simplifiedStatement, context);
+        return super.detectStatementType(simplifiedStatement, context, reader);
     }
 
     @Override
