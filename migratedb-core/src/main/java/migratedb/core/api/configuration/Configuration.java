@@ -476,7 +476,7 @@ public interface Configuration {
      * Whether to disable clean. This is especially useful for production environments where running clean can be quite
      * a career limiting move.
      *
-     * @return {@code true} to disable clean. {@code false} to leave it enabled. (default: {@code false})
+     * @return {@code true} to disable clean. {@code false} to leave it enabled. (default: {@code true})
      */
     boolean isCleanDisabled();
 

@@ -106,7 +106,7 @@ public class ClassicConfiguration implements Configuration {
     private boolean validateMigrationNaming = false;
     private boolean validateOnMigrate = true;
     private boolean cleanOnValidationError;
-    private boolean cleanDisabled;
+    private boolean cleanDisabled = true;
     private MigrationVersion baselineVersion = MigrationVersion.fromVersion("1");
     private String baselineDescription = "<< MigrateDB Baseline >>";
     private boolean baselineOnMigrate;

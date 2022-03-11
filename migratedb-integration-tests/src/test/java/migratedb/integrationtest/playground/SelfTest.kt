@@ -18,16 +18,14 @@ package migratedb.integrationtest.playground
 
 import io.kotest.matchers.collections.shouldContainAll
 import migratedb.core.api.MigrationType.JDBC
-import migratedb.integrationtest.database.CockroachDb
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ArgumentsSource
 
 internal class SelfTest : IntegrationTest() {
     @ParameterizedTest
-    //@ArgumentsSource(DbSystem.All::class)
-    @EnumSource(CockroachDb::class)
+    @ArgumentsSource(DbSystem.All::class)
     fun `Database system is supported by test DSL`(dbSystem: DbSystem) = withDsl(dbSystem) {
         given {
             database {

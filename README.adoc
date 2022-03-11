@@ -8,7 +8,7 @@ Evolve your database schema easily and reliably across all your instances.
 
 === Supported databases
 
-Oracle, SQL Server, DB2, MySQL, Aurora MySQL, MariaDB, Percona XtraDB Cluster, PostgreSQL, Aurora PostgreSQL, Redshift, CockroachDB, SAP HANA, Sybase ASE, Informix, H2, HSQLDB, Derby, SQLite, Firebird
+Oracle, SQL Server, DB2, MySQL, MariaDB, PostgreSQL, Redshift, CockroachDB, Informix, H2, HSQLDB, Derby, SQLite, Firebird
 
 == Documentation
 
@@ -17,8 +17,7 @@ https://no-website-yet.org
 == Support
 
 Bugs will be fixed, and new database versions will be supported as long as the changes are testable.
-
-New features are unlikely to be added, unless they are requested by a large number of users and are contributed via some excellent merge request.
+New features are unlikely to be added, unless they are requested by a large number of users.
 
 == How to contribute
 

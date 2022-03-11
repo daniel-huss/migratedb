@@ -8,6 +8,13 @@ import java.nio.file.Paths
 import kotlin.io.path.createDirectories
 
 /**
+ * @return The value of ${project.build.directory}
+ */
+fun buildDirectory(): Path = Paths.get("target").toAbsolutePath()
+
+fun Path.resolve(vararg paths: String) = paths.fold(this) { p, seg -> p.resolve(seg) }
+
+/**
  * Creates a temporary directory for database systems that work on the local file system.
  * Does not litter the system temp dir, because files are stored in the build target directory of the project.
  *
@@ -15,7 +22,7 @@ import kotlin.io.path.createDirectories
  */
 fun createDatabaseTempDir(name: String, deleteOnExit: Boolean = true): Path {
     return Files.createTempDirectory(
-        Paths.get("target", "database-temp", *name.toSafeFileName()).also {
+        buildDirectory().resolve("database-temp").resolve(*name.toSafeFileName()).also {
             it.createDirectories()
         },
         "it"

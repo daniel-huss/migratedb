@@ -35,7 +35,7 @@ import javax.sql.DataSource
 enum class CockroachDb(image: String) : DbSystem {
     V21_2_6("cockroachdb/cockroach:v21.2.6"),
     // Bug: MigrateDB tries to SET ROLE but this version doesn't support that feature! V20_2_0("cockroachdb/cockroach:v20.2.0"),
-    // Other versions are EOL, should we test them?
+    // Lower versions are EOL, should we test them?
     ;
 
     // Relevant idiosyncracies:
