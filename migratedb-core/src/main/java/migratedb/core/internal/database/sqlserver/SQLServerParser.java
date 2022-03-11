@@ -68,6 +68,10 @@ public class SQLServerParser extends BaseParser {
 
     @Override
     protected Boolean detectCanExecuteInTransaction(String simplifiedStatement, List<Token> keywords) {
+        if (keywords.size() == 0) {
+            return null;
+        }
+
         Token currentToken = keywords.get(keywords.size() - 1);
         String current = currentToken.getText();
 
