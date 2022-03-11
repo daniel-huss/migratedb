@@ -60,7 +60,7 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
             override fun getDescription(): String = description
             override fun getChecksum(): Int? = null
             override fun isUndo(): Boolean = prefix == "U"
-            override fun isStateScript(): Boolean = false
+            override fun isBaselineMigration(): Boolean = false
             override fun canExecuteInTransaction() = true
             override fun migrate(context: Context) {
                 code(context.connection)

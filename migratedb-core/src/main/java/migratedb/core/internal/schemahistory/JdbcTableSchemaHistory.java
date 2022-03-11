@@ -240,7 +240,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                         rs.getString(columnOrdinalMap.get("version")) != null
                         ? MigrationVersion.fromVersion(rs.getString(columnOrdinalMap.get("version"))) : null,
                         rs.getString(columnOrdinalMap.get("description")),
-                        MigrationType.valueOf(type),
+                        MigrationType.fromString(type),
                         rs.getString(columnOrdinalMap.get("script")),
                         checksum,
                         rs.getTimestamp(columnOrdinalMap.get("installed_on")),

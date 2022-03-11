@@ -161,8 +161,8 @@ public class FluentConfiguration implements Configuration {
     }
 
     @Override
-    public String getStateScriptPrefix() {
-        return config.getStateScriptPrefix();
+    public String getBaselineMigrationPrefix() {
+        return config.getBaselineMigrationPrefix();
     }
 
     @Override
@@ -597,8 +597,8 @@ public class FluentConfiguration implements Configuration {
 
     /**
      * Ignore migrations that match this comma-separated list of patterns when validating migrations. Each pattern is of
-     * the form {@code <migration_type>:<migration_state>}.
-     * See https://no-website-yet.org/documentation/configuration/parameters/ignoreMigrationPatterns for full details.
+     * the form {@code <migration_type>:<migration_state>}. See https://no-website-yet
+     * .org/documentation/configuration/parameters/ignoreMigrationPatterns for full details.
      *
      * <p>Example: repeatable:missing,versioned:pending,*:failed
      */
@@ -891,14 +891,14 @@ public class FluentConfiguration implements Configuration {
     }
 
     /**
-     * Sets the file name prefix for state scripts. They have the following file name structure:
-     * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to S1.1__My_description.sql
-     * <i>MigrateDb Teams only</i>
+     * Sets the file name prefix for baseline migrations. They have the following file name structure:
+     * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to B1.1__My_description.sql
+     * <i>Flyway Teams only</i>
      *
-     * @param stateScriptPrefix The file name prefix for state scripts (default: S)
+     * @param baselineMigrationPrefix The file name prefix for baseline migrations (default: B)
      */
-    public FluentConfiguration stateScriptPrefix(String stateScriptPrefix) {
-        config.setStateScriptPrefix(stateScriptPrefix);
+    public FluentConfiguration baselineMigrationPrefix(String baselineMigrationPrefix) {
+        config.setBaselineMigrationPrefix(baselineMigrationPrefix);
         return this;
     }
 
@@ -1301,10 +1301,11 @@ public class FluentConfiguration implements Configuration {
 
     /**
      * Configures MigrateDb with these properties. This overwrites any existing configuration. Property names are
-     * documented in {@link ConfigUtils}. To use a custom ClassLoader, setClassLoader() must be called prior to
-     * calling this method.
+     * documented in {@link ConfigUtils}. To use a custom ClassLoader, setClassLoader() must be called prior to calling
+     * this method.
      *
      * @param properties Properties used for configuration.
+     *
      * @throws MigrateDbException when the configuration failed.
      */
     public FluentConfiguration configuration(Properties properties) {
@@ -1318,6 +1319,7 @@ public class FluentConfiguration implements Configuration {
      * prior to calling this method.
      *
      * @param props Properties used for configuration.
+     *
      * @throws MigrateDbException when the configuration failed.
      */
     public FluentConfiguration configuration(Map<String, String> props) {

@@ -16,8 +16,10 @@
  */
 package migratedb.core.internal.info;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.pattern.ValidatePattern;
@@ -35,7 +37,7 @@ public class MigrationInfoContext {
     public MigrationVersion baseline;
     public MigrationVersion lastResolved = MigrationVersion.EMPTY;
     public MigrationVersion lastApplied = MigrationVersion.EMPTY;
-    public MigrationVersion latestStateScript = MigrationVersion.EMPTY;
+    public MigrationVersion latestBaselineMigration = MigrationVersion.EMPTY;
     public Map<String, Integer> latestRepeatableRuns = new HashMap<>();
 
     @Override
@@ -64,22 +66,22 @@ public class MigrationInfoContext {
         if (future != that.future) {
             return false;
         }
-        if (target != null ? !target.equals(that.target) : that.target != null) {
+        if (!Objects.equals(target, that.target)) {
             return false;
         }
-        if (schema != null ? !schema.equals(that.schema) : that.schema != null) {
+        if (!Objects.equals(schema, that.schema)) {
             return false;
         }
-        if (baseline != null ? !baseline.equals(that.baseline) : that.baseline != null) {
+        if (!Objects.equals(baseline, that.baseline)) {
             return false;
         }
-        if (lastResolved != null ? !lastResolved.equals(that.lastResolved) : that.lastResolved != null) {
+        if (!Objects.equals(lastResolved, that.lastResolved)) {
             return false;
         }
-        if (lastApplied != null ? !lastApplied.equals(that.lastApplied) : that.lastApplied != null) {
+        if (!Objects.equals(lastApplied, that.lastApplied)) {
             return false;
         }
-        if (cherryPick != null ? !cherryPick.equals(that.cherryPick) : that.cherryPick != null) {
+        if (!Arrays.equals(cherryPick, that.cherryPick)) {
             return false;
         }
         return latestRepeatableRuns.equals(that.latestRepeatableRuns);
@@ -97,7 +99,7 @@ public class MigrationInfoContext {
         result = 31 * result + (baseline != null ? baseline.hashCode() : 0);
         result = 31 * result + (lastResolved != null ? lastResolved.hashCode() : 0);
         result = 31 * result + (lastApplied != null ? lastApplied.hashCode() : 0);
-        result = 31 * result + (cherryPick != null ? cherryPick.hashCode() : 0);
+        result = 31 * result + (cherryPick != null ? Arrays.hashCode(cherryPick) : 0);
         result = 31 * result + latestRepeatableRuns.hashCode();
         return result;
     }

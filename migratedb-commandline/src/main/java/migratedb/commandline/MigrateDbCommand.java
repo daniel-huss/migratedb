@@ -18,6 +18,7 @@ package migratedb.commandline;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static migratedb.core.internal.configuration.ConfigUtils.BASELINE_DESCRIPTION;
+import static migratedb.core.internal.configuration.ConfigUtils.BASELINE_MIGRATION_PREFIX;
 import static migratedb.core.internal.configuration.ConfigUtils.BASELINE_ON_MIGRATE;
 import static migratedb.core.internal.configuration.ConfigUtils.BASELINE_VERSION;
 import static migratedb.core.internal.configuration.ConfigUtils.BATCH;
@@ -73,7 +74,6 @@ import static migratedb.core.internal.configuration.ConfigUtils.SKIP_EXECUTING_M
 import static migratedb.core.internal.configuration.ConfigUtils.SQL_MIGRATION_PREFIX;
 import static migratedb.core.internal.configuration.ConfigUtils.SQL_MIGRATION_SEPARATOR;
 import static migratedb.core.internal.configuration.ConfigUtils.SQL_MIGRATION_SUFFIXES;
-import static migratedb.core.internal.configuration.ConfigUtils.STATE_SCRIPT_PREFIX;
 import static migratedb.core.internal.configuration.ConfigUtils.TABLE;
 import static migratedb.core.internal.configuration.ConfigUtils.TABLESPACE;
 import static migratedb.core.internal.configuration.ConfigUtils.TARGET;
@@ -398,8 +398,8 @@ class MigrateDbCommand {
         if ("MIGRATEDB_SQL_MIGRATION_SUFFIXES".equals(key)) {
             return SQL_MIGRATION_SUFFIXES;
         }
-        if ("MIGRATEDB_STATE_SCRIPT_PREFIX".equals(key)) {
-            return STATE_SCRIPT_PREFIX;
+        if ("MIGRATEDB_BASELINE_MIGRATION_PREFIX".equals(key)) {
+            return BASELINE_MIGRATION_PREFIX;
         }
         if ("MIGRATEDB_TABLE".equals(key)) {
             return TABLE;

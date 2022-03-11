@@ -152,15 +152,14 @@ public interface Configuration {
     String getSqlMigrationPrefix();
 
     /**
-     * The file name prefix for state scripts. State scripts represent all migrations with version <= current state
-     * script version while keeping older migrations if needed for upgrading older deployments They have the following
-     * file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to
-     * S1.1__My_description.sql
-     * <i>MigrateDb Teams only</i>
+     * The file name prefix for baseline migrations. Baseline migrations represent all migrations with {@code version <=
+     * current baseline migration version} while keeping older migrations if needed for upgrading older deployments.
+     * They have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults
+     * translates to SB.1__My_description.sql
      *
-     * @return The file name prefix for state scripts. (default: S)
+     * @return The file name prefix for baseline migration. (default: B)
      */
-    String getStateScriptPrefix();
+    String getBaselineMigrationPrefix();
 
     /**
      * The file name prefix for undo SQL migrations. Undo SQL migrations are responsible for undoing the effects of the

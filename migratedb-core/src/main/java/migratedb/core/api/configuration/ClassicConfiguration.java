@@ -90,7 +90,7 @@ public class ClassicConfiguration implements Configuration {
     private String scriptPlaceholderPrefix = "FP__";
     private String scriptPlaceholderSuffix = "__";
     private String sqlMigrationPrefix = "V";
-    private String stateScriptPrefix = "S";
+    private String baselineMigrationPrefix = "B";
     private String undoSqlMigrationPrefix = "U";
     private String repeatableSqlMigrationPrefix = "R";
     private ResourceProvider resourceProvider = null;
@@ -239,8 +239,8 @@ public class ClassicConfiguration implements Configuration {
     }
 
     @Override
-    public String getStateScriptPrefix() {
-        return stateScriptPrefix;
+    public String getBaselineMigrationPrefix() {
+        return baselineMigrationPrefix;
     }
 
     @Override
@@ -985,13 +985,13 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Sets the file name prefix for state scripts. They have the following file name structure:
-     * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to S1.1__My_description.sql
+     * Sets the file name prefix for baseline migrations. They have the following file name structure:
+     * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to SB.1__My_description.sql
      *
-     * @param stateScriptPrefix The file name prefix for state scripts (default: S)
+     * @param baselineMigrationPrefix The file name prefix for baseline migrations (default: B)
      */
-    public void setStateScriptPrefix(String stateScriptPrefix) {
-        this.stateScriptPrefix = stateScriptPrefix;
+    public void setBaselineMigrationPrefix(String baselineMigrationPrefix) {
+        this.baselineMigrationPrefix = baselineMigrationPrefix;
     }
 
     /**
@@ -1536,9 +1536,9 @@ public class ClassicConfiguration implements Configuration {
         if (undoSqlMigrationPrefixProp != null) {
             setUndoSqlMigrationPrefix(undoSqlMigrationPrefixProp);
         }
-        String stateScriptMigrationPrefixProp = props.remove(ConfigUtils.STATE_SCRIPT_PREFIX);
-        if (stateScriptMigrationPrefixProp != null) {
-            setStateScriptPrefix(stateScriptMigrationPrefixProp);
+        String baselineMigrationPrefixProp = props.remove(ConfigUtils.BASELINE_MIGRATION_PREFIX);
+        if (baselineMigrationPrefixProp != null) {
+            setBaselineMigrationPrefix(baselineMigrationPrefixProp);
         }
         String repeatableSqlMigrationPrefixProp = props.remove(ConfigUtils.REPEATABLE_SQL_MIGRATION_PREFIX);
         if (repeatableSqlMigrationPrefixProp != null) {

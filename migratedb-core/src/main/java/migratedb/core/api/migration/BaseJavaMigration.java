@@ -20,21 +20,22 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.internal.resolver.MigrationInfoHelper;
 
+
 /**
  * <p>This is the recommended class to extend for implementing Java-based Migrations.</p>
- * <p>Subclasses should follow the default MigrateDB naming convention of having a class name with the following
+ * <p>Subclasses should follow the default Flyway naming convention of having a class name with the following
  * structure:</p>
  * <ul>
  * <li><strong>Versioned Migrations:</strong> V2__Add_new_table</li>
  * <li><strong>Undo Migrations:</strong> U2__Add_new_table</li>
  * <li><strong>Repeatable Migrations:</strong> R__Add_new_table</li>
- * <li><strong>State scripts:</strong> S2__Add_new_table</li>
+ * <li><strong>Baseline Migrations:</strong> B2__Add_new_table</li>
  * </ul>
  *
  * <p>The file name consists of the following parts:</p>
  * <ul>
- * <li><strong>Prefix:</strong> V for versioned migrations, U for undo migrations, R for repeatable migrations, S for
- * state scripts</li>
+ * <li><strong>Prefix:</strong> V for versioned migrations, U for undo migrations, R for repeatable migrations, B for
+ * baseline migrations</li>
  * <li><strong>Version:</strong> Underscores (automatically replaced by dots at runtime) separate as many parts as
  * you like (Not for repeatable migrations)</li>
  * <li><strong>Separator:</strong> __ (two underscores)</li>
@@ -94,7 +95,7 @@ public abstract class BaseJavaMigration implements JavaMigration {
     }
 
     @Override
-    public boolean isStateScript() {
+    public boolean isBaselineMigration() {
         return false;
     }
 

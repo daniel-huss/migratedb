@@ -129,13 +129,11 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
                 if (version.compareTo(context.lastResolved) > 0) {
                     context.lastResolved = version;
                 }
-                if (resolvedMigration.getType().isStateScript() && version.compareTo(context.latestStateScript) > 0) {
+                if (resolvedMigration.getType().isBaselineMigration() &&
+                    version.compareTo(context.latestBaselineMigration) > 0) {
 
                 } else {
-                    //noinspection RedundantConditionalExpression
-                    resolvedVersioned.put(Pair.of(version,
-
-                                                  false), resolvedMigration);
+                    resolvedVersioned.put(Pair.of(version, false), resolvedMigration);
                 }
             } else {
                 resolvedRepeatable.put(resolvedMigration.getDescription(), resolvedMigration);
@@ -217,7 +215,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
 
         // Add all pending migrations to output list
         for (ResolvedMigration prv : pendingResolvedVersioned) {
-            if (prv.getVersion().compareTo(context.latestStateScript) <= 0) {
+            if (prv.getVersion().compareTo(context.latestBaselineMigration) <= 0) {
                 continue;
             }
             migrationInfos1.add(new MigrationInfoImpl(prv, null, context, false, false, false));

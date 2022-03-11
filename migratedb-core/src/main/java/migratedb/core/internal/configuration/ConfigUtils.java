@@ -81,7 +81,7 @@ public class ConfigUtils {
     public static final String SQL_MIGRATION_PREFIX = "migratedb.sqlMigrationPrefix";
     public static final String SQL_MIGRATION_SEPARATOR = "migratedb.sqlMigrationSeparator";
     public static final String SQL_MIGRATION_SUFFIXES = "migratedb.sqlMigrationSuffixes";
-    public static final String STATE_SCRIPT_PREFIX = "migratedb.stateScriptPrefix";
+    public static final String BASELINE_MIGRATION_PREFIX = "migratedb.baselineMigrationPrefix";
     public static final String TABLE = "migratedb.table";
     public static final String TABLESPACE = "migratedb.tablespace";
     public static final String TARGET = "migratedb.target";
