@@ -8,7 +8,9 @@ Evolve your database schema easily and reliably across all your instances.
 
 === Supported databases
 
-Oracle, SQL Server, DB2, MySQL, MariaDB, PostgreSQL, Redshift, CockroachDB, Informix, H2, HSQLDB, Derby, SQLite, Firebird
+Oracle, SQL Server, DB2, MySQL, MariaDB, PostgreSQL, CockroachDB, Informix, H2, HSQLDB, Derby, SQLite, Firebird
+
+Current not testable: Sybase ASE, Redshift
 
 == Documentation
 
