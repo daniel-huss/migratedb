@@ -37,6 +37,7 @@ import migratedb.core.internal.sqlscript.Delimiter;
 import migratedb.core.internal.sqlscript.SqlScript;
 import migratedb.core.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.internal.util.AbbreviationUtils;
+import migratedb.core.internal.util.StringUtils;
 
 /**
  * Abstraction for database-specific functionality.
@@ -186,7 +187,36 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
     /**
      * Quotes this identifier for use in SQL queries.
      */
-    protected abstract String doQuote(String identifier);
+    protected String doQuote(String identifier) {
+        return getOpenQuote() + identifier + getCloseQuote();
+    }
+
+    protected String getOpenQuote() {
+        return "\"";
+    }
+
+    protected String getCloseQuote() {
+        return "\"";
+    }
+
+    protected String getEscapedQuote() {
+        return "";
+    }
+
+    @Override
+    public String unQuote(String identifier) {
+        String open = getOpenQuote();
+        String close = getCloseQuote();
+
+        if (!open.equals("") && !close.equals("") && identifier.startsWith(open) && identifier.endsWith(close)) {
+            identifier = identifier.substring(open.length(), identifier.length() - close.length());
+            if (!getEscapedQuote().equals("")) {
+                identifier = StringUtils.replaceAll(identifier, getEscapedQuote(), close);
+            }
+        }
+
+        return identifier;
+    }
 
     @Override
     public boolean useSingleConnection() {

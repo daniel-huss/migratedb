@@ -23,6 +23,8 @@ public interface SchemaObject<D extends Database, S extends Schema> {
      */
     S getSchema();
 
+    D getDatabase();
+
     String getName();
 
     void drop();

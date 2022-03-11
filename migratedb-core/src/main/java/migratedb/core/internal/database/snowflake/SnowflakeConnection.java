@@ -37,7 +37,7 @@ public class SnowflakeConnection extends BaseConnection<SnowflakeDatabase> {
     @Override
     protected void doRestoreOriginalState() throws SQLException {
         // Reset the role to its original value in case a migration or callback changed it
-        jdbcTemplate.execute("USE ROLE " + database.doQuote(originalRole));
+        jdbcTemplate.execute("USE ROLE " + database.quote(originalRole));
     }
 
     @Override
@@ -48,7 +48,7 @@ public class SnowflakeConnection extends BaseConnection<SnowflakeDatabase> {
 
     @Override
     public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
-        jdbcTemplate.execute("USE SCHEMA " + database.doQuote(schema));
+        jdbcTemplate.execute("USE SCHEMA " + database.quote(schema));
     }
 
     @Override

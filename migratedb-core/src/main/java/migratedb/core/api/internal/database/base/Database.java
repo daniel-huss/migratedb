@@ -69,6 +69,8 @@ public interface Database<C extends Connection> extends Closeable {
      */
     boolean catalogIsSchema();
 
+    String unQuote(String identifier);
+
     /**
      * @return Whether to use a single connection for both schema history table management and applying migrations.
      */

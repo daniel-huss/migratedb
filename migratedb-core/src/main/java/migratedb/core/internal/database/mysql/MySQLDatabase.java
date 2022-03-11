@@ -254,9 +254,13 @@ public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
         return "0";
     }
 
+    public String getOpenQuote() {
+        return "`";
+    }
+
     @Override
-    public String doQuote(String identifier) {
-        return "`" + identifier + "`";
+    public String getCloseQuote() {
+        return "`";
     }
 
     @Override

@@ -168,11 +168,6 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
     }
 
     @Override
-    public String doQuote(String identifier) {
-        return "\"" + identifier + "\"";
-    }
-
-    @Override
     public boolean catalogIsSchema() {
         return false;
     }

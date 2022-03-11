@@ -119,7 +119,13 @@ public class CockroachDBDatabase extends BaseDatabase<CockroachDBConnection> {
 
     @Override
     public String doQuote(String identifier) {
-        return "\"" + StringUtils.replaceAll(identifier, "\"", "\"\"") + "\"";
+        return getOpenQuote() + StringUtils.replaceAll(identifier, getCloseQuote(), getEscapedQuote()) +
+               getCloseQuote();
+    }
+
+    @Override
+    public String getEscapedQuote() {
+        return "\"\"";
     }
 
     @Override

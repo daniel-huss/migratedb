@@ -90,11 +90,6 @@ public class HSQLDBDatabase extends BaseDatabase<HSQLDBConnection> {
     }
 
     @Override
-    public String doQuote(String identifier) {
-        return "\"" + identifier + "\"";
-    }
-
-    @Override
     public boolean catalogIsSchema() {
         return false;
     }

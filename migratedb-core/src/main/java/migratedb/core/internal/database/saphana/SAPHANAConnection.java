@@ -47,7 +47,7 @@ public class SAPHANAConnection extends BaseConnection<SAPHANADatabase> {
 
     @Override
     public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
-        jdbcTemplate.execute("SET SCHEMA " + database.doQuote(schema));
+        jdbcTemplate.execute("SET SCHEMA " + database.quote(schema));
     }
 
     @Override

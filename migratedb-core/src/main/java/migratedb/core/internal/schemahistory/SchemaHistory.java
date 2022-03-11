@@ -16,8 +16,11 @@
  */
 package migratedb.core.internal.schemahistory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.MigrationVersion;
@@ -133,6 +136,17 @@ public abstract class SchemaHistory {
     public final boolean hasSchemasMarker() {
         List<AppliedMigration> appliedMigrations = allAppliedMigrations();
         return !appliedMigrations.isEmpty() && appliedMigrations.get(0).getType() == MigrationType.SCHEMA;
+    }
+
+    public List<String> getSchemasCreatedByMigrateDb() {
+        if (!hasSchemasMarker()) {
+            return new ArrayList<>();
+        }
+
+        return Arrays.stream(allAppliedMigrations().get(0).getScript()
+                                                   .split(","))
+                     .map(result -> table.getDatabase().unQuote(result))
+                     .collect(Collectors.toList());
     }
 
     /**

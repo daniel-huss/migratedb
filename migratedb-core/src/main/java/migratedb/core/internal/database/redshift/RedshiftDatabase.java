@@ -95,11 +95,13 @@ public class RedshiftDatabase extends BaseDatabase<RedshiftConnection> {
 
     @Override
     public String doQuote(String identifier) {
-        return redshiftQuote(identifier);
+        return getOpenQuote() + StringUtils.replaceAll(identifier, getCloseQuote(), getEscapedQuote()) +
+               getCloseQuote();
     }
 
-    static String redshiftQuote(String identifier) {
-        return "\"" + StringUtils.replaceAll(identifier, "\"", "\"\"") + "\"";
+    @Override
+    public String getEscapedQuote() {
+        return "\"\"";
     }
 
     @Override

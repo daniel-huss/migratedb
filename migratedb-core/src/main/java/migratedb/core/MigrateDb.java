@@ -351,7 +351,7 @@ public class MigrateDb {
 
     private CleanResult doClean(Database database, SchemaHistory schemaHistory, Schema[] schemas,
                                 CallbackExecutor callbackExecutor) {
-        return new DbClean(database, schemaHistory, schemas, callbackExecutor, configuration.isCleanDisabled()).clean();
+        return new DbClean(database, schemaHistory, schemas, callbackExecutor, configuration).clean();
     }
 
     /**

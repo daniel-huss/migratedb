@@ -69,8 +69,13 @@ public class SpannerDatabase extends BaseDatabase<SpannerConnection> {
     }
 
     @Override
-    protected String doQuote(String identifier) {
-        return "`" + identifier + "`";
+    public String getOpenQuote() {
+        return "`";
+    }
+
+    @Override
+    public String getCloseQuote() {
+        return "`";
     }
 
     @Override

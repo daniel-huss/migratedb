@@ -42,6 +42,10 @@ public abstract class BaseSchemaObject<D extends Database, S extends Schema> imp
         this.schema = schema;
     }
 
+    public final D getDatabase() {
+        return database;
+    }
+
     @Override
     public final S getSchema() {
         return schema;

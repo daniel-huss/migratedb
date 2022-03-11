@@ -70,9 +70,13 @@ public class FirebirdDatabase extends BaseDatabase<FirebirdConnection> {
     }
 
     @Override
-    protected String doQuote(String identifier) {
-        // escape double quote in identifier name
-        return '"' + identifier.replace("\"", "\"\"") + "\"";
+    public String doQuote(String identifier) {
+        return getOpenQuote() + identifier.replace(getCloseQuote(), getEscapedQuote()) + getCloseQuote();
+    }
+
+    @Override
+    public String getEscapedQuote() {
+        return "\"\"";
     }
 
     @Override

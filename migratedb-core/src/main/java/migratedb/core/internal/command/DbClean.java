@@ -16,8 +16,14 @@
  */
 package migratedb.core.internal.command;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.callback.Event;
+import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Connection;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
@@ -33,82 +39,88 @@ import migratedb.core.internal.util.TimeFormat;
 
 public class DbClean {
     private static final Log LOG = Log.getLog(DbClean.class);
-
-    private final Schema[] schemas;
-    private final Connection connection;
-    private final Database database;
     private final SchemaHistory schemaHistory;
-    private final CallbackExecutor callbackExecutor;
-    private final boolean cleanDisabled;
+    protected final Schema[] schemas;
+    protected final Connection connection;
+    protected final Database database;
+    protected final CallbackExecutor callbackExecutor;
+    protected final Configuration configuration;
 
     public DbClean(Database database, SchemaHistory schemaHistory, Schema[] schemas, CallbackExecutor callbackExecutor,
-                   boolean cleanDisabled) {
-        this.database = database;
-        this.connection = database.getMainConnection();
+                   Configuration configuration) {
         this.schemaHistory = schemaHistory;
         this.schemas = schemas;
+        this.connection = database.getMainConnection();
+        this.database = database;
         this.callbackExecutor = callbackExecutor;
-        this.cleanDisabled = cleanDisabled;
+        this.configuration = configuration;
     }
 
     public CleanResult clean() throws MigrateDbException {
-        if (cleanDisabled) {
+        if (configuration.isCleanDisabled()) {
             throw new MigrateDbException(
-                "Unable to execute clean as it has been disabled with the \"migratedb.cleanDisabled\" property.");
+                "Unable to execute clean as it has been disabled with the 'flyway.cleanDisabled' property.");
         }
 
         callbackExecutor.onEvent(Event.BEFORE_CLEAN);
 
         CleanResult cleanResult = CommandResultFactory.createCleanResult(database.getCatalog());
-
-        try {
-            connection.changeCurrentSchemaTo(schemas[0]);
-
-            boolean dropSchemas = false;
-            try {
-                dropSchemas = schemaHistory.hasSchemasMarker();
-            } catch (RuntimeException e) {
-                LOG.error("Error while checking whether the schemas should be dropped", e);
-            }
-
-            dropDatabaseObjectsPreSchemas();
-
-            for (Schema schema : schemas) {
-                if (!schema.exists()) {
-                    String unknownSchemaWarning = "Unable to clean unknown schema: " + schema;
-                    cleanResult.warnings.add(unknownSchemaWarning);
-                    LOG.warn(unknownSchemaWarning);
-                    continue;
-                }
-
-                if (dropSchemas) {
-                    try {
-                        cleanSchema(schema);
-                    } catch (MigrateDbException e) {
-                        // ignore as we drop schemas later
-                    }
-                } else {
-                    cleanSchema(schema);
-                    cleanResult.schemasCleaned.add(schema.getName());
-                }
-            }
-
-            dropDatabaseObjectsPostSchemas();
-
-            if (dropSchemas) {
-                for (Schema schema : schemas) {
-                    dropSchema(schema, cleanResult);
-                }
-            }
-        } catch (MigrateDbException e) {
-            callbackExecutor.onEvent(Event.AFTER_CLEAN_ERROR);
-            throw e;
-        }
+        clean(cleanResult);
 
         callbackExecutor.onEvent(Event.AFTER_CLEAN);
         schemaHistory.clearCache();
 
         return cleanResult;
+    }
+
+    protected void clean(CleanResult cleanResult) {
+        clean(schemas[0], schemas, cleanResult);
+    }
+
+    protected void clean(Schema defaultSchema, Schema[] schemas, CleanResult cleanResult) {
+        try {
+            connection.changeCurrentSchemaTo(defaultSchema);
+
+            List<String> dropSchemas = new ArrayList<>();
+            try {
+                dropSchemas = schemaHistory.getSchemasCreatedByMigrateDb();
+            } catch (Exception e) {
+                LOG.error("Error while checking whether the schemas should be dropped. Schemas will not be dropped", e);
+            }
+
+            clean(schemas, cleanResult, dropSchemas);
+        } catch (MigrateDbException e) {
+            callbackExecutor.onEvent(Event.AFTER_CLEAN_ERROR);
+            throw e;
+        }
+    }
+
+    protected void clean(Schema[] schemas, CleanResult cleanResult, List<String> dropSchemas) {
+        dropDatabaseObjectsPreSchemas();
+
+        List<Schema> schemaList = new LinkedList<>(Arrays.asList(schemas));
+        for (int i = 0; i < schemaList.size(); ) {
+            Schema schema = schemaList.get(i);
+            if (!schema.exists()) {
+                String unknownSchemaWarning = "Unable to clean unknown schema: " + schema;
+                cleanResult.warnings.add(unknownSchemaWarning);
+                LOG.warn(unknownSchemaWarning);
+                schemaList.remove(i);
+            } else {
+                i++;
+            }
+        }
+        cleanSchemas(schemaList.toArray(new Schema[0]), dropSchemas, cleanResult);
+        Collections.reverse(schemaList);
+        cleanSchemas(schemaList.toArray(new Schema[0]), dropSchemas, null);
+
+        dropDatabaseObjectsPostSchemas();
+
+        for (Schema schema : schemas) {
+            if (dropSchemas.contains(schema.getName())) {
+                dropSchema(schema, cleanResult);
+            }
+        }
     }
 
     /**
@@ -123,13 +135,13 @@ public class DbClean {
                 database.cleanPreSchemas();
                 return null;
             });
+            stopWatch.stop();
+            LOG.info(String.format("Successfully dropped pre-schema database level objects (execution time %s)",
+                                   TimeFormat.format(stopWatch.getTotalTimeMillis())));
         } catch (MigrateDbSqlException e) {
             LOG.debug(e.getMessage());
             LOG.warn("Unable to drop pre-schema database level objects");
         }
-        stopWatch.stop();
-        LOG.info(String.format("Successfully dropped pre-schema database level objects (execution time %s)",
-                               TimeFormat.format(stopWatch.getTotalTimeMillis())));
     }
 
     /**
@@ -144,13 +156,13 @@ public class DbClean {
                 database.cleanPostSchemas(schemas);
                 return null;
             });
+            stopWatch.stop();
+            LOG.info(String.format("Successfully dropped post-schema database level objects (execution time %s)",
+                                   TimeFormat.format(stopWatch.getTotalTimeMillis())));
         } catch (MigrateDbSqlException e) {
             LOG.debug(e.getMessage());
             LOG.warn("Unable to drop post-schema database level objects");
         }
-        stopWatch.stop();
-        LOG.info(String.format("Successfully dropped post-schema database level objects (execution time %s)",
-                               TimeFormat.format(stopWatch.getTotalTimeMillis())));
     }
 
     private void dropSchema(Schema schema, CleanResult cleanResult) {
@@ -175,16 +187,36 @@ public class DbClean {
         }
     }
 
+    private void cleanSchemas(Schema[] schemas, List<String> dropSchemas, CleanResult cleanResult) {
+        for (Schema schema : schemas) {
+            if (dropSchemas.contains(schema.getName())) {
+                try {
+                    cleanSchema(schema);
+                } catch (MigrateDbException ignored) {
+                }
+            } else {
+                cleanSchema(schema);
+                if (cleanResult != null) {
+                    cleanResult.schemasCleaned.add(schema.getName());
+                }
+            }
+        }
+    }
+
     private void cleanSchema(Schema schema) {
-        LOG.debug("Cleaning schema " + schema + " ...");
+        LOG.debug("Cleaning schema " + schema + "...");
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
+        doCleanSchema(schema);
+        stopWatch.stop();
+        LOG.info(String.format("Successfully cleaned schema %s (execution time %s)",
+                               schema, TimeFormat.format(stopWatch.getTotalTimeMillis())));
+    }
+
+    protected void doCleanSchema(Schema schema) {
         ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(), database).execute(() -> {
             schema.clean();
             return null;
         });
-        stopWatch.stop();
-        LOG.info(String.format("Successfully cleaned schema %s (execution time %s)",
-                               schema, TimeFormat.format(stopWatch.getTotalTimeMillis())));
     }
 }

@@ -42,8 +42,6 @@ import migratedb.core.internal.util.TimeFormat;
 
 /**
  * Handles the validate command.
- *
- * @author Axel Fontaine
  */
 public class DbValidate {
     private static final Log LOG = Log.getLog(DbValidate.class);
