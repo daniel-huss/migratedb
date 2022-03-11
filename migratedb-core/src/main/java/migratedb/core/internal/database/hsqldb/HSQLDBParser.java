@@ -409,7 +409,8 @@ public class HSQLDBParser extends BaseParser {
                  // excludes the IF in eg. CREATE TABLE IF EXISTS
                  || "FOR".equalsIgnoreCase(keywordText)
                  || "CASE".equalsIgnoreCase(keywordText))
-                && previousKeyword != null && !"END".equalsIgnoreCase(previousKeywordText))) {
+                && previousKeyword != null && !"END".equalsIgnoreCase(previousKeywordText)
+                && !"CURSOR".equalsIgnoreCase(previousKeywordText))) {  // DECLARE CURSOR FOR SELECT ... has no END
             context.increaseBlockDepth(keywordText);
         } else if (("EACH".equalsIgnoreCase(keywordText) || "SQLEXCEPTION".equalsIgnoreCase(keywordText))
                    && previousKeyword != null && "FOR".equalsIgnoreCase(previousKeywordText) &&
