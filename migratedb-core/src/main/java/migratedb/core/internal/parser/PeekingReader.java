@@ -26,7 +26,7 @@ public class PeekingReader extends FilterReader {
     private int[] peekBuffer = new int[256];
     private int peekMax = 0;
     private int peekBufferOffset = 0;
-    private boolean supportsPeekingMultipleLines = true;
+    private final boolean supportsPeekingMultipleLines;
 
     PeekingReader(Reader in, boolean supportsPeekingMultipleLines) {
         super(in);
@@ -361,6 +361,8 @@ public class PeekingReader extends FilterReader {
             if (c == delimiter) {
                 if (selfEscape && peek(delimiter)) {
                     result.append(delimiter);
+                    result.append(delimiter);
+                    read();
                     continue;
                 }
                 break;
@@ -483,18 +485,6 @@ public class PeekingReader extends FilterReader {
             }
         } while (true);
         return result.toString();
-    }
-
-    /**
-     * Swallows all characters in this stream as long as they can be part of a numeric constant.
-     */
-    public void swallowNumeric() throws IOException {
-        do {
-            if (!peekNumeric()) {
-                return;
-            }
-            swallow();
-        } while (true);
     }
 
     /**
