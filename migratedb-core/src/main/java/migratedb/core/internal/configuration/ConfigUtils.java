@@ -142,7 +142,7 @@ public class ConfigUtils {
                     boolean restoreMultilineDelimiter = false;
                     if (nextLine.isEmpty()) {
                         // blank line
-                    } else if (nextLine.contains("=")) {
+                    } else if (nextLine.trim().startsWith("migratedb.") && nextLine.contains("=")) {
                         if (isMultilineBooleanExpression(nextLine)) {
                             // next line is an extension of a boolean expression
                             restoreMultilineDelimiter = true;
