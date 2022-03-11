@@ -474,7 +474,7 @@ public abstract class BaseParser implements Parser {
         int pos = tracker.getPos();
         int line = tracker.getLine();
         int col = tracker.getCol();
-        int colIgnoringWhitepace = tracker.getColIgnoringWhitespace();
+        int colIgnoringWhitespace = tracker.getColIgnoringWhitespace();
 
         String peek = reader.peek(peekDepth);
         if (peek == null) {
@@ -543,7 +543,7 @@ public abstract class BaseParser implements Parser {
             reader.swallowUntilIncludingWithEscape('\'', true);
             return new Token(TokenType.STRING, pos, line, col, null, null, context.getParensDepth());
         }
-        if (isDelimiter(peek, context, col, colIgnoringWhitepace)) {
+        if (isDelimiter(peek, context, col, colIgnoringWhitespace)) {
             return handleDelimiter(reader, context, pos, line, col);
         }
         if (isOpeningIdentifier(c)) {
@@ -598,8 +598,7 @@ public abstract class BaseParser implements Parser {
         return alternativeStringLiteralQuote != 0 && peek.charAt(0) == alternativeStringLiteralQuote;
     }
 
-
-    protected boolean isDelimiter(String peek, ParserContext context, int col, int colIgnoringWhitepace) {
+    protected boolean isDelimiter(String peek, ParserContext context, int col, int colIgnoringWhitespace) {
         return peek.startsWith(context.getDelimiter().getDelimiter());
     }
 

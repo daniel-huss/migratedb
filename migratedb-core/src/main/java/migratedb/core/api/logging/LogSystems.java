@@ -36,6 +36,7 @@ public class LogSystems {
     public static final String JAVA_UTIL = "jul";
     public static final String SLF4J = "slf4j";
     public static final String CONSOLE = "console";
+    public static final String NONE = "none";
 
     public static LogSystem parse(Set<String> logSystemNames, ClassLoader classLoader, @Nullable LogSystem fallback) {
         var logSystems = new LinkedHashSet<LogSystem>();
@@ -52,6 +53,8 @@ public class LogSystems {
                     break;
                 case JAVA_UTIL:
                     logSystems.add(JavaUtilLogSystem.INSTANCE);
+                    break;
+                case NONE:
                     break;
                 case SLF4J:
                     logSystems.add(Slf4jLogSystem.INSTANCE);
