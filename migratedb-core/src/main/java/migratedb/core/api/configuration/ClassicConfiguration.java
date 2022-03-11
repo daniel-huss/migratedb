@@ -96,7 +96,7 @@ public class ClassicConfiguration implements Configuration {
     private ResourceProvider resourceProvider = null;
     private ClassProvider<JavaMigration> javaMigrationClassProvider = null;
     private String sqlMigrationSeparator = "__";
-    private String[] sqlMigrationSuffixes = {".sql"};
+    private String[] sqlMigrationSuffixes = { ".sql" };
     private JavaMigration[] javaMigrations = {};
     private boolean ignoreMissingMigrations;
     private boolean ignoreIgnoredMigrations;
@@ -691,11 +691,14 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setIgnoreMigrationPatterns(String... ignoreMigrationPatterns) {
         this.ignoreMigrationPatterns = Arrays.stream(ignoreMigrationPatterns)
-                .map(ValidatePattern::fromPattern)
-                .toArray(ValidatePattern[]::new);
+                                             .map(ValidatePattern::fromPattern)
+                                             .toArray(ValidatePattern[]::new);
     }
 
-    private void setIgnoreMigrationPatterns(ValidatePattern[] ignoreMigrationPatterns) {
+    /**
+     * Ignore migrations that match this array of ValidatePatterns when validating migrations.
+     */
+    public void setIgnoreMigrationPatterns(ValidatePattern... ignoreMigrationPatterns) {
         this.ignoreMigrationPatterns = ignoreMigrationPatterns;
     }
 
@@ -904,8 +907,8 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setCherryPick(String... cherryPickAsString) {
         this.cherryPick = Arrays.stream(cherryPickAsString)
-                .map(MigrationPattern::new)
-                .toArray(MigrationPattern[]::new);
+                                .map(MigrationPattern::new)
+                                .toArray(MigrationPattern[]::new);
     }
 
     /**
@@ -1108,7 +1111,7 @@ public class ClassicConfiguration implements Configuration {
     public void setConnectRetries(int connectRetries) {
         if (connectRetries < 0) {
             throw new MigrateDbException("Invalid number of connectRetries (must be 0 or greater): " + connectRetries,
-                    ErrorCode.CONFIGURATION);
+                                         ErrorCode.CONFIGURATION);
         }
         this.connectRetries = connectRetries;
     }
@@ -1122,8 +1125,8 @@ public class ClassicConfiguration implements Configuration {
     public void setConnectRetriesInterval(int connectRetriesInterval) {
         if (connectRetriesInterval < 0) {
             throw new MigrateDbException(
-                    "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
-                    ErrorCode.CONFIGURATION);
+                "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
+                ErrorCode.CONFIGURATION);
         }
         this.connectRetriesInterval = connectRetriesInterval;
     }
@@ -1455,6 +1458,7 @@ public class ClassicConfiguration implements Configuration {
      * <p>To use a custom ClassLoader, setClassLoader() must be called prior to calling this method.</p>
      *
      * @param properties Properties used for configuration.
+     *
      * @throws MigrateDbException when the configuration failed.
      */
     public void configure(Properties properties) {
@@ -1467,6 +1471,7 @@ public class ClassicConfiguration implements Configuration {
      * <p>To use a custom ClassLoader, it must be passed to the MigrateDb constructor prior to calling this method.</p>
      *
      * @param props Properties used for configuration.
+     *
      * @throws MigrateDbException when the configuration failed.
      */
     public void configure(Map<String, String> props) {
@@ -1662,8 +1667,8 @@ public class ClassicConfiguration implements Configuration {
             setSkipDefaultCallbacks(skipDefaultCallbacksProp);
         }
         Map<String, String> placeholdersFromProps = getPropertiesUnderNamespace(props,
-                getPlaceholders(),
-                ConfigUtils.PLACEHOLDERS_PROPERTY_PREFIX);
+                                                                                getPlaceholders(),
+                                                                                ConfigUtils.PLACEHOLDERS_PROPERTY_PREFIX);
         setPlaceholders(placeholdersFromProps);
         Boolean mixedProp = removeBoolean(props, ConfigUtils.MIXED);
         if (mixedProp != null) {
@@ -1724,22 +1729,22 @@ public class ClassicConfiguration implements Configuration {
 
         // Must be done last, so that any driver-specific config has been done at this point.
         if (StringUtils.hasText(url) && (StringUtils.hasText(urlProp) ||
-                StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
-                StringUtils.hasText(passwordProp))) {
+                                         StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
+                                         StringUtils.hasText(passwordProp))) {
             Map<String, String> jdbcPropertiesFromProps =
-                    getPropertiesUnderNamespace(
-                            props,
-                            getPlaceholders(),
-                            ConfigUtils.JDBC_PROPERTIES_PREFIX);
+                getPropertiesUnderNamespace(
+                    props,
+                    getPlaceholders(),
+                    ConfigUtils.JDBC_PROPERTIES_PREFIX);
 
             setDataSource(new DriverDataSource(classLoader,
-                    driver,
-                    url,
-                    user,
-                    password,
-                    this,
-                    jdbcPropertiesFromProps,
-                    databaseTypeRegister));
+                                               driver,
+                                               url,
+                                               user,
+                                               password,
+                                               this,
+                                               jdbcPropertiesFromProps,
+                                               databaseTypeRegister));
         }
 
         ConfigUtils.reportUnrecognisedProperties(props, "migratedb.");

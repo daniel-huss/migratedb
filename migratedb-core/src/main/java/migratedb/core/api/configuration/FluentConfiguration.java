@@ -608,6 +608,14 @@ public class FluentConfiguration implements Configuration {
     }
 
     /**
+     * Ignore migrations that match this array of ValidatePatterns when validating migrations.
+     */
+    public FluentConfiguration ignoreMigrationPatterns(ValidatePattern... ignoreMigrationPatterns) {
+        config.setIgnoreMigrationPatterns(ignoreMigrationPatterns);
+        return this;
+    }
+
+    /**
      * Whether to validate migrations and callbacks whose scripts do not obey the correct naming convention. A failure
      * can be useful to check that errors such as case sensitivity in migration prefixes have been corrected.
      *
