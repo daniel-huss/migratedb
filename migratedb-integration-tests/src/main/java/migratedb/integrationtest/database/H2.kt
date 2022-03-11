@@ -31,7 +31,7 @@ import migratedb.integrationtest.util.dependencies.DependencyResolver.toClassLoa
 import javax.sql.DataSource
 
 enum class H2 : DbSystem {
-    // Bug: Flyway didn't support newer H2 versions V2_1_210,
+    V2_1_210,
     V1_4_200,
     ;
 

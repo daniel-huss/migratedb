@@ -903,7 +903,6 @@ public class FluentConfiguration implements Configuration {
     /**
      * Sets the file name prefix for baseline migrations. They have the following file name structure:
      * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to B1.1__My_description.sql
-     * <i>Flyway Teams only</i>
      *
      * @param baselineMigrationPrefix The file name prefix for baseline migrations (default: B)
      */

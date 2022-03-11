@@ -23,7 +23,7 @@ import migratedb.core.internal.resolver.MigrationInfoHelper;
 
 /**
  * <p>This is the recommended class to extend for implementing Java-based Migrations.</p>
- * <p>Subclasses should follow the default Flyway naming convention of having a class name with the following
+ * <p>Subclasses should follow the default MigrateDB naming convention of having a class name with the following
  * structure:</p>
  * <ul>
  * <li><strong>Versioned Migrations:</strong> V2__Add_new_table</li>

@@ -53,13 +53,14 @@ public class H2Database extends BaseDatabase<H2Connection> {
     }
 
     boolean supportsDropSchemaCascade;
-    private boolean requiresV2MetadataColumnNames;
+    private final boolean requiresV2MetadataColumnNames;
     CompatibilityMode compatibilityMode;
 
     public H2Database(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
                       StatementInterceptor statementInterceptor) {
         super(configuration, jdbcConnectionFactory, statementInterceptor);
 
+        requiresV2MetadataColumnNames = super.determineVersion().isAtLeast("2.0.0");
         compatibilityMode = determineCompatibilityMode();
     }
 
@@ -101,7 +102,6 @@ public class H2Database extends BaseDatabase<H2Connection> {
         ensureDatabaseIsRecentEnough("1.2.137");
         recommendMigrateDbUpgradeIfNecessary("2.0.201");
         supportsDropSchemaCascade = getVersion().isAtLeast("1.4.200");
-        requiresV2MetadataColumnNames = getVersion().isAtLeast("2.0.0");
     }
 
     @Override
@@ -153,14 +153,18 @@ public class H2Database extends BaseDatabase<H2Connection> {
 
     @Override
     protected String doGetCurrentUser() throws SQLException {
-        // In Oracle mode, empty strings in the installed_by column of the history table would be converted to NULLs.
-        // As H2 supports a null user, we use a dummy value when required.
-        String user = getMainConnection().getJdbcTemplate().queryForString("SELECT USER()");
-
-        if (compatibilityMode == CompatibilityMode.Oracle && (user == null || "".equals(user))) {
-            return DEFAULT_USER;
+        try {
+            String user = getMainConnection().getJdbcTemplate().queryForString("SELECT USER()");
+            if (compatibilityMode == CompatibilityMode.Oracle && (user == null || "".equals(user))) {
+                user = DEFAULT_USER;
+            }
+            return user;
+        } catch (Exception e) {
+            if (compatibilityMode == CompatibilityMode.Oracle) {
+                return DEFAULT_USER;
+            }
+            throw e;
         }
-        return user;
     }
 
     @Override
@@ -180,7 +184,7 @@ public class H2Database extends BaseDatabase<H2Connection> {
 
     @Override
     public String getBooleanFalse() {
-        return "0";
+        return requiresV2MetadataColumnNames ? "FALSE" : "0";
     }
 
     @Override

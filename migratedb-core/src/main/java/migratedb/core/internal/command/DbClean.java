@@ -59,7 +59,7 @@ public class DbClean {
     public CleanResult clean() throws MigrateDbException {
         if (configuration.isCleanDisabled()) {
             throw new MigrateDbException(
-                "Unable to execute clean as it has been disabled with the 'flyway.cleanDisabled' property.");
+                "Unable to execute clean as it has been disabled");
         }
 
         callbackExecutor.onEvent(Event.BEFORE_CLEAN);

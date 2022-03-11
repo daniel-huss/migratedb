@@ -74,12 +74,13 @@ public class H2Schema extends BaseSchema<H2Database, H2Table> {
             jdbcTemplate.execute(statement);
         }
 
-        if (!requiresV2Metadata) {
-            List<String> aliasNames = jdbcTemplate.queryForStringList(
-                "SELECT ALIAS_NAME FROM INFORMATION_SCHEMA.FUNCTION_ALIASES WHERE ALIAS_SCHEMA = ?", name);
-            for (String statement : generateDropStatements("ALIAS", aliasNames)) {
-                jdbcTemplate.execute(statement);
-            }
+        List<String> aliasNames = jdbcTemplate.queryForStringList(
+            requiresV2Metadata
+            ? "SELECT ROUTINE_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION' AND " +
+              "ROUTINE_SCHEMA = ?"
+            : "SELECT ALIAS_NAME FROM INFORMATION_SCHEMA.FUNCTION_ALIASES WHERE ALIAS_SCHEMA = ?", name);
+        for (String statement : generateDropStatements("ALIAS", aliasNames)) {
+            jdbcTemplate.execute(statement);
         }
 
         List<String> domainNames = listObjectNames("DOMAIN", "");
@@ -117,9 +118,8 @@ public class H2Schema extends BaseSchema<H2Database, H2Table> {
     /**
      * Generate the statements for dropping all the objects of this type in the current schema.
      *
-     * @param objectType  The type of object to drop (Sequence, constant, ...)
+     * @param objectType The type of object to drop (Sequence, constant, ...)
      * @param objectNames The names of the objects to drop.
-     *
      * @return The list of statements.
      */
     private List<String> generateDropStatementsForCurrentSchema(String objectType, List<String> objectNames) {
@@ -135,7 +135,8 @@ public class H2Schema extends BaseSchema<H2Database, H2Table> {
 
     @Override
     protected H2Table[] doAllTables() throws SQLException {
-        List<String> tableNames = listObjectNames("TABLE", "TABLE_TYPE = 'TABLE'");
+        List<String> tableNames = listObjectNames("TABLE",
+                                                  "TABLE_TYPE = " + (requiresV2Metadata ? "'BASE TABLE'" : "'TABLE'"));
 
         H2Table[] tables = new H2Table[tableNames.size()];
         for (int i = 0; i < tableNames.size(); i++) {
@@ -147,11 +148,9 @@ public class H2Schema extends BaseSchema<H2Database, H2Table> {
     /**
      * List the names of the objects of this type in this schema.
      *
-     * @param objectType  The type of objects to list (Sequence, constant, ...)
+     * @param objectType The type of objects to list (Sequence, constant, ...)
      * @param querySuffix Suffix to append to the query to find the objects to list.
-     *
      * @return The names of the objects.
-     *
      * @throws java.sql.SQLException when the object names could not be listed.
      */
     private List<String> listObjectNames(String objectType, String querySuffix) throws SQLException {
