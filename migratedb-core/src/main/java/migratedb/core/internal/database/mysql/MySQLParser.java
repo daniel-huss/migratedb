@@ -138,7 +138,7 @@ public class MySQLParser extends BaseParser {
     }
 
     private boolean doesDelimiterEndFunction(List<Token> tokens, Token delimiter) {
-        // if there's not enough tokens, its not the function
+        // if there's not enough tokens, it's not the function
         if (tokens.size() < 2) {
             return false;
         }
@@ -161,13 +161,14 @@ public class MySQLParser extends BaseParser {
         int parensDepth = keyword.getParensDepth();
 
         if ("BEGIN".equalsIgnoreCase(keywordText) && context.getStatementType() == STORED_PROGRAM_STATEMENT) {
-            context.increaseBlockDepth("");
+            context.increaseBlockDepth(Integer.toString(parensDepth));
         }
 
         if (context.getBlockDepth() > 0 && lastTokenIs(tokens, parensDepth, "END") &&
             !"IF".equalsIgnoreCase(keywordText) && !"LOOP".equalsIgnoreCase(keywordText)) {
             String initiator = context.getBlockInitiator();
-            if (initiator.equals("") || initiator.equals(keywordText) || "AS".equalsIgnoreCase(keywordText)) {
+            if (initiator.equals("") || initiator.equals(keywordText) || "AS".equalsIgnoreCase(keywordText) ||
+                initiator.equals(Integer.toString(parensDepth))) {
                 context.decreaseBlockDepth();
             }
         }
