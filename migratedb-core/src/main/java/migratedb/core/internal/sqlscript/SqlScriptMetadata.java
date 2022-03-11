@@ -31,17 +31,24 @@ public class SqlScriptMetadata {
     private static final Log LOG = Log.getLog(SqlScriptMetadata.class);
     private static final String EXECUTE_IN_TRANSACTION = "executeInTransaction";
     private static final String ENCODING = "encoding";
+    private static final String PLACEHOLDER_REPLACEMENT = "placeholderReplacement";
     private static final String SHOULD_EXECUTE = "shouldExecute";
 
     private final Boolean executeInTransaction;
     private final String encoding;
+    private final boolean placeholderReplacement;
     private final boolean shouldExecute;
 
     private SqlScriptMetadata(Map<String, String> metadata) {
         // Make copy to prevent removing elements from the original
         metadata = new HashMap<>(metadata);
+
         this.executeInTransaction = ConfigUtils.removeBoolean(metadata, EXECUTE_IN_TRANSACTION);
         this.encoding = metadata.remove(ENCODING);
+
+        this.placeholderReplacement = Boolean.parseBoolean(metadata.getOrDefault(PLACEHOLDER_REPLACEMENT, "true"));
+        metadata.remove(PLACEHOLDER_REPLACEMENT);
+
         this.shouldExecute = true;
 
         ConfigUtils.reportUnrecognisedProperties(metadata, null);
@@ -53,6 +60,10 @@ public class SqlScriptMetadata {
 
     public String encoding() {
         return encoding;
+    }
+
+    public boolean placeholderReplacement() {
+        return placeholderReplacement;
     }
 
     public boolean shouldExecute() {

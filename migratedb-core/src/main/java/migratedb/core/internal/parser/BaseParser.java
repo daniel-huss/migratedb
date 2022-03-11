@@ -36,6 +36,7 @@ import migratedb.core.internal.resource.ResourceName;
 import migratedb.core.internal.resource.ResourceNameParser;
 import migratedb.core.internal.sqlscript.Delimiter;
 import migratedb.core.internal.sqlscript.ParsedSqlStatement;
+import migratedb.core.internal.sqlscript.SqlScriptMetadata;
 import migratedb.core.internal.util.BomStrippingReader;
 import migratedb.core.internal.util.IOUtils;
 import migratedb.core.internal.util.MigrateDbWebsiteLinks;
@@ -96,19 +97,16 @@ public abstract class BaseParser implements Parser {
         return 0;
     }
 
-
     protected Set<String> getValidKeywords() {
         return null;
     }
-
 
     protected boolean supportsPeekingMultipleLines() {
         return true;
     }
 
-
-    @Override public final SqlStatementIterator parse(Resource resource) {
-
+    @Override
+    public final SqlStatementIterator parse(Resource resource, SqlScriptMetadata metadata) {
         PositionTracker tracker = new PositionTracker();
         Recorder recorder = new Recorder();
         ParserContext context = new ParserContext(getDefaultDelimiter());
@@ -127,7 +125,7 @@ public abstract class BaseParser implements Parser {
             var bufferedReader = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader, 4096);
             var readAheadReader = new UnboundedReadAheadReader(bufferedReader);
             var bomStrippingReader = new BomStrippingReader(readAheadReader);
-            var placeholderReplacingReader = replacePlaceholders(bomStrippingReader);
+            var placeholderReplacingReader = replacePlaceholders(bomStrippingReader, metadata);
             var positionTrackingReader = new PositionTrackingReader(tracker, placeholderReplacingReader);
             var recordingReader = new RecordingReader(recorder, positionTrackingReader);
             var peekingReader = new PeekingReader(recordingReader, supportsPeekingMultipleLines());
@@ -139,18 +137,22 @@ public abstract class BaseParser implements Parser {
         }
     }
 
+    public final SqlStatementIterator parse(Resource resource) {
+        return parse(resource, null);
+    }
 
     /**
      * Configures this reader for placeholder replacement.
      *
-     * @param reader The original reader.
+     * @param reader   The original reader.
+     * @param metadata The resource's metadata.
+     *
      * @return The new reader with placeholder replacement.
      */
-    protected Reader replacePlaceholders(Reader reader) {
-        if (configuration.isPlaceholderReplacement()) {
+    protected Reader replacePlaceholders(Reader reader, SqlScriptMetadata metadata) {
+        if (configuration.isPlaceholderReplacement() && (metadata == null || metadata.placeholderReplacement())) {
             return PlaceholderReplacingReader.create(configuration, parsingContext, reader);
         }
-
         return reader;
     }
 
