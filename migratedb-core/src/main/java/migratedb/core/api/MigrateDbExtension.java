@@ -36,4 +36,12 @@ public interface MigrateDbExtension {
     default Set<DatabaseType> getDatabaseTypes() {
         return Collections.emptySet();
     }
+
+    /**
+     * @return Converters of extension-specific configuration properties (i.e. String-based configuration) to the
+     * corresponding internal data structures (one per data structure type).
+     */
+    default Set<ConfigPropertiesConverter> getConfigPropertiesConverters() {
+        return Collections.emptySet();
+    }
 }

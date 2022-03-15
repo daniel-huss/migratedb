@@ -95,12 +95,6 @@ public class ConfigUtils {
     public static final String FAIL_ON_MISSING_LOCATIONS = "migratedb.failOnMissingLocations";
     public static final String LOGGERS = "migratedb.loggers";
 
-    // Oracle-specific
-    public static final String ORACLE_SQLPLUS = "migratedb.oracle.sqlplus";
-    public static final String ORACLE_SQLPLUS_WARN = "migratedb.oracle.sqlplusWarn";
-    public static final String ORACLE_KERBEROS_CONFIG_FILE = "migratedb.oracle.kerberosConfigFile";
-    public static final String ORACLE_KERBEROS_CACHE_FILE = "migratedb.oracle.kerberosCacheFile";
-    public static final String ORACLE_WALLET_LOCATION = "migratedb.oracle.walletLocation";
 
     // Command-line specific
     public static final String JAR_DIRS = "migratedb.jarDirs";

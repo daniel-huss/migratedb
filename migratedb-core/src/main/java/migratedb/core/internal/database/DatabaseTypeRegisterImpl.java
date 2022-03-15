@@ -47,8 +47,14 @@ public class DatabaseTypeRegisterImpl implements DatabaseTypeRegister {
             copy.addAll(registeredDatabaseTypesInPriorityOrder);
             copy.addAll(databaseTypes);
             registeredDatabaseTypesInPriorityOrder = copy.stream()
-                    .sorted(Comparator.comparing(DatabaseType::getPriority))
-                    .collect(Collectors.toUnmodifiableList());
+                                                         .sorted(Comparator.comparing(DatabaseType::getPriority))
+                                                         .collect(Collectors.toUnmodifiableList());
+        }
+    }
+
+    public void clear() {
+        synchronized (this) {
+            registeredDatabaseTypesInPriorityOrder = Collections.emptyList();
         }
     }
 

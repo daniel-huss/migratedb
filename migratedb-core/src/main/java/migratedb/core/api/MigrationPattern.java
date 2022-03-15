@@ -16,12 +16,13 @@
  */
 package migratedb.core.api;
 
-public class MigrationPattern {
+import java.util.Objects;
+
+public final class MigrationPattern {
     private final String migrationName;
 
     public MigrationPattern(String migrationName) {
         this.migrationName = migrationName;
-
     }
 
     public boolean matches(MigrationVersion version, String description) {
@@ -34,9 +35,21 @@ public class MigrationPattern {
         }
     }
 
+    /**
+     * The migration name as passed to the constructor.
+     */
     @Override
     public String toString() {
         return migrationName;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof MigrationPattern)) {
+            return false;
+        }
+        var other = (MigrationPattern) obj;
+        return Objects.equals(migrationName, other.migrationName);
     }
 
     @Override

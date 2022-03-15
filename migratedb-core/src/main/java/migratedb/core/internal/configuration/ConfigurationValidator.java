@@ -23,7 +23,6 @@ import migratedb.core.api.configuration.Configuration;
 
 public class ConfigurationValidator {
     public void validate(Configuration configuration) {
-
         if (configuration.getDataSource() == null) {
             throw new MigrateDbException(
                 "Unable to connect to the database. Configure the url, user and password!",
@@ -32,7 +31,8 @@ public class ConfigurationValidator {
 
         for (String key : configuration.getPlaceholders().keySet()) {
             if (key.toLowerCase(Locale.ENGLISH).startsWith("migratedb:")) {
-                throw new MigrateDbException("Invalid placeholder ('migratedb:' prefix is reserved): " + key);
+                throw new MigrateDbException("Invalid placeholder ('migratedb:' prefix is reserved): " + key,
+                                             ErrorCode.CONFIGURATION);
             }
         }
     }

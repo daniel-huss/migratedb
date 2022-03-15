@@ -19,10 +19,14 @@ package migratedb.core.api.configuration;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import migratedb.core.api.ClassProvider;
 import migratedb.core.api.DatabaseTypeRegister;
+import migratedb.core.api.ExtensionConfig;
 import migratedb.core.api.Location;
+import migratedb.core.api.MigrateDbExtension;
 import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.ResourceProvider;
@@ -539,13 +543,13 @@ public interface Configuration {
     String[] getErrorOverrides();
 
     /**
-     * The stream where to output the SQL statements of a migration dry run. {@code null} if the SQL statements are
-     * executed against the database directly.
+     * The stream supplier where to output the SQL statements of a migration dry run. {@code null} if the SQL statements
+     * are executed against the database directly.
      * <i>MigrateDb Teams only</i>
      *
      * @return The stream or {@code null} if the SQL statements are executed against the database directly.
      */
-    OutputStream getDryRunOutput();
+    Supplier<OutputStream> getDryRunOutput();
 
     /**
      * Whether to batch SQL statements when executing them. Batching can save up to 99 percent of network roundtrips by
@@ -561,30 +565,7 @@ public interface Configuration {
     boolean isBatch();
 
     /**
-     * Whether to MigrateDb's support for Oracle SQL*Plus commands should be activated.
-     *
-     * <i>MigrateDb Teams only</i>
-     *
-     * @return {@code true} to active SQL*Plus support. {@code false} to fail fast instead. (default: {@code false})
-     */
-    boolean isOracleSqlplus();
-
-    /**
-     * Whether MigrateDb should issue a warning instead of an error whenever it encounters an Oracle SQL*Plus statement
-     * it doesn't yet support.
-     *
-     * <i>MigrateDb Teams only</i>
-     *
-     * @return {@code true} to issue a warning. {@code false} to fail fast instead. (default: {@code false})
-     */
-    boolean isOracleSqlplusWarn();
-
-    String getOracleKerberosConfigFile();
-
-    String getOracleKerberosCacheFile();
-
-    /**
-     * Always returns {@code null} because a license key is not required. Merely exists for API compatibility.
+     * Merely exists for API compatibility. If a value was set, returns that same value.
      */
     String getLicenseKey();
 
@@ -595,7 +576,7 @@ public interface Configuration {
      *
      * @return {@code true} to output the results table (default: {@code true})
      */
-    boolean outputQueryResults();
+    boolean isOutputQueryResults();
 
     /**
      * Retrieves the custom ResourceProvider to be used to look up resources. If not set, the default strategy will be
@@ -650,4 +631,14 @@ public interface Configuration {
      * The database type register.
      */
     DatabaseTypeRegister getDatabaseTypeRegister();
+
+    /**
+     * Unmodifiable set of extensions that have been loaded into this configuration.
+     */
+    Set<MigrateDbExtension> getLoadedExtensions();
+
+    /**
+     * A read-only view of the extension config (by type).
+     */
+    Map<Class<? extends ExtensionConfig>, ? extends ExtensionConfig> getExtensionConfig();
 }

@@ -18,26 +18,29 @@ package migratedb.core.api.configuration;
 
 import static migratedb.core.internal.configuration.ConfigUtils.removeBoolean;
 import static migratedb.core.internal.configuration.ConfigUtils.removeInteger;
-import static migratedb.core.internal.util.Development.TODO;
 
-import java.io.File;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import migratedb.core.api.ClassProvider;
 import migratedb.core.api.DatabaseTypeRegister;
 import migratedb.core.api.ErrorCode;
+import migratedb.core.api.ExtensionConfig;
 import migratedb.core.api.Location;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrateDbExtension;
@@ -51,6 +54,7 @@ import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.pattern.ValidatePattern;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.configuration.ConfigUtils;
+import migratedb.core.internal.configuration.FileOutputStreamFactory;
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl;
 import migratedb.core.internal.extension.BuiltinFeatures;
 import migratedb.core.internal.jdbc.DriverDataSource;
@@ -121,20 +125,19 @@ public class ClassicConfiguration implements Configuration {
     private String installedBy;
     private boolean createSchemas = true;
     private String[] errorOverrides = new String[0];
-    private OutputStream dryRunOutput;
+    private Supplier<OutputStream> dryRunOutput;
     private boolean batch;
     private boolean outputQueryResults = true;
     private int lockRetryCount = 50;
     private Map<String, String> jdbcProperties;
     private boolean oracleSqlplus;
     private boolean oracleSqlplusWarn;
-    private String oracleKerberosConfigFile = "";
-    private String oracleKerberosCacheFile = "";
-    private String oracleWalletLocation;
     private boolean failOnMissingLocations = false;
     private LogSystem logger;
+    private String licenseKey;
     private final DatabaseTypeRegisterImpl databaseTypeRegister = new DatabaseTypeRegisterImpl();
     private final Set<MigrateDbExtension> loadedExtensions = new HashSet<>();
+    private final Map<Class<? extends ExtensionConfig>, ExtensionConfig> extensionConfig = new HashMap<>();
 
     public ClassicConfiguration() {
         this(ClassUtils.defaultClassLoader());
@@ -404,13 +407,13 @@ public class ClassicConfiguration implements Configuration {
     }
 
     @Override
-    public OutputStream getDryRunOutput() {
+    public Supplier<OutputStream> getDryRunOutput() {
         return dryRunOutput;
     }
 
     @Override
     public String getLicenseKey() {
-        return null;
+        return licenseKey;
     }
 
     @Override
@@ -434,7 +437,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     @Override
-    public boolean outputQueryResults() {
+    public boolean isOutputQueryResults() {
         return outputQueryResults;
     }
 
@@ -474,28 +477,18 @@ public class ClassicConfiguration implements Configuration {
     }
 
     @Override
-    public boolean isOracleSqlplus() {
-        return oracleSqlplus;
-    }
-
-    @Override
-    public boolean isOracleSqlplusWarn() {
-        return oracleSqlplusWarn;
-    }
-
-    @Override
-    public String getOracleKerberosConfigFile() {
-        return oracleKerberosConfigFile;
-    }
-
-    @Override
-    public String getOracleKerberosCacheFile() {
-        return oracleKerberosCacheFile;
-    }
-
-    @Override
     public DatabaseTypeRegister getDatabaseTypeRegister() {
         return databaseTypeRegister;
+    }
+
+    @Override
+    public Set<MigrateDbExtension> getLoadedExtensions() {
+        return Collections.unmodifiableSet(loadedExtensions);
+    }
+
+    @Override
+    public Map<Class<? extends ExtensionConfig>, ? extends ExtensionConfig> getExtensionConfig() {
+        return Collections.unmodifiableMap(extensionConfig);
     }
 
     /**
@@ -504,7 +497,7 @@ public class ClassicConfiguration implements Configuration {
      *
      * @param dryRunOutput The output file or {@code null} to execute the SQL statements directly against the database.
      */
-    public void setDryRunOutput(OutputStream dryRunOutput) {
+    public void setDryRunOutput(Supplier<OutputStream> dryRunOutput) {
         this.dryRunOutput = dryRunOutput;
     }
 
@@ -512,29 +505,12 @@ public class ClassicConfiguration implements Configuration {
      * Sets the file where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
      * statements directly against the database. If the file specified is in a non-existent directory, MigrateDb will
      * create all directories and parent directories as needed.
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param dryRunOutput The output file or {@code null} to execute the SQL statements directly against the database.
-     */
-    public void setDryRunOutputAsFile(File dryRunOutput) {
-        TODO("Implement seting dry run output as file");
-    }
-
-    /**
-     * Sets the file where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
-     * statements directly against the database. If the file specified is in a non-existent directory, MigrateDb will
-     * create all directories and parent directories as needed. Paths starting with s3: point to a bucket in AWS S3,
-     * which must exist. They are in the format {@code s3:<bucket>(/optionalfolder/subfolder)/filename.sql}
-     * <p>
-     * Paths starting with gcs: point to a bucket in Google Cloud Storage, which must exist. They are in the format
-     * {@code gcs:<bucket>(/optionalfolder/subfolder)/filename.sql}
-     * <i>MigrateDb Teams only</i>
      *
      * @param dryRunOutputFileName The name of the output file or {@code null} to execute the SQL statements directly
      *                             against the database.
      */
     public void setDryRunOutputAsFileName(String dryRunOutputFileName) {
-        TODO("Implement setting dry run output as file name");
+        this.dryRunOutput = new FileOutputStreamFactory(Paths.get(dryRunOutputFileName));
     }
 
     /**
@@ -602,7 +578,7 @@ public class ClassicConfiguration implements Configuration {
      * The log system(s) MigrateDb should use.
      */
     public void setLogger(String... logger) {
-        this.logger = LogSystems.parse(Set.of(logger), getClassLoader(), null);
+        this.logger = LogSystems.parse(new LinkedHashSet<>(Arrays.asList(logger)), getClassLoader(), null);
     }
 
     /**
@@ -1290,56 +1266,6 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Whether MigrateDb's support for Oracle SQL*Plus commands should be activated.
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param oracleSqlplus {@code true} to active SQL*Plus support. {@code false} to fail fast instead. (default:
-     *                      {@code false})
-     */
-    public void setOracleSqlplus(boolean oracleSqlplus) {
-        this.oracleSqlplus = oracleSqlplus;
-    }
-
-    /**
-     * Whether MigrateDb should issue a warning instead of an error whenever it encounters an Oracle SQL*Plus
-     * statementit doesn't yet support.
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param oracleSqlplusWarn {@code true} to issue a warning. {@code false} to fail fast instead. (default: {@code
-     *                          false})
-     */
-    public void setOracleSqlplusWarn(boolean oracleSqlplusWarn) {
-        this.oracleSqlplusWarn = oracleSqlplusWarn;
-    }
-
-    /**
-     * When Oracle needs to connect to a Kerberos service to authenticate, the location of the Kerberos configuration.
-     * <i>MigrateDb Teams only</i>
-     */
-    public void setOracleKerberosConfigFile(String oracleKerberosConfigFile) {
-        this.oracleKerberosConfigFile = oracleKerberosConfigFile;
-    }
-
-    /**
-     * When Oracle needs to connect to a Kerberos service to authenticate, the location of the Kerberos cache.
-     * <i>MigrateDb Teams only</i>
-     */
-    public void setOracleKerberosCacheFile(String oracleKerberosCacheFile) {
-        this.oracleKerberosCacheFile = oracleKerberosCacheFile;
-    }
-
-    /**
-     * The location of your Oracle wallet, used to automatically sign in to your databases.
-     *
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param oracleWalletLocation The path to your Oracle Wallet
-     */
-    public void setOracleWalletLocation(String oracleWalletLocation) {
-        this.oracleWalletLocation = oracleWalletLocation;
-    }
-
-    /**
      * Whether MigrateDb should attempt to create the schemas specified in the schemas property.
      *
      * @param createSchemas @{code true} to attempt to create the schemas (default: {@code true})
@@ -1349,9 +1275,11 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Does nothing, because this software has been liberated. Merely exists for compatibility.
+     * Merely exists for compatibility. Setting a license key has no effect except that {@link #getLicenseKey()} will
+     * return that key.
      */
     public void setLicenseKey(String licenseKey) {
+        this.licenseKey = licenseKey;
     }
 
     /**
@@ -1394,9 +1322,24 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
+     * Sets the extension config of type {@code T}.
+     */
+    public <T extends ExtensionConfig> void setExtensionConfig(Class<T> extensionConfigType, T value) {
+        extensionConfig.put(extensionConfigType, value);
+    }
+
+    /**
      * Configure with the same values as this existing configuration.
+     * <p>To use a custom ClassLoader, it must be passed to the constructor prior to calling this method.</p>
      */
     public void configure(Configuration configuration) {
+        extensionConfig.clear();
+        extensionConfig.putAll(configuration.getExtensionConfig());
+        loadedExtensions.clear();
+        loadedExtensions.addAll(configuration.getLoadedExtensions());
+        databaseTypeRegister.clear();
+        databaseTypeRegister.registerDatabaseTypes(configuration.getDatabaseTypeRegister().getDatabaseTypes());
+
         setLogger(configuration.getLogger());
         setBaselineDescription(configuration.getBaselineDescription());
         setBaselineOnMigrate(configuration.isBaselineOnMigrate());
@@ -1456,7 +1399,7 @@ public class ClassicConfiguration implements Configuration {
     /**
      * Configures MigrateDb with these properties. This overwrites any existing configuration. Properties are documented
      * here: https://no-website-yet.org/documentation/configuration/parameters/
-     * <p>To use a custom ClassLoader, setClassLoader() must be called prior to calling this method.</p>
+     * <p>To use a custom ClassLoader, it must be passed to the constructor prior to calling this method.</p>
      *
      * @param properties Properties used for configuration.
      *
@@ -1469,7 +1412,7 @@ public class ClassicConfiguration implements Configuration {
     /**
      * Configures MigrateDb with these properties. This overwrites any existing configuration. Properties are documented
      * here: https://no-website-yet.org/documentation/configuration/parameters/
-     * <p>To use a custom ClassLoader, it must be passed to the MigrateDb constructor prior to calling this method.</p>
+     * <p>To use a custom ClassLoader, it must be passed to the constructor prior to calling this method.</p>
      *
      * @param props Properties used for configuration.
      *
@@ -1695,30 +1638,12 @@ public class ClassicConfiguration implements Configuration {
         if (batchProp != null) {
             setBatch(batchProp);
         }
-        Boolean oracleSqlplusProp = removeBoolean(props, ConfigUtils.ORACLE_SQLPLUS);
-        if (oracleSqlplusProp != null) {
-            setOracleSqlplus(oracleSqlplusProp);
-        }
-        Boolean oracleSqlplusWarnProp = removeBoolean(props, ConfigUtils.ORACLE_SQLPLUS_WARN);
-        if (oracleSqlplusWarnProp != null) {
-            setOracleSqlplusWarn(oracleSqlplusWarnProp);
-        }
+
         Boolean createSchemasProp = removeBoolean(props, ConfigUtils.CREATE_SCHEMAS);
         if (createSchemasProp != null) {
             setShouldCreateSchemas(createSchemasProp);
         }
-        String oracleKerberosConfigFile = props.remove(ConfigUtils.ORACLE_KERBEROS_CONFIG_FILE);
-        if (oracleKerberosConfigFile != null) {
-            setOracleKerberosConfigFile(oracleKerberosConfigFile);
-        }
-        String oracleKerberosCacheFile = props.remove(ConfigUtils.ORACLE_KERBEROS_CACHE_FILE);
-        if (oracleKerberosCacheFile != null) {
-            setOracleKerberosCacheFile(oracleKerberosCacheFile);
-        }
-        String oracleWalletLocationProp = props.remove(ConfigUtils.ORACLE_WALLET_LOCATION);
-        if (oracleWalletLocationProp != null) {
-            setOracleWalletLocation(oracleWalletLocationProp);
-        }
+
         String ignoreMigrationPatternsProp = props.remove(ConfigUtils.IGNORE_MIGRATION_PATTERNS);
         if (ignoreMigrationPatternsProp != null) {
             setIgnoreMigrationPatterns(StringUtils.tokenizeToStringArray(ignoreMigrationPatternsProp, ","));
@@ -1726,6 +1651,13 @@ public class ClassicConfiguration implements Configuration {
         Boolean failOnMissingLocationsProp = removeBoolean(props, ConfigUtils.FAIL_ON_MISSING_LOCATIONS);
         if (failOnMissingLocationsProp != null) {
             setFailOnMissingLocations(failOnMissingLocationsProp);
+        }
+
+        for (var extension : loadedExtensions) {
+            for (var converter : extension.getConfigPropertiesConverters()) {
+                var result = converter.convert(props);
+                extensionConfig.put(result.extensionConfigType, result.config);
+            }
         }
 
         // Must be done last, so that any driver-specific config has been done at this point.

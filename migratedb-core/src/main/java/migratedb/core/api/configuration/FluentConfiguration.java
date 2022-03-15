@@ -16,16 +16,17 @@
  */
 package migratedb.core.api.configuration;
 
-import java.io.File;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import migratedb.core.MigrateDb;
 import migratedb.core.api.ClassProvider;
 import migratedb.core.api.DatabaseTypeRegister;
+import migratedb.core.api.ExtensionConfig;
 import migratedb.core.api.Location;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrateDbExtension;
@@ -326,33 +327,13 @@ public class FluentConfiguration implements Configuration {
     }
 
     @Override
-    public OutputStream getDryRunOutput() {
+    public Supplier<OutputStream> getDryRunOutput() {
         return config.getDryRunOutput();
     }
 
     @Override
     public boolean isBatch() {
         return config.isBatch();
-    }
-
-    @Override
-    public boolean isOracleSqlplus() {
-        return config.isOracleSqlplus();
-    }
-
-    @Override
-    public boolean isOracleSqlplusWarn() {
-        return config.isOracleSqlplusWarn();
-    }
-
-    @Override
-    public String getOracleKerberosConfigFile() {
-        return config.getOracleKerberosConfigFile();
-    }
-
-    @Override
-    public String getOracleKerberosCacheFile() {
-        return config.getOracleKerberosCacheFile();
     }
 
     @Override
@@ -371,8 +352,8 @@ public class FluentConfiguration implements Configuration {
     }
 
     @Override
-    public boolean outputQueryResults() {
-        return config.outputQueryResults();
+    public boolean isOutputQueryResults() {
+        return config.isOutputQueryResults();
     }
 
     @Override
@@ -400,14 +381,23 @@ public class FluentConfiguration implements Configuration {
         return config.getDatabaseTypeRegister();
     }
 
+    @Override
+    public Set<MigrateDbExtension> getLoadedExtensions() {
+        return config.getLoadedExtensions();
+    }
+
+    @Override
+    public Map<Class<? extends ExtensionConfig>, ? extends ExtensionConfig> getExtensionConfig() {
+        return config.getExtensionConfig();
+    }
+
     /**
      * Sets the stream where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
      * statements directly against the database. The stream when be closing when MigrateDb finishes writing the output.
-     * <i>MigrateDb Teams only</i>
      *
      * @param dryRunOutput The output file or {@code null} to execute the SQL statements directly against the database.
      */
-    public FluentConfiguration dryRunOutput(OutputStream dryRunOutput) {
+    public FluentConfiguration dryRunOutput(Supplier<OutputStream> dryRunOutput) {
         config.setDryRunOutput(dryRunOutput);
         return this;
     }
@@ -416,23 +406,6 @@ public class FluentConfiguration implements Configuration {
      * Sets the file where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
      * statements directly against the database. If the file specified is in a non-existent directory, MigrateDb will
      * create all directories and parent directories as needed.
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param dryRunOutput The output file or {@code null} to execute the SQL statements directly against the database.
-     */
-    public FluentConfiguration dryRunOutput(File dryRunOutput) {
-        config.setDryRunOutputAsFile(dryRunOutput);
-        return this;
-    }
-
-    /**
-     * Sets the file where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
-     * statements directly against the database. If the file specified is in a non-existent directory, MigrateDb will
-     * create all directories and parent directories as needed. Paths starting with s3: point to a bucket in AWS S3,
-     * which must exist. They are in the format {@code s3:<bucket>(/optionalfolder/subfolder)/filename.sql} Paths
-     * starting with gcs: point to a bucket in Google Cloud Storage, which must exist. They are in the format {@code
-     * gcs:<bucket>(/optionalfolder/subfolder)/filename.sql}
-     * <i>MigrateDb Teams only</i>
      *
      * @param dryRunOutputFileName The name of the output file or {@code null} to execute the SQL statements directly
      *                             against the database.
@@ -1217,61 +1190,10 @@ public class FluentConfiguration implements Configuration {
     }
 
     /**
-     * Whether MigrateDb's support for Oracle SQL*Plus commands should be activated.
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param oracleSqlplus {@code true} to active SQL*Plus support. {@code false} to fail fast instead. (default:
-     *                      {@code false})
+     * Sets the extension config of type {@code T}.
      */
-    public FluentConfiguration oracleSqlplus(boolean oracleSqlplus) {
-        config.setOracleSqlplus(oracleSqlplus);
-        return this;
-    }
-
-    /**
-     * Whether MigrateDb should issue a warning instead of an error whenever it encounters an Oracle SQL*Plus statement
-     * it doesn't yet support.
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param oracleSqlplusWarn {@code true} to issue a warning. {@code false} to fail fast instead. (default: {@code
-     *                          false})
-     */
-    public FluentConfiguration oracleSqlplusWarn(boolean oracleSqlplusWarn) {
-        config.setOracleSqlplusWarn(oracleSqlplusWarn);
-        return this;
-    }
-
-    /**
-     * When authenticating to Oracle via Kerberos, the location of the Kerberos {@code krb5.conf} file
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param oracleKerberosConfigFile The Kerberos config file path.
-     */
-    public FluentConfiguration oracleKerberosConfigFile(String oracleKerberosConfigFile) {
-        config.setOracleKerberosConfigFile(oracleKerberosConfigFile);
-        return this;
-    }
-
-    /**
-     * When authenticating to Oracle via Kerberos, the location of the local Kerberos config cache (optional).
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param oracleKerberosCacheFile The Kerberos cache file path.
-     */
-    public FluentConfiguration oracleKerberosCacheFile(String oracleKerberosCacheFile) {
-        config.setOracleKerberosCacheFile(oracleKerberosCacheFile);
-        return this;
-    }
-
-    /**
-     * The location of your Oracle wallet, used to automatically sign in to your databases.
-     *
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param oracleWalletLocation The path to your Oracle Wallet
-     */
-    public FluentConfiguration oracleWalletLocation(String oracleWalletLocation) {
-        config.setOracleWalletLocation(oracleWalletLocation);
+    public <T extends ExtensionConfig> FluentConfiguration extensionConfig(Class<T> extensionConfigType, T value) {
+        config.setExtensionConfig(extensionConfigType, value);
         return this;
     }
 

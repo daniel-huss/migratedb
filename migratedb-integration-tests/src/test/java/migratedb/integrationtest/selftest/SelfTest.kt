@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.playground
+package migratedb.integrationtest.selftest
 
 import io.kotest.matchers.collections.shouldContainAll
-import migratedb.core.api.MigrationType.JDBC
+import migratedb.core.api.MigrationType
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.params.ParameterizedTest
@@ -30,7 +30,7 @@ internal class SelfTest : IntegrationTest() {
         given {
             database {
                 existingSchemaHistory(table = table("migratedb")) {
-                    entry(name = "V001__Test", type = JDBC, success = true)
+                    entry(name = "V001__Test", type = MigrationType.JDBC, success = true)
                 }
             }
         }.`when` {

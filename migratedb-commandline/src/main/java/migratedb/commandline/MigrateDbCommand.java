@@ -51,11 +51,6 @@ import static migratedb.core.internal.configuration.ConfigUtils.LOCATIONS;
 import static migratedb.core.internal.configuration.ConfigUtils.LOCK_RETRY_COUNT;
 import static migratedb.core.internal.configuration.ConfigUtils.LOGGERS;
 import static migratedb.core.internal.configuration.ConfigUtils.MIXED;
-import static migratedb.core.internal.configuration.ConfigUtils.ORACLE_KERBEROS_CACHE_FILE;
-import static migratedb.core.internal.configuration.ConfigUtils.ORACLE_KERBEROS_CONFIG_FILE;
-import static migratedb.core.internal.configuration.ConfigUtils.ORACLE_SQLPLUS;
-import static migratedb.core.internal.configuration.ConfigUtils.ORACLE_SQLPLUS_WARN;
-import static migratedb.core.internal.configuration.ConfigUtils.ORACLE_WALLET_LOCATION;
 import static migratedb.core.internal.configuration.ConfigUtils.OUTPUT_QUERY_RESULTS;
 import static migratedb.core.internal.configuration.ConfigUtils.OUT_OF_ORDER;
 import static migratedb.core.internal.configuration.ConfigUtils.PASSWORD;
@@ -83,6 +78,11 @@ import static migratedb.core.internal.configuration.ConfigUtils.USER;
 import static migratedb.core.internal.configuration.ConfigUtils.VALIDATE_MIGRATION_NAMING;
 import static migratedb.core.internal.configuration.ConfigUtils.VALIDATE_ON_MIGRATE;
 import static migratedb.core.internal.configuration.ConfigUtils.loadConfiguration;
+import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_KERBEROS_CACHE_FILE;
+import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_KERBEROS_CONFIG_FILE;
+import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_SQLPLUS;
+import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_SQLPLUS_WARN;
+import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_WALLET_LOCATION;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -469,7 +469,7 @@ class MigrateDbCommand {
 
         while (matcher.find()) {
             String variableName = matcher.group(1);
-            String variableValue = environment.getOrDefault(variableName,"");
+            String variableValue = environment.getOrDefault(variableName, "");
 
             LOG.debug("Expanding environment variable in config: " + variableName + " -> " + variableValue);
             expandedValue = expandedValue.replaceAll(Pattern.quote(matcher.group(0)),

@@ -16,33 +16,38 @@
  */
 package migratedb.core.api.pattern;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationState;
 import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 
-public class ValidatePattern {
+public final class ValidatePattern {
     private final String migrationType;
     private final String migrationState;
-    private static final List<String> validMigrationTypes = Arrays.asList("*", "repeatable", "versioned");
-    private static final List<String> validMigrationStates = Arrays.asList(
+    public static final List<String> validMigrationTypes = List.of("*", "repeatable", "versioned");
+    public static final List<String> validMigrationStates = List.of(
         "*",
-        MigrationState.MISSING_SUCCESS.getDisplayName().toLowerCase(),
-        MigrationState.PENDING.getDisplayName().toLowerCase(),
-        MigrationState.IGNORED.getDisplayName().toLowerCase(),
-        MigrationState.FUTURE_SUCCESS.getDisplayName().toLowerCase());
+        MigrationState.MISSING_SUCCESS.getDisplayName().toLowerCase(Locale.ROOT),
+        MigrationState.PENDING.getDisplayName().toLowerCase(Locale.ROOT),
+        MigrationState.IGNORED.getDisplayName().toLowerCase(Locale.ROOT),
+        MigrationState.FUTURE_SUCCESS.getDisplayName().toLowerCase(Locale.ROOT));
 
     private ValidatePattern(String migrationType, String migrationState) {
         this.migrationType = migrationType;
         this.migrationState = migrationState;
     }
 
-    public static ValidatePattern fromPattern(String pattern) {
-        if (pattern == null) {
-            throw new MigrateDbException("Null pattern not allowed.");
-        }
+    public String pattern() {
+        return migrationType + ":" + migrationState;
+    }
 
+    @Override
+    public String toString() {
+        return pattern();
+    }
+
+    public static ValidatePattern fromPattern(String pattern) {
         String[] patternParts = pattern.split(":");
 
         if (patternParts.length != 2) {
@@ -52,8 +57,8 @@ public class ValidatePattern {
                 MigrateDbWebsiteLinks.IGNORE_MIGRATION_PATTERNS + " for full details");
         }
 
-        String migrationType = patternParts[0].trim().toLowerCase();
-        String migrationState = patternParts[1].trim().toLowerCase();
+        String migrationType = patternParts[0].trim().toLowerCase(Locale.ROOT);
+        String migrationState = patternParts[1].trim().toLowerCase(Locale.ROOT);
 
         if (!validMigrationTypes.contains(migrationType)) {
             throw new MigrateDbException(
