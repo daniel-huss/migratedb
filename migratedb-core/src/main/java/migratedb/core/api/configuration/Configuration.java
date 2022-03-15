@@ -545,7 +545,6 @@ public interface Configuration {
     /**
      * The stream supplier where to output the SQL statements of a migration dry run. {@code null} if the SQL statements
      * are executed against the database directly.
-     * <i>MigrateDb Teams only</i>
      *
      * @return The stream or {@code null} if the SQL statements are executed against the database directly.
      */
@@ -557,7 +556,6 @@ public interface Configuration {
      * individually. This is particularly useful for very large SQL migrations composed of multiple MB or even GB of
      * reference data, as this can dramatically reduce the network overhead. This is supported for INSERT, UPDATE,
      * DELETE, MERGE and UPSERT statements. All other statements are automatically executed without batching.
-     * <i>MigrateDb Teams only</i>
      *
      * @return {@code true} to batch SQL statements. {@code false} to execute them individually instead. (default:
      * {@code false})

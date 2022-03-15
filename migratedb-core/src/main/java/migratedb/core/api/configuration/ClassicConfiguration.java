@@ -870,7 +870,6 @@ public class ClassicConfiguration implements Configuration {
     /**
      * Gets the migrations that MigrateDb should consider when migrating or undoing. Leave empty to consider all
      * available migrations. Migrations not in this list will be ignored.
-     * <i>MigrateDb Teams only</i>
      */
     public void setCherryPick(MigrationPattern... cherryPick) {
         this.cherryPick = cherryPick;
@@ -880,7 +879,6 @@ public class ClassicConfiguration implements Configuration {
      * Gets the migrations that MigrateDb should consider when migrating or undoing. Leave empty to consider all
      * available migrations. Migrations not in this list will be ignored. Values should be the version for versioned
      * migrations (e.g. 1, 2.4, 6.5.3) or the description for repeatable migrations (e.g. Insert_Data, Create_Table)
-     * <i>MigrateDb Teams only</i>
      */
     public void setCherryPick(String... cherryPickAsString) {
         this.cherryPick = Arrays.stream(cherryPickAsString)
@@ -1340,56 +1338,65 @@ public class ClassicConfiguration implements Configuration {
         databaseTypeRegister.clear();
         databaseTypeRegister.registerDatabaseTypes(configuration.getDatabaseTypeRegister().getDatabaseTypes());
 
-        setLogger(configuration.getLogger());
         setBaselineDescription(configuration.getBaselineDescription());
+        setBaselineMigrationPrefix(configuration.getBaselineMigrationPrefix());
         setBaselineOnMigrate(configuration.isBaselineOnMigrate());
         setBaselineVersion(configuration.getBaselineVersion());
+        setBatch(configuration.isBatch());
         setCallbacks(configuration.getCallbacks());
+        setCherryPick(configuration.getCherryPick());
         setCleanDisabled(configuration.isCleanDisabled());
         setCleanOnValidationError(configuration.isCleanOnValidationError());
-        setDataSource(configuration.getDataSource());
         setConnectRetries(configuration.getConnectRetries());
         setConnectRetriesInterval(configuration.getConnectRetriesInterval());
-        setInitSql(configuration.getInitSql());
-
+        setDataSource(configuration.getDataSource());
+        setDefaultSchema(configuration.getDefaultSchema());
+        setDryRunOutput(configuration.getDryRunOutput());
         setEncoding(configuration.getEncoding());
+        setErrorOverrides(configuration.getErrorOverrides());
+        setFailOnMissingLocations(configuration.getFailOnMissingLocations());
+        setFailOnMissingTarget(configuration.getFailOnMissingTarget());
         setGroup(configuration.isGroup());
-        setValidateMigrationNaming(configuration.isValidateMigrationNaming());
-        setIgnoreMigrationPatterns(configuration.getIgnoreMigrationPatterns());
         setIgnoreFutureMigrations(configuration.isIgnoreFutureMigrations());
-        setIgnoreMissingMigrations(configuration.isIgnoreMissingMigrations());
         setIgnoreIgnoredMigrations(configuration.isIgnoreIgnoredMigrations());
+        setIgnoreMigrationPatterns(configuration.getIgnoreMigrationPatterns());
+        setIgnoreMissingMigrations(configuration.isIgnoreMissingMigrations());
         setIgnorePendingMigrations(configuration.isIgnorePendingMigrations());
+        setInitSql(configuration.getInitSql());
         setInstalledBy(configuration.getInstalledBy());
+        setJavaMigrationClassProvider(configuration.getJavaMigrationClassProvider());
         setJavaMigrations(configuration.getJavaMigrations());
+        setJdbcProperties(configuration.getJdbcProperties());
+        setLicenseKey(configuration.getLicenseKey());
         setLocations(configuration.getLocations());
+        setLockRetryCount(configuration.getLockRetryCount());
+        setLogger(configuration.getLogger());
         setMixed(configuration.isMixed());
         setOutOfOrder(configuration.isOutOfOrder());
+        setOutputQueryResults(configuration.isOutputQueryResults());
         setPlaceholderPrefix(configuration.getPlaceholderPrefix());
         setPlaceholderReplacement(configuration.isPlaceholderReplacement());
         setPlaceholders(configuration.getPlaceholders());
         setPlaceholderSuffix(configuration.getPlaceholderSuffix());
-        setScriptPlaceholderPrefix(configuration.getScriptPlaceholderPrefix());
-        setScriptPlaceholderSuffix(configuration.getScriptPlaceholderSuffix());
         setRepeatableSqlMigrationPrefix(configuration.getRepeatableSqlMigrationPrefix());
         setResolvers(configuration.getResolvers());
-        setDefaultSchema(configuration.getDefaultSchema());
+        setResourceProvider(configuration.getResourceProvider());
         setSchemas(configuration.getSchemas());
+        setScriptPlaceholderPrefix(configuration.getScriptPlaceholderPrefix());
+        setScriptPlaceholderSuffix(configuration.getScriptPlaceholderSuffix());
+        setShouldCreateSchemas(configuration.getCreateSchemas());
         setSkipDefaultCallbacks(configuration.isSkipDefaultCallbacks());
         setSkipDefaultResolvers(configuration.isSkipDefaultResolvers());
+        setSkipExecutingMigrations(configuration.isSkipExecutingMigrations());
         setSqlMigrationPrefix(configuration.getSqlMigrationPrefix());
         setSqlMigrationSeparator(configuration.getSqlMigrationSeparator());
         setSqlMigrationSuffixes(configuration.getSqlMigrationSuffixes());
         setTable(configuration.getTable());
         setTablespace(configuration.getTablespace());
         setTarget(configuration.getTarget());
-        setFailOnMissingTarget(configuration.getFailOnMissingTarget());
+        setUndoSqlMigrationPrefix(configuration.getUndoSqlMigrationPrefix());
+        setValidateMigrationNaming(configuration.isValidateMigrationNaming());
         setValidateOnMigrate(configuration.isValidateOnMigrate());
-        setResourceProvider(configuration.getResourceProvider());
-        setJavaMigrationClassProvider(configuration.getJavaMigrationClassProvider());
-        setShouldCreateSchemas(configuration.getCreateSchemas());
-        setLockRetryCount(configuration.getLockRetryCount());
-        setFailOnMissingLocations(configuration.getFailOnMissingLocations());
 
         url = configuration.getUrl();
         user = configuration.getUser();

@@ -16,16 +16,29 @@
 
 package migratedb.testing
 
+import io.kotest.assertions.asClue
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import migratedb.core.api.configuration.Configuration
-import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.functions
 
 fun Configuration.shouldBeEquivalentTo(other: Configuration) {
-    Configuration::class.memberProperties.asSequence()
-        .filterNot { it.name == "classLoader" }
-        .forEach {
-            val actual = it.get(this)
-            val expected = it.get(other)
-            actual.shouldBe(expected)
+    Configuration::class.functions.asSequence()
+        .filter {
+            (it.name.startsWith("get") || it.name.startsWith("is")) &&
+                    it.name != "getClassLoader" &&
+                    it.name != "getClass" &&
+                    it.name != "getDatabaseTypeRegister"
         }
+        .forEach {
+            val actual = it.call(this)
+            val expected = it.call(other)
+            "Value of ${it.name}()".asClue {
+                actual.shouldBe(expected)
+            }
+        }
+    "Registered database types".asClue {
+        databaseTypeRegister.databaseTypes.map { it::class.java }
+            .shouldContainExactlyInAnyOrder(other.databaseTypeRegister.databaseTypes.map { it::class.java })
+    }
 }
