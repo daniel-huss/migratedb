@@ -81,7 +81,7 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
     /**
      * Creates a Version using this version string.
      *
-     * @param version The version in one of the following formats: 6, 6.0, 005, 1.2.3.4, 201004200021. <br/>{@code null}
+     * @param version The version in one of the following formats: 6, 6.0, 005, 1.2.3.4, 201004200021. <br>{@code null}
      *                means that this version refers to an empty schema.
      */
     private MigrationVersion(String version) {
@@ -91,7 +91,7 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
     }
 
     /**
-     * @param version     The version in one of the following formats: 6, 6.0, 005, 1.2.3.4, 201004200021. <br/>{@code
+     * @param version     The version in one of the following formats: 6, 6.0, 005, 1.2.3.4, 201004200021. <br>{@code
      *                    null} means that this version refers to an empty schema.
      * @param displayText The alternative text to display instead of the version number.
      */

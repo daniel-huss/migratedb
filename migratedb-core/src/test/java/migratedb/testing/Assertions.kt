@@ -16,29 +16,22 @@
 
 package migratedb.testing
 
-import io.kotest.assertions.asClue
-import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.kotest.matchers.shouldBe
 import migratedb.core.api.configuration.Configuration
 import kotlin.reflect.full.functions
 
-fun Configuration.shouldBeEquivalentTo(other: Configuration) {
-    Configuration::class.functions.asSequence()
-        .filter {
-            (it.name.startsWith("get") || it.name.startsWith("is")) &&
-                    it.name != "getClassLoader" &&
-                    it.name != "getClass" &&
-                    it.name != "getDatabaseTypeRegister"
-        }
-        .forEach {
-            val actual = it.call(this)
-            val expected = it.call(other)
-            "Value of ${it.name}()".asClue {
-                actual.shouldBe(expected)
+
+fun Configuration.comparableProperties() = {
+    mutableMapOf<String, Any>().also { props ->
+        Configuration::class.functions.asSequence()
+            .filter {
+                (it.name.startsWith("get") || it.name.startsWith("is")) &&
+                        it.name != "getClassLoader" &&
+                        it.name != "getClass" &&
+                        it.name != "getDatabaseTypeRegister"
             }
-        }
-    "Registered database types".asClue {
-        databaseTypeRegister.databaseTypes.map { it::class.java }
-            .shouldContainExactlyInAnyOrder(other.databaseTypeRegister.databaseTypes.map { it::class.java })
+            .forEach { getter ->
+                getter.call(this)?.let { props["Value of ${getter.name}()"] = it }
+            }
+        props["Registered database type"] = databaseTypeRegister.databaseTypes.asSequence().map { it::class.java }.toSet()
     }
 }

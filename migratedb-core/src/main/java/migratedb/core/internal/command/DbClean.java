@@ -34,8 +34,8 @@ import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
+import migratedb.core.internal.util.DateTimeUtils;
 import migratedb.core.internal.util.StopWatch;
-import migratedb.core.internal.util.TimeFormat;
 
 public class DbClean {
     private static final Log LOG = Log.getLog(DbClean.class);
@@ -139,7 +139,7 @@ public class DbClean {
             });
             stopWatch.stop();
             LOG.info(String.format("Successfully dropped pre-schema database level objects (execution time %s)",
-                                   TimeFormat.format(stopWatch.getTotalTimeMillis())));
+                                   DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis())));
         } catch (MigrateDbSqlException e) {
             LOG.debug(e.getMessage());
             LOG.warn("Unable to drop pre-schema database level objects");
@@ -160,7 +160,7 @@ public class DbClean {
             });
             stopWatch.stop();
             LOG.info(String.format("Successfully dropped post-schema database level objects (execution time %s)",
-                                   TimeFormat.format(stopWatch.getTotalTimeMillis())));
+                                   DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis())));
         } catch (MigrateDbSqlException e) {
             LOG.debug(e.getMessage());
             LOG.warn("Unable to drop post-schema database level objects");
@@ -181,7 +181,7 @@ public class DbClean {
 
             stopWatch.stop();
             LOG.info(String.format("Successfully dropped schema %s (execution time %s)",
-                                   schema, TimeFormat.format(stopWatch.getTotalTimeMillis())));
+                                   schema, DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis())));
         } catch (MigrateDbSqlException e) {
             LOG.debug(e.getMessage());
             LOG.warn("Unable to drop schema " + schema + ". It was cleaned instead.");
@@ -212,7 +212,7 @@ public class DbClean {
         doCleanSchema(schema);
         stopWatch.stop();
         LOG.info(String.format("Successfully cleaned schema %s (execution time %s)",
-                               schema, TimeFormat.format(stopWatch.getTotalTimeMillis())));
+                               schema, DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis())));
     }
 
     protected void doCleanSchema(Schema schema) {

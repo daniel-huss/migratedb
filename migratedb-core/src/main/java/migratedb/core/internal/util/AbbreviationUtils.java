@@ -19,13 +19,8 @@ package migratedb.core.internal.util;
 /**
  * Various abbreviation-related utilities.
  */
-public class AbbreviationUtils {
-    /**
-     * Prevents instantiation.
-     */
-    private AbbreviationUtils() {
-        // Do nothing.
-    }
+public enum AbbreviationUtils {
+    ;
 
     /**
      * Abbreviates this description to a length that will fit in the database.

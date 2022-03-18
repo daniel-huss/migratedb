@@ -44,10 +44,10 @@ import migratedb.core.internal.info.MigrationInfoImpl;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
+import migratedb.core.internal.util.DateTimeUtils;
 import migratedb.core.internal.util.ExceptionUtils;
 import migratedb.core.internal.util.StopWatch;
 import migratedb.core.internal.util.StringUtils;
-import migratedb.core.internal.util.TimeFormat;
 
 public class DbMigrate {
     private static final Log LOG = Log.getLog(DbMigrate.class);
@@ -277,7 +277,7 @@ public class DbMigrate {
         String migrationText = (migrationSuccessCount == 1) ? "migration" : "migrations";
 
         LOG.info("Successfully applied " + migrationSuccessCount + " " + migrationText + " to schema " + schema
-                 + targetText + " (execution time " + TimeFormat.format(executionTime) + ")");
+                 + targetText + " (execution time " + DateTimeUtils.formatDuration(executionTime) + ")");
     }
 
     /**

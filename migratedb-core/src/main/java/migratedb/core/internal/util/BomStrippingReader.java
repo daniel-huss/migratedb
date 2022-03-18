@@ -31,7 +31,7 @@ public class BomStrippingReader extends FilterReader {
      *
      * @param in a Reader object providing the underlying stream.
      *
-     * @throws NullPointerException if <code>in</code> is <code>null</code>
+     * @throws NullPointerException if {@code in} is {@code null}
      */
     public BomStrippingReader(Reader in) {
         super(in);

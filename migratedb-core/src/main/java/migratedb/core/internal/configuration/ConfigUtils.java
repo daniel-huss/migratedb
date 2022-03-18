@@ -28,79 +28,10 @@ import java.util.Map;
 import java.util.Properties;
 import migratedb.core.api.ErrorCode;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.logging.Log;
 import migratedb.core.internal.util.StringUtils;
 
-public class ConfigUtils {
-    private static final Log LOG = Log.getLog(ConfigUtils.class);
-
-    public static final String CONFIG_FILE_NAME = "migratedb.conf";
-    public static final String CONFIG_FILES = "migratedb.configFiles";
-    public static final String CONFIG_FILE_ENCODING = "migratedb.configFileEncoding";
-    public static final String BASELINE_DESCRIPTION = "migratedb.baselineDescription";
-    public static final String BASELINE_ON_MIGRATE = "migratedb.baselineOnMigrate";
-    public static final String BASELINE_VERSION = "migratedb.baselineVersion";
-    public static final String BATCH = "migratedb.batch";
-    public static final String CALLBACKS = "migratedb.callbacks";
-    public static final String CLEAN_DISABLED = "migratedb.cleanDisabled";
-    public static final String CLEAN_ON_VALIDATION_ERROR = "migratedb.cleanOnValidationError";
-    public static final String CONNECT_RETRIES = "migratedb.connectRetries";
-    public static final String CONNECT_RETRIES_INTERVAL = "migratedb.connectRetriesInterval";
-    public static final String DEFAULT_SCHEMA = "migratedb.defaultSchema";
-    public static final String DRIVER = "migratedb.driver";
-    public static final String DRYRUN_OUTPUT = "migratedb.dryRunOutput";
-    public static final String ENCODING = "migratedb.encoding";
-    public static final String ERROR_OVERRIDES = "migratedb.errorOverrides";
-    public static final String GROUP = "migratedb.group";
-    public static final String IGNORE_FUTURE_MIGRATIONS = "migratedb.ignoreFutureMigrations";
-    public static final String IGNORE_MISSING_MIGRATIONS = "migratedb.ignoreMissingMigrations";
-    public static final String IGNORE_IGNORED_MIGRATIONS = "migratedb.ignoreIgnoredMigrations";
-    public static final String IGNORE_PENDING_MIGRATIONS = "migratedb.ignorePendingMigrations";
-    public static final String IGNORE_MIGRATION_PATTERNS = "migratedb.ignoreMigrationPatterns";
-    public static final String INIT_SQL = "migratedb.initSql";
-    public static final String INSTALLED_BY = "migratedb.installedBy";
-    public static final String LOCATIONS = "migratedb.locations";
-    public static final String MIXED = "migratedb.mixed";
-    public static final String OUT_OF_ORDER = "migratedb.outOfOrder";
-    public static final String SKIP_EXECUTING_MIGRATIONS = "migratedb.skipExecutingMigrations";
-    public static final String OUTPUT_QUERY_RESULTS = "migratedb.outputQueryResults";
-    public static final String PASSWORD = "migratedb.password";
-    public static final String PLACEHOLDER_PREFIX = "migratedb.placeholderPrefix";
-    public static final String PLACEHOLDER_REPLACEMENT = "migratedb.placeholderReplacement";
-    public static final String PLACEHOLDER_SUFFIX = "migratedb.placeholderSuffix";
-    public static final String SCRIPT_PLACEHOLDER_PREFIX = "migratedb.scriptPlaceholderPrefix";
-    public static final String SCRIPT_PLACEHOLDER_SUFFIX = "migratedb.scriptPlaceholderSuffix";
-    public static final String PLACEHOLDERS_PROPERTY_PREFIX = "migratedb.placeholders.";
-    public static final String LOCK_RETRY_COUNT = "migratedb.lockRetryCount";
-    public static final String JDBC_PROPERTIES_PREFIX = "migratedb.jdbcProperties.";
-    public static final String REPEATABLE_SQL_MIGRATION_PREFIX = "migratedb.repeatableSqlMigrationPrefix";
-    public static final String RESOLVERS = "migratedb.resolvers";
-    public static final String SCHEMAS = "migratedb.schemas";
-    public static final String SKIP_DEFAULT_CALLBACKS = "migratedb.skipDefaultCallbacks";
-    public static final String SKIP_DEFAULT_RESOLVERS = "migratedb.skipDefaultResolvers";
-    public static final String SQL_MIGRATION_PREFIX = "migratedb.sqlMigrationPrefix";
-    public static final String SQL_MIGRATION_SEPARATOR = "migratedb.sqlMigrationSeparator";
-    public static final String SQL_MIGRATION_SUFFIXES = "migratedb.sqlMigrationSuffixes";
-    public static final String BASELINE_MIGRATION_PREFIX = "migratedb.baselineMigrationPrefix";
-    public static final String TABLE = "migratedb.table";
-    public static final String TABLESPACE = "migratedb.tablespace";
-    public static final String TARGET = "migratedb.target";
-    public static final String CHERRY_PICK = "migratedb.cherryPick";
-    public static final String UNDO_SQL_MIGRATION_PREFIX = "migratedb.undoSqlMigrationPrefix";
-    public static final String URL = "migratedb.url";
-    public static final String USER = "migratedb.user";
-    public static final String VALIDATE_ON_MIGRATE = "migratedb.validateOnMigrate";
-    public static final String VALIDATE_MIGRATION_NAMING = "migratedb.validateMigrationNaming";
-    public static final String CREATE_SCHEMAS = "migratedb.createSchemas";
-    public static final String FAIL_ON_MISSING_LOCATIONS = "migratedb.failOnMissingLocations";
-    public static final String LOGGERS = "migratedb.loggers";
-
-
-    // Command-line specific
-    public static final String JAR_DIRS = "migratedb.jarDirs";
-
-    private ConfigUtils() {
-    }
+public enum ConfigUtils {
+    ;
 
     /**
      * Reads the configuration from a Reader.

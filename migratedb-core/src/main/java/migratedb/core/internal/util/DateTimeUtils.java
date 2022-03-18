@@ -16,15 +16,26 @@
  */
 package migratedb.core.internal.util;
 
-/**
- * Formats execution times.
- */
-public class TimeFormat {
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+public enum DateTimeUtils {
+    ;
+    private static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss",
+                                                                                        Locale.ROOT);
+    private static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ROOT);
+
     /**
-     * Prevent instantiation.
+     * @param date The date to format.
+     *
+     * @return The date formatted as {@code yyyy-MM-dd HH:mm:ss}. An empty string if the date is null.
      */
-    private TimeFormat() {
-        // Do nothing
+    public static String formatDateAsIsoishString(Instant date) {
+        if (date == null) {
+            return "";
+        }
+        return dateTimeFormat.format(date);
     }
 
     /**
@@ -34,7 +45,7 @@ public class TimeFormat {
      *
      * @return The execution in a human-readable format.
      */
-    public static String format(long millis) {
+    public static String formatDuration(long millis) {
         return String.format("%02d:%02d.%03ds", millis / 60000, (millis % 60000) / 1000, (millis % 1000));
     }
 }

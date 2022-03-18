@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-package migratedb.testing
+package migratedb.commandline;
 
-import migratedb.core.api.ClassProvider
-import migratedb.core.api.ResourceProvider
-import migratedb.core.api.migration.JavaMigration
-import migratedb.core.api.resource.Resource
-
-class MyClassAndResourceProvider : ClassProvider<JavaMigration>, ResourceProvider {
-    override fun getClasses(): List<Class<out JavaMigration>> {
-        return emptyList()
-    }
-
-    override fun getResource(name: String?): Resource? {
-        return null
-    }
-
-    override fun getResources(prefix: String?, vararg suffixes: String?): List<Resource> {
-        return emptyList()
-    }
+final class CommandLineConfigKey {
+    public static final String JAR_DIRS = "migratedb.jarDirs";
+    public static final String CONFIG_FILES = "migratedb.configFiles";
+    public static final String CONFIG_FILE_ENCODING = "migratedb.configFileEncoding";
 }

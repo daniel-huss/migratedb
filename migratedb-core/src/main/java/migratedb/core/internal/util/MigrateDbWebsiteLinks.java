@@ -16,14 +16,12 @@
  */
 package migratedb.core.internal.util;
 
-public class MigrateDbWebsiteLinks {
-    // TODO Insert links
+public enum MigrateDbWebsiteLinks {
+    ;
+    // TODO Insert links or remove
     public static final String FILTER_INFO_OUTPUT = "";
-    public static final String USAGE_COMMANDLINE = "";
-    public static final String STAYING_UP_TO_DATE = "";
     public static final String IGNORE_MIGRATION_PATTERNS = "";
     public static final String RESET_THE_BASELINE_MIGRATION = "";
-    public static final String ORACLE_SQL_PLUS = "";
     public static final String LOCK_RETRY_COUNT = "";
     public static final String WINDOWS_AUTH = "";
     public static final String AZURE_ACTIVE_DIRECTORY = "";

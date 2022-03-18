@@ -18,10 +18,8 @@ package migratedb.core.internal.util;
 
 import java.sql.SQLException;
 
-public class ExceptionUtils {
-
-    private ExceptionUtils() {
-    }
+public enum ExceptionUtils {
+    ;
 
     /**
      * @return The root cause or the throwable itself if it doesn't have a cause.

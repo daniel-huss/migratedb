@@ -23,11 +23,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class StringUtils {
+public enum StringUtils {
+    ;
     private static final String WHITESPACE_CHARS = " \t\n\f\r";
-
-    private StringUtils() {
-    }
 
     /**
      * Trims or pads (with spaces) this string, so it has this exact length.
@@ -372,7 +370,7 @@ public class StringUtils {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        Iterator it = collection.iterator();
+        Iterator<?> it = collection.iterator();
         while (it.hasNext()) {
             sb.append(it.next());
             if (it.hasNext()) {
@@ -401,7 +399,7 @@ public class StringUtils {
     }
 
     /**
-     * Checks whether this strings both begins with this prefix and ends withs either of these suffixes.
+     * Checks whether {@code str} both begins with this prefix and ends withs either of these suffixes.
      *
      * @param str      The string to check.
      * @param prefix   The prefix.

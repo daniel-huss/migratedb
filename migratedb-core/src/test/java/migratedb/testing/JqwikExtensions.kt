@@ -37,6 +37,8 @@ import java.nio.file.Paths
 import java.util.*
 import kotlin.reflect.KClass
 
+fun <T> withArbitrariesOutsideOfProperty(action: () -> T) = synchronized(Arbitraries::class.java, action)
+
 fun <T : Any> Arbitrary<T>.array(elementType: KClass<in T>): ArrayArbitrary<T, Array<T>> {
     val arrayType = java.lang.reflect.Array.newInstance(elementType.java, 0).javaClass
     @Suppress("UNCHECKED_CAST")
@@ -58,7 +60,7 @@ fun anyLogSystemAsString(): Arbitrary<String> {
         LogSystems.JAVA_UTIL,
         LogSystems.NONE,
         LogSystems.SLF4J,
-        MyCustomLogSystem::class.java.name
+        MyNoOp::class.java.name
     )
 }
 
@@ -74,7 +76,7 @@ fun anyLocation(): Arbitrary<Location> {
     val fileSystemLocations = directoryNames.map {
         FileSystemLocation(Paths.get("target", *it.toTypedArray()))
     }
-    val customLocations = Arbitraries.just(MyClassAndResourceProvider().let {
+    val customLocations = Arbitraries.just(MyNoOp().let {
         CustomLocation(it, it)
     })
 
@@ -113,7 +115,7 @@ fun anyMigrationPattern(): Arbitrary<MigrationPattern> = String.any()
     .ofMaxLength(20)
     .map(::MigrationPattern)
 
-fun anyMigrationVersion(): Arbitrary<MigrationVersion> = String.any()
+fun anyMigrationVersionString(): Arbitrary<String> = String.any()
     .numeric()
     .ofMinLength(1)
     .ofMaxLength(10)
@@ -121,5 +123,9 @@ fun anyMigrationVersion(): Arbitrary<MigrationVersion> = String.any()
     .ofMinSize(1)
     .ofMaxSize(10)
     .map {
-        MigrationVersion.fromVersion(it.joinToString("."))
+        it.joinToString(".")
+    }.edgeCases {
+        it.add("next", "latest", "current")
     }
+
+fun anyMigrationVersion(): Arbitrary<MigrationVersion> = anyMigrationVersionString().map(MigrationVersion::fromVersion)

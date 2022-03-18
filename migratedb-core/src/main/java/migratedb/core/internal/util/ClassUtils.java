@@ -17,6 +17,8 @@
 package migratedb.core.internal.util;
 
 import java.lang.reflect.Field;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
@@ -24,9 +26,8 @@ import java.util.List;
 import java.util.ServiceLoader;
 import migratedb.core.api.MigrateDbException;
 
-public class ClassUtils {
-    private ClassUtils() {
-    }
+public enum ClassUtils {
+    ;
 
     /**
      * Creates a new instance of this class.
@@ -34,10 +35,12 @@ public class ClassUtils {
      * @param className   The fully qualified name of the class to instantiate.
      * @param classLoader The ClassLoader to use.
      * @param <T>         The type of the new instance.
+     *
      * @return The new instance.
+     *
      * @throws MigrateDbException Thrown when the instantiation failed.
      */
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     public static <T> T instantiate(String className, ClassLoader classLoader) {
         try {
             return (T) Class.forName(className, true, classLoader).getConstructor().newInstance();
@@ -50,7 +53,9 @@ public class ClassUtils {
      * Creates a new instance of {@code clazz}.
      *
      * @param <T> The type of the new instance.
+     *
      * @return The new instance.
+     *
      * @throws MigrateDbException Thrown when the instantiation failed.
      */
     public static <T> T instantiate(Class<T> clazz) {
@@ -61,13 +66,13 @@ public class ClassUtils {
         }
     }
 
-
     /**
      * Instantiate all these classes.
      *
      * @param classes     Fully qualified class names to instantiate.
      * @param classLoader The ClassLoader to use.
      * @param <T>         The common type for all classes.
+     *
      * @return The list of instances.
      */
     public static <T> List<T> instantiateAll(String[] classes, ClassLoader classLoader) {
@@ -86,6 +91,7 @@ public class ClassUtils {
      *
      * @param className   The name of the class to check.
      * @param classLoader The ClassLoader to use.
+     *
      * @return whether the specified class is present
      */
     public static boolean isPresent(String className, ClassLoader classLoader) {
@@ -105,6 +111,7 @@ public class ClassUtils {
      *
      * @param serviceName The name of the service to check.
      * @param classLoader The ClassLoader to use.
+     *
      * @return whether an implementation of the specified service is present
      */
     public static boolean isImplementationPresent(String serviceName, ClassLoader classLoader) {
@@ -122,6 +129,7 @@ public class ClassUtils {
      *
      * @param className   The name of the class to load.
      * @param classLoader The ClassLoader to use.
+     *
      * @return the newly loaded class
      */
     public static Class<?> loadClass(String className,
@@ -137,22 +145,27 @@ public class ClassUtils {
      * Tries to get the physical location on disk of {@code aClass}.
      *
      * @param aClass The class to get the location for.
-     * @return The absolute path of the .class file.
+     *
+     * @return The absolute path of the .class file (or null).
      */
     public static String guessLocationOnDisk(Class<?> aClass) {
         ProtectionDomain protectionDomain = aClass.getProtectionDomain();
         if (protectionDomain == null) {
-            //Android
             return null;
         }
         CodeSource codeSource = protectionDomain.getCodeSource();
-
-        if (codeSource == null || codeSource.getLocation() == null) {
-            //Custom classloader with for example classes defined using URLClassLoader#defineClass(String name,
-            // byte[] b, int off, int len)
+        if (codeSource == null) {
             return null;
         }
-        return UrlUtils.decodeURL(codeSource.getLocation().getPath());
+        var location = codeSource.getLocation();
+        if (location == null) {
+            return null;
+        }
+        try {
+            return Paths.get(location.toURI()).toAbsolutePath().toString();
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 
     /**
@@ -161,7 +174,9 @@ public class ClassUtils {
      * @param className   The fully qualified name of the class to instantiate.
      * @param classLoader The ClassLoader to use.
      * @param fieldName   The field name
+     *
      * @return The value of the field.
+     *
      * @throws MigrateDbException Thrown when the instantiation failed.
      */
     public static String getStaticFieldValue(String className, String fieldName, ClassLoader classLoader) {
@@ -171,7 +186,7 @@ public class ClassUtils {
             return (String) field.get(null);
         } catch (ReflectiveOperationException | RuntimeException e) {
             throw new MigrateDbException(
-                    "Unable to obtain field value " + className + "." + fieldName + " : " + e.getMessage(), e);
+                "Unable to obtain field value " + className + "." + fieldName + " : " + e.getMessage(), e);
         }
     }
 

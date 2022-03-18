@@ -17,66 +17,66 @@
 package migratedb.commandline;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static migratedb.core.internal.configuration.ConfigUtils.BASELINE_DESCRIPTION;
-import static migratedb.core.internal.configuration.ConfigUtils.BASELINE_MIGRATION_PREFIX;
-import static migratedb.core.internal.configuration.ConfigUtils.BASELINE_ON_MIGRATE;
-import static migratedb.core.internal.configuration.ConfigUtils.BASELINE_VERSION;
-import static migratedb.core.internal.configuration.ConfigUtils.BATCH;
-import static migratedb.core.internal.configuration.ConfigUtils.CALLBACKS;
-import static migratedb.core.internal.configuration.ConfigUtils.CHERRY_PICK;
-import static migratedb.core.internal.configuration.ConfigUtils.CLEAN_DISABLED;
-import static migratedb.core.internal.configuration.ConfigUtils.CLEAN_ON_VALIDATION_ERROR;
-import static migratedb.core.internal.configuration.ConfigUtils.CONFIG_FILES;
-import static migratedb.core.internal.configuration.ConfigUtils.CONFIG_FILE_ENCODING;
-import static migratedb.core.internal.configuration.ConfigUtils.CONNECT_RETRIES;
-import static migratedb.core.internal.configuration.ConfigUtils.CONNECT_RETRIES_INTERVAL;
-import static migratedb.core.internal.configuration.ConfigUtils.CREATE_SCHEMAS;
-import static migratedb.core.internal.configuration.ConfigUtils.DEFAULT_SCHEMA;
-import static migratedb.core.internal.configuration.ConfigUtils.DRIVER;
-import static migratedb.core.internal.configuration.ConfigUtils.DRYRUN_OUTPUT;
-import static migratedb.core.internal.configuration.ConfigUtils.ENCODING;
-import static migratedb.core.internal.configuration.ConfigUtils.ERROR_OVERRIDES;
-import static migratedb.core.internal.configuration.ConfigUtils.FAIL_ON_MISSING_LOCATIONS;
-import static migratedb.core.internal.configuration.ConfigUtils.GROUP;
-import static migratedb.core.internal.configuration.ConfigUtils.IGNORE_FUTURE_MIGRATIONS;
-import static migratedb.core.internal.configuration.ConfigUtils.IGNORE_IGNORED_MIGRATIONS;
-import static migratedb.core.internal.configuration.ConfigUtils.IGNORE_MIGRATION_PATTERNS;
-import static migratedb.core.internal.configuration.ConfigUtils.IGNORE_MISSING_MIGRATIONS;
-import static migratedb.core.internal.configuration.ConfigUtils.IGNORE_PENDING_MIGRATIONS;
-import static migratedb.core.internal.configuration.ConfigUtils.INIT_SQL;
-import static migratedb.core.internal.configuration.ConfigUtils.INSTALLED_BY;
-import static migratedb.core.internal.configuration.ConfigUtils.JAR_DIRS;
-import static migratedb.core.internal.configuration.ConfigUtils.JDBC_PROPERTIES_PREFIX;
-import static migratedb.core.internal.configuration.ConfigUtils.LOCATIONS;
-import static migratedb.core.internal.configuration.ConfigUtils.LOCK_RETRY_COUNT;
-import static migratedb.core.internal.configuration.ConfigUtils.LOGGERS;
-import static migratedb.core.internal.configuration.ConfigUtils.MIXED;
-import static migratedb.core.internal.configuration.ConfigUtils.OUTPUT_QUERY_RESULTS;
-import static migratedb.core.internal.configuration.ConfigUtils.OUT_OF_ORDER;
-import static migratedb.core.internal.configuration.ConfigUtils.PASSWORD;
-import static migratedb.core.internal.configuration.ConfigUtils.PLACEHOLDERS_PROPERTY_PREFIX;
-import static migratedb.core.internal.configuration.ConfigUtils.PLACEHOLDER_PREFIX;
-import static migratedb.core.internal.configuration.ConfigUtils.PLACEHOLDER_REPLACEMENT;
-import static migratedb.core.internal.configuration.ConfigUtils.PLACEHOLDER_SUFFIX;
-import static migratedb.core.internal.configuration.ConfigUtils.REPEATABLE_SQL_MIGRATION_PREFIX;
-import static migratedb.core.internal.configuration.ConfigUtils.RESOLVERS;
-import static migratedb.core.internal.configuration.ConfigUtils.SCHEMAS;
-import static migratedb.core.internal.configuration.ConfigUtils.SCRIPT_PLACEHOLDER_PREFIX;
-import static migratedb.core.internal.configuration.ConfigUtils.SCRIPT_PLACEHOLDER_SUFFIX;
-import static migratedb.core.internal.configuration.ConfigUtils.SKIP_DEFAULT_CALLBACKS;
-import static migratedb.core.internal.configuration.ConfigUtils.SKIP_DEFAULT_RESOLVERS;
-import static migratedb.core.internal.configuration.ConfigUtils.SKIP_EXECUTING_MIGRATIONS;
-import static migratedb.core.internal.configuration.ConfigUtils.SQL_MIGRATION_PREFIX;
-import static migratedb.core.internal.configuration.ConfigUtils.SQL_MIGRATION_SEPARATOR;
-import static migratedb.core.internal.configuration.ConfigUtils.SQL_MIGRATION_SUFFIXES;
-import static migratedb.core.internal.configuration.ConfigUtils.TABLE;
-import static migratedb.core.internal.configuration.ConfigUtils.TABLESPACE;
-import static migratedb.core.internal.configuration.ConfigUtils.TARGET;
-import static migratedb.core.internal.configuration.ConfigUtils.UNDO_SQL_MIGRATION_PREFIX;
-import static migratedb.core.internal.configuration.ConfigUtils.URL;
-import static migratedb.core.internal.configuration.ConfigUtils.USER;
-import static migratedb.core.internal.configuration.ConfigUtils.VALIDATE_MIGRATION_NAMING;
-import static migratedb.core.internal.configuration.ConfigUtils.VALIDATE_ON_MIGRATE;
+import static migratedb.commandline.CommandLineConfigKey.CONFIG_FILES;
+import static migratedb.commandline.CommandLineConfigKey.CONFIG_FILE_ENCODING;
+import static migratedb.commandline.CommandLineConfigKey.JAR_DIRS;
+import static migratedb.core.api.configuration.ConfigKey.BASELINE_DESCRIPTION;
+import static migratedb.core.api.configuration.ConfigKey.BASELINE_MIGRATION_PREFIX;
+import static migratedb.core.api.configuration.ConfigKey.BASELINE_ON_MIGRATE;
+import static migratedb.core.api.configuration.ConfigKey.BASELINE_VERSION;
+import static migratedb.core.api.configuration.ConfigKey.BATCH;
+import static migratedb.core.api.configuration.ConfigKey.CALLBACKS;
+import static migratedb.core.api.configuration.ConfigKey.CHERRY_PICK;
+import static migratedb.core.api.configuration.ConfigKey.CLEAN_DISABLED;
+import static migratedb.core.api.configuration.ConfigKey.CLEAN_ON_VALIDATION_ERROR;
+import static migratedb.core.api.configuration.ConfigKey.CONNECT_RETRIES;
+import static migratedb.core.api.configuration.ConfigKey.CONNECT_RETRIES_INTERVAL;
+import static migratedb.core.api.configuration.ConfigKey.CREATE_SCHEMAS;
+import static migratedb.core.api.configuration.ConfigKey.DEFAULT_SCHEMA;
+import static migratedb.core.api.configuration.ConfigKey.DRIVER;
+import static migratedb.core.api.configuration.ConfigKey.DRYRUN_OUTPUT;
+import static migratedb.core.api.configuration.ConfigKey.ENCODING;
+import static migratedb.core.api.configuration.ConfigKey.ERROR_OVERRIDES;
+import static migratedb.core.api.configuration.ConfigKey.FAIL_ON_MISSING_LOCATIONS;
+import static migratedb.core.api.configuration.ConfigKey.GROUP;
+import static migratedb.core.api.configuration.ConfigKey.IGNORE_FUTURE_MIGRATIONS;
+import static migratedb.core.api.configuration.ConfigKey.IGNORE_IGNORED_MIGRATIONS;
+import static migratedb.core.api.configuration.ConfigKey.IGNORE_MIGRATION_PATTERNS;
+import static migratedb.core.api.configuration.ConfigKey.IGNORE_MISSING_MIGRATIONS;
+import static migratedb.core.api.configuration.ConfigKey.IGNORE_PENDING_MIGRATIONS;
+import static migratedb.core.api.configuration.ConfigKey.INIT_SQL;
+import static migratedb.core.api.configuration.ConfigKey.INSTALLED_BY;
+import static migratedb.core.api.configuration.ConfigKey.JDBC_PROPERTIES_PREFIX;
+import static migratedb.core.api.configuration.ConfigKey.LOCATIONS;
+import static migratedb.core.api.configuration.ConfigKey.LOCK_RETRY_COUNT;
+import static migratedb.core.api.configuration.ConfigKey.LOGGER;
+import static migratedb.core.api.configuration.ConfigKey.MIXED;
+import static migratedb.core.api.configuration.ConfigKey.OUTPUT_QUERY_RESULTS;
+import static migratedb.core.api.configuration.ConfigKey.OUT_OF_ORDER;
+import static migratedb.core.api.configuration.ConfigKey.PASSWORD;
+import static migratedb.core.api.configuration.ConfigKey.PLACEHOLDERS_PROPERTY_PREFIX;
+import static migratedb.core.api.configuration.ConfigKey.PLACEHOLDER_PREFIX;
+import static migratedb.core.api.configuration.ConfigKey.PLACEHOLDER_REPLACEMENT;
+import static migratedb.core.api.configuration.ConfigKey.PLACEHOLDER_SUFFIX;
+import static migratedb.core.api.configuration.ConfigKey.REPEATABLE_SQL_MIGRATION_PREFIX;
+import static migratedb.core.api.configuration.ConfigKey.RESOLVERS;
+import static migratedb.core.api.configuration.ConfigKey.SCHEMAS;
+import static migratedb.core.api.configuration.ConfigKey.SCRIPT_PLACEHOLDER_PREFIX;
+import static migratedb.core.api.configuration.ConfigKey.SCRIPT_PLACEHOLDER_SUFFIX;
+import static migratedb.core.api.configuration.ConfigKey.SKIP_DEFAULT_CALLBACKS;
+import static migratedb.core.api.configuration.ConfigKey.SKIP_DEFAULT_RESOLVERS;
+import static migratedb.core.api.configuration.ConfigKey.SKIP_EXECUTING_MIGRATIONS;
+import static migratedb.core.api.configuration.ConfigKey.SQL_MIGRATION_PREFIX;
+import static migratedb.core.api.configuration.ConfigKey.SQL_MIGRATION_SEPARATOR;
+import static migratedb.core.api.configuration.ConfigKey.SQL_MIGRATION_SUFFIXES;
+import static migratedb.core.api.configuration.ConfigKey.TABLE;
+import static migratedb.core.api.configuration.ConfigKey.TABLESPACE;
+import static migratedb.core.api.configuration.ConfigKey.TARGET;
+import static migratedb.core.api.configuration.ConfigKey.UNDO_SQL_MIGRATION_PREFIX;
+import static migratedb.core.api.configuration.ConfigKey.URL;
+import static migratedb.core.api.configuration.ConfigKey.USER;
+import static migratedb.core.api.configuration.ConfigKey.VALIDATE_MIGRATION_NAMING;
+import static migratedb.core.api.configuration.ConfigKey.VALIDATE_ON_MIGRATE;
 import static migratedb.core.internal.configuration.ConfigUtils.loadConfiguration;
 import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_KERBEROS_CACHE_FILE;
 import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_KERBEROS_CONFIG_FILE;
@@ -118,23 +118,24 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.MigrationInfoService;
 import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.configuration.ConfigKey;
 import migratedb.core.api.configuration.FluentConfiguration;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.output.CompositeResult;
 import migratedb.core.api.output.ErrorOutput;
 import migratedb.core.api.output.OperationResult;
-import migratedb.core.internal.configuration.ConfigUtils;
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl;
 import migratedb.core.internal.info.BuildInfo;
 import migratedb.core.internal.info.MigrationInfoDumper;
 import migratedb.core.internal.util.ClassUtils;
-import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 import migratedb.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 class MigrateDbCommand {
     private static final Log LOG = Log.getLog(MigrateDbCommand.class);
+
+    public static final String CONFIG_FILE_NAME = "migratedb.conf";
 
     private final Arguments arguments;
     private final Console console;
@@ -414,7 +415,7 @@ class MigrateDbCommand {
             return CHERRY_PICK;
         }
         if ("MIGRATEDB_LOGGERS".equals(key)) {
-            return LOGGERS;
+            return LOGGER;
         }
         if ("MIGRATEDB_UNDO_SQL_MIGRATION_PREFIX".equals(key)) {
             return UNDO_SQL_MIGRATION_PREFIX;
@@ -507,11 +508,11 @@ class MigrateDbCommand {
 
                 switch (entry.getKey()) {
                     // Mask the password. Ex.: T0pS3cr3t -> *********
-                    case ConfigUtils.PASSWORD:
+                    case ConfigKey.PASSWORD:
                         value = StringUtils.trimOrPad("", value.length(), '*');
                         break;
                     // Mask any password in the URL
-                    case ConfigUtils.URL:
+                    case ConfigKey.URL:
                         value = databaseTypeRegister.redactJdbcUrl(value);
                         break;
                 }
@@ -552,10 +553,10 @@ class MigrateDbCommand {
     private Map<String, String> loadDefaultConfigurationFiles(File installationDir, String encoding) {
         Map<String, String> configMap = new HashMap<>();
         configMap.putAll(loadConfigurationFile(new File(
-            installationDir.getAbsolutePath() + "/conf/" + ConfigUtils.CONFIG_FILE_NAME), encoding, false));
+            installationDir.getAbsolutePath() + "/conf/" + CONFIG_FILE_NAME), encoding, false));
         configMap.putAll(loadConfigurationFile(new File(
-            System.getProperty("user.home") + "/" + ConfigUtils.CONFIG_FILE_NAME), encoding, false));
-        configMap.putAll(loadConfigurationFile(new File(ConfigUtils.CONFIG_FILE_NAME), encoding, false));
+            System.getProperty("user.home") + "/" + CONFIG_FILE_NAME), encoding, false));
+        configMap.putAll(loadConfigurationFile(new File(CONFIG_FILE_NAME), encoding, false));
 
         return configMap;
     }
@@ -614,7 +615,7 @@ class MigrateDbCommand {
     }
 
     private void makeRelativeLocationsBasedOnWorkingDirectory(Map<String, String> config) {
-        String[] locations = config.get(ConfigUtils.LOCATIONS).split(",");
+        String[] locations = config.get(ConfigKey.LOCATIONS).split(",");
         for (int i = 0; i < locations.length; i++) {
             if (locations[i].startsWith(Location.FileSystemLocation.PREFIX)) {
                 String newLocation = locations[i].substring(Location.FileSystemLocation.PREFIX.length());
@@ -626,7 +627,7 @@ class MigrateDbCommand {
             }
         }
 
-        config.put(ConfigUtils.LOCATIONS, StringUtils.arrayToCommaDelimitedString(locations));
+        config.put(ConfigKey.LOCATIONS, StringUtils.arrayToCommaDelimitedString(locations));
     }
 
     private Map<String, String> overrideConfiguration(Map<String, String> existingConfiguration,
@@ -724,17 +725,17 @@ class MigrateDbCommand {
         // To maintain override order, return extension value first if present
         String workingDirectory = arguments.isWorkingDirectorySet() ? arguments.getWorkingDirectory()
                                                                     : getInstallationDir();
-        config.put(ConfigUtils.LOCATIONS, "filesystem:" + new File(workingDirectory, "sql").getAbsolutePath());
-        config.put(ConfigUtils.JAR_DIRS, new File(workingDirectory, "jars").getAbsolutePath());
+        config.put(ConfigKey.LOCATIONS, "filesystem:" + new File(workingDirectory, "sql").getAbsolutePath());
+        config.put(JAR_DIRS, new File(workingDirectory, "jars").getAbsolutePath());
     }
 
     /**
      * Filters the properties to remove the MigrateDb Commandline-specific ones.
      */
     private void filterProperties(Map<String, String> config) {
-        config.remove(ConfigUtils.JAR_DIRS);
-        config.remove(ConfigUtils.CONFIG_FILES);
-        config.remove(ConfigUtils.CONFIG_FILE_ENCODING);
+        config.remove(JAR_DIRS);
+        config.remove(CONFIG_FILES);
+        config.remove(CONFIG_FILE_ENCODING);
     }
 
     private void printVersion() {
@@ -830,8 +831,6 @@ class MigrateDbCommand {
         LOG.info("Example");
         LOG.info("-------");
         LOG.info("migratedb -user=myuser -password=s3cr3t -url=jdbc:h2:mem -placeholders.abc=def migrate");
-        LOG.info("");
-        LOG.info("More info at " + MigrateDbWebsiteLinks.USAGE_COMMANDLINE);
     }
 
     private List<File> getJdbcDriverJarFiles() {
@@ -848,7 +847,7 @@ class MigrateDbCommand {
     }
 
     private List<File> getJavaMigrationJarFiles(Map<String, String> config) throws IOException {
-        String jarDirs = config.get(ConfigUtils.JAR_DIRS);
+        String jarDirs = config.get(JAR_DIRS);
         if (!StringUtils.hasLength(jarDirs)) {
             return Collections.emptyList();
         }
@@ -897,19 +896,19 @@ class MigrateDbCommand {
             return;
         }
 
-        if (!config.containsKey(ConfigUtils.URL)) {
+        if (!config.containsKey(ConfigKey.URL)) {
             // URL is not set. We are doomed for failure anyway.
             return;
         }
 
-        String url = config.get(ConfigUtils.URL);
-        if (!config.containsKey(ConfigUtils.USER) && needsUser(url, config.getOrDefault(ConfigUtils.PASSWORD, null))) {
-            config.put(ConfigUtils.USER, console.readLine("Database user: "));
+        String url = config.get(ConfigKey.URL);
+        if (!config.containsKey(ConfigKey.USER) && needsUser(url, config.getOrDefault(ConfigKey.PASSWORD, null))) {
+            config.put(ConfigKey.USER, console.readLine("Database user: "));
         }
 
-        if (!config.containsKey(ConfigUtils.PASSWORD) && needsPassword(url, config.get(ConfigUtils.USER))) {
+        if (!config.containsKey(ConfigKey.PASSWORD) && needsPassword(url, config.get(ConfigKey.USER))) {
             char[] password = console.readPassword("Database password: ");
-            config.put(ConfigUtils.PASSWORD, password == null ? "" : String.valueOf(password));
+            config.put(ConfigKey.PASSWORD, password == null ? "" : String.valueOf(password));
         }
     }
 
@@ -936,8 +935,8 @@ class MigrateDbCommand {
         String workingDirectory =
             arguments.isWorkingDirectorySet() ? arguments.getWorkingDirectory() : null;
 
-        if (envVars.containsKey(ConfigUtils.CONFIG_FILES)) {
-            for (String file : StringUtils.tokenizeToStringArray(envVars.get(ConfigUtils.CONFIG_FILES), ",")) {
+        if (envVars.containsKey(CONFIG_FILES)) {
+            for (String file : StringUtils.tokenizeToStringArray(envVars.get(CONFIG_FILES), ",")) {
                 configFiles.add(new File(workingDirectory, file));
             }
             return configFiles;
@@ -967,8 +966,8 @@ class MigrateDbCommand {
      */
     private String determineConfigurationFileEncoding(Arguments arguments,
                                                       Map<String, String> envVars) {
-        if (envVars.containsKey(ConfigUtils.CONFIG_FILE_ENCODING)) {
-            return envVars.get(ConfigUtils.CONFIG_FILE_ENCODING);
+        if (envVars.containsKey(CONFIG_FILE_ENCODING)) {
+            return envVars.get(CONFIG_FILE_ENCODING);
         }
 
         if (arguments.isConfigFileEncodingSet()) {

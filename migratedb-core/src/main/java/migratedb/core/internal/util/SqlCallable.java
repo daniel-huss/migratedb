@@ -23,7 +23,5 @@ import java.sql.SQLException;
  * generic Exception.
  */
 public interface SqlCallable<V> {
-
     V call() throws SQLException;
-
 }

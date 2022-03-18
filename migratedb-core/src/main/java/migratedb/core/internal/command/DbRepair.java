@@ -38,8 +38,8 @@ import migratedb.core.internal.info.MigrationInfoImpl;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
+import migratedb.core.internal.util.DateTimeUtils;
 import migratedb.core.internal.util.StopWatch;
-import migratedb.core.internal.util.TimeFormat;
 
 /**
  * Handles MigrateDB 's repair command.
@@ -148,7 +148,7 @@ public class DbRepair {
             stopWatch.stop();
 
             LOG.info("Successfully repaired schema history table " + schemaHistory + " (execution time "
-                     + TimeFormat.format(stopWatch.getTotalTimeMillis()) + ").");
+                     + DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis()) + ").");
             if (repairActions.deletedMissingMigrations) {
                 LOG.info(
                     "Please ensure the previous contents of the deleted migrations are removed from the database, or " +

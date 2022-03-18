@@ -36,9 +36,9 @@ import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
+import migratedb.core.internal.util.DateTimeUtils;
 import migratedb.core.internal.util.Pair;
 import migratedb.core.internal.util.StopWatch;
-import migratedb.core.internal.util.TimeFormat;
 
 /**
  * Handles the validate command.
@@ -175,10 +175,10 @@ public class DbValidate {
             count = result.getLeft();
             if (count == 1) {
                 LOG.info(String.format("Successfully validated 1 migration (execution time %s)",
-                                       TimeFormat.format(stopWatch.getTotalTimeMillis())));
+                                       DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis())));
             } else {
                 LOG.info(String.format("Successfully validated %d migrations (execution time %s)",
-                                       count, TimeFormat.format(stopWatch.getTotalTimeMillis())));
+                                       count, DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis())));
 
                 if (count == 0) {
                     String noMigrationsWarning = "No migrations found. Are your locations set up correctly?";
