@@ -15,22 +15,26 @@
  */
 package  migratedb.core.api.configuration
 
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
+import io.kotest.assertions.asClue
+import io.kotest.assertions.throwables.shouldNotThrowAny
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.maps.shouldBeEmpty
 import migratedb.core.api.Location
+import migratedb.core.api.MigrateDbException
 import migratedb.core.api.MigrationVersion
-import migratedb.core.api.configuration.ConfigKey.ErrorOverrideString
-import migratedb.core.api.configuration.ConfigKey.Info
-import migratedb.core.api.configuration.ConfigKey.JdbcUrlString
+import migratedb.core.api.configuration.PropertyNames.ErrorOverrideString
+import migratedb.core.api.configuration.PropertyNames.Info
+import migratedb.core.api.configuration.PropertyNames.JdbcUrlString
 import migratedb.core.api.pattern.ValidatePattern
 import migratedb.testing.CoreTest
 import migratedb.testing.MigrateDbDomain
-import migratedb.testing.MyNoOp
+import migratedb.testing.UniversalDummy
 import migratedb.testing.anyErrorOverride
 import migratedb.testing.anyLocation
 import migratedb.testing.anyMigrationVersionString
 import migratedb.testing.anyValidatePattern
 import migratedb.testing.comparableProperties
+import migratedb.testing.diffWith
 import migratedb.testing.withArbitrariesOutsideOfProperty
 import net.jqwik.api.Arbitraries
 import net.jqwik.api.Arbitraries.just
@@ -41,6 +45,7 @@ import net.jqwik.api.domains.Domain
 import net.jqwik.kotlin.api.any
 import net.jqwik.kotlin.api.ofLength
 import net.jqwik.kotlin.api.ofSize
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -55,7 +60,7 @@ import java.util.stream.Stream
 
 @Domain(MigrateDbDomain::class)
 internal class ClassicConfigurationTest : CoreTest() {
-    @Property
+    @Property(tries = 200)
     fun `configure(Configuration) copies all properties except class loader into empty configuration`(
         @ForAll source: ClassicConfiguration
     ) {
@@ -64,10 +69,12 @@ internal class ClassicConfigurationTest : CoreTest() {
         target.configure(source)
 
         // then
-        target.comparableProperties().shouldBe(source.comparableProperties())
+        target.comparableProperties().diffWith(source.comparableProperties()).asClue {
+            it.shouldBeEmpty()
+        }
     }
 
-    @Property
+    @Property(tries = 200)
     fun `configure(Configuration) copies all properties except class loader into non-empty configuration`(
         @ForAll source: ClassicConfiguration,
         @ForAll target: ClassicConfiguration
@@ -76,35 +83,40 @@ internal class ClassicConfigurationTest : CoreTest() {
         target.configure(source)
 
         // then
-        target.comparableProperties().shouldBe(source.comparableProperties())
+        target.comparableProperties().diffWith(source.comparableProperties()).asClue {
+            it.shouldBeEmpty()
+        }
     }
 
     @ParameterizedTest
     @ArgumentsSource(ConfigKeyFields::class)
-    fun `configure(Properties) supports all config keys`(field: Field) {
-        // given
-        val config = ClassicConfiguration()
-        val oldProperties = config.comparableProperties()
-
-        // when
-        config.configure(field.sampleProperties())
-
-        // then
-        config.comparableProperties().shouldNotBe(oldProperties)
-    }
-
-
-    internal class ConfigKeyFields : ArgumentsProvider {
-        override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
-            return ConfigKey::class.java.stringConstantFields().map { Arguments.arguments(it) }
+    fun `configure(Properties) supports all config keys`(field: ConfigKeyField) {
+        shouldNotThrowAny {
+            ClassicConfiguration().configure(field.sampleProperties())
         }
     }
 
-    companion object {
-        fun Field.sampleProperties(): Map<String, String> = withArbitrariesOutsideOfProperty {
-            val info = getAnnotation(Info::class.java) ?: throw IllegalStateException("$this not annotated with @${Info::class.java}")
+    @Test
+    fun `configure(Properties) throws if there are unsupported config keys`() {
+        shouldThrow<MigrateDbException> {
+            ClassicConfiguration().configure(
+                mapOf(
+                    "migratedb.group" to "true",
+                    "migratedb.unsupportedThingy" to "somehing"
+                )
+            )
+        }
+    }
+
+    data class ConfigKeyField(val field: Field) {
+        override fun toString(): String {
+            return "${field.get(null)}"
+        }
+
+        fun sampleProperties(): Map<String, String> = withArbitrariesOutsideOfProperty {
+            val info = field.getAnnotation(Info::class.java) ?: throw IllegalStateException("$field not annotated with @${Info::class.java}")
             val generator = info.generator()
-            val key = get(null).toString()
+            val key = field.get(null).toString()
             when {
                 info.isPrefix -> Arbitraries.maps(
                     String.any().ofLength(1..10).alpha().map { key + it },
@@ -118,7 +130,7 @@ internal class ClassicConfigurationTest : CoreTest() {
             var generator = generatorForType(typeHint.java).fixGenSize(1)
             generator.edgeCases { edgeCases ->
                 acceptsStringConstantsIn.forEach {
-                    edgeCases.add(*it.java.stringConstantFields().map { field -> field.get(null) }.toArray(::arrayOfNulls))
+                    edgeCases.add(*it.java.stringConstantFields().map { f -> f.get(null) }.toArray(::arrayOfNulls))
                 }
             }
             if (commaSeparated) {
@@ -139,11 +151,19 @@ internal class ClassicConfigurationTest : CoreTest() {
                 java.lang.Boolean::class.java -> Boolean.any().map { it.toString() }
                 MigrationVersion::class.java -> anyMigrationVersionString()
                 ValidatePattern::class.java -> anyValidatePattern().map { it.pattern() }
-                Class::class.java -> just(MyNoOp::class.java.name)
+                Class::class.java -> just(UniversalDummy::class.java.name)
                 else -> throw IllegalStateException("Field type not implemented: $type")
             }
         }
+    }
 
+    internal class ConfigKeyFields : ArgumentsProvider {
+        override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
+            return PropertyNames::class.java.stringConstantFields().map { Arguments.arguments(ConfigKeyField(it)) }
+        }
+    }
+
+    companion object {
         fun Class<*>.stringConstantFields(): Stream<Field> {
             return Arrays.stream(fields)
                 .filter {

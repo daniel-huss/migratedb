@@ -20,63 +20,63 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static migratedb.commandline.CommandLineConfigKey.CONFIG_FILES;
 import static migratedb.commandline.CommandLineConfigKey.CONFIG_FILE_ENCODING;
 import static migratedb.commandline.CommandLineConfigKey.JAR_DIRS;
-import static migratedb.core.api.configuration.ConfigKey.BASELINE_DESCRIPTION;
-import static migratedb.core.api.configuration.ConfigKey.BASELINE_MIGRATION_PREFIX;
-import static migratedb.core.api.configuration.ConfigKey.BASELINE_ON_MIGRATE;
-import static migratedb.core.api.configuration.ConfigKey.BASELINE_VERSION;
-import static migratedb.core.api.configuration.ConfigKey.BATCH;
-import static migratedb.core.api.configuration.ConfigKey.CALLBACKS;
-import static migratedb.core.api.configuration.ConfigKey.CHERRY_PICK;
-import static migratedb.core.api.configuration.ConfigKey.CLEAN_DISABLED;
-import static migratedb.core.api.configuration.ConfigKey.CLEAN_ON_VALIDATION_ERROR;
-import static migratedb.core.api.configuration.ConfigKey.CONNECT_RETRIES;
-import static migratedb.core.api.configuration.ConfigKey.CONNECT_RETRIES_INTERVAL;
-import static migratedb.core.api.configuration.ConfigKey.CREATE_SCHEMAS;
-import static migratedb.core.api.configuration.ConfigKey.DEFAULT_SCHEMA;
-import static migratedb.core.api.configuration.ConfigKey.DRIVER;
-import static migratedb.core.api.configuration.ConfigKey.DRYRUN_OUTPUT;
-import static migratedb.core.api.configuration.ConfigKey.ENCODING;
-import static migratedb.core.api.configuration.ConfigKey.ERROR_OVERRIDES;
-import static migratedb.core.api.configuration.ConfigKey.FAIL_ON_MISSING_LOCATIONS;
-import static migratedb.core.api.configuration.ConfigKey.GROUP;
-import static migratedb.core.api.configuration.ConfigKey.IGNORE_FUTURE_MIGRATIONS;
-import static migratedb.core.api.configuration.ConfigKey.IGNORE_IGNORED_MIGRATIONS;
-import static migratedb.core.api.configuration.ConfigKey.IGNORE_MIGRATION_PATTERNS;
-import static migratedb.core.api.configuration.ConfigKey.IGNORE_MISSING_MIGRATIONS;
-import static migratedb.core.api.configuration.ConfigKey.IGNORE_PENDING_MIGRATIONS;
-import static migratedb.core.api.configuration.ConfigKey.INIT_SQL;
-import static migratedb.core.api.configuration.ConfigKey.INSTALLED_BY;
-import static migratedb.core.api.configuration.ConfigKey.JDBC_PROPERTIES_PREFIX;
-import static migratedb.core.api.configuration.ConfigKey.LOCATIONS;
-import static migratedb.core.api.configuration.ConfigKey.LOCK_RETRY_COUNT;
-import static migratedb.core.api.configuration.ConfigKey.LOGGER;
-import static migratedb.core.api.configuration.ConfigKey.MIXED;
-import static migratedb.core.api.configuration.ConfigKey.OUTPUT_QUERY_RESULTS;
-import static migratedb.core.api.configuration.ConfigKey.OUT_OF_ORDER;
-import static migratedb.core.api.configuration.ConfigKey.PASSWORD;
-import static migratedb.core.api.configuration.ConfigKey.PLACEHOLDERS_PROPERTY_PREFIX;
-import static migratedb.core.api.configuration.ConfigKey.PLACEHOLDER_PREFIX;
-import static migratedb.core.api.configuration.ConfigKey.PLACEHOLDER_REPLACEMENT;
-import static migratedb.core.api.configuration.ConfigKey.PLACEHOLDER_SUFFIX;
-import static migratedb.core.api.configuration.ConfigKey.REPEATABLE_SQL_MIGRATION_PREFIX;
-import static migratedb.core.api.configuration.ConfigKey.RESOLVERS;
-import static migratedb.core.api.configuration.ConfigKey.SCHEMAS;
-import static migratedb.core.api.configuration.ConfigKey.SCRIPT_PLACEHOLDER_PREFIX;
-import static migratedb.core.api.configuration.ConfigKey.SCRIPT_PLACEHOLDER_SUFFIX;
-import static migratedb.core.api.configuration.ConfigKey.SKIP_DEFAULT_CALLBACKS;
-import static migratedb.core.api.configuration.ConfigKey.SKIP_DEFAULT_RESOLVERS;
-import static migratedb.core.api.configuration.ConfigKey.SKIP_EXECUTING_MIGRATIONS;
-import static migratedb.core.api.configuration.ConfigKey.SQL_MIGRATION_PREFIX;
-import static migratedb.core.api.configuration.ConfigKey.SQL_MIGRATION_SEPARATOR;
-import static migratedb.core.api.configuration.ConfigKey.SQL_MIGRATION_SUFFIXES;
-import static migratedb.core.api.configuration.ConfigKey.TABLE;
-import static migratedb.core.api.configuration.ConfigKey.TABLESPACE;
-import static migratedb.core.api.configuration.ConfigKey.TARGET;
-import static migratedb.core.api.configuration.ConfigKey.UNDO_SQL_MIGRATION_PREFIX;
-import static migratedb.core.api.configuration.ConfigKey.URL;
-import static migratedb.core.api.configuration.ConfigKey.USER;
-import static migratedb.core.api.configuration.ConfigKey.VALIDATE_MIGRATION_NAMING;
-import static migratedb.core.api.configuration.ConfigKey.VALIDATE_ON_MIGRATE;
+import static migratedb.core.api.configuration.PropertyNames.BASELINE_DESCRIPTION;
+import static migratedb.core.api.configuration.PropertyNames.BASELINE_MIGRATION_PREFIX;
+import static migratedb.core.api.configuration.PropertyNames.BASELINE_ON_MIGRATE;
+import static migratedb.core.api.configuration.PropertyNames.BASELINE_VERSION;
+import static migratedb.core.api.configuration.PropertyNames.BATCH;
+import static migratedb.core.api.configuration.PropertyNames.CALLBACKS;
+import static migratedb.core.api.configuration.PropertyNames.CHERRY_PICK;
+import static migratedb.core.api.configuration.PropertyNames.CLEAN_DISABLED;
+import static migratedb.core.api.configuration.PropertyNames.CLEAN_ON_VALIDATION_ERROR;
+import static migratedb.core.api.configuration.PropertyNames.CONNECT_RETRIES;
+import static migratedb.core.api.configuration.PropertyNames.CONNECT_RETRIES_INTERVAL;
+import static migratedb.core.api.configuration.PropertyNames.CREATE_SCHEMAS;
+import static migratedb.core.api.configuration.PropertyNames.DEFAULT_SCHEMA;
+import static migratedb.core.api.configuration.PropertyNames.DRIVER;
+import static migratedb.core.api.configuration.PropertyNames.DRYRUN_OUTPUT;
+import static migratedb.core.api.configuration.PropertyNames.ENCODING;
+import static migratedb.core.api.configuration.PropertyNames.ERROR_OVERRIDES;
+import static migratedb.core.api.configuration.PropertyNames.FAIL_ON_MISSING_LOCATIONS;
+import static migratedb.core.api.configuration.PropertyNames.GROUP;
+import static migratedb.core.api.configuration.PropertyNames.IGNORE_FUTURE_MIGRATIONS;
+import static migratedb.core.api.configuration.PropertyNames.IGNORE_IGNORED_MIGRATIONS;
+import static migratedb.core.api.configuration.PropertyNames.IGNORE_MIGRATION_PATTERNS;
+import static migratedb.core.api.configuration.PropertyNames.IGNORE_MISSING_MIGRATIONS;
+import static migratedb.core.api.configuration.PropertyNames.IGNORE_PENDING_MIGRATIONS;
+import static migratedb.core.api.configuration.PropertyNames.INIT_SQL;
+import static migratedb.core.api.configuration.PropertyNames.INSTALLED_BY;
+import static migratedb.core.api.configuration.PropertyNames.JDBC_PROPERTIES_PREFIX;
+import static migratedb.core.api.configuration.PropertyNames.LOCATIONS;
+import static migratedb.core.api.configuration.PropertyNames.LOCK_RETRY_COUNT;
+import static migratedb.core.api.configuration.PropertyNames.LOGGER;
+import static migratedb.core.api.configuration.PropertyNames.MIXED;
+import static migratedb.core.api.configuration.PropertyNames.OUTPUT_QUERY_RESULTS;
+import static migratedb.core.api.configuration.PropertyNames.OUT_OF_ORDER;
+import static migratedb.core.api.configuration.PropertyNames.PASSWORD;
+import static migratedb.core.api.configuration.PropertyNames.PLACEHOLDERS_PROPERTY_PREFIX;
+import static migratedb.core.api.configuration.PropertyNames.PLACEHOLDER_PREFIX;
+import static migratedb.core.api.configuration.PropertyNames.PLACEHOLDER_REPLACEMENT;
+import static migratedb.core.api.configuration.PropertyNames.PLACEHOLDER_SUFFIX;
+import static migratedb.core.api.configuration.PropertyNames.REPEATABLE_SQL_MIGRATION_PREFIX;
+import static migratedb.core.api.configuration.PropertyNames.RESOLVERS;
+import static migratedb.core.api.configuration.PropertyNames.SCHEMAS;
+import static migratedb.core.api.configuration.PropertyNames.SCRIPT_PLACEHOLDER_PREFIX;
+import static migratedb.core.api.configuration.PropertyNames.SCRIPT_PLACEHOLDER_SUFFIX;
+import static migratedb.core.api.configuration.PropertyNames.SKIP_DEFAULT_CALLBACKS;
+import static migratedb.core.api.configuration.PropertyNames.SKIP_DEFAULT_RESOLVERS;
+import static migratedb.core.api.configuration.PropertyNames.SKIP_EXECUTING_MIGRATIONS;
+import static migratedb.core.api.configuration.PropertyNames.SQL_MIGRATION_PREFIX;
+import static migratedb.core.api.configuration.PropertyNames.SQL_MIGRATION_SEPARATOR;
+import static migratedb.core.api.configuration.PropertyNames.SQL_MIGRATION_SUFFIXES;
+import static migratedb.core.api.configuration.PropertyNames.TABLE;
+import static migratedb.core.api.configuration.PropertyNames.TABLESPACE;
+import static migratedb.core.api.configuration.PropertyNames.TARGET;
+import static migratedb.core.api.configuration.PropertyNames.UNDO_SQL_MIGRATION_PREFIX;
+import static migratedb.core.api.configuration.PropertyNames.URL;
+import static migratedb.core.api.configuration.PropertyNames.USER;
+import static migratedb.core.api.configuration.PropertyNames.VALIDATE_MIGRATION_NAMING;
+import static migratedb.core.api.configuration.PropertyNames.VALIDATE_ON_MIGRATE;
 import static migratedb.core.internal.configuration.ConfigUtils.loadConfiguration;
 import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_KERBEROS_CACHE_FILE;
 import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_KERBEROS_CONFIG_FILE;
@@ -118,8 +118,8 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.MigrationInfoService;
 import migratedb.core.api.MigrationVersion;
-import migratedb.core.api.configuration.ConfigKey;
 import migratedb.core.api.configuration.FluentConfiguration;
+import migratedb.core.api.configuration.PropertyNames;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.output.CompositeResult;
@@ -508,11 +508,11 @@ class MigrateDbCommand {
 
                 switch (entry.getKey()) {
                     // Mask the password. Ex.: T0pS3cr3t -> *********
-                    case ConfigKey.PASSWORD:
+                    case PropertyNames.PASSWORD:
                         value = StringUtils.trimOrPad("", value.length(), '*');
                         break;
                     // Mask any password in the URL
-                    case ConfigKey.URL:
+                    case PropertyNames.URL:
                         value = databaseTypeRegister.redactJdbcUrl(value);
                         break;
                 }
@@ -615,7 +615,7 @@ class MigrateDbCommand {
     }
 
     private void makeRelativeLocationsBasedOnWorkingDirectory(Map<String, String> config) {
-        String[] locations = config.get(ConfigKey.LOCATIONS).split(",");
+        String[] locations = config.get(PropertyNames.LOCATIONS).split(",");
         for (int i = 0; i < locations.length; i++) {
             if (locations[i].startsWith(Location.FileSystemLocation.PREFIX)) {
                 String newLocation = locations[i].substring(Location.FileSystemLocation.PREFIX.length());
@@ -627,7 +627,7 @@ class MigrateDbCommand {
             }
         }
 
-        config.put(ConfigKey.LOCATIONS, StringUtils.arrayToCommaDelimitedString(locations));
+        config.put(PropertyNames.LOCATIONS, StringUtils.arrayToCommaDelimitedString(locations));
     }
 
     private Map<String, String> overrideConfiguration(Map<String, String> existingConfiguration,
@@ -725,7 +725,7 @@ class MigrateDbCommand {
         // To maintain override order, return extension value first if present
         String workingDirectory = arguments.isWorkingDirectorySet() ? arguments.getWorkingDirectory()
                                                                     : getInstallationDir();
-        config.put(ConfigKey.LOCATIONS, "filesystem:" + new File(workingDirectory, "sql").getAbsolutePath());
+        config.put(PropertyNames.LOCATIONS, "filesystem:" + new File(workingDirectory, "sql").getAbsolutePath());
         config.put(JAR_DIRS, new File(workingDirectory, "jars").getAbsolutePath());
     }
 
@@ -896,19 +896,20 @@ class MigrateDbCommand {
             return;
         }
 
-        if (!config.containsKey(ConfigKey.URL)) {
+        if (!config.containsKey(PropertyNames.URL)) {
             // URL is not set. We are doomed for failure anyway.
             return;
         }
 
-        String url = config.get(ConfigKey.URL);
-        if (!config.containsKey(ConfigKey.USER) && needsUser(url, config.getOrDefault(ConfigKey.PASSWORD, null))) {
-            config.put(ConfigKey.USER, console.readLine("Database user: "));
+        String url = config.get(PropertyNames.URL);
+        if (!config.containsKey(PropertyNames.USER) && needsUser(url,
+                                                                 config.getOrDefault(PropertyNames.PASSWORD, null))) {
+            config.put(PropertyNames.USER, console.readLine("Database user: "));
         }
 
-        if (!config.containsKey(ConfigKey.PASSWORD) && needsPassword(url, config.get(ConfigKey.USER))) {
+        if (!config.containsKey(PropertyNames.PASSWORD) && needsPassword(url, config.get(PropertyNames.USER))) {
             char[] password = console.readPassword("Database password: ");
-            config.put(ConfigKey.PASSWORD, password == null ? "" : String.valueOf(password));
+            config.put(PropertyNames.PASSWORD, password == null ? "" : String.valueOf(password));
         }
     }
 

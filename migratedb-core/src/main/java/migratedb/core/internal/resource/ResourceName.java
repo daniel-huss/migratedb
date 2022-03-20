@@ -36,8 +36,7 @@ public class ResourceName {
     private final String validityMessage;
 
     public ResourceName(String prefix, String version, String separator, String description, String rawDescription,
-                        String suffix,
-                        boolean isValid, String validityMessage) {
+                        String suffix, boolean isValid, String validityMessage) {
         this.prefix = prefix;
         this.version = version;
         this.separator = separator;
@@ -92,7 +91,7 @@ public class ResourceName {
     public String getDescription() {
         if (!isValid) {
             throw new MigrateDbException(
-                "Cannot access description of invalid ResourceNameParseResult\n" + validityMessage);
+                "Cannot access description of invalid ResourceName\n" + validityMessage);
         }
         return description;
     }
@@ -103,7 +102,7 @@ public class ResourceName {
     public String getSuffix() {
         if (!isValid) {
             throw new MigrateDbException(
-                "Cannot access suffix of invalid ResourceNameParseResult\n" + validityMessage);
+                "Cannot access suffix of invalid ResourceName\n" + validityMessage);
         }
         return suffix;
     }
@@ -113,7 +112,7 @@ public class ResourceName {
      */
     public String getFilenameWithoutSuffix() {
         if (!isValid) {
-            throw new MigrateDbException("Cannot access name of invalid ResourceNameParseResult\n" + validityMessage);
+            throw new MigrateDbException("Cannot access name of invalid ResourceName\n" + validityMessage);
         }
 
         if ("".equals(description)) {
@@ -128,7 +127,7 @@ public class ResourceName {
      */
     public String getFilename() {
         if (!isValid) {
-            throw new MigrateDbException("Cannot access name of invalid ResourceNameParseResult\n" + validityMessage);
+            throw new MigrateDbException("Cannot access name of invalid ResourceName\n" + validityMessage);
         }
 
         if ("".equals(description)) {

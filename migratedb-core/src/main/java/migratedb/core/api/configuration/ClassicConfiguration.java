@@ -129,8 +129,6 @@ public class ClassicConfiguration implements Configuration {
     private boolean outputQueryResults = true;
     private int lockRetryCount = 50;
     private Map<String, String> jdbcProperties = new HashMap<>();
-    private boolean oracleSqlplus;
-    private boolean oracleSqlplusWarn;
     private boolean failOnMissingLocations = false;
     private LogSystem logger;
     private String licenseKey;
@@ -1403,9 +1401,10 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Configures MigrateDb with these properties. This overwrites any existing configuration. Properties are documented
-     * here: https://no-website-yet.org/documentation/configuration/parameters/
-     * <p>To use a custom ClassLoader, it must be passed to the constructor prior to calling this method.</p>
+     * Configures MigrateDb with these properties. This overwrites any existing configuration. Property names are
+     * documented in {@link PropertyNames}. To use a custom ClassLoader, it must be passed to the MigrateDb constructor
+     * prior to calling this method. To support the configuration of extensions, those extensions must be activated via
+     * {@code useExtension} prior to calling this method.
      *
      * @param properties Properties used for configuration.
      *
@@ -1416,9 +1415,10 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Configures MigrateDb with these properties. This overwrites any existing configuration. Properties are documented
-     * here: https://no-website-yet.org/documentation/configuration/parameters/
-     * <p>To use a custom ClassLoader, it must be passed to the constructor prior to calling this method.</p>
+     * Configures MigrateDb with these properties. This overwrites any existing configuration. Property names are
+     * documented in {@link PropertyNames}. To use a custom ClassLoader, it must be passed to the MigrateDb constructor
+     * prior to calling this method. To support the configuration of extensions, those extensions must be activated via
+     * {@code useExtension} prior to calling this method.
      *
      * @param props Properties used for configuration.
      *
@@ -1428,235 +1428,235 @@ public class ClassicConfiguration implements Configuration {
         // Make copy to prevent removing elements from the original.
         props = new HashMap<>(props);
 
-        String driverProp = props.remove(ConfigKey.DRIVER);
+        String driverProp = props.remove(PropertyNames.DRIVER);
         if (driverProp != null) {
             dataSource = null;
             driver = driverProp;
         }
-        String urlProp = props.remove(ConfigKey.URL);
+        String urlProp = props.remove(PropertyNames.URL);
         if (urlProp != null) {
             dataSource = null;
             url = urlProp;
         }
-        String userProp = props.remove(ConfigKey.USER);
+        String userProp = props.remove(PropertyNames.USER);
         if (userProp != null) {
             dataSource = null;
             user = userProp;
         }
-        String passwordProp = props.remove(ConfigKey.PASSWORD);
+        String passwordProp = props.remove(PropertyNames.PASSWORD);
         if (passwordProp != null) {
             dataSource = null;
             password = passwordProp;
         }
-        Integer connectRetriesProp = removeInteger(props, ConfigKey.CONNECT_RETRIES);
+        Integer connectRetriesProp = removeInteger(props, PropertyNames.CONNECT_RETRIES);
         if (connectRetriesProp != null) {
             setConnectRetries(connectRetriesProp);
         }
-        Integer connectRetriesIntervalProp = removeInteger(props, ConfigKey.CONNECT_RETRIES_INTERVAL);
+        Integer connectRetriesIntervalProp = removeInteger(props, PropertyNames.CONNECT_RETRIES_INTERVAL);
         if (connectRetriesIntervalProp != null) {
             setConnectRetriesInterval(connectRetriesIntervalProp);
         }
-        String initSqlProp = props.remove(ConfigKey.INIT_SQL);
+        String initSqlProp = props.remove(PropertyNames.INIT_SQL);
         if (initSqlProp != null) {
             setInitSql(initSqlProp);
         }
-        String locationsProp = props.remove(ConfigKey.LOCATIONS);
+        String locationsProp = props.remove(PropertyNames.LOCATIONS);
         if (locationsProp != null) {
             setLocationsAsStrings(StringUtils.tokenizeToStringArray(locationsProp, ","));
         }
-        Boolean placeholderReplacementProp = removeBoolean(props, ConfigKey.PLACEHOLDER_REPLACEMENT);
+        Boolean placeholderReplacementProp = removeBoolean(props, PropertyNames.PLACEHOLDER_REPLACEMENT);
         if (placeholderReplacementProp != null) {
             setPlaceholderReplacement(placeholderReplacementProp);
         }
-        String placeholderPrefixProp = props.remove(ConfigKey.PLACEHOLDER_PREFIX);
+        String placeholderPrefixProp = props.remove(PropertyNames.PLACEHOLDER_PREFIX);
         if (placeholderPrefixProp != null) {
             setPlaceholderPrefix(placeholderPrefixProp);
         }
-        String placeholderSuffixProp = props.remove(ConfigKey.PLACEHOLDER_SUFFIX);
+        String placeholderSuffixProp = props.remove(PropertyNames.PLACEHOLDER_SUFFIX);
         if (placeholderSuffixProp != null) {
             setPlaceholderSuffix(placeholderSuffixProp);
         }
-        String scriptPlaceholderPrefixProp = props.remove(ConfigKey.SCRIPT_PLACEHOLDER_PREFIX);
+        String scriptPlaceholderPrefixProp = props.remove(PropertyNames.SCRIPT_PLACEHOLDER_PREFIX);
         if (scriptPlaceholderPrefixProp != null) {
             setScriptPlaceholderPrefix(scriptPlaceholderPrefixProp);
         }
-        String scriptPlaceholderSuffixProp = props.remove(ConfigKey.SCRIPT_PLACEHOLDER_SUFFIX);
+        String scriptPlaceholderSuffixProp = props.remove(PropertyNames.SCRIPT_PLACEHOLDER_SUFFIX);
         if (scriptPlaceholderSuffixProp != null) {
             setScriptPlaceholderSuffix(scriptPlaceholderSuffixProp);
         }
-        String sqlMigrationPrefixProp = props.remove(ConfigKey.SQL_MIGRATION_PREFIX);
+        String sqlMigrationPrefixProp = props.remove(PropertyNames.SQL_MIGRATION_PREFIX);
         if (sqlMigrationPrefixProp != null) {
             setSqlMigrationPrefix(sqlMigrationPrefixProp);
         }
-        String undoSqlMigrationPrefixProp = props.remove(ConfigKey.UNDO_SQL_MIGRATION_PREFIX);
+        String undoSqlMigrationPrefixProp = props.remove(PropertyNames.UNDO_SQL_MIGRATION_PREFIX);
         if (undoSqlMigrationPrefixProp != null) {
             setUndoSqlMigrationPrefix(undoSqlMigrationPrefixProp);
         }
-        String baselineMigrationPrefixProp = props.remove(ConfigKey.BASELINE_MIGRATION_PREFIX);
+        String baselineMigrationPrefixProp = props.remove(PropertyNames.BASELINE_MIGRATION_PREFIX);
         if (baselineMigrationPrefixProp != null) {
             setBaselineMigrationPrefix(baselineMigrationPrefixProp);
         }
-        String repeatableSqlMigrationPrefixProp = props.remove(ConfigKey.REPEATABLE_SQL_MIGRATION_PREFIX);
+        String repeatableSqlMigrationPrefixProp = props.remove(PropertyNames.REPEATABLE_SQL_MIGRATION_PREFIX);
         if (repeatableSqlMigrationPrefixProp != null) {
             setRepeatableSqlMigrationPrefix(repeatableSqlMigrationPrefixProp);
         }
-        String sqlMigrationSeparatorProp = props.remove(ConfigKey.SQL_MIGRATION_SEPARATOR);
+        String sqlMigrationSeparatorProp = props.remove(PropertyNames.SQL_MIGRATION_SEPARATOR);
         if (sqlMigrationSeparatorProp != null) {
             setSqlMigrationSeparator(sqlMigrationSeparatorProp);
         }
-        String sqlMigrationSuffixesProp = props.remove(ConfigKey.SQL_MIGRATION_SUFFIXES);
+        String sqlMigrationSuffixesProp = props.remove(PropertyNames.SQL_MIGRATION_SUFFIXES);
         if (sqlMigrationSuffixesProp != null) {
             setSqlMigrationSuffixes(StringUtils.tokenizeToStringArray(sqlMigrationSuffixesProp, ","));
         }
-        String encodingProp = props.remove(ConfigKey.ENCODING);
+        String encodingProp = props.remove(PropertyNames.ENCODING);
         if (encodingProp != null) {
             setEncodingAsString(encodingProp);
         }
-        String defaultSchemaProp = props.remove(ConfigKey.DEFAULT_SCHEMA);
+        String defaultSchemaProp = props.remove(PropertyNames.DEFAULT_SCHEMA);
         if (defaultSchemaProp != null) {
             setDefaultSchema(defaultSchemaProp);
         }
-        String schemasProp = props.remove(ConfigKey.SCHEMAS);
+        String schemasProp = props.remove(PropertyNames.SCHEMAS);
         if (schemasProp != null) {
             setSchemas(StringUtils.tokenizeToStringArray(schemasProp, ","));
         }
-        String tableProp = props.remove(ConfigKey.TABLE);
+        String tableProp = props.remove(PropertyNames.TABLE);
         if (tableProp != null) {
             setTable(tableProp);
         }
-        String tablespaceProp = props.remove(ConfigKey.TABLESPACE);
+        String tablespaceProp = props.remove(PropertyNames.TABLESPACE);
         if (tablespaceProp != null) {
             setTablespace(tablespaceProp);
         }
-        Boolean cleanOnValidationErrorProp = removeBoolean(props, ConfigKey.CLEAN_ON_VALIDATION_ERROR);
+        Boolean cleanOnValidationErrorProp = removeBoolean(props, PropertyNames.CLEAN_ON_VALIDATION_ERROR);
         if (cleanOnValidationErrorProp != null) {
             setCleanOnValidationError(cleanOnValidationErrorProp);
         }
-        Boolean cleanDisabledProp = removeBoolean(props, ConfigKey.CLEAN_DISABLED);
+        Boolean cleanDisabledProp = removeBoolean(props, PropertyNames.CLEAN_DISABLED);
         if (cleanDisabledProp != null) {
             setCleanDisabled(cleanDisabledProp);
         }
-        Boolean validateOnMigrateProp = removeBoolean(props, ConfigKey.VALIDATE_ON_MIGRATE);
+        Boolean validateOnMigrateProp = removeBoolean(props, PropertyNames.VALIDATE_ON_MIGRATE);
         if (validateOnMigrateProp != null) {
             setValidateOnMigrate(validateOnMigrateProp);
         }
-        String baselineVersionProp = props.remove(ConfigKey.BASELINE_VERSION);
+        String baselineVersionProp = props.remove(PropertyNames.BASELINE_VERSION);
         if (baselineVersionProp != null) {
-            setBaselineVersion(MigrationVersion.fromVersion(baselineVersionProp));
+            setBaselineVersionAsString(baselineVersionProp);
         }
-        String baselineDescriptionProp = props.remove(ConfigKey.BASELINE_DESCRIPTION);
+        String baselineDescriptionProp = props.remove(PropertyNames.BASELINE_DESCRIPTION);
         if (baselineDescriptionProp != null) {
             setBaselineDescription(baselineDescriptionProp);
         }
-        Boolean baselineOnMigrateProp = removeBoolean(props, ConfigKey.BASELINE_ON_MIGRATE);
+        Boolean baselineOnMigrateProp = removeBoolean(props, PropertyNames.BASELINE_ON_MIGRATE);
         if (baselineOnMigrateProp != null) {
             setBaselineOnMigrate(baselineOnMigrateProp);
         }
-        Boolean ignoreMissingMigrationsProp = removeBoolean(props, ConfigKey.IGNORE_MISSING_MIGRATIONS);
+        Boolean ignoreMissingMigrationsProp = removeBoolean(props, PropertyNames.IGNORE_MISSING_MIGRATIONS);
         if (ignoreMissingMigrationsProp != null) {
             setIgnoreMissingMigrations(ignoreMissingMigrationsProp);
         }
-        Boolean ignoreIgnoredMigrationsProp = removeBoolean(props, ConfigKey.IGNORE_IGNORED_MIGRATIONS);
+        Boolean ignoreIgnoredMigrationsProp = removeBoolean(props, PropertyNames.IGNORE_IGNORED_MIGRATIONS);
         if (ignoreIgnoredMigrationsProp != null) {
             setIgnoreIgnoredMigrations(ignoreIgnoredMigrationsProp);
         }
-        Boolean ignorePendingMigrationsProp = removeBoolean(props, ConfigKey.IGNORE_PENDING_MIGRATIONS);
+        Boolean ignorePendingMigrationsProp = removeBoolean(props, PropertyNames.IGNORE_PENDING_MIGRATIONS);
         if (ignorePendingMigrationsProp != null) {
             setIgnorePendingMigrations(ignorePendingMigrationsProp);
         }
-        Boolean ignoreFutureMigrationsProp = removeBoolean(props, ConfigKey.IGNORE_FUTURE_MIGRATIONS);
+        Boolean ignoreFutureMigrationsProp = removeBoolean(props, PropertyNames.IGNORE_FUTURE_MIGRATIONS);
         if (ignoreFutureMigrationsProp != null) {
             setIgnoreFutureMigrations(ignoreFutureMigrationsProp);
         }
-        Boolean validateMigrationNamingProp = removeBoolean(props, ConfigKey.VALIDATE_MIGRATION_NAMING);
+        Boolean validateMigrationNamingProp = removeBoolean(props, PropertyNames.VALIDATE_MIGRATION_NAMING);
         if (validateMigrationNamingProp != null) {
             setValidateMigrationNaming(validateMigrationNamingProp);
         }
-        String targetProp = props.remove(ConfigKey.TARGET);
+        String targetProp = props.remove(PropertyNames.TARGET);
         if (targetProp != null) {
             setTargetAsString(targetProp);
         }
-        String cherryPickProp = props.remove(ConfigKey.CHERRY_PICK);
+        String cherryPickProp = props.remove(PropertyNames.CHERRY_PICK);
         if (cherryPickProp != null) {
             setCherryPick(StringUtils.tokenizeToStringArray(cherryPickProp, ","));
         }
-        String loggersProp = props.remove(ConfigKey.LOGGER);
+        String loggersProp = props.remove(PropertyNames.LOGGER);
         if (loggersProp != null) {
             setLogger(StringUtils.tokenizeToStringArray(loggersProp, ","));
         }
-        Integer lockRetryCount = removeInteger(props, ConfigKey.LOCK_RETRY_COUNT);
+        Integer lockRetryCount = removeInteger(props, PropertyNames.LOCK_RETRY_COUNT);
         if (lockRetryCount != null) {
             setLockRetryCount(lockRetryCount);
         }
-        Boolean outOfOrderProp = removeBoolean(props, ConfigKey.OUT_OF_ORDER);
+        Boolean outOfOrderProp = removeBoolean(props, PropertyNames.OUT_OF_ORDER);
         if (outOfOrderProp != null) {
             setOutOfOrder(outOfOrderProp);
         }
-        Boolean skipExecutingMigrationsProp = removeBoolean(props, ConfigKey.SKIP_EXECUTING_MIGRATIONS);
+        Boolean skipExecutingMigrationsProp = removeBoolean(props, PropertyNames.SKIP_EXECUTING_MIGRATIONS);
         if (skipExecutingMigrationsProp != null) {
             setSkipExecutingMigrations(skipExecutingMigrationsProp);
         }
-        Boolean outputQueryResultsProp = removeBoolean(props, ConfigKey.OUTPUT_QUERY_RESULTS);
+        Boolean outputQueryResultsProp = removeBoolean(props, PropertyNames.OUTPUT_QUERY_RESULTS);
         if (outputQueryResultsProp != null) {
             setOutputQueryResults(outputQueryResultsProp);
         }
-        String resolversProp = props.remove(ConfigKey.RESOLVERS);
+        String resolversProp = props.remove(PropertyNames.RESOLVERS);
         if (StringUtils.hasLength(resolversProp)) {
             setResolversAsClassNames(StringUtils.tokenizeToStringArray(resolversProp, ","));
         }
-        Boolean skipDefaultResolversProp = removeBoolean(props, ConfigKey.SKIP_DEFAULT_RESOLVERS);
+        Boolean skipDefaultResolversProp = removeBoolean(props, PropertyNames.SKIP_DEFAULT_RESOLVERS);
         if (skipDefaultResolversProp != null) {
             setSkipDefaultResolvers(skipDefaultResolversProp);
         }
-        String callbacksProp = props.remove(ConfigKey.CALLBACKS);
+        String callbacksProp = props.remove(PropertyNames.CALLBACKS);
         if (StringUtils.hasLength(callbacksProp)) {
             setCallbacksAsClassNames(StringUtils.tokenizeToStringArray(callbacksProp, ","));
         }
-        Boolean skipDefaultCallbacksProp = removeBoolean(props, ConfigKey.SKIP_DEFAULT_CALLBACKS);
+        Boolean skipDefaultCallbacksProp = removeBoolean(props, PropertyNames.SKIP_DEFAULT_CALLBACKS);
         if (skipDefaultCallbacksProp != null) {
             setSkipDefaultCallbacks(skipDefaultCallbacksProp);
         }
-        putPropertiesUnderNamespace(props, placeholders, ConfigKey.PLACEHOLDERS_PROPERTY_PREFIX);
-        Boolean mixedProp = removeBoolean(props, ConfigKey.MIXED);
+        putPropertiesUnderNamespace(props, placeholders, PropertyNames.PLACEHOLDERS_PROPERTY_PREFIX);
+        Boolean mixedProp = removeBoolean(props, PropertyNames.MIXED);
         if (mixedProp != null) {
             setMixed(mixedProp);
         }
-        Boolean groupProp = removeBoolean(props, ConfigKey.GROUP);
+        Boolean groupProp = removeBoolean(props, PropertyNames.GROUP);
         if (groupProp != null) {
             setGroup(groupProp);
         }
-        String installedByProp = props.remove(ConfigKey.INSTALLED_BY);
+        String installedByProp = props.remove(PropertyNames.INSTALLED_BY);
         if (installedByProp != null) {
             setInstalledBy(installedByProp);
         }
-        String dryRunOutputProp = props.remove(ConfigKey.DRYRUN_OUTPUT);
+        String dryRunOutputProp = props.remove(PropertyNames.DRYRUN_OUTPUT);
         if (dryRunOutputProp != null) {
             setDryRunOutputAsFileName(dryRunOutputProp);
         }
-        String errorOverridesProp = props.remove(ConfigKey.ERROR_OVERRIDES);
+        String errorOverridesProp = props.remove(PropertyNames.ERROR_OVERRIDES);
         if (errorOverridesProp != null) {
             setErrorOverrides(StringUtils.tokenizeToStringArray(errorOverridesProp, ","));
         }
-        Boolean batchProp = removeBoolean(props, ConfigKey.BATCH);
+        Boolean batchProp = removeBoolean(props, PropertyNames.BATCH);
         if (batchProp != null) {
             setBatch(batchProp);
         }
 
-        Boolean createSchemasProp = removeBoolean(props, ConfigKey.CREATE_SCHEMAS);
+        Boolean createSchemasProp = removeBoolean(props, PropertyNames.CREATE_SCHEMAS);
         if (createSchemasProp != null) {
             setShouldCreateSchemas(createSchemasProp);
         }
 
-        String ignoreMigrationPatternsProp = props.remove(ConfigKey.IGNORE_MIGRATION_PATTERNS);
+        String ignoreMigrationPatternsProp = props.remove(PropertyNames.IGNORE_MIGRATION_PATTERNS);
         if (ignoreMigrationPatternsProp != null) {
             setIgnoreMigrationPatterns(StringUtils.tokenizeToStringArray(ignoreMigrationPatternsProp, ","));
         }
-        Boolean failOnMissingLocationsProp = removeBoolean(props, ConfigKey.FAIL_ON_MISSING_LOCATIONS);
+        Boolean failOnMissingLocationsProp = removeBoolean(props, PropertyNames.FAIL_ON_MISSING_LOCATIONS);
         if (failOnMissingLocationsProp != null) {
             setFailOnMissingLocations(failOnMissingLocationsProp);
         }
 
-        putPropertiesUnderNamespace(props, jdbcProperties, ConfigKey.JDBC_PROPERTIES_PREFIX);
+        putPropertiesUnderNamespace(props, jdbcProperties, PropertyNames.JDBC_PROPERTIES_PREFIX);
 
         for (var extension : loadedExtensions) {
             for (var converter : extension.getConfigPropertiesConverters()) {
@@ -1672,7 +1672,7 @@ public class ClassicConfiguration implements Configuration {
             putPropertiesUnderNamespace(
                 props,
                 getPlaceholders(),
-                ConfigKey.JDBC_PROPERTIES_PREFIX);
+                PropertyNames.JDBC_PROPERTIES_PREFIX);
 
             setDataSource(new DriverDataSource(classLoader,
                                                driver,

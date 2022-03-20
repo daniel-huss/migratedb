@@ -39,15 +39,17 @@ class MigrateDbDomain : DomainContextBase() {
 
     @Provide
     fun configurations(): Arbitrary<ClassicConfiguration> {
-        return Arbitraries.subsetOf(ConfigSetters.all).flatMap { subset ->
-            Combinators.combine(subset.map { it.asAction }).`as` {
-                it.fold(ClassicConfiguration()) { config, setterAction ->
-                    if (setterAction.precondition(config)) {
-                        setterAction.run(config)
+        return Arbitraries.subsetOf(ConfigSetters.all)
+            .edgeCases { it.add(ConfigSetters.all.toSet()) }
+            .flatMap { subset ->
+                Combinators.combine(subset.map { it.asAction }).`as` {
+                    it.fold(ClassicConfiguration()) { config, setterAction ->
+                        if (setterAction.precondition(config)) {
+                            setterAction.run(config)
+                        }
+                        config
                     }
-                    config
                 }
             }
-        }
     }
 }

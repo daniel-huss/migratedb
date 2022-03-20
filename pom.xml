@@ -50,7 +50,6 @@
         <module>migratedb-scanner</module>
         <module>migratedb-commandline</module>
         <module>migratedb-integration-tests</module>
-        <module>migratedb-docs</module>
         <module>migratedb-maven-plugin</module>
     </modules>
 

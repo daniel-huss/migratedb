@@ -27,7 +27,7 @@ import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.logging.LogSystems;
 import migratedb.core.api.pattern.ValidatePattern;
 
-public class ConfigKey {
+public class PropertyNames {
     @Info(typeHint = String.class)
     public static final String BASELINE_DESCRIPTION = "migratedb.baselineDescription";
     @Info(typeHint = Boolean.class)

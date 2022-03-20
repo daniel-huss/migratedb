@@ -16,22 +16,24 @@
 
 package migratedb.testing
 
+import com.google.common.collect.MapDifference.ValueDifference
+import com.google.common.collect.Maps
 import migratedb.core.api.configuration.Configuration
 import kotlin.reflect.full.functions
 
+fun <K, V> Map<K, V>.diffWith(other: Map<*, *>): Map<Any?, ValueDifference<Any?>> =
+    Maps.difference(this, other, SmartEquivalence).entriesDiffering()
 
-fun Configuration.comparableProperties() = {
-    mutableMapOf<String, Any>().also { props ->
-        Configuration::class.functions.asSequence()
-            .filter {
-                (it.name.startsWith("get") || it.name.startsWith("is")) &&
-                        it.name != "getClassLoader" &&
-                        it.name != "getClass" &&
-                        it.name != "getDatabaseTypeRegister"
-            }
-            .forEach { getter ->
-                getter.call(this)?.let { props["Value of ${getter.name}()"] = it }
-            }
-        props["Registered database type"] = databaseTypeRegister.databaseTypes.asSequence().map { it::class.java }.toSet()
-    }
+fun Configuration.comparableProperties(): Map<String, Any> = mutableMapOf<String, Any>().also { props ->
+    Configuration::class.functions.asSequence()
+        .filter {
+            (it.name.startsWith("get") || it.name.startsWith("is")) &&
+                    it.name != "getClassLoader" &&
+                    it.name != "getClass" &&
+                    it.name != "getDatabaseTypeRegister"
+        }
+        .forEach { getter ->
+            getter.call(this)?.let { props[getter.name] = it }
+        }
+    props["getDatabaseTypeRegister"] = databaseTypeRegister.databaseTypes.asSequence().map { it::class.java }.toSet()
 }

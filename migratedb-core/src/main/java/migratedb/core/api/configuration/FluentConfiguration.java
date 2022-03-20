@@ -39,7 +39,6 @@ import migratedb.core.api.logging.LogSystems;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.pattern.ValidatePattern;
 import migratedb.core.api.resolver.MigrationResolver;
-import migratedb.core.internal.configuration.ConfigUtils;
 import migratedb.core.internal.util.ClassUtils;
 
 /**
@@ -1232,8 +1231,9 @@ public class FluentConfiguration implements Configuration {
 
     /**
      * Configures MigrateDb with these properties. This overwrites any existing configuration. Property names are
-     * documented in {@link ConfigUtils}. To use a custom ClassLoader, setClassLoader() must be called prior to calling
-     * this method.
+     * documented in {@link PropertyNames}. To use a custom ClassLoader, setClassLoader() must be called prior to
+     * calling this method. To support the configuration of extensions, those extensions must be activated via {@code
+     * useExtension} prior to calling this method.
      *
      * @param properties Properties used for configuration.
      *
@@ -1246,8 +1246,9 @@ public class FluentConfiguration implements Configuration {
 
     /**
      * Configures MigrateDb with these properties. This overwrites any existing configuration. Property names are
-     * documented in {@link ConfigUtils}. To use a custom ClassLoader, it must be passed to the MigrateDb constructor
-     * prior to calling this method.
+     * documented in {@link PropertyNames}. To use a custom ClassLoader, it must be passed to the MigrateDb constructor
+     * prior to calling this method. To support the configuration of extensions, those extensions must be activated via
+     * {@code useExtension} prior to calling this method.
      *
      * @param props Properties used for configuration.
      *

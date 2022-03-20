@@ -29,7 +29,7 @@ import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.FeatureDetector;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class LogSystems {
+public final class LogSystems {
     public static final String ANDROID = "android";
     public static final String APACHE_COMMONS = "apache-commons";
     public static final String AUTO_DETECT = "auto";

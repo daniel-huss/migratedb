@@ -60,7 +60,7 @@ fun anyLogSystemAsString(): Arbitrary<String> {
         LogSystems.JAVA_UTIL,
         LogSystems.NONE,
         LogSystems.SLF4J,
-        MyNoOp::class.java.name
+        UniversalDummy::class.java.name
     )
 }
 
@@ -76,7 +76,7 @@ fun anyLocation(): Arbitrary<Location> {
     val fileSystemLocations = directoryNames.map {
         FileSystemLocation(Paths.get("target", *it.toTypedArray()))
     }
-    val customLocations = Arbitraries.just(MyNoOp().let {
+    val customLocations = Arbitraries.just(UniversalDummy().let {
         CustomLocation(it, it)
     })
 

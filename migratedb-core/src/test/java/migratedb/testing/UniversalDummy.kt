@@ -28,15 +28,21 @@ import migratedb.core.api.resolver.MigrationResolver
 import migratedb.core.api.resolver.ResolvedMigration
 import migratedb.core.api.resource.Resource
 import migratedb.core.internal.logging.NoLogSystem
+import java.io.ByteArrayOutputStream
+import java.io.OutputStream
 import java.sql.Driver
+import java.util.function.Supplier
 
 /**
  * Universal instantiable class that can be used when one of its interfaces is required. Its actions do nothing.
  */
-class MyNoOp : Callback, MigrationResolver, ResourceProvider, JavaMigration, LogSystem, ClassProvider<JavaMigration>,
-    Driver by org.h2.Driver() {
+class UniversalDummy : Callback, MigrationResolver, ResourceProvider, JavaMigration, LogSystem, ClassProvider<JavaMigration>,
+    Supplier<OutputStream>, Driver by org.h2.Driver() {
     override fun getClasses(): Collection<Class<JavaMigration>> = emptyList()
 
+    override fun get(): OutputStream {
+        return ByteArrayOutputStream(1)
+    }
 
     override fun createLogAdapter(logName: String): LogAdapter {
         return NoLogSystem.INSTANCE.createLogAdapter(logName)
@@ -94,5 +100,14 @@ class MyNoOp : Callback, MigrationResolver, ResourceProvider, JavaMigration, Log
 
     override fun getCallbackName(): String {
         return "MyCallback"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (javaClass != other?.javaClass) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
     }
 }
