@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * Reader that strips the BOM at the beginning of a stream.
+ * Reader that strips the BOM from every position in a stream.
  */
 public class BomStrippingReader extends FilterReader {
     private static final int EMPTY_STREAM = -1;
@@ -41,7 +41,7 @@ public class BomStrippingReader extends FilterReader {
     public int read() throws IOException {
         int c = super.read();
         if (c != EMPTY_STREAM && BomFilter.isBom((char) c)) {
-            // Skip BOM
+            // Skip BOM, even if it is not at the start of the stream. (TODO: Uh, is that intended?)
             return super.read();
         }
         return c;

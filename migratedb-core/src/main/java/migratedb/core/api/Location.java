@@ -29,31 +29,33 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.IntPredicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import migratedb.core.internal.resource.classpath.ClassPathResourceProvider;
 import migratedb.core.internal.resource.filesystem.FileSystemResourceProvider;
 import migratedb.core.internal.util.ClassUtils;
+import migratedb.core.internal.util.StringUtils;
 
 /**
  * A location to load migrations from.
+ * <p>
+ * Note: Although this class is declared abstract, it is not meant to be subclassed outside its compilation unit. To
+ * provide a custom location type, use {@link CustomLocation}.
  */
 public abstract class Location {
 
-    // Poor man's sealed class: Hide constructor.
+    // Prevent subclassing outside of this compilation unit
     private Location() {
     }
 
-    public static Location parse(String rawLocation, ClassLoader classLoader) {
-        if (rawLocation.startsWith(FileSystemLocation.PREFIX)) {
-            var baseDirectory = Paths.get(rawLocation.substring(FileSystemLocation.PREFIX.length()));
+    public static Location parse(String locationString, ClassLoader classLoader) {
+        if (locationString.startsWith(FileSystemLocation.PREFIX)) {
+            var baseDirectory = Paths.get(locationString.substring(FileSystemLocation.PREFIX.length()));
             return new FileSystemLocation(baseDirectory);
-        } else if (rawLocation.startsWith(CustomLocation.PREFIX)) {
-            var providerClass = rawLocation.substring(CustomLocation.PREFIX.length());
+        } else if (locationString.startsWith(CustomLocation.PREFIX)) {
+            var providerClass = locationString.substring(CustomLocation.PREFIX.length());
             return CustomLocation.fromClass(providerClass, classLoader);
         } else {
-            var packageName = rawLocation.substring(ClassPathLocation.PREFIX.length());
+            var packageName = locationString.substring(ClassPathLocation.PREFIX.length());
             return new ClassPathLocation(packageName, classLoader);
         }
     }
@@ -63,7 +65,6 @@ public abstract class Location {
     public abstract ClassProvider<?> classProvider();
 
     public abstract boolean exists();
-
 
     public static final class CustomLocation extends Location {
         /**
@@ -108,7 +109,9 @@ public abstract class Location {
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof CustomLocation)) return false;
+            if (!(o instanceof CustomLocation)) {
+                return false;
+            }
             CustomLocation other = (CustomLocation) o;
             return resourceProvider.equals(other.resourceProvider) && classProvider.equals(other.classProvider);
         }
@@ -142,17 +145,9 @@ public abstract class Location {
         private final ClassLoader classLoader;
 
         public ClassPathLocation(String namePrefix, ClassLoader classLoader) {
-            var trimmed = trimSlashes(namePrefix);
+            var trimmed = StringUtils.trimChar(namePrefix, '/');
             this.namePrefix = trimmed.isEmpty() ? "" : trimmed + "/";
             this.classLoader = classLoader;
-        }
-
-        private static String trimSlashes(String s) {
-            IntPredicate isSlash = it -> s.charAt(it) == '/';
-            var beginIndex = IntStream.range(0, s.length()).dropWhile(isSlash).findFirst().orElse(0);
-            var endIndex = IntStream.iterate(s.length() - 1, it -> it > 0, it -> it - 1).dropWhile(isSlash).findFirst().orElse(s.length());
-            if (beginIndex >= endIndex) return "";
-            return s.substring(beginIndex, endIndex);
         }
 
         @Override
@@ -164,8 +159,10 @@ public abstract class Location {
         public ClassProvider<?> classProvider() {
             return new ClassProvider<>() {
                 private final List<Class<?>> classes = readLines(CLASS_LIST_RESOURCE_NAME).stream()
-                        .map(it -> ClassUtils.loadClass(it, classLoader))
-                        .collect(Collectors.toUnmodifiableList());
+                                                                                          .map(it -> ClassUtils.loadClass(
+                                                                                              it,
+                                                                                              classLoader))
+                                                                                          .collect(Collectors.toUnmodifiableList());
 
                 @Override
                 public Collection<Class<?>> getClasses() {
@@ -177,7 +174,7 @@ public abstract class Location {
         @Override
         public boolean exists() {
             return classLoader.getResource(namePrefix + RESOURCE_LIST_RESOURCE_NAME) != null ||
-                    classLoader.getResource(namePrefix + CLASS_LIST_RESOURCE_NAME) != null;
+                   classLoader.getResource(namePrefix + CLASS_LIST_RESOURCE_NAME) != null;
         }
 
         private List<String> readLines(String relativeResourceName) {
@@ -196,7 +193,9 @@ public abstract class Location {
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof ClassPathLocation)) return false;
+            if (!(o instanceof ClassPathLocation)) {
+                return false;
+            }
             ClassPathLocation other = (ClassPathLocation) o;
             return namePrefix.equals(other.namePrefix) && classLoader.equals(other.classLoader);
         }
@@ -248,7 +247,9 @@ public abstract class Location {
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof FileSystemLocation)) return false;
+            if (!(o instanceof FileSystemLocation)) {
+                return false;
+            }
             FileSystemLocation other = (FileSystemLocation) o;
             return baseDirectory.equals(other.baseDirectory);
         }

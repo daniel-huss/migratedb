@@ -21,10 +21,9 @@ import migratedb.core.api.callback.Callback
 import migratedb.core.api.callback.Context
 import migratedb.core.api.callback.Event
 import migratedb.core.api.migration.BaseJavaMigration
+import migratedb.testing.LogRecorder
 import org.h2.jdbcx.JdbcDataSource
 import org.junit.jupiter.api.Test
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 
 internal class LogTest {
     @Test
@@ -71,23 +70,5 @@ internal class LogTest {
         override fun canHandleInTransaction(event: Event?, context: Context?) = true
         override fun handle(event: Event?, context: Context?) = log.info("$event")
         override fun getCallbackName() = "Log message producer"
-    }
-
-    data class LogEntry(val logName: String, val message: String?, val exception: Exception?, val thread: Thread)
-
-    class LogRecorder(entries: MutableSet<LogEntry>? = null, val name: String = "") : LogSystem {
-        val entries: MutableSet<LogEntry> = entries ?: Collections.newSetFromMap(ConcurrentHashMap())
-
-        private fun record(logName: String, message: String?, exception: Exception? = null) {
-            entries.add(LogEntry(logName, message, exception, Thread.currentThread()))
-        }
-
-        override fun isDebugEnabled(logName: String) = true
-
-        override fun debug(logName: String, message: String) = record(logName, message)
-        override fun info(logName: String, message: String) = record(logName, message)
-        override fun warn(logName: String, message: String) = record(logName, message)
-        override fun error(logName: String, message: String) = record(logName, message)
-        override fun error(logName: String, message: String, e: Exception?) = record(logName, message, e)
     }
 }

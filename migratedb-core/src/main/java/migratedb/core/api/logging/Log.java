@@ -30,7 +30,7 @@ public final class Log {
     private static volatile LogSystem defaultLogSystem = LogSystems.autoDetect(ClassUtils.defaultClassLoader(), null);
 
     // Trade-off: Logging performance will degrade proportionally to the number of concurrent withLogSystem invocations.
-    // Anything < 10 should be hard to ever notice.
+    // Anything < 10 should be hardly noticable.
     private static final List<Map.Entry<Thread, LogSystem>> overrides = new CopyOnWriteArrayList<>();
 
     public static void setDefaultLogSystem(LogSystem defaultLogSystem) {

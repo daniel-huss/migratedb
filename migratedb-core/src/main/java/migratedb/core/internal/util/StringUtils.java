@@ -27,6 +27,19 @@ public enum StringUtils {
     ;
     private static final String WHITESPACE_CHARS = " \t\n\f\r";
 
+    @SuppressWarnings("StatementWithEmptyBody")
+    public static String trimChar(String s, char c) {
+        int start, end;
+        for (start = 0; start < s.length() && s.charAt(start) == c; start++) {
+        }
+        for (end = s.length() - 1; end >= 0 && s.charAt(end) == c; end--) {
+        }
+        if (start >= end) {
+            return "";
+        }
+        return s.substring(start, end + 1);
+    }
+
     /**
      * Trims or pads (with spaces) this string, so it has this exact length.
      *
