@@ -15,7 +15,6 @@
  */
 package migratedb.core;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +23,6 @@ import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.callback.Callback;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
-import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.migration.JavaMigration;
@@ -45,7 +43,6 @@ import migratedb.core.internal.schemahistory.SchemaHistoryFactory;
 import migratedb.core.internal.sqlscript.SqlScript;
 import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.internal.sqlscript.SqlScriptFactory;
-import migratedb.core.internal.strategy.RetryStrategy;
 import migratedb.core.internal.util.LocationScanner;
 
 final class MigrateDbExecutor {
@@ -86,11 +83,16 @@ final class MigrateDbExecutor {
      * @return The result of the command.
      */
     public <T> T execute(Command<T> command, boolean scannerRequired) {
+        return Log.withLogSystem(configuration.getLogger(),
+                                 () -> doExecute(command, scannerRequired));
+    }
+
+    private <T> T doExecute(Command<T> command, boolean scannerRequired) {
         T result;
 
         configurationValidator.validate(configuration);
 
-        StatementInterceptor statementInterceptor = null;
+        StatementInterceptor statementInterceptor = null; //TODO implement?
 
         var resourceProviderClassProviders = createResourceAndClassProviders(scannerRequired);
         ResourceProvider resourceProvider = resourceProviderClassProviders.resourceProvider;
@@ -102,32 +104,25 @@ final class MigrateDbExecutor {
                                                                                 configuration,
                                                                                 statementInterceptor);
 
-        DatabaseType databaseType = jdbcConnectionFactory.getDatabaseType();
-        ParsingContext parsingContext = new ParsingContext();
-        SqlScriptFactory sqlScriptFactory = databaseType.createSqlScriptFactory(configuration, parsingContext);
-        RetryStrategy.setNumberOfRetries(configuration.getLockRetryCount());
+        var databaseType = jdbcConnectionFactory.getDatabaseType();
+        var parsingContext = new ParsingContext();
+        var sqlScriptFactory = databaseType.createSqlScriptFactory(configuration, parsingContext);
 
-        SqlScriptExecutorFactory noCallbackSqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
+        var noCallbackSqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
             jdbcConnectionFactory,
             NoopCallbackExecutor.INSTANCE,
-            null
+            statementInterceptor
         );
 
-        jdbcConnectionFactory.setConnectionInitializer(new JdbcConnectionFactory.ConnectionInitializer() {
-            @Override
-            public void initialize(JdbcConnectionFactory jdbcConnectionFactory, Connection connection) {
-                if (configuration.getInitSql() == null) {
-                    return;
-                }
-                StringResource resource = new StringResource("", configuration.getInitSql());
-
-                SqlScript sqlScript = sqlScriptFactory.createSqlScript(resource, true, resourceProvider);
-
-                boolean outputQueryResults = false;
-
-                noCallbackSqlScriptExecutorFactory.createSqlScriptExecutor(connection, false, false, outputQueryResults)
-                                                  .execute(sqlScript);
+        jdbcConnectionFactory.setConnectionInitializer((jdbcConnectionFactory1, connection) -> {
+            if (configuration.getInitSql() == null) {
+                return;
             }
+            StringResource resource = new StringResource("", configuration.getInitSql());
+            SqlScript sqlScript = sqlScriptFactory.createSqlScript(resource, true, resourceProvider);
+            boolean outputQueryResults = false;
+            noCallbackSqlScriptExecutorFactory.createSqlScriptExecutor(connection, false, false, outputQueryResults)
+                                              .execute(sqlScript);
         });
 
         try (var database = databaseType.createDatabase(configuration,
@@ -143,24 +138,24 @@ final class MigrateDbExecutor {
 
             database.ensureSupported();
 
-            DefaultCallbackExecutor callbackExecutor = new DefaultCallbackExecutor(configuration,
-                                                                                   database,
-                                                                                   schemas.defaultSchema,
-                                                                                   prepareCallbacks(
-                                                                                       database,
-                                                                                       resourceProvider,
-                                                                                       jdbcConnectionFactory,
-                                                                                       sqlScriptFactory,
-                                                                                       statementInterceptor,
-                                                                                       schemas.defaultSchema,
-                                                                                       parsingContext));
+            var callbackExecutor = new DefaultCallbackExecutor(configuration,
+                                                               database,
+                                                               schemas.defaultSchema,
+                                                               prepareCallbacks(
+                                                                   database,
+                                                                   resourceProvider,
+                                                                   jdbcConnectionFactory,
+                                                                   sqlScriptFactory,
+                                                                   statementInterceptor,
+                                                                   schemas.defaultSchema,
+                                                                   parsingContext));
 
-            SqlScriptExecutorFactory sqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
+            var sqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
                 jdbcConnectionFactory,
                 callbackExecutor,
                 statementInterceptor);
 
-            SchemaHistory schemaHistory = SchemaHistoryFactory.getSchemaHistory(
+            var schemaHistory = SchemaHistoryFactory.getSchemaHistory(
                 configuration,
                 noCallbackSqlScriptExecutorFactory,
                 sqlScriptFactory,
@@ -236,17 +231,16 @@ final class MigrateDbExecutor {
                                             StatementInterceptor statementInterceptor,
                                             Schema schema,
                                             ParsingContext parsingContext) {
-        List<Callback> effectiveCallbacks = new ArrayList<>();
-        CallbackExecutor callbackExecutor = NoopCallbackExecutor.INSTANCE;
-
-        effectiveCallbacks.addAll(Arrays.asList(configuration.getCallbacks()));
+        List<Callback> effectiveCallbacks = new ArrayList<>(Arrays.asList(configuration.getCallbacks()));
 
         if (!configuration.isSkipDefaultCallbacks()) {
-            SqlScriptExecutorFactory sqlScriptExecutorFactory = jdbcConnectionFactory.getDatabaseType()
-                                                                                     .createSqlScriptExecutorFactory(
-                                                                                         jdbcConnectionFactory,
-                                                                                         callbackExecutor,
-                                                                                         statementInterceptor);
+            // The no-op callback executor here is intentional because we're just interested in
+            // SqlScriptCallbackFactory.getCallbacks() and somehow have to satisfy the ctor dependencies.
+            var sqlScriptExecutorFactory = jdbcConnectionFactory.getDatabaseType()
+                                                                .createSqlScriptExecutorFactory(
+                                                                    jdbcConnectionFactory,
+                                                                    NoopCallbackExecutor.INSTANCE,
+                                                                    statementInterceptor);
 
             effectiveCallbacks.addAll(new SqlScriptCallbackFactory(resourceProvider,
                                                                    sqlScriptExecutorFactory,

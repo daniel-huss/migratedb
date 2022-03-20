@@ -17,44 +17,38 @@
 
 package migratedb.core.internal.logging;
 
-import migratedb.core.api.logging.LogAdapter;
 import migratedb.core.api.logging.LogSystem;
 
 public enum NoLogSystem implements LogSystem {
     INSTANCE;
 
-    private static final Adapter ADAPTER_INSTANCE = new Adapter();
-
     @Override
-    public LogAdapter createLogAdapter(String logName) {
-        return ADAPTER_INSTANCE;
+    public boolean isDebugEnabled(String logName) {
+        return false;
     }
 
-    private static final class Adapter implements LogAdapter {
+    @Override
+    public void debug(String logName, String message) {
 
-        @Override
-        public boolean isDebugEnabled() {
-            return false;
-        }
+    }
 
-        @Override
-        public void debug(String message) {
-        }
+    @Override
+    public void info(String logName, String message) {
 
-        @Override
-        public void info(String message) {
-        }
+    }
 
-        @Override
-        public void warn(String message) {
-        }
+    @Override
+    public void warn(String logName, String message) {
 
-        @Override
-        public void error(String message) {
-        }
+    }
 
-        @Override
-        public void error(String message, Exception e) {
-        }
+    @Override
+    public void error(String logName, String message) {
+
+    }
+
+    @Override
+    public void error(String logName, String message, Exception e) {
+
     }
 }

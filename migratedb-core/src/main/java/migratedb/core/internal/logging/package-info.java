@@ -13,5 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+@DefaultQualifier(value = NonNull.class, locations = { TypeUseLocation.PARAMETER, TypeUseLocation.RETURN })
 package migratedb.core.internal.logging;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import org.checkerframework.framework.qual.TypeUseLocation;

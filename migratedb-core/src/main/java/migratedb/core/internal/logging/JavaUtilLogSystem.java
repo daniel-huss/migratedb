@@ -19,85 +19,71 @@ package migratedb.core.internal.logging;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import migratedb.core.api.logging.LogAdapter;
 import migratedb.core.api.logging.LogSystem;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public enum JavaUtilLogSystem implements LogSystem {
     INSTANCE;
 
+    private Logger logger(String logName) {
+        // No need to double-cache
+        return Logger.getLogger(logName);
+    }
+
+    @Override
+    public boolean isDebugEnabled(String logName) {
+        return logger(logName).isLoggable(Level.FINE);
+    }
+
+    public void debug(String logName, String message) {
+        log(logger(logName), Level.FINE, message, null);
+    }
+
+    public void info(String logName, String message) {
+        log(logger(logName), Level.INFO, message, null);
+    }
+
+    public void warn(String logName, String message) {
+        log(logger(logName), Level.WARNING, message, null);
+    }
+
+    public void error(String logName, String message) {
+        log(logger(logName), Level.SEVERE, message, null);
+    }
+
+    public void error(String logName, String message, Exception e) {
+        log(logger(logName), Level.SEVERE, message, e);
+    }
+
+    /**
+     * Log the message at the specified level with the specified exception if any.
+     */
+    private void log(Logger logger, Level level, String message, @Nullable Exception e) {
+        LogRecord record = new LogRecord(level, message);
+        record.setLoggerName(logger.getName());
+        record.setThrown(e);
+        record.setSourceClassName(logger.getName());
+        record.setSourceMethodName(getMethodName(logger));
+        logger.log(record);
+    }
+
+    /**
+     * Computes the source method name for the log output.
+     */
+    private @Nullable String getMethodName(Logger logger) {
+        StackTraceElement[] steArray = new Throwable().getStackTrace();
+
+        for (StackTraceElement stackTraceElement : steArray) {
+            if (logger.getName().equals(stackTraceElement.getClassName())) {
+                return stackTraceElement.getMethodName();
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public String toString() {
         return "java.util.logging";
-    }
-
-    @Override
-    public LogAdapter createLogAdapter(String logName) {
-        return new Adapter(Logger.getLogger(logName));
-    }
-
-    private static final class Adapter implements LogAdapter {
-
-        private final Logger logger;
-
-        /**
-         * Creates a new wrapper around this logger.
-         *
-         * @param logger The original java.util Logger.
-         */
-        Adapter(Logger logger) {
-            this.logger = logger;
-        }
-
-        @Override
-        public boolean isDebugEnabled() {
-            return logger.isLoggable(Level.FINE);
-        }
-
-        public void debug(String message) {
-            log(Level.FINE, message, null);
-        }
-
-        public void info(String message) {
-            log(Level.INFO, message, null);
-        }
-
-        public void warn(String message) {
-            log(Level.WARNING, message, null);
-        }
-
-        public void error(String message) {
-            log(Level.SEVERE, message, null);
-        }
-
-        public void error(String message, Exception e) {
-            log(Level.SEVERE, message, e);
-        }
-
-        /**
-         * Log the message at the specified level with the specified exception if any.
-         */
-        private void log(Level level, String message, Exception e) {
-            LogRecord record = new LogRecord(level, message);
-            record.setLoggerName(logger.getName());
-            record.setThrown(e);
-            record.setSourceClassName(logger.getName());
-            record.setSourceMethodName(getMethodName());
-            logger.log(record);
-        }
-
-        /**
-         * Computes the source method name for the log output.
-         */
-        private String getMethodName() {
-            StackTraceElement[] steArray = new Throwable().getStackTrace();
-
-            for (StackTraceElement stackTraceElement : steArray) {
-                if (logger.getName().equals(stackTraceElement.getClassName())) {
-                    return stackTraceElement.getMethodName();
-                }
-            }
-
-            return null;
-        }
     }
 }

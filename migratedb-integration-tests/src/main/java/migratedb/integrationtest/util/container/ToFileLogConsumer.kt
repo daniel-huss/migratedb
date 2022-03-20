@@ -16,7 +16,7 @@
 
 package migratedb.integrationtest.util.container
 
-import migratedb.integrationtest.util.base.FileNames.toSafeFileName
+import migratedb.testing.util.io.toSafeFileName
 import org.testcontainers.containers.output.OutputFrame
 import org.testcontainers.containers.output.OutputFrame.OutputType.STDERR
 import org.testcontainers.containers.output.OutputFrame.OutputType.STDOUT

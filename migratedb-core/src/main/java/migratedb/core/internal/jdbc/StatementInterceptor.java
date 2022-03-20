@@ -45,4 +45,63 @@ public interface StatementInterceptor {
     void interceptCallableStatement(String sql);
 
     void schemaHistoryTableDeleteFailed(Table table, AppliedMigration appliedMigration);
+
+    static StatementInterceptor doNothing() {
+        return new StatementInterceptor() {
+            @Override
+            public void init(Database database, Table table) {
+
+            }
+
+            @Override
+            public void schemaHistoryTableCreate(boolean baseline) {
+
+            }
+
+            @Override
+            public void schemaHistoryTableInsert(AppliedMigration appliedMigration) {
+
+            }
+
+            @Override
+            public void close() {
+
+            }
+
+            @Override
+            public void sqlScript(Resource resource) {
+
+            }
+
+            @Override
+            public void sqlStatement(SqlStatement statement) {
+
+            }
+
+            @Override
+            public void interceptCommand(String command) {
+
+            }
+
+            @Override
+            public void interceptStatement(String sql) {
+
+            }
+
+            @Override
+            public void interceptPreparedStatement(String sql, Map<Integer, Object> params) {
+
+            }
+
+            @Override
+            public void interceptCallableStatement(String sql) {
+
+            }
+
+            @Override
+            public void schemaHistoryTableDeleteFailed(Table table, AppliedMigration appliedMigration) {
+
+            }
+        };
+    }
 }

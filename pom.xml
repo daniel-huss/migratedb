@@ -46,6 +46,7 @@
     </developers>
 
     <modules>
+        <module>migratedb-testlib</module>
         <module>migratedb-core</module>
         <module>migratedb-scanner</module>
         <module>migratedb-commandline</module>

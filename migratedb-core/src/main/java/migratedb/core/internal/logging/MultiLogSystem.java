@@ -18,8 +18,6 @@ package migratedb.core.internal.logging;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-import migratedb.core.api.logging.LogAdapter;
 import migratedb.core.api.logging.LogSystem;
 
 /**
@@ -39,63 +37,47 @@ public class MultiLogSystem implements LogSystem {
     }
 
     @Override
-    public LogAdapter createLogAdapter(String logName) {
-        return new Adpater(delegates.stream()
-                                    .map(it -> it.createLogAdapter(logName))
-                                    .collect(Collectors.toUnmodifiableList()));
+    public boolean isDebugEnabled(String logName) {
+        for (var log : delegates) {
+            if (!log.isDebugEnabled(logName)) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    private static final class Adpater implements LogAdapter {
-        private final List<LogAdapter> logAdapters;
-
-        Adpater(List<LogAdapter> logAdapters) {
-            this.logAdapters = logAdapters;
+    @Override
+    public void debug(String logName, String message) {
+        for (var log : delegates) {
+            log.debug(logName, message);
         }
+    }
 
-        @Override
-        public boolean isDebugEnabled() {
-            for (var log : logAdapters) {
-                if (!log.isDebugEnabled()) {
-                    return false;
-                }
-            }
-
-            return true;
+    @Override
+    public void info(String logName, String message) {
+        for (var log : delegates) {
+            log.info(logName, message);
         }
+    }
 
-        @Override
-        public void debug(String message) {
-            for (var log : logAdapters) {
-                log.debug(message);
-            }
+    @Override
+    public void warn(String logName, String message) {
+        for (var log : delegates) {
+            log.warn(logName, message);
         }
+    }
 
-        @Override
-        public void info(String message) {
-            for (var log : logAdapters) {
-                log.info(message);
-            }
+    @Override
+    public void error(String logName, String message) {
+        for (var log : delegates) {
+            log.error(logName, message);
         }
+    }
 
-        @Override
-        public void warn(String message) {
-            for (var log : logAdapters) {
-                log.warn(message);
-            }
-        }
-
-        @Override
-        public void error(String message) {
-            for (var log : logAdapters) {
-                log.error(message);
-            }
-        }
-
-        @Override
-        public void error(String message, Exception e) {
-            for (var log : logAdapters) {
-                log.error(message, e);
-            }
+    @Override
+    public void error(String logName, String message, Exception e) {
+        for (var log : delegates) {
+            log.error(logName, message, e);
         }
     }
 }

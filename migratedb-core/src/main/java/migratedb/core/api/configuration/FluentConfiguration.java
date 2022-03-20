@@ -481,7 +481,7 @@ public class FluentConfiguration implements Configuration {
      * The logger(s) MigrateDb should use.
      */
     public FluentConfiguration logger(String... logger) {
-        return logger(LogSystems.parse(Set.of(logger), getClassLoader(), null));
+        return logger(LogSystems.fromStrings(Set.of(logger), getClassLoader(), null));
     }
 
     /**

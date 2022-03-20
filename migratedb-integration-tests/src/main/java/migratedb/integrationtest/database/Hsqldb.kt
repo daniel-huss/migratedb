@@ -26,8 +26,8 @@ import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.SharedResources
-import migratedb.integrationtest.util.dependencies.DependencyResolver
-import migratedb.integrationtest.util.dependencies.DependencyResolver.toClassLoader
+import migratedb.testing.util.dependencies.DependencyResolver
+import migratedb.testing.util.dependencies.DependencyResolver.toClassLoader
 import javax.sql.DataSource
 
 enum class Hsqldb : DbSystem {

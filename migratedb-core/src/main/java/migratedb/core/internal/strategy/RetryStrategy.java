@@ -24,30 +24,15 @@ import migratedb.core.internal.util.SqlCallable;
  * A class that retries a Callable a given number of times until success is obtained.
  */
 public class RetryStrategy {
-
-    /**
-     * We hard-code a default of 50 retries here, but this may be overridden by configuration.
-     */
-    private static int numberOfRetries = 50;
-    private static boolean unlimitedRetries;
+    private boolean unlimitedRetries;
 
     private int numberOfRetriesRemaining;
 
     /**
      * A class that retries a Callable a given number of times until success is obtained.
      */
-    public RetryStrategy() {
+    public RetryStrategy(int numberOfRetries) {
         numberOfRetriesRemaining = numberOfRetries;
-    }
-
-    /**
-     * Set the number of retries that are to be attempted before giving up.
-     *
-     * @param retries The number of retries to attempt. To try forever, use -1.
-     */
-    public static void setNumberOfRetries(int retries) {
-        numberOfRetries = retries;
-        unlimitedRetries = (retries < 0);
     }
 
     private boolean hasMoreRetries() {

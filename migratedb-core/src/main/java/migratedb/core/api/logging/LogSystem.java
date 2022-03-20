@@ -18,5 +18,15 @@
 package migratedb.core.api.logging;
 
 public interface LogSystem {
-    LogAdapter createLogAdapter(String logName);
+    boolean isDebugEnabled(String logName);
+
+    void debug(String logName, String message);
+
+    void info(String logName, String message);
+
+    void warn(String logName, String message);
+
+    void error(String logName, String message);
+
+    void error(String logName, String message, Exception e);
 }

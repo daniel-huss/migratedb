@@ -33,7 +33,7 @@ public class PostgreSQLDatabase extends BaseDatabase<PostgreSQLConnection> {
 
     @Override
     protected PostgreSQLConnection doGetConnection(Connection connection) {
-        return new PostgreSQLConnection(this, connection);
+        return new PostgreSQLConnection(configuration, this, connection);
     }
 
     @Override

@@ -19,6 +19,7 @@ package migratedb.core.internal.database.postgresql;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.internal.database.base.BaseConnection;
@@ -30,9 +31,12 @@ import migratedb.core.internal.util.StringUtils;
  */
 public class PostgreSQLConnection extends BaseConnection<PostgreSQLDatabase> {
     private final String originalRole;
+    private final Configuration configuration;
 
-    protected PostgreSQLConnection(PostgreSQLDatabase database, java.sql.Connection connection) {
+    protected PostgreSQLConnection(Configuration configuration, PostgreSQLDatabase database,
+                                   java.sql.Connection connection) {
         super(database, connection);
+        this.configuration = configuration;
 
         try {
             originalRole = jdbcTemplate.queryForString("SELECT CURRENT_USER");
@@ -98,6 +102,7 @@ public class PostgreSQLConnection extends BaseConnection<PostgreSQLDatabase> {
 
     @Override
     public <T> T lock(Table table, Callable<T> callable) {
-        return new PostgreSQLAdvisoryLockTemplate(jdbcTemplate, table.toString().hashCode()).execute(callable);
+        return new PostgreSQLAdvisoryLockTemplate(configuration, jdbcTemplate, table.toString().hashCode()).execute(
+            callable);
     }
 }

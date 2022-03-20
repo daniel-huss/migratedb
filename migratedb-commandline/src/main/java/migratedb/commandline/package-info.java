@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,19 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@DefaultQualifier(value = NonNull.class, locations = { TypeUseLocation.PARAMETER, TypeUseLocation.RETURN })
+package migratedb.commandline;
 
-package migratedb.core.api.logging;
-
-public interface LogAdapter {
-    boolean isDebugEnabled();
-
-    void debug(String message);
-
-    void info(String message);
-
-    void warn(String message);
-
-    void error(String message);
-
-    void error(String message, Exception e);
-}
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import org.checkerframework.framework.qual.TypeUseLocation;

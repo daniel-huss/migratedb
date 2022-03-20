@@ -15,8 +15,13 @@
  * limitations under the License.
  */
 /**
- * Interfaces for MigrateDb's log abstraction. Custom MigrationResolver, MigrationExecutor, MigrateDbCallback,
- * ErrorHandler and JdbcMigration implementations should use this to obtain a logger that will work with any logging
- * framework across all environments (API, Maven, Gradle, CLI, etc).
+ * MigrateDb's log abstraction. Custom MigrationResolver, MigrationExecutor, MigrateDbCallback, ErrorHandler and
+ * JdbcMigration implementations should use this to obtain a logger that will work with any logging framework across all
+ * environments (API, Maven, Gradle, CLI, etc).
  */
+@DefaultQualifier(value = NonNull.class, locations = { TypeUseLocation.PARAMETER, TypeUseLocation.RETURN })
 package migratedb.core.api.logging;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import org.checkerframework.framework.qual.TypeUseLocation;

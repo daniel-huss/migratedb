@@ -19,7 +19,9 @@ package migratedb.core.api.logging;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Supplier;
 import migratedb.core.internal.util.ClassUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Logging frontend for MigrateDB components and extensions.
@@ -27,7 +29,8 @@ import migratedb.core.internal.util.ClassUtils;
 public final class Log {
     private static volatile LogSystem defaultLogSystem = LogSystems.autoDetect(ClassUtils.defaultClassLoader(), null);
 
-    // Grows proportionally to the number of concurrent withLogSystem invocations.
+    // Trade-off: Logging performance will degrade proportionally to the number of concurrent withLogSystem invocations.
+    // Anything < 10 should be hard to ever notice.
     private static final List<Map.Entry<Thread, LogSystem>> overrides = new CopyOnWriteArrayList<>();
 
     public static void setDefaultLogSystem(LogSystem defaultLogSystem) {
@@ -38,11 +41,11 @@ public final class Log {
      * Runs {@code action} using the given {@code newLogSystem} instead of the default log system for the current
      * thread. The {@code action} must be single-threaded.
      */
-    public static void withLogSystem(LogSystem newLogSystem, Runnable action) {
+    public static <T> T withLogSystem(LogSystem newLogSystem, Supplier<T> action) {
         var override = Map.entry(Thread.currentThread(), newLogSystem);
         try {
             overrides.add(override);
-            action.run();
+            return action.get();
         } finally {
             overrides.removeIf(it -> it == override);
         }
@@ -62,50 +65,37 @@ public final class Log {
         return new Log(klass.getName());
     }
 
-    private volatile LogAdapter delegate;
-    private volatile LogSystem logSystem;
     private final String logName;
 
     private Log(String logName) {
         this.logName = logName;
     }
 
-    private void checkIfLogSystemHasChanged() {
-        LogSystem currentLogSystem = getLogSystemForCurrentThread();
-        if (delegate == null || logSystem != currentLogSystem) {
-            delegate = currentLogSystem.createLogAdapter(logName);
-            logSystem = currentLogSystem;
-        }
-        assert delegate != null;
-    }
-
     public boolean isDebugEnabled() {
-        checkIfLogSystemHasChanged();
-        return delegate.isDebugEnabled();
+        return getLogSystemForCurrentThread().isDebugEnabled(logName);
     }
 
-    public void debug(String message) {
-        checkIfLogSystemHasChanged();
-        delegate.debug(message);
+    public void debug(@Nullable String message) {
+        getLogSystemForCurrentThread().debug(logName, String.valueOf(message));
     }
 
-    public void info(String message) {
-        checkIfLogSystemHasChanged();
-        delegate.info(message);
+    public void info(@Nullable String message) {
+        getLogSystemForCurrentThread().info(logName, String.valueOf(message));
     }
 
-    public void warn(String message) {
-        checkIfLogSystemHasChanged();
-        delegate.warn(message);
+    public void warn(@Nullable String message) {
+        getLogSystemForCurrentThread().warn(logName, String.valueOf(message));
     }
 
-    public void error(String message) {
-        checkIfLogSystemHasChanged();
-        delegate.error(message);
+    public void error(@Nullable String message) {
+        getLogSystemForCurrentThread().error(logName, String.valueOf(message));
     }
 
-    public void error(String message, Exception e) {
-        checkIfLogSystemHasChanged();
-        delegate.error(message, e);
+    public void error(@Nullable String message, @Nullable Exception e) {
+        if (e == null) {
+            getLogSystemForCurrentThread().error(logName, String.valueOf(message));
+        } else {
+            getLogSystemForCurrentThread().error(logName, String.valueOf(message), e);
+        }
     }
 }

@@ -21,7 +21,6 @@ import migratedb.core.api.ResourceProvider
 import migratedb.core.api.callback.Callback
 import migratedb.core.api.callback.Context
 import migratedb.core.api.callback.Event
-import migratedb.core.api.logging.LogAdapter
 import migratedb.core.api.logging.LogSystem
 import migratedb.core.api.migration.JavaMigration
 import migratedb.core.api.resolver.MigrationResolver
@@ -36,16 +35,18 @@ import java.util.function.Supplier
 /**
  * Universal instantiable class that can be used when one of its interfaces is required. Its actions do nothing.
  */
-class UniversalDummy : Callback, MigrationResolver, ResourceProvider, JavaMigration, LogSystem, ClassProvider<JavaMigration>,
-    Supplier<OutputStream>, Driver by org.h2.Driver() {
+class UniversalDummy : Callback,
+    MigrationResolver,
+    ResourceProvider,
+    JavaMigration,
+    LogSystem by NoLogSystem.INSTANCE,
+    ClassProvider<JavaMigration>,
+    Supplier<OutputStream>,
+    Driver by org.h2.Driver() {
     override fun getClasses(): Collection<Class<JavaMigration>> = emptyList()
 
     override fun get(): OutputStream {
         return ByteArrayOutputStream(1)
-    }
-
-    override fun createLogAdapter(logName: String): LogAdapter {
-        return NoLogSystem.INSTANCE.createLogAdapter(logName)
     }
 
     override fun getVersion(): MigrationVersion {

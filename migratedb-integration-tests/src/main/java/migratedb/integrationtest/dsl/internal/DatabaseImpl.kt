@@ -23,6 +23,7 @@ import migratedb.core.api.internal.database.base.Database
 import migratedb.core.api.internal.database.base.Schema
 import migratedb.core.internal.callback.NoopCallbackExecutor
 import migratedb.core.internal.jdbc.JdbcConnectionFactory
+import migratedb.core.internal.jdbc.StatementInterceptor
 import migratedb.core.internal.parser.ParsingContext
 import migratedb.core.internal.resolver.MigrationInfoHelper
 import migratedb.core.internal.schemahistory.SchemaHistoryFactory
@@ -30,7 +31,6 @@ import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.dsl.DatabaseSpec
 import migratedb.integrationtest.dsl.SchemaHistorySpec
 import migratedb.integrationtest.util.base.Names
-import migratedb.integrationtest.util.base.NoOpIntercepter
 import migratedb.integrationtest.util.base.SafeIdentifier
 
 class DatabaseImpl(
@@ -56,8 +56,8 @@ class DatabaseImpl(
         val configuration = FluentConfiguration().also {
             if (schemaName != null) it.schemas(schemaName.toString())
         }
-        val connectionFactory = JdbcConnectionFactory(dataSource, configuration, NoOpIntercepter)
-        val db = databaseHandle.type.createDatabase(configuration, connectionFactory, NoOpIntercepter)
+        val connectionFactory = JdbcConnectionFactory(dataSource, configuration, StatementInterceptor.doNothing())
+        val db = databaseHandle.type.createDatabase(configuration, connectionFactory, StatementInterceptor.doNothing())
         val schema = SchemaHistoryFactory.scanSchemas(configuration, db).defaultSchema
         schemaHistory?.materializeInto(db, schema, connectionFactory)
         database = db
@@ -105,7 +105,7 @@ class DatabaseImpl(
             val sqlScriptExecutorFactory = database.databaseType.createSqlScriptExecutorFactory(
                 connectionFactory,
                 NoopCallbackExecutor.INSTANCE,
-                NoOpIntercepter
+                StatementInterceptor.doNothing()
             )
             val sqlScriptFactory = database.databaseType.createSqlScriptFactory(
                 configuration,
@@ -117,7 +117,7 @@ class DatabaseImpl(
                 sqlScriptFactory,
                 database,
                 schema,
-                NoOpIntercepter
+                StatementInterceptor.doNothing()
             )
 
             schemaHistory.create(false)

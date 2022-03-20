@@ -65,7 +65,7 @@ fun anyLogSystemAsString(): Arbitrary<String> {
 }
 
 fun anyLogSystem(): Arbitrary<LogSystem> = anyLogSystemAsString().map {
-    LogSystems.parse(setOf(it), ClassUtils.defaultClassLoader(), null)
+    LogSystems.fromStrings(setOf(it), ClassUtils.defaultClassLoader(), null)
 }
 
 fun anyLocation(): Arbitrary<Location> {

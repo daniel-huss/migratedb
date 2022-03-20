@@ -15,8 +15,8 @@
  */
 package migratedb.integrationtest.util.container
 
-import migratedb.integrationtest.util.base.Exec.async
-import migratedb.integrationtest.util.base.Exec.tryAll
+import migratedb.testing.util.base.Exec.async
+import migratedb.testing.util.base.Exec.tryAll
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 

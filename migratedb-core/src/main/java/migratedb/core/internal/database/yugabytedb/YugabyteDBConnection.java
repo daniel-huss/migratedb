@@ -16,13 +16,14 @@
  */
 package migratedb.core.internal.database.yugabytedb;
 
+import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.postgresql.PostgreSQLConnection;
 
 public class YugabyteDBConnection extends PostgreSQLConnection {
 
-    YugabyteDBConnection(YugabyteDBDatabase database, java.sql.Connection connection) {
-        super(database, connection);
+    YugabyteDBConnection(Configuration configuration, YugabyteDBDatabase database, java.sql.Connection connection) {
+        super(configuration, database, connection);
     }
 
     @Override

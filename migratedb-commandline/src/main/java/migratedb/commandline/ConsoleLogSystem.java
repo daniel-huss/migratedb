@@ -17,7 +17,6 @@
 package migratedb.commandline;
 
 import java.io.PrintStream;
-import migratedb.core.api.logging.LogAdapter;
 import migratedb.core.api.logging.LogSystem;
 
 public class ConsoleLogSystem implements LogSystem {
@@ -25,50 +24,46 @@ public class ConsoleLogSystem implements LogSystem {
     private final PrintStream stdout;
     private final PrintStream stderr;
     private final LogLevel level;
-    private final ConsoleLogAdapter adapterInstance;
 
     public ConsoleLogSystem(Arguments commandLineArguments, PrintStream stdout, PrintStream stderr) {
         this.commandLineArguments = commandLineArguments;
         this.stdout = stdout;
         this.stderr = stderr;
         this.level = commandLineArguments.getLogLevel();
-        this.adapterInstance = new ConsoleLogAdapter();
     }
 
     @Override
-    public LogAdapter createLogAdapter(String logName) {
-        return adapterInstance;
+    public boolean isDebugEnabled(String logName) {
+        return level == LogLevel.DEBUG;
     }
 
-    private final class ConsoleLogAdapter implements LogAdapter {
-        @Override
-        public boolean isDebugEnabled() {
-            return level == LogLevel.DEBUG;
+    @Override
+    public void debug(String logName, String message) {
+        if (isDebugEnabled(logName)) {
+            stdout.println("DEBUG: " + message);
         }
+    }
 
-        public void debug(String message) {
-            if (isDebugEnabled()) {
-                stdout.println("DEBUG: " + message);
-            }
+    @Override
+    public void info(String logName, String message) {
+        if (level.compareTo(LogLevel.INFO) <= 0) {
+            stdout.println(message);
         }
+    }
 
-        public void info(String message) {
-            if (level.compareTo(LogLevel.INFO) <= 0) {
-                stdout.println(message);
-            }
-        }
+    @Override
+    public void warn(String logName, String message) {
+        stdout.println("WARNING: " + message);
+    }
 
-        public void warn(String message) {
-            stdout.println("WARNING: " + message);
-        }
+    @Override
+    public void error(String logName, String message) {
+        stderr.println("ERROR: " + message);
+    }
 
-        public void error(String message) {
-            stderr.println("ERROR: " + message);
-        }
-
-        public void error(String message, Exception e) {
-            stderr.println("ERROR: " + message);
-            e.printStackTrace(stderr);
-        }
+    @Override
+    public void error(String logName, String message, Exception e) {
+        stderr.println("ERROR: " + message);
+        e.printStackTrace(stderr);
     }
 }

@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
@@ -39,6 +40,7 @@ public class PostgreSQLAdvisoryLockTemplate {
         + (0x61 << 8) // a
         + 0x79; // y
 
+    private final Configuration configuration;
     /**
      * The connection for the advisory lock.
      */
@@ -51,7 +53,8 @@ public class PostgreSQLAdvisoryLockTemplate {
      * @param jdbcTemplate  The jdbcTemplate for the connection.
      * @param discriminator A number to discriminate between locks.
      */
-    PostgreSQLAdvisoryLockTemplate(JdbcTemplate jdbcTemplate, int discriminator) {
+    PostgreSQLAdvisoryLockTemplate(Configuration configuration, JdbcTemplate jdbcTemplate, int discriminator) {
+        this.configuration = configuration;
         this.jdbcTemplate = jdbcTemplate;
         this.lockNum = LOCK_MAGIC_NUM + discriminator;
     }
@@ -85,7 +88,7 @@ public class PostgreSQLAdvisoryLockTemplate {
     }
 
     private void lock() throws SQLException {
-        RetryStrategy strategy = new RetryStrategy();
+        RetryStrategy strategy = new RetryStrategy(configuration.getLockRetryCount());
         strategy.doWithRetries(this::tryLock,
                                "Interrupted while attempting to acquire PostgreSQL advisory lock",
                                "Number of retries exceeded while attempting to acquire PostgreSQL advisory lock. " +

@@ -16,57 +16,43 @@
  */
 package migratedb.core.internal.logging;
 
-import migratedb.core.api.logging.LogAdapter;
 import migratedb.core.api.logging.LogSystem;
 
 public enum ApacheCommonsLogSystem implements LogSystem {
     INSTANCE;
 
+    private org.apache.commons.logging.Log logger(String logName) {
+        // No need to double-cache these
+        return org.apache.commons.logging.LogFactory.getLog(logName);
+    }
+
     @Override
-    public LogAdapter createLogAdapter(String logName) {
-        return new Adapter(org.apache.commons.logging.LogFactory.getLog(logName));
+    public boolean isDebugEnabled(String logName) {
+        return logger(logName).isDebugEnabled();
+    }
+
+    public void debug(String logName, String message) {
+        logger(logName).debug(message);
+    }
+
+    public void info(String logName, String message) {
+        logger(logName).info(message);
+    }
+
+    public void warn(String logName, String message) {
+        logger(logName).warn(message);
+    }
+
+    public void error(String logName, String message) {
+        logger(logName).error(message);
+    }
+
+    public void error(String logName, String message, Exception e) {
+        logger(logName).error(message, e);
     }
 
     @Override
     public String toString() {
         return "org.apache.commons.logging";
-    }
-
-    private static final class Adapter implements LogAdapter {
-        private final org.apache.commons.logging.Log logger;
-
-        /**
-         * Creates a new wrapper around this logger.
-         *
-         * @param logger The original Apache Commons Logging Logger.
-         */
-        Adapter(org.apache.commons.logging.Log logger) {
-            this.logger = logger;
-        }
-
-        @Override
-        public boolean isDebugEnabled() {
-            return logger.isDebugEnabled();
-        }
-
-        public void debug(String message) {
-            logger.debug(message);
-        }
-
-        public void info(String message) {
-            logger.info(message);
-        }
-
-        public void warn(String message) {
-            logger.warn(message);
-        }
-
-        public void error(String message) {
-            logger.error(message);
-        }
-
-        public void error(String message, Exception e) {
-            logger.error(message, e);
-        }
     }
 }

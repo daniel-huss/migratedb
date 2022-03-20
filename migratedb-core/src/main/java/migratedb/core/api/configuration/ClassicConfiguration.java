@@ -575,7 +575,7 @@ public class ClassicConfiguration implements Configuration {
      * The log system(s) MigrateDb should use.
      */
     public void setLogger(String... logger) {
-        this.logger = LogSystems.parse(new LinkedHashSet<>(Arrays.asList(logger)), getClassLoader(), null);
+        this.logger = LogSystems.fromStrings(new LinkedHashSet<>(Arrays.asList(logger)), getClassLoader(), null);
     }
 
     /**

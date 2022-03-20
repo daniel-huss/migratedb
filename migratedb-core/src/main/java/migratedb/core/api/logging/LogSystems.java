@@ -18,6 +18,7 @@
 package migratedb.core.api.logging;
 
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 import migratedb.core.internal.logging.AndroidLogSystem;
 import migratedb.core.internal.logging.ApacheCommonsLogSystem;
@@ -29,19 +30,57 @@ import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.FeatureDetector;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Pre-defined log system names and auto-detection.
+ */
 public final class LogSystems {
+    /**
+     * Android log system.
+     */
     public static final String ANDROID = "android";
+    /**
+     * {@code org.apache.commons.logging} system.
+     */
     public static final String APACHE_COMMONS = "apache-commons";
+    /**
+     * Auto-detect based on on environment. See {@link #autoDetect(ClassLoader, LogSystem)}.
+     */
     public static final String AUTO_DETECT = "auto";
+    /**
+     * {@code java.util.logging} system.
+     */
     public static final String JAVA_UTIL = "jul";
+    /**
+     * {@code org.slf4j} system.
+     */
     public static final String SLF4J = "slf4j";
+    /**
+     * An alias that means the fallback logger will be used (this library has no opinion on what a "console" log should
+     * be).
+     */
     public static final String CONSOLE = "console";
+    /**
+     * Suppresses all log messages.
+     */
     public static final String NONE = "none";
 
-    public static LogSystem parse(Set<String> logSystemNames, ClassLoader classLoader, @Nullable LogSystem fallback) {
+    /**
+     * Creates a log system that forwards logging calls to all log system names in {@code logSystemNames}. Each log
+     * system name must either be one of the string constants in this class or the fully qualified name of a class that
+     * implements {@link LogSystem} and has a public no-arg constructor.
+     *
+     * @param logSystemNames The log system names to parse
+     * @param classLoader    Used to instantiate classes by name
+     * @param fallback       Used for {@link #AUTO_DETECT} and {@link #CONSOLE} (the latter being a direct alias for
+     *                       it)
+     *
+     * @return Log system that delegates to all log systems identified by {@code logSystemNames}.
+     */
+    public static LogSystem fromStrings(Set<String> logSystemNames, ClassLoader classLoader,
+                                        @Nullable LogSystem fallback) {
         var logSystems = new LinkedHashSet<LogSystem>();
         for (var logSystemName : logSystemNames) {
-            switch (logSystemName) {
+            switch (logSystemName.toLowerCase(Locale.ROOT)) {
                 case ANDROID:
                     logSystems.add(AndroidLogSystem.INSTANCE);
                     break;
@@ -79,10 +118,32 @@ public final class LogSystems {
         }
     }
 
+    /**
+     * Instantiates a class that implements {@link LogSystem}.
+     *
+     * @param className   Fully qualified name of class to instantiate. Class must have a public no-arg constructor.
+     * @param classLoader Class loader to use.
+     *
+     * @return The custom log system.
+     */
     public static LogSystem custom(String className, ClassLoader classLoader) {
         return ClassUtils.instantiate(className, classLoader);
     }
 
+    /**
+     * Auto-detects the "best" available log system and returns an instance of it. The order of precedence is:
+     * <ol>
+     *     <li>If we're on Android, use its log system.</li>
+     *     <li>If one of the supported logging libraries is found via {@code classLoader}, use it.</li>
+     *     <li>If {@code fallback} is non-null, use that.</li>
+     *     <li>Use {@code java.util.logging}.</li>
+     * </ol>
+     *
+     * @param classLoader Used to check for the presence of supported logging libraries.
+     * @param fallback    Log system to use over {@code java.util.logging}
+     *
+     * @return Auto-detected log system.
+     */
     public static LogSystem autoDetect(ClassLoader classLoader, @Nullable LogSystem fallback) {
         FeatureDetector featureDetector = new FeatureDetector(classLoader);
         if (featureDetector.isAndroidAvailable()) {

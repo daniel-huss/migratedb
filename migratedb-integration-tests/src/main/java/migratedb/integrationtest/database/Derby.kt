@@ -24,11 +24,11 @@ import migratedb.integrationtest.database.mutation.DerbyCreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
-import migratedb.integrationtest.util.base.createDatabaseTempDir
 import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.SharedResources
-import migratedb.integrationtest.util.dependencies.DependencyResolver
-import migratedb.integrationtest.util.dependencies.DependencyResolver.toClassLoader
+import migratedb.testing.util.dependencies.DependencyResolver
+import migratedb.testing.util.dependencies.DependencyResolver.toClassLoader
+import migratedb.testing.util.io.newTempDir
 import java.nio.file.Path
 import java.sql.Connection
 import java.sql.Driver
@@ -53,7 +53,7 @@ enum class Derby : DbSystem {
         }
 
         init {
-            System.setProperty("derby.stream.error.file", createDatabaseTempDir("derby").resolve("derby.log").toString())
+            System.setProperty("derby.stream.error.file", newTempDir("derby").resolve("derby.log").toString())
             System.setProperty("derby.infolog.append", "true")
         }
     }
@@ -78,7 +78,7 @@ enum class Derby : DbSystem {
 
     private inner class Handle : DbSystem.Handle {
         override val type: DatabaseType get() = Companion.databaseType
-        private val dataDir = createDatabaseTempDir("derby-$name", deleteOnExit = false)
+        private val dataDir = newTempDir("derby-$name", deleteOnExit = false)
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             val dbPath = dbPath(namespace)

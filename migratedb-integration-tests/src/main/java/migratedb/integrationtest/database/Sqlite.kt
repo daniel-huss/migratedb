@@ -25,10 +25,10 @@ import migratedb.integrationtest.database.mutation.SqliteCreateTableMutation
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
-import migratedb.integrationtest.util.base.createDatabaseTempDir
 import migratedb.integrationtest.util.container.SharedResources
-import migratedb.integrationtest.util.dependencies.DependencyResolver
-import migratedb.integrationtest.util.dependencies.DependencyResolver.toClassLoader
+import migratedb.testing.util.dependencies.DependencyResolver
+import migratedb.testing.util.dependencies.DependencyResolver.toClassLoader
+import migratedb.testing.util.io.newTempDir
 import java.nio.file.Path
 import javax.sql.DataSource
 import kotlin.io.path.deleteIfExists
@@ -67,7 +67,7 @@ enum class Sqlite : DbSystem {
         private val defaultSchema = "main".asSafeIdentifier()
 
         init {
-            System.setProperty("org.sqlite.tmpdir", createDatabaseTempDir("sqlite-driver").toString())
+            System.setProperty("org.sqlite.tmpdir", newTempDir("sqlite-driver").toString())
         }
     }
 
@@ -84,7 +84,7 @@ enum class Sqlite : DbSystem {
 
     private inner class Handle : DbSystem.Handle {
         override val type: DatabaseType get() = Companion.databaseType
-        private val dataDir = createDatabaseTempDir("sqlite-$name", deleteOnExit = false)
+        private val dataDir = newTempDir("sqlite-$name", deleteOnExit = false)
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             // A db exists as soon as we connect to it

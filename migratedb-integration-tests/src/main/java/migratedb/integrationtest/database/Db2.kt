@@ -21,10 +21,10 @@ import com.ibm.db2.jcc.DB2SimpleDataSource
 import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.internal.database.db2.DB2DatabaseType
 import migratedb.core.internal.jdbc.JdbcConnectionFactory
+import migratedb.core.internal.jdbc.StatementInterceptor
 import migratedb.integrationtest.database.mutation.Db2CreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.Names
-import migratedb.integrationtest.util.base.NoOpIntercepter
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.awaitConnectivity
 import migratedb.integrationtest.util.container.Lease
@@ -105,8 +105,8 @@ enum class Db2(image: String) : DbSystem {
         private val db = FluentConfiguration().let {
             val ds = container().dataSource()
             ds.awaitConnectivity(Duration.ofMinutes(5)).use { }
-            val connectionFactory = JdbcConnectionFactory(ds, it, NoOpIntercepter)
-            type.createDatabase(it, connectionFactory, NoOpIntercepter)
+            val connectionFactory = JdbcConnectionFactory(ds, it, StatementInterceptor.doNothing())
+            type.createDatabase(it, connectionFactory, StatementInterceptor.doNothing())
         }
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
