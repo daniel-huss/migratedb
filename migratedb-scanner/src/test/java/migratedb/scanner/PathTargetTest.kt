@@ -23,6 +23,7 @@ import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.paths.shouldBeAFile
 import io.kotest.matchers.paths.shouldNotExist
 import io.kotest.matchers.shouldNotBe
+import migratedb.scanner.testing.FsConfigurations
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
 import kotlin.io.path.readLines

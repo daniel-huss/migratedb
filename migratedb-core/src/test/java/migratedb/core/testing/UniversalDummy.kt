@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.testing
+package migratedb.core.testing
 
 import migratedb.core.api.ClassProvider
 import migratedb.core.api.MigrationVersion

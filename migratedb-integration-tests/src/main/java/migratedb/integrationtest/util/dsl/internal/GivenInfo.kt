@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl
+package migratedb.integrationtest.util.dsl.internal
 
-import migratedb.core.api.configuration.FluentConfiguration
+import migratedb.core.api.internal.database.base.Database
+import migratedb.integrationtest.database.DbSystem
+import migratedb.integrationtest.util.base.SafeIdentifier
 
-interface RunWithConfigSpec {
-    fun withConfig(classLoader: ClassLoader? = null, block: (FluentConfiguration) -> Unit)
-}
+data class GivenInfo(
+    val databaseHandle: DbSystem.Handle,
+    val database: Database<*>,
+    val namespace: SafeIdentifier,
+    val schemaName: SafeIdentifier?,
+)

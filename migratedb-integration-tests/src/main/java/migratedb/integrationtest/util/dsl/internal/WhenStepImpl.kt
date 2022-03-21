@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl.internal
+package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
-import migratedb.integrationtest.dsl.Dsl
-import migratedb.integrationtest.dsl.RunMigrateSpec
+import migratedb.integrationtest.util.dsl.Dsl
+import migratedb.integrationtest.util.dsl.RunMigrateSpec
 
 class WhenStepImpl<G : Any>(given: G, givenInfo: GivenInfo) : Dsl.WhenStep<G>, AbstractAfterGiven<G>(given, givenInfo) {
     private val executableActions = mutableListOf<() -> Unit>()

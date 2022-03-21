@@ -17,16 +17,14 @@
 package migratedb.integrationtest.util.base
 
 import migratedb.integrationtest.database.DbSystem
-import migratedb.integrationtest.dsl.Dsl
 import migratedb.integrationtest.util.container.SharedResources
 import migratedb.integrationtest.util.container.SharedResources.Companion.resources
+import migratedb.integrationtest.util.dsl.Dsl
 import org.junit.jupiter.api.Timeout
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace
-import org.slf4j.LoggerFactory
-import org.slf4j.bridge.SLF4JBridgeHandler
 import java.util.concurrent.TimeUnit
 
 @ExtendWith(IntegrationTest.Extension::class)
@@ -48,17 +46,4 @@ abstract class IntegrationTest {
     }
 
     fun withDsl(dbSystem: DbSystem, block: (Dsl).() -> (Unit)) = Dsl(dbSystem, Extension.resources()).use(block)
-
-    companion object {
-        init {
-            synchronized(IntegrationTest::class.java) {
-                // Eagerly init the logging system before multi-threading kicks in
-                LoggerFactory.getLogger(IntegrationTest::class.java)
-                if (!SLF4JBridgeHandler.isInstalled()) {
-                    SLF4JBridgeHandler.removeHandlersForRootLogger()
-                    SLF4JBridgeHandler.install()
-                }
-            }
-        }
-    }
 }

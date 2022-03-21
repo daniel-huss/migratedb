@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl
+package migratedb.scanner.testing
 
-import migratedb.core.api.MigrationType
+import com.google.common.jimfs.Configuration
+import org.junit.jupiter.api.extension.ExtensionContext
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.ArgumentsProvider
+import java.util.stream.Stream
 
-interface SchemaHistorySpec {
-    fun entry(name: String, type: MigrationType, success: Boolean, installedRank: Int? = null, checksum: Int = 0)
+class FsConfigurations : ArgumentsProvider {
+    override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
+        return Stream.of(Configuration.unix(), Configuration.windows(), Configuration.osX())
+            .map(Arguments::of)
+    }
 }

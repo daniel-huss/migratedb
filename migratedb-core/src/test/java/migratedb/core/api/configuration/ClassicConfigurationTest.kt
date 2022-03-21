@@ -26,16 +26,15 @@ import migratedb.core.api.configuration.PropertyNames.ErrorOverrideString
 import migratedb.core.api.configuration.PropertyNames.Info
 import migratedb.core.api.configuration.PropertyNames.JdbcUrlString
 import migratedb.core.api.pattern.ValidatePattern
-import migratedb.testing.CoreTest
-import migratedb.testing.MigrateDbDomain
-import migratedb.testing.UniversalDummy
-import migratedb.testing.anyErrorOverride
-import migratedb.testing.anyLocation
-import migratedb.testing.anyMigrationVersionString
-import migratedb.testing.anyValidatePattern
-import migratedb.testing.comparableProperties
-import migratedb.testing.diffWith
-import migratedb.testing.withArbitrariesOutsideOfProperty
+import migratedb.core.testing.MigrateDbDomain
+import migratedb.core.testing.UniversalDummy
+import migratedb.core.testing.anyErrorOverride
+import migratedb.core.testing.anyLocation
+import migratedb.core.testing.anyMigrationVersionString
+import migratedb.core.testing.anyValidatePattern
+import migratedb.core.testing.comparableProperties
+import migratedb.core.testing.diffWith
+import migratedb.core.testing.withArbitrariesOutsideOfProperty
 import net.jqwik.api.Arbitraries
 import net.jqwik.api.Arbitraries.just
 import net.jqwik.api.Arbitrary
@@ -59,7 +58,7 @@ import java.util.*
 import java.util.stream.Stream
 
 @Domain(MigrateDbDomain::class)
-internal class ClassicConfigurationTest : CoreTest() {
+internal class ClassicConfigurationTest {
     @Property(tries = 200)
     fun `configure(Configuration) copies all properties except class loader into empty configuration`(
         @ForAll source: ClassicConfiguration

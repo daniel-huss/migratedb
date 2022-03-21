@@ -137,7 +137,7 @@ public enum ClassUtils {
         try {
             return classLoader.loadClass(className);
         } catch (ReflectiveOperationException | RuntimeException e) {
-            throw new MigrateDbException("Cannot load class " + className);
+            throw new MigrateDbException("Cannot load class " + className, e);
         }
     }
 

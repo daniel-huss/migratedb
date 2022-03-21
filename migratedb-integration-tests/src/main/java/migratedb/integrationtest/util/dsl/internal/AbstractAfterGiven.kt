@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl.internal
+package migratedb.integrationtest.util.dsl.internal
 
-import migratedb.integrationtest.dsl.Dsl
 import migratedb.integrationtest.util.base.SafeIdentifier
+import migratedb.integrationtest.util.dsl.Dsl
 
 abstract class AbstractAfterGiven<G>(
     override val given: G,

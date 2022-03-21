@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl.internal
+package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.integrationtest.database.DbSystem
-import migratedb.integrationtest.dsl.DatabaseSpec
-import migratedb.integrationtest.dsl.Dsl
+import migratedb.integrationtest.util.dsl.DatabaseSpec
+import migratedb.integrationtest.util.dsl.Dsl
 
 class GivenStepImpl(private val databaseHandle: DbSystem.Handle) : AutoCloseable, Dsl.GivenStep {
     private var database: DatabaseImpl? = null

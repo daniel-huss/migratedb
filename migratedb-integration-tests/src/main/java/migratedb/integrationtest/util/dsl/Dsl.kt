@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl
+package migratedb.integrationtest.util.dsl
 
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
-import migratedb.integrationtest.dsl.internal.GivenStepImpl
-import migratedb.integrationtest.dsl.internal.ThenStepImpl
-import migratedb.integrationtest.dsl.internal.WhenStepImpl
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 import migratedb.integrationtest.util.container.SharedResources
+import migratedb.integrationtest.util.dsl.internal.GivenStepImpl
+import migratedb.integrationtest.util.dsl.internal.ThenStepImpl
+import migratedb.integrationtest.util.dsl.internal.WhenStepImpl
 import org.springframework.jdbc.core.JdbcTemplate
 
 class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable {

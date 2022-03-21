@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl
+package migratedb.scanner.testing
 
-interface QualifiedTableNameProvider {
+import org.objectweb.asm.Opcodes
 
-    /**
-     * Normalizes the case of a table name and qualifies it with a schema name if needed.
-     */
-    fun qualTable(s: CharSequence): String
+enum class Mod(val opcode: Int) {
+    ABSTRACT(Opcodes.ACC_ABSTRACT), PUBLIC(Opcodes.ACC_PUBLIC), PRIVATE(Opcodes.ACC_PRIVATE), PROTECTED(Opcodes.ACC_PROTECTED), FINAL(Opcodes.ACC_FINAL)
 }

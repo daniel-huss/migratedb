@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package migratedb.scanner
+package migratedb.integrationtest.util.dsl
 
-import com.google.common.jimfs.Configuration
-import org.junit.jupiter.api.extension.ExtensionContext
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.ArgumentsProvider
-import java.util.stream.Stream
+import migratedb.core.api.migration.JavaMigration
+import java.sql.Connection
 
-class FsConfigurations : ArgumentsProvider {
-    override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
-        return Stream.of(Configuration.unix(), Configuration.windows(), Configuration.osX())
-            .map(Arguments::of)
-    }
+interface RunMigrateSpec : RunWithConfigSpec {
+    fun script(name: String, sql: String)
+    fun code(name: String, code: (Connection) -> Unit)
+    fun code(name: String, code: JavaMigration)
+    fun code(name: String)
 }

@@ -26,7 +26,7 @@ import migratedb.core.internal.logging.MultiLogSystem
 import migratedb.core.internal.logging.NoLogSystem
 import migratedb.core.internal.logging.Slf4jLogSystem
 import migratedb.core.internal.util.ClassUtils.defaultClassLoader
-import migratedb.testing.LogRecorder
+import migratedb.core.testing.LogRecorder
 import org.junit.jupiter.api.Test
 import java.net.URLClassLoader
 

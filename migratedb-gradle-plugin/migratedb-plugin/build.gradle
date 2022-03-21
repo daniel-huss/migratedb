@@ -8,6 +8,8 @@ plugins {
 group 'de.unentscheidbar'
 version '0.1.0'
 
+String scannerArtifact = "de.unentscheidbar:migratedb-scanner:${project.version}"
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -47,8 +49,14 @@ java {
 
 dependencies {
     runtimeOnly gradleApi()
-    implementation 'de.unentscheidbar:migratedb-scanner:0.1-SNAPSHOT'
+    implementation scannerArtifact
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+}
+
+tasks.withType(AbstractArchiveTask) {
+    // Reproducible builds, please
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
 }
 
 tasks.withType(Test).configureEach {

@@ -564,7 +564,11 @@ public interface Configuration {
 
     /**
      * Merely exists for API compatibility. If a value was set, returns that same value.
+     *
+     * @deprecated No longer needed.
      */
+    @Deprecated
+    @SuppressWarnings("DeprecatedIsStillUsed")
     String getLicenseKey();
 
     /**

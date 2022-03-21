@@ -16,9 +16,11 @@ Current not testable: Sybase ASE, Redshift
 
 https://no-website-yet.org
 
+xref:CHANGELOG.adoc[Changelog]
+
 == Support
 
-Bugs will be fixed, and new database versions will be supported as long as the changes are testable.
+Bugs will be fixed, and new software versions will be supported as long as the changes are testable.
 New features are unlikely to be added, unless they are requested by a large number of users.
 
 == How to contribute

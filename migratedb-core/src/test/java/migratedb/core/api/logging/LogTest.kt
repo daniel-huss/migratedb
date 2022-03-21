@@ -21,7 +21,7 @@ import migratedb.core.api.callback.Callback
 import migratedb.core.api.callback.Context
 import migratedb.core.api.callback.Event
 import migratedb.core.api.migration.BaseJavaMigration
-import migratedb.testing.LogRecorder
+import migratedb.core.testing.LogRecorder
 import org.h2.jdbcx.JdbcDataSource
 import org.junit.jupiter.api.Test
 

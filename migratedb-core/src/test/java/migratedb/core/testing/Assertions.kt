@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.testing
+package migratedb.core.testing
 
 import com.google.common.collect.MapDifference.ValueDifference
 import com.google.common.collect.Maps

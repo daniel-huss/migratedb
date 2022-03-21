@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.testing
+package migratedb.core.testing
 
 import migratedb.core.api.Location
 import migratedb.core.api.Location.ClassPathLocation

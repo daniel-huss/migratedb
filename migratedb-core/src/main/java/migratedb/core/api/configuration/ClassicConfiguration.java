@@ -1272,7 +1272,11 @@ public class ClassicConfiguration implements Configuration {
     /**
      * Merely exists for compatibility. Setting a license key has no effect except that {@link #getLicenseKey()} will
      * return that key.
+     *
+     * @deprecated No longer needed.
      */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     public void setLicenseKey(String licenseKey) {
         this.licenseKey = licenseKey;
     }

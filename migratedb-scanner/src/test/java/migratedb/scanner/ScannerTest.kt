@@ -22,38 +22,25 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import migratedb.scanner.ScannerTest.Kind.ANNOTATION
-import migratedb.scanner.ScannerTest.Kind.ENUM
-import migratedb.scanner.ScannerTest.Kind.INTERFACE
-import migratedb.scanner.ScannerTest.Kind.PLAIN_CLASS
-import migratedb.scanner.ScannerTest.Mod.ABSTRACT
-import migratedb.scanner.ScannerTest.Mod.FINAL
-import migratedb.scanner.ScannerTest.Mod.PRIVATE
-import migratedb.scanner.ScannerTest.Mod.PROTECTED
-import migratedb.scanner.ScannerTest.Mod.PUBLIC
+import migratedb.core.api.Location.ClassPathLocation
+import migratedb.scanner.testing.Dsl
+import migratedb.scanner.testing.FsConfigurations
+import migratedb.scanner.testing.Kind.ANNOTATION
+import migratedb.scanner.testing.Kind.ENUM
+import migratedb.scanner.testing.Kind.INTERFACE
+import migratedb.scanner.testing.Kind.PLAIN_CLASS
+import migratedb.scanner.testing.Mod.ABSTRACT
+import migratedb.scanner.testing.Mod.FINAL
+import migratedb.scanner.testing.Mod.PRIVATE
+import migratedb.scanner.testing.Mod.PROTECTED
+import migratedb.scanner.testing.Mod.PUBLIC
+import migratedb.testing.util.io.resolve
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
-import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Opcodes.ACC_ABSTRACT
-import org.objectweb.asm.Opcodes.ACC_ANNOTATION
-import org.objectweb.asm.Opcodes.ACC_ENUM
-import org.objectweb.asm.Opcodes.ACC_FINAL
-import org.objectweb.asm.Opcodes.ACC_INTERFACE
-import org.objectweb.asm.Opcodes.ACC_PRIVATE
-import org.objectweb.asm.Opcodes.ACC_PROTECTED
-import org.objectweb.asm.Opcodes.ACC_PUBLIC
-import java.io.OutputStream
-import java.nio.file.FileSystem
-import java.nio.file.Path
+import java.net.URLClassLoader
 import java.util.concurrent.atomic.AtomicLong
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 import kotlin.io.path.createDirectories
-import kotlin.io.path.createFile
 import kotlin.io.path.createSymbolicLinkPointingTo
-import kotlin.io.path.exists
-import kotlin.io.path.outputStream
 
 internal class ScannerTest {
 
@@ -230,82 +217,37 @@ internal class ScannerTest {
         result.foundResources.shouldBeEmpty()
     }
 
+    @ParameterizedTest
+    @ArgumentsSource(FsConfigurations::class)
+    fun `Works with ClassPathLocation`(fsConfig: Configuration) = withDsl(fsConfig) {
+        // given
+        val classpathDir = "classpathDir".toPath()
+        clazz(classpathDir, "foo/InstantiableClass", PLAIN_CLASS, PUBLIC)
+        resource(classpathDir.resolve("foo/script1.sql"))
+        resource(classpathDir.resolve("bar/script2.sql"))
+        resource(classpathDir.resolve("bar/baz/script3.sql"))
+        val jarFile = jar("someJar.jar".toPath()) {
+            clazz("bar/InstantiableClass", PLAIN_CLASS, PUBLIC)
+        }
 
-    // Boring test DSL implementation below this line
+        // when
+        Scanner().scan(Scanner.Config(setOf(classpathDir, jarFile), setOf("foo", "bar"))).also {
+            it.writeTo(PathTarget(classpathDir.resolve("db", "migration")))
+        }
+        val urls = listOf(classpathDir, jarFile).map { it.toUri().toURL() }.toTypedArray()
+        val classLoader = URLClassLoader(urls, null)
+        val actual = ClassPathLocation("db/migration", classLoader)
+
+        // then
+        actual.classProvider().classes.map { it.name }
+            .shouldContainExactlyInAnyOrder("foo.InstantiableClass", "bar.InstantiableClass")
+        actual.resourceProvider().getResources("", ".sql").map { it.name }
+            .shouldContainExactlyInAnyOrder("foo/script1.sql", "bar/script2.sql", "bar/baz/script3.sql")
+    }
 
     private fun withDsl(fsConfig: Configuration, block: (Dsl).() -> Unit) {
         Jimfs.newFileSystem(fsConfig).use { fs ->
             Dsl(fs).block()
         }
-    }
-
-    private enum class Mod(val opcode: Int) {
-        ABSTRACT(ACC_ABSTRACT), PUBLIC(ACC_PUBLIC), PRIVATE(ACC_PRIVATE), PROTECTED(ACC_PROTECTED), FINAL(ACC_FINAL)
-    }
-
-    private enum class Kind(val opcode: Int) {
-        PLAIN_CLASS(0), ENUM(ACC_ENUM), ANNOTATION(ACC_ANNOTATION), INTERFACE(ACC_INTERFACE);
-    }
-
-    private class Dsl(val fs: FileSystem) {
-        fun jar(path: Path, block: (JarBuilder).() -> Unit): Path {
-            return path.also {
-                JarBuilder(it).use(block)
-            }
-        }
-
-        fun clazz(dir: Path, binaryName: String, kind: Kind, vararg mods: Mod): Path {
-            return dir.plus("$binaryName.class").createFileAndParents().also { path ->
-                path.outputStream().use {
-                    writeClass(it, binaryName, kind, mods)
-                }
-            }
-        }
-
-        fun resource(path: Path): Path {
-            return path.createFileAndParents()
-        }
-
-        inner class JarBuilder(path: Path) : AutoCloseable {
-            private val stream = ZipOutputStream(path.createFileAndParents().outputStream()).also {
-                // The first entry must be META-INF/MANIFEST.MF
-                try {
-                    it.putNextEntry(ZipEntry("META-INF/MANIFEST.MF"))
-                } catch (e: Exception) {
-                    it.use { throw e }
-                }
-            }
-
-            fun resource(path: String) {
-                stream.putNextEntry(ZipEntry(path.trimStart('/')))
-            }
-
-            fun clazz(binaryName: String, kind: Kind, vararg mods: Mod) {
-                stream.putNextEntry(ZipEntry("$binaryName.class"))
-                writeClass(stream, binaryName, kind, mods)
-            }
-
-            fun multiReleaseClazz(binaryName: String, version: Int, kind: Kind, vararg mods: Mod) {
-                stream.putNextEntry(ZipEntry("META-INF/versions/$version/$binaryName.class"))
-                writeClass(stream, binaryName, kind, mods)
-            }
-
-            override fun close() = stream.close()
-        }
-
-        private fun writeClass(stream: OutputStream, binaryName: String, kind: Kind, mods: Array<out Mod>) {
-            val w = ClassWriter(0)
-            val access = mods.fold(kind.opcode) { opcode, mod -> opcode.or(mod.opcode) }
-            val superName = when (kind) {
-                Kind.ENUM -> "java/lang/Enum"
-                else -> "java/lang/Object"
-            }
-            w.visit(Opcodes.V17, access, binaryName, null, superName, null)
-            stream.write(w.toByteArray())
-        }
-
-        private fun Path.createFileAndParents() = this.also { if (!exists()) parent?.createDirectories().also { createFile() } }
-        fun String.toPath() = fs.rootDirectories.first().plus(this)
-        operator fun Path.plus(relativePath: String) = relativePath.split('/').fold(this) { p, next -> p.resolve(next) }
     }
 }

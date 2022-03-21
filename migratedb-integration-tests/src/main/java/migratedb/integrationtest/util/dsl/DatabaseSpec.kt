@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl
+package migratedb.integrationtest.util.dsl
 
 interface DatabaseSpec {
     fun existingSchemaHistory(table: String, block: SchemaHistorySpec.() -> Unit)

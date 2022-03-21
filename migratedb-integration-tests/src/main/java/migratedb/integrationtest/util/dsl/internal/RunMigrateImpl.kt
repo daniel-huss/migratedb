@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl.internal
+package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.MigrationVersion
 import migratedb.core.api.configuration.FluentConfiguration
@@ -24,7 +24,7 @@ import migratedb.core.api.resource.Resource
 import migratedb.core.internal.resolver.MigrationInfoHelper.extractVersionAndDescription
 import migratedb.core.internal.resource.NameListResourceProvider
 import migratedb.core.internal.resource.StringResource
-import migratedb.integrationtest.dsl.RunMigrateSpec
+import migratedb.integrationtest.util.dsl.RunMigrateSpec
 import java.sql.Connection
 
 class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {

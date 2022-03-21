@@ -158,11 +158,10 @@ public abstract class Location {
         @Override
         public ClassProvider<?> classProvider() {
             return new ClassProvider<>() {
-                private final List<Class<?>> classes = readLines(CLASS_LIST_RESOURCE_NAME).stream()
-                                                                                          .map(it -> ClassUtils.loadClass(
-                                                                                              it,
-                                                                                              classLoader))
-                                                                                          .collect(Collectors.toUnmodifiableList());
+                private final List<Class<?>> classes = readLines(CLASS_LIST_RESOURCE_NAME)
+                    .stream()
+                    .map(it -> ClassUtils.loadClass(it, classLoader))
+                    .collect(Collectors.toUnmodifiableList());
 
                 @Override
                 public Collection<Class<?>> getClasses() {

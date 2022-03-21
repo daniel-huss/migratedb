@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl.internal
+package migratedb.scanner.testing
 
-import migratedb.core.api.internal.database.base.Database
-import migratedb.integrationtest.database.DbSystem
-import migratedb.integrationtest.util.base.SafeIdentifier
+import org.objectweb.asm.Opcodes
 
-data class GivenInfo(
-    val databaseHandle: DbSystem.Handle,
-    val database: Database<*>,
-    val namespace: SafeIdentifier,
-    val schemaName: SafeIdentifier?,
-)
+enum class Kind(val opcode: Int) {
+    PLAIN_CLASS(0), ENUM(Opcodes.ACC_ENUM), ANNOTATION(Opcodes.ACC_ANNOTATION), INTERFACE(Opcodes.ACC_INTERFACE);
+}

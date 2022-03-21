@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl.internal
+package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.MigrationType
 import migratedb.core.api.MigrationVersion
@@ -28,10 +28,10 @@ import migratedb.core.internal.parser.ParsingContext
 import migratedb.core.internal.resolver.MigrationInfoHelper
 import migratedb.core.internal.schemahistory.SchemaHistoryFactory
 import migratedb.integrationtest.database.DbSystem
-import migratedb.integrationtest.dsl.DatabaseSpec
-import migratedb.integrationtest.dsl.SchemaHistorySpec
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
+import migratedb.integrationtest.util.dsl.DatabaseSpec
+import migratedb.integrationtest.util.dsl.SchemaHistorySpec
 
 class DatabaseImpl(
     private val databaseHandle: DbSystem.Handle

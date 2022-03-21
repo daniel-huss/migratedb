@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package migratedb.testing
+package migratedb.integrationtest.util.dsl
 
-import org.slf4j.LoggerFactory
-import org.slf4j.bridge.SLF4JBridgeHandler
+interface QualifiedTableNameProvider {
 
-abstract class CoreTest {
-    companion object {
-        init {
-            synchronized(CoreTest::class.java) {
-                // Eagerly init the logging system before multi-threading kicks in
-                LoggerFactory.getLogger(CoreTest::class.java)
-                if (!SLF4JBridgeHandler.isInstalled()) {
-                    SLF4JBridgeHandler.removeHandlersForRootLogger()
-                    SLF4JBridgeHandler.install()
-                }
-            }
-        }
-    }
+    /**
+     * Normalizes the case of a table name and qualifies it with a schema name if needed.
+     */
+    fun qualTable(s: CharSequence): String
 }

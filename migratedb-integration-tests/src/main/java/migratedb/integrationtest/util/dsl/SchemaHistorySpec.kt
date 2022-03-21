@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.dsl.internal
+package migratedb.integrationtest.util.dsl
 
-import migratedb.integrationtest.dsl.Dsl
-import migratedb.integrationtest.util.base.work
-import org.springframework.jdbc.core.JdbcTemplate
+import migratedb.core.api.MigrationType
 
-class ThenStepImpl<G : Any>(given: G, givenInfo: GivenInfo) : Dsl.ThenStep<G>, AbstractAfterGiven<G>(given, givenInfo) {
-    override fun withConnection(block: (JdbcTemplate) -> Unit) {
-        givenInfo.databaseHandle
-            .newAdminConnection(givenInfo.namespace)
-            .work(schema = givenInfo.schemaName, action = block)
-    }
+interface SchemaHistorySpec {
+    fun entry(name: String, type: MigrationType, success: Boolean, installedRank: Int? = null, checksum: Int = 0)
 }
