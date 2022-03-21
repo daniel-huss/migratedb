@@ -28,7 +28,6 @@ import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.strategy.BackoffStrategy;
 import migratedb.core.internal.util.ExceptionUtils;
-import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 
 /**
  * Utility class for dealing with jdbc connections.
@@ -62,21 +61,21 @@ public class JdbcUtils {
                 if ("08S01".equals(e.getSQLState()) && e.getMessage().contains(
                     "This driver is not configured for integrated authentication")) {
                     throw new MigrateDbSqlException("Unable to obtain connection from database"
-                                                    + getDataSourceInfo(dataSource,databaseTypeRegister) + ": " + e.getMessage() +
-                                                    "\nTo setup integrated authentication see " +
-                                                    MigrateDbWebsiteLinks.WINDOWS_AUTH, e);
+                                                    + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
+                                                    e.getMessage(),
+                                                    e);
                 } else if (e.getSQLState() == null && e.getMessage().contains("MSAL4J")) {
                     throw new MigrateDbSqlException("Unable to obtain connection from database"
-                                                    + getDataSourceInfo(dataSource,databaseTypeRegister) + ": " + e.getMessage() +
+                                                    + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
+                                                    e.getMessage() +
                                                     "\nYou need to install some extra drivers in order for " +
-                                                    "interactive authentication to work." +
-                                                    "\nFor instructions, see " +
-                                                    MigrateDbWebsiteLinks.AZURE_ACTIVE_DIRECTORY, e);
+                                                    "interactive authentication to work.", e);
                 }
 
                 if (++retries > connectRetries) {
                     throw new MigrateDbSqlException("Unable to obtain connection from database"
-                                                    + getDataSourceInfo(dataSource,databaseTypeRegister) + ": " + e.getMessage(), e);
+                                                    + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
+                                                    e.getMessage(), e);
                 }
                 Throwable rootCause = ExceptionUtils.getRootCause(e);
                 String msg = "Connection error: " + e.getMessage();
@@ -89,7 +88,8 @@ public class JdbcUtils {
                 } catch (InterruptedException e1) {
                     Thread.currentThread().interrupt();
                     throw new MigrateDbSqlException("Unable to obtain connection from database"
-                                                    + getDataSourceInfo(dataSource,databaseTypeRegister) + ": " + e.getMessage(), e);
+                                                    + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
+                                                    e.getMessage(), e);
                 }
             }
         }

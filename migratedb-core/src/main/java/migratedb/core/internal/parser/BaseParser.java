@@ -39,7 +39,7 @@ import migratedb.core.internal.sqlscript.ParsedSqlStatement;
 import migratedb.core.internal.sqlscript.SqlScriptMetadata;
 import migratedb.core.internal.util.BomStrippingReader;
 import migratedb.core.internal.util.IOUtils;
-import migratedb.core.internal.util.MigrateDbWebsiteLinks;
+import migratedb.core.internal.util.WebsiteLinks;
 
 /**
  * The main parser all database-specific parsers derive from.
@@ -56,7 +56,6 @@ public abstract class BaseParser implements Parser {
     private final Set<String> validKeywords;
     public final ParsingContext parsingContext;
 
-
     protected BaseParser(Configuration configuration, ParsingContext parsingContext, int peekDepth) {
         this.configuration = configuration;
         this.peekDepth = peekDepth;
@@ -67,31 +66,25 @@ public abstract class BaseParser implements Parser {
         this.parsingContext = parsingContext;
     }
 
-
     protected Delimiter getDefaultDelimiter() {
         return Delimiter.SEMICOLON;
     }
-
 
     protected char getIdentifierQuote() {
         return '"';
     }
 
-
     protected char getAlternativeIdentifierQuote() {
         return 0;
     }
-
 
     protected char getAlternativeStringLiteralQuote() {
         return 0;
     }
 
-
     protected char getOpeningIdentifierSymbol() {
         return 0;
     }
-
 
     protected char getClosingIdentifierSymbol() {
         return 0;
@@ -122,7 +115,8 @@ public abstract class BaseParser implements Parser {
             throw new MigrateDbException("Failed to open resource " + filename);
         }
         try {
-            var bufferedReader = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader, 4096);
+            var bufferedReader = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader,
+                                                                                                                 4096);
             var readAheadReader = new UnboundedReadAheadReader(bufferedReader);
             var bomStrippingReader = new BomStrippingReader(readAheadReader);
             var placeholderReplacingReader = replacePlaceholders(bomStrippingReader, metadata);
@@ -156,8 +150,8 @@ public abstract class BaseParser implements Parser {
         return reader;
     }
 
-
-    protected SqlStatement getNextStatement(Resource resource, PeekingReader reader, Recorder recorder, PositionTracker tracker, ParserContext context) {
+    protected SqlStatement getNextStatement(Resource resource, PeekingReader reader, Recorder recorder,
+                                            PositionTracker tracker, ParserContext context) {
         resetDelimiter(context);
         context.setStatementType(StatementType.UNKNOWN);
 
@@ -198,7 +192,9 @@ public abstract class BaseParser implements Parser {
                 if (tokenType == TokenType.NEW_DELIMITER) {
                     if (!tokens.isEmpty() && nonCommentPartPos >= 0) {
                         String sql = recorder.stop();
-                        throw new MigrateDbException("Delimiter changed inside statement at line " + statementLine + " col " + statementCol + ": " + sql);
+                        throw new MigrateDbException(
+                            "Delimiter changed inside statement at line " + statementLine + " col " + statementCol +
+                            ": " + sql);
                     }
 
                     context.setDelimiter(new Delimiter(token.getText(), false
@@ -230,9 +226,11 @@ public abstract class BaseParser implements Parser {
 
                 int parensDepth = token.getParensDepth();
                 int blockDepth = context.getBlockDepth();
-                if (TokenType.EOF == tokenType || (TokenType.DELIMITER == tokenType && parensDepth == 0 && blockDepth == 0)) {
+                if (TokenType.EOF == tokenType ||
+                    (TokenType.DELIMITER == tokenType && parensDepth == 0 && blockDepth == 0)) {
                     String sql = recorder.stop();
-                    if (TokenType.EOF == tokenType && (sql.trim().isEmpty() || tokens.isEmpty() || nonCommentPartPos < 0)) {
+                    if (TokenType.EOF == tokenType &&
+                        (sql.trim().isEmpty() || tokens.isEmpty() || nonCommentPartPos < 0)) {
                         return null;
                     }
                     if (canExecuteInTransaction == null) {
@@ -240,14 +238,27 @@ public abstract class BaseParser implements Parser {
                     }
 
                     if (TokenType.EOF == tokenType && (parensDepth > 0 || blockDepth > 0)) {
-                        throw new MigrateDbException("Incomplete statement at line " + statementLine + " col " + statementCol + ": " + sql);
+                        throw new MigrateDbException(
+                            "Incomplete statement at line " + statementLine + " col " + statementCol + ": " + sql);
                     }
-                    return createStatement(reader, recorder, statementPos, statementLine, statementCol, nonCommentPartPos, nonCommentPartLine, nonCommentPartCol, statementType, canExecuteInTransaction, context.getDelimiter(), sql.trim()
+                    return createStatement(reader,
+                                           recorder,
+                                           statementPos,
+                                           statementLine,
+                                           statementCol,
+                                           nonCommentPartPos,
+                                           nonCommentPartLine,
+                                           nonCommentPartCol,
+                                           statementType,
+                                           canExecuteInTransaction,
+                                           context.getDelimiter(),
+                                           sql.trim()
 
                     );
                 }
 
-                if (tokens.isEmpty() || tokens.stream().allMatch(t -> t.getType() == TokenType.BLANK_LINES || t.getType() == TokenType.COMMENT)) {
+                if (tokens.isEmpty() || tokens.stream().allMatch(t -> t.getType() == TokenType.BLANK_LINES ||
+                                                                      t.getType() == TokenType.COMMENT)) {
                     nonCommentPartPos = -1;
                     nonCommentPartLine = -1;
                     nonCommentPartCol = -1;
@@ -258,7 +269,8 @@ public abstract class BaseParser implements Parser {
                 }
                 tokens.add(token);
                 recorder.confirm();
-                if (nonCommentPartPos < 0 && TokenType.COMMENT != tokenType && TokenType.DELIMITER != tokenType && TokenType.BLANK_LINES != tokenType) {
+                if (nonCommentPartPos < 0 && TokenType.COMMENT != tokenType && TokenType.DELIMITER != tokenType &&
+                    TokenType.BLANK_LINES != tokenType) {
                     nonCommentPartPos = token.getPos();
                     nonCommentPartLine = token.getLine();
                     nonCommentPartCol = token.getCol();
@@ -289,27 +301,28 @@ public abstract class BaseParser implements Parser {
             } while (true);
         } catch (IOException | RuntimeException e) {
             IOUtils.closeAndAddSuppressed(reader, e);
-            throw new MigrateDbException("Unable to parse statement in " + resource.getName() + " at line " + statementLine + " col " + statementCol + ". See " + MigrateDbWebsiteLinks.KNOWN_PARSER_LIMITATIONS + " for more information: " + e.getMessage(), e);
+            throw new MigrateDbException(
+                "Unable to parse statement in " + resource.getName() + " at line " + statementLine + " col " +
+                statementCol + ". See " + WebsiteLinks.KNOWN_PARSER_LIMITATIONS + " for more information: " +
+                e.getMessage(), e);
         }
     }
-
 
     protected boolean shouldAdjustBlockDepth(ParserContext context, List<Token> tokens, Token token) {
         return token.getType() == TokenType.KEYWORD && token.getParensDepth() == 0;
     }
-
 
     /**
      * Whether the current set of tokens should be discarded.
      *
      * @param token              The latest token.
      * @param nonCommentPartSeen Whether a non-comment part has already been seen.
+     *
      * @return {@code true} if it should, {@code false} if not.
      */
     protected boolean shouldDiscard(Token token, boolean nonCommentPartSeen) {
         return token.getType() == TokenType.DELIMITER && !nonCommentPartSeen;
     }
-
 
     /**
      * Resets the delimiter to its default value before parsing a new statement.
@@ -317,7 +330,6 @@ public abstract class BaseParser implements Parser {
     protected void resetDelimiter(ParserContext context) {
         context.setDelimiter(getDefaultDelimiter());
     }
-
 
     /**
      * Adjusts the delimiter if necessary for this statement type.
@@ -327,7 +339,6 @@ public abstract class BaseParser implements Parser {
     protected void adjustDelimiter(ParserContext context, StatementType statementType) {
     }
 
-
     /**
      * @return The cutoff point in terms of number of tokens after which a statement can no longer be non-transactional.
      */
@@ -335,16 +346,14 @@ public abstract class BaseParser implements Parser {
         return 10;
     }
 
-
-    protected void adjustBlockDepth(ParserContext context, List<Token> tokens, Token keyword, PeekingReader reader) throws IOException {
+    protected void adjustBlockDepth(ParserContext context, List<Token> tokens, Token keyword, PeekingReader reader)
+    throws IOException {
 
     }
-
 
     protected int getLastKeywordIndex(List<Token> tokens) {
         return getLastKeywordIndex(tokens, tokens.size());
     }
-
 
     protected int getLastKeywordIndex(List<Token> tokens, int endIndex) {
         for (int i = endIndex - 1; i >= 0; i--) {
@@ -355,7 +364,6 @@ public abstract class BaseParser implements Parser {
         }
         return -1;
     }
-
 
     protected static Token getPreviousToken(List<Token> tokens, int parensDepth) {
         for (int i = tokens.size() - 1; i >= 0; i--) {
@@ -376,7 +384,6 @@ public abstract class BaseParser implements Parser {
         return null;
     }
 
-
     protected static boolean lastTokenIs(List<Token> tokens, int parensDepth, String tokenText) {
         Token previousToken = getPreviousToken(tokens, parensDepth);
         if (previousToken == null) {
@@ -385,7 +392,6 @@ public abstract class BaseParser implements Parser {
 
         return tokenText.equals(previousToken.getText());
     }
-
 
     protected static boolean lastTokenIsOnLine(List<Token> tokens, int parensDepth, int line) {
         Token previousToken = getPreviousToken(tokens, parensDepth);
@@ -396,11 +402,9 @@ public abstract class BaseParser implements Parser {
         return previousToken.getLine() == line;
     }
 
-
     protected static boolean tokenAtIndexIs(List<Token> tokens, int index, String tokenText) {
         return tokens.get(index).getText().equals(tokenText);
     }
-
 
     protected boolean doTokensMatchPattern(List<Token> previousTokens, Token current, Pattern regex) {
         ArrayList<String> tokenStrings = new ArrayList<>();
@@ -428,7 +432,6 @@ public abstract class BaseParser implements Parser {
         return regex.matcher(builder.toString()).matches();
     }
 
-
     protected ParsedSqlStatement createStatement(PeekingReader reader,
                                                  Recorder recorder,
                                                  int statementPos,
@@ -453,8 +456,8 @@ public abstract class BaseParser implements Parser {
         return StatementType.UNKNOWN;
     }
 
-
-    private Boolean determineCanExecuteInTransaction(String simplifiedStatement, List<Token> keywords, Boolean defaultValue) {
+    private Boolean determineCanExecuteInTransaction(String simplifiedStatement, List<Token> keywords,
+                                                     Boolean defaultValue) {
         if (keywords.size() > getTransactionalDetectionCutoff()) {
             return true;
         } else {
@@ -466,11 +469,9 @@ public abstract class BaseParser implements Parser {
         }
     }
 
-
     protected Boolean detectCanExecuteInTransaction(String simplifiedStatement, List<Token> keywords) {
         return true;
     }
-
 
     private Token readToken(PeekingReader reader, PositionTracker tracker, ParserContext context) throws IOException {
         int pos = tracker.getPos();
@@ -529,7 +530,13 @@ public abstract class BaseParser implements Parser {
                 text.append(reader.readUntilExcluding("*/", "/*"));
             }
             reader.swallow(2);
-            return new Token(TokenType.COMMENT, pos, line, col, text.toString(), text.toString(), context.getParensDepth());
+            return new Token(TokenType.COMMENT,
+                             pos,
+                             line,
+                             col,
+                             text.toString(),
+                             text.toString(),
+                             context.getParensDepth());
         }
         if (Character.isDigit(c)) {
             String text = reader.readNumeric();
@@ -578,23 +585,20 @@ public abstract class BaseParser implements Parser {
         return new Token(TokenType.SYMBOL, pos, line, col, text, text, context.getParensDepth());
     }
 
-
     protected String readKeyword(PeekingReader reader, Delimiter delimiter, ParserContext context) throws IOException {
         return "" + (char) reader.read() + reader.readKeywordPart(delimiter, context);
     }
-
 
     protected String readIdentifier(PeekingReader reader) throws IOException {
         return "" + (char) reader.read() + reader.readUntilIncluding(getClosingIdentifierSymbol());
     }
 
-
-    protected Token handleDelimiter(PeekingReader reader, ParserContext context, int pos, int line, int col) throws IOException {
+    protected Token handleDelimiter(PeekingReader reader, ParserContext context, int pos, int line, int col)
+    throws IOException {
         String text = context.getDelimiter().getDelimiter();
         reader.swallow(text.length());
         return new Token(TokenType.DELIMITER, pos, line, col, text, text, context.getParensDepth());
     }
-
 
     protected boolean isAlternativeStringLiteral(String peek) {
         return alternativeStringLiteralQuote != 0 && peek.charAt(0) == alternativeStringLiteralQuote;
@@ -604,21 +608,17 @@ public abstract class BaseParser implements Parser {
         return peek.startsWith(context.getDelimiter().getDelimiter());
     }
 
-
     protected boolean isLetter(char c, ParserContext context) {
         return (c == '_' || context.isLetter(c));
     }
-
 
     private boolean isOpeningIdentifier(char c) {
         return c == getOpeningIdentifierSymbol();
     }
 
-
     protected boolean isSingleLineComment(String peek, ParserContext context, int col) {
         return peek.startsWith("--");
     }
-
 
     protected boolean isKeyword(String text) {
         for (int i = 0; i < text.length(); i++) {
@@ -633,8 +633,8 @@ public abstract class BaseParser implements Parser {
         return true;
     }
 
-
-    private String readAdditionalIdentifierParts(PeekingReader reader, char quote, Delimiter delimiter, ParserContext context) throws IOException {
+    private String readAdditionalIdentifierParts(PeekingReader reader, char quote, Delimiter delimiter,
+                                                 ParserContext context) throws IOException {
         String result = "";
         reader.swallow();
         result += ".";
@@ -657,7 +657,6 @@ public abstract class BaseParser implements Parser {
         return result;
     }
 
-
     private List<Token> discardBlankLines(List<Token> tokens) {
         List<Token> nonBlankLinesTokens = new ArrayList<>(tokens);
         while (nonBlankLinesTokens.get(0).getType() == TokenType.BLANK_LINES) {
@@ -669,33 +668,37 @@ public abstract class BaseParser implements Parser {
         return nonBlankLinesTokens;
     }
 
-
     protected boolean isCommentDirective(String peek) {
         return false;
     }
 
-
-    protected Token handleCommentDirective(PeekingReader reader, ParserContext context, int pos, int line, int col) throws IOException {
+    protected Token handleCommentDirective(PeekingReader reader, ParserContext context, int pos, int line, int col)
+    throws IOException {
         return null;
     }
 
-
-    protected Token handleStringLiteral(PeekingReader reader, ParserContext context, int pos, int line, int col) throws IOException {
+    protected Token handleStringLiteral(PeekingReader reader, ParserContext context, int pos, int line, int col)
+    throws IOException {
         reader.swallow();
         reader.swallowUntilIncludingWithEscape('\'', true);
         return new Token(TokenType.STRING, pos, line, col, null, null, context.getParensDepth());
     }
 
-
-    protected Token handleAlternativeStringLiteral(PeekingReader reader, ParserContext context, int pos, int line, int col) throws IOException {
+    protected Token handleAlternativeStringLiteral(PeekingReader reader, ParserContext context, int pos, int line,
+                                                   int col) throws IOException {
         return null;
     }
 
-
-    protected Token handleKeyword(PeekingReader reader, ParserContext context, int pos, int line, int col, String keyword) throws IOException {
-        return new Token(TokenType.KEYWORD, pos, line, col, keyword.toUpperCase(Locale.ENGLISH), keyword, context.getParensDepth());
+    protected Token handleKeyword(PeekingReader reader, ParserContext context, int pos, int line, int col,
+                                  String keyword) throws IOException {
+        return new Token(TokenType.KEYWORD,
+                         pos,
+                         line,
+                         col,
+                         keyword.toUpperCase(Locale.ENGLISH),
+                         keyword,
+                         context.getParensDepth());
     }
-
 
     private static boolean containsAtLeast(String str, char c, int min) {
         if (min > str.length()) {
@@ -714,7 +717,6 @@ public abstract class BaseParser implements Parser {
         return false;
     }
 
-
     public class ParserSqlStatementIterator implements SqlStatementIterator {
 
         private final PeekingReader peekingReader;
@@ -724,8 +726,8 @@ public abstract class BaseParser implements Parser {
         private final ParserContext context;
         private SqlStatement nextStatement;
 
-
-        public ParserSqlStatementIterator(PeekingReader peekingReader, Resource resource, Recorder recorder, PositionTracker tracker, ParserContext context) {
+        public ParserSqlStatementIterator(PeekingReader peekingReader, Resource resource, Recorder recorder,
+                                          PositionTracker tracker, ParserContext context) {
             this.peekingReader = peekingReader;
             this.resource = resource;
             this.recorder = recorder;
@@ -733,7 +735,6 @@ public abstract class BaseParser implements Parser {
             this.context = context;
             nextStatement = getNextStatement(resource, peekingReader, recorder, tracker, context);
         }
-
 
         @Override
         public void close() {
@@ -744,12 +745,10 @@ public abstract class BaseParser implements Parser {
             }
         }
 
-
         @Override
         public boolean hasNext() {
             return nextStatement != null;
         }
-
 
         @Override
         public SqlStatement next() {
@@ -761,7 +760,6 @@ public abstract class BaseParser implements Parser {
             nextStatement = getNextStatement(resource, peekingReader, recorder, tracker, context);
             return result;
         }
-
 
         @Override
         public void remove() {

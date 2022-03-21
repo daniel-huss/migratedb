@@ -26,7 +26,6 @@ import migratedb.core.api.output.BaselineResult;
 import migratedb.core.api.output.CommandResultFactory;
 import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.schemahistory.SchemaHistory;
-import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 
 /**
  * Handles MigrateDB 's baseline command.
@@ -104,9 +103,7 @@ public class DbBaseline {
                             "Unable to baseline schema history table " + schemaHistory + " with ("
                             + baselineVersion + "," + baselineDescription
                             + ") as it has already been baselined with ("
-                            + baselineMarker.getVersion() + "," + baselineMarker.getDescription() + ")\n" +
-                            "Need to reset your baseline? Learn more: " +
-                            MigrateDbWebsiteLinks.RESET_THE_BASELINE_MIGRATION);
+                            + baselineMarker.getVersion() + "," + baselineMarker.getDescription() + ")");
                     }
                 } else {
                     if (schemaHistory.hasSchemasMarker() && baselineVersion.equals(MigrationVersion.fromVersion("0"))) {
@@ -116,9 +113,7 @@ public class DbBaseline {
 
                     if (schemaHistory.hasNonSyntheticAppliedMigrations()) {
                         throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
-                                                     " as it already contains migrations\n" +
-                                                     "Need to reset your baseline? Learn more: " +
-                                                     MigrateDbWebsiteLinks.RESET_THE_BASELINE_MIGRATION);
+                                                     " as it already contains migrations");
                     }
 
                     if (schemaHistory.allAppliedMigrations().isEmpty()) {
@@ -131,9 +126,7 @@ public class DbBaseline {
                     throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
                                                  " as it already contains migrations.\n" +
                                                  "Delete the schema history table with the clean command, and run " +
-                                                 "baseline again.\n" +
-                                                 "Need to reset your baseline? Learn more: " +
-                                                 MigrateDbWebsiteLinks.RESET_THE_BASELINE_MIGRATION);
+                                                 "baseline again.");
                 }
             }
         } catch (MigrateDbException e) {

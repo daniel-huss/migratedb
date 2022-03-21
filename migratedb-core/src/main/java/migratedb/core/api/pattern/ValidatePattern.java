@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationState;
-import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 
 public final class ValidatePattern {
     private final String migrationType;
@@ -52,9 +51,7 @@ public final class ValidatePattern {
 
         if (patternParts.length != 2) {
             throw new MigrateDbException(
-                "Invalid pattern '" + pattern + "'. Pattern must be of the form <migration_type>:<migration_state> " +
-                "See " +
-                MigrateDbWebsiteLinks.IGNORE_MIGRATION_PATTERNS + " for full details");
+                "Invalid pattern '" + pattern + "'. Pattern must be of the form <migration_type>:<migration_state>");
         }
 
         String migrationType = patternParts[0].trim().toLowerCase(Locale.ROOT);

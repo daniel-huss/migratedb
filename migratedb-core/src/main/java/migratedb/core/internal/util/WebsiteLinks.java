@@ -16,15 +16,10 @@
  */
 package migratedb.core.internal.util;
 
-public enum MigrateDbWebsiteLinks {
+public enum WebsiteLinks {
     ;
-    // TODO Insert links or remove
-    public static final String FILTER_INFO_OUTPUT = "";
-    public static final String IGNORE_MIGRATION_PATTERNS = "";
-    public static final String RESET_THE_BASELINE_MIGRATION = "";
-    public static final String LOCK_RETRY_COUNT = "";
-    public static final String WINDOWS_AUTH = "";
-    public static final String AZURE_ACTIVE_DIRECTORY = "";
-    public static final String KNOWN_PARSER_LIMITATIONS = "";
-    public static final String CREATE_SCHEMAS = "";
+    private static final String BASE = "https://daniel-huss.github.io/migratedb";
+
+    public static final String KNOWN_PARSER_LIMITATIONS = BASE + "/about/known-parser-limitations";
+    public static final String CREATE_SCHEMAS = BASE + "/about/create-schemas";
 }

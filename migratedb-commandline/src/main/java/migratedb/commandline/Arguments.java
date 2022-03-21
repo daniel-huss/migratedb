@@ -16,11 +16,17 @@
  */
 package migratedb.commandline;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -28,8 +34,8 @@ import java.util.Map;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationState;
 import migratedb.core.api.MigrationVersion;
-import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 import migratedb.core.internal.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class Arguments {
     // Flags
@@ -51,7 +57,8 @@ public class Arguments {
     private static final String INFO_UNTIL_VERSION = "infoUntilVersion";
     private static final String INFO_OF_STATE = "infoOfState";
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private static final DateTimeFormatter OLD_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm",
+                                                                                         Locale.ROOT);
 
     private static final List<String> VALID_OPERATIONS_AND_FLAGS = getValidOperationsAndFlags();
 
@@ -234,23 +241,23 @@ public class Arguments {
         return getArgumentValue(WORKING_DIRECTORY, args);
     }
 
-    public Date getInfoSinceDate() {
+    public @Nullable Instant getInfoSinceDate() {
         return parseDate(INFO_SINCE_DATE);
     }
 
-    public Date getInfoUntilDate() {
+    public @Nullable Instant getInfoUntilDate() {
         return parseDate(INFO_UNTIL_DATE);
     }
 
-    public MigrationVersion getInfoSinceVersion() {
+    public @Nullable MigrationVersion getInfoSinceVersion() {
         return parseVersion(INFO_SINCE_VERSION);
     }
 
-    public MigrationVersion getInfoUntilVersion() {
+    public @Nullable MigrationVersion getInfoUntilVersion() {
         return parseVersion(INFO_UNTIL_VERSION);
     }
 
-    public MigrationState getInfoOfState() {
+    public @Nullable MigrationState getInfoOfState() {
         String stateStr = getArgumentValue(INFO_OF_STATE, args);
 
         if (!StringUtils.hasText(stateStr)) {
@@ -260,7 +267,7 @@ public class Arguments {
         return MigrationState.valueOf(stateStr.toUpperCase(Locale.ENGLISH));
     }
 
-    private MigrationVersion parseVersion(String argument) {
+    private @Nullable MigrationVersion parseVersion(String argument) {
         String versionStr = getArgumentValue(argument, args);
 
         if (versionStr.isEmpty()) {
@@ -270,23 +277,36 @@ public class Arguments {
         return MigrationVersion.fromVersion(versionStr);
     }
 
-    private Date parseDate(String argument) {
+    private @Nullable Instant parseDate(String argument) {
         String dateStr = getArgumentValue(argument, args);
 
         if (dateStr.isEmpty()) {
             return null;
         }
 
-        try {
-            synchronized (DATE_FORMAT) {
-                return DATE_FORMAT.parse(dateStr);
+        Instant result = null;
+        for (var format : List.of(ISO_DATE_TIME, OLD_DATE_FORMAT)) {
+            try {
+                var parsed = format.parseBest(dateStr,
+                                              ZonedDateTime::from,
+                                              OffsetDateTime::from,
+                                              LocalDateTime::from);
+                if (parsed instanceof ZonedDateTime) {
+                    result = ((ZonedDateTime) parsed).toInstant();
+                } else if (parsed instanceof OffsetDateTime) {
+                    result = ((OffsetDateTime) parsed).toInstant();
+                } else if (parsed instanceof LocalDateTime) {
+                    result = ((LocalDateTime) parsed).atZone(ZoneId.systemDefault()).toInstant();
+                }
+            } catch (DateTimeParseException ignored) {
             }
-        } catch (ParseException e) {
-            throw new MigrateDbException("'" + dateStr + "' is an invalid value for the " + argument + " option. " +
-                                         "The expected format is 'dd/mm/yyyy hh:mm', like '13/10/2020 16:30'. " +
-                                         "See the MigrateDb documentation for help: " +
-                                         MigrateDbWebsiteLinks.FILTER_INFO_OUTPUT);
         }
+        if (result == null) {
+            throw new MigrateDbException("'" + dateStr + "' is an invalid value for the " + argument + " option. " +
+                                         "The expected format is either '" + ISO_DATE_TIME + "' or '" +
+                                         OLD_DATE_FORMAT + "', like '13/10/2020 16:30'.");
+        }
+        return result;
     }
 
     public boolean isOutputFileSet() {

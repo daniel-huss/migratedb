@@ -25,7 +25,6 @@ import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.strategy.RetryStrategy;
-import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 
 /**
  * Spring-like template for executing with PostgreSQL advisory locks.
@@ -75,7 +74,9 @@ public class PostgreSQLAdvisoryLockTemplate {
             rethrow = new MigrateDbSqlException("Unable to acquire PostgreSQL advisory lock", e);
             throw rethrow;
         } catch (Exception e) {
-            if (e instanceof InterruptedException) Thread.currentThread().interrupt();
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             if (e instanceof RuntimeException) {
                 rethrow = (RuntimeException) e;
             } else {
@@ -92,8 +93,7 @@ public class PostgreSQLAdvisoryLockTemplate {
         strategy.doWithRetries(this::tryLock,
                                "Interrupted while attempting to acquire PostgreSQL advisory lock",
                                "Number of retries exceeded while attempting to acquire PostgreSQL advisory lock. " +
-                               "Configure the number of retries with the 'lockRetryCount' configuration option: " +
-                               MigrateDbWebsiteLinks.LOCK_RETRY_COUNT);
+                               "Configure the number of retries with the 'lockRetryCount' configuration option.");
     }
 
     private boolean tryLock() throws SQLException {

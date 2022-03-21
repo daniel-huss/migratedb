@@ -46,8 +46,8 @@ import migratedb.core.internal.command.DbValidate;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.Development;
-import migratedb.core.internal.util.MigrateDbWebsiteLinks;
 import migratedb.core.internal.util.StringUtils;
+import migratedb.core.internal.util.WebsiteLinks;
 
 /**
  * This is the centre point of MigrateDB, and for most users, the only class they will ever have to deal with.
@@ -176,7 +176,7 @@ public class MigrateDb {
                             LOG.warn("The configuration option 'createSchemas' is false.\n" +
                                      "However, the schema history table still needs a schema to reside in.\n" +
                                      "You must manually create a schema for the schema history table to reside in.\n" +
-                                     "See " + MigrateDbWebsiteLinks.CREATE_SCHEMAS);
+                                     "See " + WebsiteLinks.CREATE_SCHEMAS);
                         }
 
                         schemaHistory.create(false);
@@ -349,7 +349,7 @@ public class MigrateDb {
                              "Even though MigrateDb is configured not to create any schemas, the schema history table" +
                              " still needs a schema to reside in.\n" +
                              "You must manually create a schema for the schema history table to reside in.\n" + "See " +
-                             MigrateDbWebsiteLinks.CREATE_SCHEMAS);
+                             WebsiteLinks.CREATE_SCHEMAS);
                 }
 
                 BaselineResult baselineResult = doBaseline(schemaHistory, callbackExecutor, database);

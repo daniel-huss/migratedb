@@ -257,7 +257,7 @@ class MigrateDbCommand {
         return result;
     }
 
-    private static String convertKey(String key) {
+    private static @Nullable String convertKey(String key) {
         if ("MIGRATEDB_BASELINE_DESCRIPTION".equals(key)) {
             return BASELINE_DESCRIPTION;
         }
@@ -655,7 +655,8 @@ class MigrateDbCommand {
         return condensedMessages.toString();
     }
 
-    private OperationResult executeOperation(MigrateDb migratedb, String operation) {
+    @SuppressWarnings("IfCanBeSwitch")
+    private @Nullable OperationResult executeOperation(MigrateDb migratedb, String operation) {
         OperationResult result = null;
         if ("clean".equals(operation)) {
             result = migratedb.clean();
@@ -696,7 +697,7 @@ class MigrateDbCommand {
         return result;
     }
 
-    private void printJson(OperationResult object) throws IOException {
+    private void printJson(@Nullable OperationResult object) throws IOException {
         String json = convertObjectToJsonString(object);
         byte[] bytes = json.getBytes(UTF_8);
         if (arguments.isOutputFileSet()) {
@@ -716,7 +717,7 @@ class MigrateDbCommand {
         stdout.write(bytes);
     }
 
-    private String convertObjectToJsonString(Object object) {
+    private String convertObjectToJsonString(@Nullable Object object) {
         Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create();
         return gson.toJson(object);
     }
