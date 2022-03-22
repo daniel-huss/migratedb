@@ -147,9 +147,6 @@ public class SqlMigrationResolver implements MigrationResolver {
                     MigrationType.SQL,
                     resource.getName(),
                     new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript, false, false)) {
-                @Override
-                public void validate() {
-                }
             });
         }
     }

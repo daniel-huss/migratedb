@@ -46,7 +46,6 @@ public interface Context {
     /**
      * @return The info about the statement being handled. Only relevant for the statement-level events. {@code null} in
      * all other cases.
-     *
      */
     Statement getStatement();
 

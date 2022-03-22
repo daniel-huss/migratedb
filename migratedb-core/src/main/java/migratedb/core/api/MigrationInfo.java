@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package migratedb.core.api;
 
 import java.time.Instant;
+import migratedb.core.api.internal.schemahistory.AppliedMigration;
+import migratedb.core.api.resolver.ResolvedMigration;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Info about a migration. The natural ordering of this data structure corresponds to the execution order of the
  * migrations.
  */
 public interface MigrationInfo extends Comparable<MigrationInfo> {
+    /**
+     * @return The resolved migration to aggregate the info from.
+     */
+    ResolvedMigration getResolvedMigration();
+
+    /**
+     * @return The applied migration to aggregate the info from.
+     */
+    AppliedMigration getAppliedMigration();
+
     /**
      * @return The type of migration (BASELINE, SQL, JDBC, ...)
      */
@@ -80,7 +93,7 @@ public interface MigrationInfo extends Comparable<MigrationInfo> {
     String getPhysicalLocation();
 
     /**
-     * @return The result between a comparison of these MigrationInfo's versions.
+     * @return The error code with the relevant validation message, or {@code null} if everything is fine.
      */
-    int compareVersion(MigrationInfo o);
+    @Nullable ErrorDetails validate();
 }

@@ -19,15 +19,17 @@ package migratedb.core.api;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class MigrationVersion implements Comparable<MigrationVersion> {
     /**
-     * Version for an empty schema.
+     * Version for an empty schema. Only a marker.
      */
     public static final MigrationVersion EMPTY = new MigrationVersion(null, "<< Empty Schema >>");
     /**
-     * Latest version.
+     * Latest version. Only a marker. For the real version use MigrateDb.info().latest() instead.
      */
     public static final MigrationVersion LATEST = new MigrationVersion(BigInteger.valueOf(-1), "<< Latest Version >>");
     /**
@@ -36,7 +38,7 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
     public static final MigrationVersion CURRENT = new MigrationVersion(BigInteger.valueOf(-2),
                                                                         "<< Current Version >>");
     /**
-     * Next version.
+     * Next version. Only a marker. For the real version use MigrateDb.info().next() instead.
      */
     public static final MigrationVersion NEXT = new MigrationVersion(BigInteger.valueOf(-3), "<< Next Version >>");
 
@@ -54,10 +56,10 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
     private final String displayText;
 
     /**
-     * Create a MigrationVersion from a version String.
+     * Create a {@code MigrationVersion} from a version String.
      *
-     * @param version The version String. The value {@code current} will be interpreted as MigrationVersion.CURRENT, a
-     *                marker for the latest version that has been applied to the database.
+     * @param version The version String. The value {@code current} will be interpreted as the marker {@link #CURRENT},
+     *                {@code next} is mapped to {@link #NEXT}, and {@code latest} corresponds to {@link #LATEST}.
      *
      * @return The MigrationVersion
      */
@@ -107,9 +109,9 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
     }
 
     /**
-     * @return Numeric version as String
+     * @return Numeric version as String, {@code null} if this is the EMPTY marker.
      */
-    public String getVersion() {
+    public @Nullable String getVersion() {
         if (equals(EMPTY)) {
             return null;
         }
@@ -121,16 +123,10 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof MigrationVersion)) {
             return false;
         }
-
-        MigrationVersion version1 = (MigrationVersion) o;
-
-        return compareTo(version1) == 0;
+        return compareTo((MigrationVersion) o) == 0;
     }
 
     @Override
@@ -182,7 +178,7 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
      * @return The major version as a string.
      */
     public String getMajorAsString() {
-        return versionParts.get(0).toString();
+        return Objects.toString(versionParts.get(0), null);
     }
 
     /**
@@ -192,46 +188,38 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
         if (versionParts.size() == 1) {
             return "0";
         }
-        return versionParts.get(1).toString();
+        return Objects.toString(versionParts.get(1), null);
     }
 
     @Override
     public int compareTo(MigrationVersion o) {
+        // Ugh! So apparently, EMPTY, CURRENT and NEXT have no well-defined order except "less than others"
+        // while LATEST is the greatest value, even greater than versions whose major version is > Long.MAX_VALUE...
+
+        if (this == o) {
+            return 0;
+        }
+
         if (o == null) {
             return 1;
         }
 
-        if (this == EMPTY) {
-            if (o == EMPTY) {
-                return 0;
-            } else {
-                return -1;
-            }
-        }
-
-        if (this == CURRENT) {
-            return o == CURRENT ? 0 : -1;
+        if (this == EMPTY || this == CURRENT || this == NEXT) {
+            return -1;
         }
 
         if (this == LATEST) {
-            if (o == LATEST) {
-                return 0;
-            } else {
-                return 1;
-            }
-        }
-
-        if (o == EMPTY) {
             return 1;
         }
 
-        if (o == CURRENT) {
+        if (o == EMPTY || o == CURRENT || o == NEXT) {
             return 1;
         }
 
         if (o == LATEST) {
             return -1;
         }
+
         List<BigInteger> parts1 = versionParts;
         List<BigInteger> parts2 = o.versionParts;
         int largestNumberOfParts = Math.max(parts1.size(), parts2.size());
@@ -275,7 +263,9 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
         try {
             return new BigInteger(part);
         } catch (NumberFormatException e) {
-            throw new MigrateDbException("Version may only contain 0..9 and . (dot). Invalid version: " + versionStr);
+            // Avoid arbitrary user input in exception message
+            var invalidValue = versionStr.length() > 20 ? (versionStr.substring(0, 17) + "...") : versionStr;
+            throw new MigrateDbException("Version may only contain 0..9 and . (dot). Invalid version: " + invalidValue);
         }
     }
 }

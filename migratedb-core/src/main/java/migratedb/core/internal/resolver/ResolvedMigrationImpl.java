@@ -55,9 +55,6 @@ public class ResolvedMigrationImpl implements ResolvedMigration {
         this.executor = executor;
     }
 
-    public void validate() {
-    }
-
     @Override
     public MigrationVersion getVersion() {
         return version;

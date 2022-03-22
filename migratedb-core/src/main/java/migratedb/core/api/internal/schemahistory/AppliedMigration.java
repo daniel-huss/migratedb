@@ -176,64 +176,43 @@ public class AppliedMigration implements Comparable<AppliedMigration> {
         return success;
     }
 
-    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof AppliedMigration)) {
             return false;
         }
-
-        AppliedMigration that = (AppliedMigration) o;
-
-        if (executionTime != that.executionTime) {
-            return false;
-        }
-        if (installedRank != that.installedRank) {
-            return false;
-        }
-        if (success != that.success) {
-            return false;
-        }
-        if (!Objects.equals(checksum, that.checksum)) {
-            return false;
-        }
-        if (!description.equals(that.description)) {
-            return false;
-        }
-        if (!Objects.equals(installedBy, that.installedBy)) {
-            return false;
-        }
-        if (!Objects.equals(installedOn, that.installedOn)) {
-            return false;
-        }
-        if (!script.equals(that.script)) {
-            return false;
-        }
-        if (type != that.type) {
-            return false;
-        }
-        return Objects.equals(version, that.version);
+        AppliedMigration other = (AppliedMigration) o;
+        return (executionTime == other.executionTime) &&
+               (installedRank == other.installedRank) &&
+               (success == other.success) &&
+               Objects.equals(checksum, other.checksum) &&
+               Objects.equals(description, other.description) &&
+               Objects.equals(installedBy, other.installedBy) &&
+               Objects.equals(installedOn, other.installedOn) &&
+               Objects.equals(script, other.script) &&
+               Objects.equals(type, other.type) &&
+               Objects.equals(version, other.version);
     }
 
     @Override
     public int hashCode() {
-        int result = installedRank;
-        result = 31 * result + (version != null ? version.hashCode() : 0);
-        result = 31 * result + description.hashCode();
-        result = 31 * result + type.hashCode();
-        result = 31 * result + script.hashCode();
-        result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
-        result = 31 * result + (installedOn != null ? installedOn.hashCode() : 0);
-        result = 31 * result + (installedBy != null ? installedBy.hashCode() : 0);
-        result = 31 * result + executionTime;
-        result = 31 * result + (success ? 1 : 0);
-        return result;
+        return Objects.hash(installedRank,
+                            version,
+                            description,
+                            type,
+                            script,
+                            checksum,
+                            installedOn,
+                            installedBy,
+                            executionTime,
+                            success);
     }
 
     public int compareTo(AppliedMigration o) {
-        return installedRank - o.installedRank;
+        return Integer.compare(installedRank, o.installedRank);
+    }
+
+    public boolean isRepeatable() {
+        return getVersion() == null;
     }
 }

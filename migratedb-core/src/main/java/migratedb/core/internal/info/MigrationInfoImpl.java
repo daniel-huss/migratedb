@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,11 +25,11 @@ import migratedb.core.api.MigrationType;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.resolver.ResolvedMigration;
-import migratedb.core.internal.resolver.ResolvedMigrationImpl;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.AbbreviationUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-public class MigrationInfoImpl implements MigrationInfo {
+class MigrationInfoImpl implements MigrationInfo {
     private final ResolvedMigration resolvedMigration;
     private final AppliedMigration appliedMigration;
     private final MigrationInfoContext context;
@@ -49,16 +48,12 @@ public class MigrationInfoImpl implements MigrationInfo {
 
     }
 
-    /**
-     * @return The resolved migration to aggregate the info from.
-     */
+    @Override
     public ResolvedMigration getResolvedMigration() {
         return resolvedMigration;
     }
 
-    /**
-     * @return The applied migration to aggregate the info from.
-     */
+    @Override
     public AppliedMigration getAppliedMigration() {
         return appliedMigration;
     }
@@ -235,10 +230,8 @@ public class MigrationInfoImpl implements MigrationInfo {
         return "";
     }
 
-    /**
-     * @return The error code with the relevant validation message, or {@code null} if everything is fine.
-     */
-    public ErrorDetails validate() {
+    @Override
+    public @Nullable ErrorDetails validate() {
         MigrationState state = getState();
 
         if (MigrationState.ABOVE_TARGET.equals(state)) {
@@ -353,14 +346,6 @@ public class MigrationInfoImpl implements MigrationInfo {
             }
         }
 
-        // Perform additional validation for pending migrations. This is not performed for previously applied migrations
-        // as it is assumed that if the checksum is unchanged, previous positive validation results still hold true.
-        // #2392: Migrations above target are also ignored as the user explicitly asked for them to not be taken into
-        // account.
-        if (!context.pending && MigrationState.PENDING == state && resolvedMigration instanceof ResolvedMigrationImpl) {
-            ((ResolvedMigrationImpl) resolvedMigration).validate();
-        }
-
         return null;
     }
 
@@ -372,7 +357,8 @@ public class MigrationInfoImpl implements MigrationInfo {
     private boolean descriptionMismatch(ResolvedMigration resolvedMigration, AppliedMigration appliedMigration) {
         // For some databases, we can't put an empty description into the history table
         if (SchemaHistory.NO_DESCRIPTION_MARKER.equals(appliedMigration.getDescription())) {
-            return !"".equals(resolvedMigration.getDescription());
+            return !"".equals(resolvedMigration.getDescription()) &&
+                   !SchemaHistory.NO_DESCRIPTION_MARKER.equals(resolvedMigration.getDescription());
         }
         return (!AbbreviationUtils.abbreviateDescription(resolvedMigration.getDescription())
                                   .equals(appliedMigration.getDescription()));
@@ -416,11 +402,12 @@ public class MigrationInfoImpl implements MigrationInfo {
         return compareVersion(o);
     }
 
-    @Override
+    /**
+     * @return The result between a comparison of these MigrationInfoImpl's versions.
+     */
     public int compareVersion(MigrationInfo o) {
         if (getVersion() != null && o.getVersion() != null) {
-            int v = getVersion().compareTo(o.getVersion());
-            return v;
+            return getVersion().compareTo(o.getVersion());
         }
 
         // One versioned and one repeatable migration: versioned migration goes before repeatable

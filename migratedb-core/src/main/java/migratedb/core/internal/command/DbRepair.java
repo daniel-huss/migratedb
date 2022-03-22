@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.command;
 
+import static migratedb.core.internal.jdbc.ExecutionTemplateFactory.createExecutionTemplate;
+
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.MigrationState;
@@ -34,15 +35,13 @@ import migratedb.core.api.output.RepairResult;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.callback.CallbackExecutor;
-import migratedb.core.internal.info.MigrationInfoImpl;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
-import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.DateTimeUtils;
 import migratedb.core.internal.util.StopWatch;
 
 /**
- * Handles MigrateDB 's repair command.
+ * Handles MigrateDB's repair command.
  */
 public class DbRepair {
     private static final Log LOG = Log.getLog(DbRepair.class);
@@ -124,26 +123,20 @@ public class DbRepair {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
 
-            repairActions = ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(), database)
-                                                    .execute(new Callable<CompletedRepairActions>() {
-                                                        public CompletedRepairActions call() {
-                                                            CompletedRepairActions completedActions =
-                                                                new CompletedRepairActions();
+            repairActions = createExecutionTemplate(connection.getJdbcConnection(), database)
+                .execute(() -> {
+                    CompletedRepairActions completedActions = new CompletedRepairActions();
 
-                                                            completedActions.removedFailedMigrations =
-                                                                schemaHistory.removeFailedMigrations(
-                                                                repairResult,
-                                                                configuration.getCherryPick());
-                                                            migrationInfoService.refresh();
+                    completedActions.removedFailedMigrations = schemaHistory.removeFailedMigrations(
+                        repairResult,
+                        configuration.getCherryPick());
+                    migrationInfoService.refresh();
 
-                                                            completedActions.deletedMissingMigrations =
-                                                                deleteMissingMigrations();
+                    completedActions.deletedMissingMigrations = markMissingMigrationsAsDeleted();
 
-                                                            completedActions.alignedAppliedMigrationChecksums =
-                                                                alignAppliedMigrationsWithResolvedMigrations();
-                                                            return completedActions;
-                                                        }
-                                                    });
+                    completedActions.alignedAppliedMigrationChecksums = alignAppliedMigrationsWithResolvedMigrations();
+                    return completedActions;
+                });
 
             stopWatch.stop();
 
@@ -168,24 +161,22 @@ public class DbRepair {
         return repairResult;
     }
 
-    private boolean deleteMissingMigrations() {
+    private boolean markMissingMigrationsAsDeleted() {
         boolean removed = false;
         for (MigrationInfo migrationInfo : migrationInfoService.all()) {
-            MigrationInfoImpl migrationInfoImpl = (MigrationInfoImpl) migrationInfo;
-
             if (migrationInfo.getType().isSynthetic()
 
             ) {
                 continue;
             }
 
-            AppliedMigration applied = migrationInfoImpl.getAppliedMigration();
-            MigrationState state = migrationInfoImpl.getState();
+            AppliedMigration applied = migrationInfo.getAppliedMigration();
+            MigrationState state = migrationInfo.getState();
             boolean isMigrationMissing =
                 state == MigrationState.MISSING_SUCCESS || state == MigrationState.MISSING_FAILED ||
                 state == MigrationState.FUTURE_SUCCESS || state == MigrationState.FUTURE_FAILED;
             boolean isMigrationIgnored = Arrays.stream(configuration.getIgnoreMigrationPatterns())
-                                               .anyMatch(p -> p.matchesMigration(migrationInfoImpl.getVersion() != null,
+                                               .anyMatch(p -> p.matchesMigration(migrationInfo.getVersion() != null,
                                                                                  state));
             if (isMigrationMissing && !isMigrationIgnored) {
                 schemaHistory.delete(applied);
@@ -200,10 +191,8 @@ public class DbRepair {
     private boolean alignAppliedMigrationsWithResolvedMigrations() {
         boolean repaired = false;
         for (MigrationInfo migrationInfo : migrationInfoService.all()) {
-            MigrationInfoImpl migrationInfoImpl = (MigrationInfoImpl) migrationInfo;
-
-            ResolvedMigration resolved = migrationInfoImpl.getResolvedMigration();
-            AppliedMigration applied = migrationInfoImpl.getAppliedMigration();
+            ResolvedMigration resolved = migrationInfo.getResolvedMigration();
+            AppliedMigration applied = migrationInfo.getAppliedMigration();
 
             // Repair versioned
             if (resolved != null
@@ -211,7 +200,7 @@ public class DbRepair {
                 && applied != null
                 && !applied.getType().isSynthetic()
 
-                && migrationInfoImpl.getState() != MigrationState.IGNORED
+                && migrationInfo.getState() != MigrationState.IGNORED
                 && updateNeeded(resolved, applied)) {
                 schemaHistory.update(applied, resolved);
                 repaired = true;
@@ -224,7 +213,7 @@ public class DbRepair {
                 && applied != null
                 && !applied.getType().isSynthetic()
 
-                && migrationInfoImpl.getState() != MigrationState.IGNORED
+                && migrationInfo.getState() != MigrationState.IGNORED
                 && resolved.checksumMatchesWithoutBeingIdentical(applied.getChecksum())) {
                 schemaHistory.update(applied, resolved);
                 repaired = true;

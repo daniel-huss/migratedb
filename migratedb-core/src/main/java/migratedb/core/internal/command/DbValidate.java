@@ -18,7 +18,6 @@ package migratedb.core.internal.command;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import migratedb.core.api.ErrorCode;
 import migratedb.core.api.ErrorDetails;
 import migratedb.core.api.callback.Event;
@@ -37,7 +36,6 @@ import migratedb.core.internal.info.MigrationInfoServiceImpl;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.DateTimeUtils;
-import migratedb.core.internal.util.Pair;
 import migratedb.core.internal.util.StopWatch;
 
 /**
@@ -110,6 +108,17 @@ public class DbValidate {
         this.callbackExecutor = callbackExecutor;
     }
 
+    private static class CountAndInvalidMigrations {
+        public final int count;
+        public final List<ValidateOutput> invalidMigrations;
+
+        private CountAndInvalidMigrations(int count,
+                                          List<ValidateOutput> invalidMigrations) {
+            this.count = count;
+            this.invalidMigrations = invalidMigrations;
+        }
+    }
+
     /**
      * Starts the actual migration.
      *
@@ -141,38 +150,33 @@ public class DbValidate {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        Pair<Integer, List<ValidateOutput>> result =
-            ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(),
-                                                                                                      database).execute(
-            new Callable<Pair<Integer, List<ValidateOutput>>>() {
-                @Override
-                public Pair<Integer, List<ValidateOutput>> call() {
-                    MigrationInfoServiceImpl migrationInfoService =
-                        new MigrationInfoServiceImpl(migrationResolver, schemaHistory, database, configuration,
-                                                     configuration.getTarget(),
-                                                     configuration.isOutOfOrder(),
-                                                     configuration.getCherryPick(),
-                                                     pending,
-                                                     configuration.isIgnoreMissingMigrations(),
-                                                     configuration.isIgnoreIgnoredMigrations(),
-                                                     configuration.isIgnoreFutureMigrations());
+        var result =
+            ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(), database).execute(() -> {
+                MigrationInfoServiceImpl migrationInfoService =
+                    new MigrationInfoServiceImpl(migrationResolver, schemaHistory, database, configuration,
+                                                 configuration.getTarget(),
+                                                 configuration.isOutOfOrder(),
+                                                 configuration.getCherryPick(),
+                                                 pending,
+                                                 configuration.isIgnoreMissingMigrations(),
+                                                 configuration.isIgnoreIgnoredMigrations(),
+                                                 configuration.isIgnoreFutureMigrations());
 
-                    migrationInfoService.refresh();
+                migrationInfoService.refresh();
 
-                    int count = migrationInfoService.all().length;
-                    List<ValidateOutput> invalidMigrations = migrationInfoService.validate();
-                    return Pair.of(count, invalidMigrations);
-                }
+                int count = migrationInfoService.all().length;
+                List<ValidateOutput> invalidMigrations = migrationInfoService.validate();
+                return new CountAndInvalidMigrations(count, invalidMigrations);
             });
 
         stopWatch.stop();
 
         List<String> warnings = new ArrayList<>();
-        List<ValidateOutput> invalidMigrations = result.getRight();
+        List<ValidateOutput> invalidMigrations = result.invalidMigrations;
         ErrorDetails validationError = null;
         int count = 0;
         if (invalidMigrations.isEmpty()) {
-            count = result.getLeft();
+            count = result.count;
             if (count == 1) {
                 LOG.info(String.format("Successfully validated 1 migration (execution time %s)",
                                        DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis())));

@@ -40,7 +40,6 @@ import migratedb.core.api.output.MigrateResult;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.callback.CallbackExecutor;
-import migratedb.core.internal.info.MigrationInfoImpl;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
@@ -241,8 +240,8 @@ public class DbMigrate {
             }
         }
 
-        LinkedHashMap<MigrationInfoImpl, Boolean> group = new LinkedHashMap<>();
-        for (MigrationInfoImpl pendingMigration : infoService.pending()) {
+        LinkedHashMap<MigrationInfo, Boolean> group = new LinkedHashMap<>();
+        for (MigrationInfo pendingMigration : infoService.pending()) {
             if (appliedResolvedMigrations.contains(pendingMigration.getResolvedMigration())) {
                 continue;
             }
@@ -283,7 +282,7 @@ public class DbMigrate {
     /**
      * Applies this migration to the database. The migration state and the execution time are updated accordingly.
      */
-    private void applyMigrations(LinkedHashMap<MigrationInfoImpl, Boolean> group, boolean skipExecutingMigrations) {
+    private void applyMigrations(LinkedHashMap<MigrationInfo, Boolean> group, boolean skipExecutingMigrations) {
         boolean executeGroupInTransaction = isExecuteGroupInTransaction(group);
         StopWatch stopWatch = new StopWatch();
         try {
@@ -297,7 +296,7 @@ public class DbMigrate {
                 doMigrateGroup(group, stopWatch, skipExecutingMigrations, false);
             }
         } catch (MigrateDbMigrateException e) {
-            MigrationInfoImpl migration = e.getMigration();
+            MigrationInfo migration = e.getMigration();
             String failedMsg = "Migration of " + toMigrationText(migration, e.isOutOfOrder()) + " failed!";
             if (database.supportsDdlTransactions() && executeGroupInTransaction) {
                 LOG.error(failedMsg + " Changes successfully rolled back.");
@@ -318,11 +317,11 @@ public class DbMigrate {
         }
     }
 
-    private boolean isExecuteGroupInTransaction(LinkedHashMap<MigrationInfoImpl, Boolean> group) {
+    private boolean isExecuteGroupInTransaction(LinkedHashMap<MigrationInfo, Boolean> group) {
         boolean executeGroupInTransaction = true;
         boolean first = true;
 
-        for (Map.Entry<MigrationInfoImpl, Boolean> entry : group.entrySet()) {
+        for (Map.Entry<MigrationInfo, Boolean> entry : group.entrySet()) {
             ResolvedMigration resolvedMigration = entry.getKey().getResolvedMigration();
             boolean inTransaction = resolvedMigration.getExecutor().canExecuteInTransaction();
 
@@ -349,7 +348,7 @@ public class DbMigrate {
         return executeGroupInTransaction;
     }
 
-    private void doMigrateGroup(LinkedHashMap<MigrationInfoImpl, Boolean> group, StopWatch stopWatch,
+    private void doMigrateGroup(LinkedHashMap<MigrationInfo, Boolean> group, StopWatch stopWatch,
                                 boolean skipExecutingMigrations, boolean isExecuteInTransaction) {
         Context context = new Context() {
             @Override
@@ -363,8 +362,8 @@ public class DbMigrate {
             }
         };
 
-        for (Map.Entry<MigrationInfoImpl, Boolean> entry : group.entrySet()) {
-            MigrationInfoImpl migration = entry.getKey();
+        for (Map.Entry<MigrationInfo, Boolean> entry : group.entrySet()) {
+            MigrationInfo migration = entry.getKey();
             boolean isOutOfOrder = entry.getValue();
 
             String migrationText = toMigrationText(migration, isOutOfOrder);
@@ -433,7 +432,7 @@ public class DbMigrate {
         }
     }
 
-    private String toMigrationText(MigrationInfoImpl migration, boolean isOutOfOrder) {
+    private String toMigrationText(MigrationInfo migration, boolean isOutOfOrder) {
         MigrationExecutor migrationExecutor = migration.getResolvedMigration().getExecutor();
         String migrationText;
         if (migration.getVersion() != null) {
@@ -455,22 +454,22 @@ public class DbMigrate {
     }
 
     public static class MigrateDbMigrateException extends MigrateDbException {
-        private final MigrationInfoImpl migration;
+        private final MigrationInfo migration;
         private final boolean outOfOrder;
 
-        MigrateDbMigrateException(MigrationInfoImpl migration, boolean outOfOrder, SQLException e) {
+        MigrateDbMigrateException(MigrationInfo migration, boolean outOfOrder, SQLException e) {
             super(ExceptionUtils.toMessage(e), e);
             this.migration = migration;
             this.outOfOrder = outOfOrder;
         }
 
-        MigrateDbMigrateException(MigrationInfoImpl migration, boolean outOfOrder, MigrateDbException e) {
+        MigrateDbMigrateException(MigrationInfo migration, boolean outOfOrder, MigrateDbException e) {
             super(e.getMessage(), e);
             this.migration = migration;
             this.outOfOrder = outOfOrder;
         }
 
-        public MigrationInfoImpl getMigration() {
+        public MigrationInfo getMigration() {
             return migration;
         }
 

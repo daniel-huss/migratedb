@@ -24,7 +24,7 @@ import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.pattern.ValidatePattern;
 
-public class MigrationInfoContext {
+final class MigrationInfoContext {
     public boolean outOfOrder;
     public boolean pending;
     public boolean missing;
@@ -42,65 +42,37 @@ public class MigrationInfoContext {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof MigrationInfoContext)) {
             return false;
         }
-
-        MigrationInfoContext that = (MigrationInfoContext) o;
-
-        if (outOfOrder != that.outOfOrder) {
-            return false;
-        }
-        if (pending != that.pending) {
-            return false;
-        }
-        if (missing != that.missing) {
-            return false;
-        }
-        if (ignored != that.ignored) {
-            return false;
-        }
-        if (future != that.future) {
-            return false;
-        }
-        if (!Objects.equals(target, that.target)) {
-            return false;
-        }
-        if (!Objects.equals(schema, that.schema)) {
-            return false;
-        }
-        if (!Objects.equals(baseline, that.baseline)) {
-            return false;
-        }
-        if (!Objects.equals(lastResolved, that.lastResolved)) {
-            return false;
-        }
-        if (!Objects.equals(lastApplied, that.lastApplied)) {
-            return false;
-        }
-        if (!Arrays.equals(cherryPick, that.cherryPick)) {
-            return false;
-        }
-        return latestRepeatableRuns.equals(that.latestRepeatableRuns);
+        MigrationInfoContext other = (MigrationInfoContext) o;
+        return (outOfOrder == other.outOfOrder) &&
+               (pending == other.pending) &&
+               (missing == other.missing) &&
+               (ignored == other.ignored) &&
+               (future == other.future) && (Objects.equals(target, other.target)) &&
+               (Objects.equals(schema, other.schema)) &&
+               (Objects.equals(baseline, other.baseline)) &&
+               (Objects.equals(lastResolved, other.lastResolved)) &&
+               (Objects.equals(lastApplied, other.lastApplied)) &&
+               (Arrays.equals(cherryPick, other.cherryPick)) &&
+               Objects.equals(latestRepeatableRuns, other.latestRepeatableRuns);
     }
 
     @Override
     public int hashCode() {
-        int result = (outOfOrder ? 1 : 0);
-        result = 31 * result + (pending ? 1 : 0);
-        result = 31 * result + (missing ? 1 : 0);
-        result = 31 * result + (ignored ? 1 : 0);
-        result = 31 * result + (future ? 1 : 0);
-        result = 31 * result + (target != null ? target.hashCode() : 0);
-        result = 31 * result + (schema != null ? schema.hashCode() : 0);
-        result = 31 * result + (baseline != null ? baseline.hashCode() : 0);
-        result = 31 * result + (lastResolved != null ? lastResolved.hashCode() : 0);
-        result = 31 * result + (lastApplied != null ? lastApplied.hashCode() : 0);
-        result = 31 * result + (cherryPick != null ? Arrays.hashCode(cherryPick) : 0);
-        result = 31 * result + latestRepeatableRuns.hashCode();
-        return result;
+        return Objects.hash(
+            outOfOrder,
+            pending,
+            missing,
+            ignored,
+            future,
+            target,
+            schema,
+            baseline,
+            lastResolved,
+            lastApplied,
+            Arrays.hashCode(cherryPick),
+            latestRepeatableRuns);
     }
 }

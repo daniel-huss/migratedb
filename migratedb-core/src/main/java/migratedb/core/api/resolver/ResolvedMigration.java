@@ -25,9 +25,16 @@ import migratedb.core.api.executor.MigrationExecutor;
  */
 public interface ResolvedMigration extends ChecksumMatcher {
     /**
-     * @return The version of the database after applying this migration. {@code null} for repeatable migrations.
+     * @return The version of the database after applying this migration, {@code null} for repeatable migrations.
      */
     MigrationVersion getVersion();
+
+    /**
+     * @return Whether this is a repeatable migration.
+     */
+    default boolean isRepeatable() {
+        return getVersion() == null;
+    }
 
     /**
      * @return The description of the migration.
