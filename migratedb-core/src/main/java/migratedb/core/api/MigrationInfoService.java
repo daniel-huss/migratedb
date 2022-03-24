@@ -57,4 +57,24 @@ public interface MigrationInfoService extends InfoOutputProvider {
      * @return The applied migrations. An empty array if none.
      */
     MigrationInfo[] applied();
+
+    /**
+     * @return The resolved migrations. An empty array if none.
+     */
+    MigrationInfo[] resolved();
+
+    /**
+     * @return The failed migrations. An empty array if none.
+     */
+    MigrationInfo[] failed();
+
+    /**
+     * @return The future migrations. An empty array if none.
+     */
+    MigrationInfo[] future();
+
+    /**
+     * @return The out of order migrations. An empty array if none.
+     */
+    MigrationInfo[] outOfOrder();
 }

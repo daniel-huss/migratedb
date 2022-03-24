@@ -20,5 +20,4 @@ import migratedb.core.api.output.InfoResult;
 
 interface InfoOutputProvider {
     InfoResult getInfoResult();
-
 }

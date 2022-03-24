@@ -510,23 +510,17 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
         return filterByState(it -> it.is(Category.APPLIED));
     }
 
-    /**
-     * @return The resolved migrations. An empty array if none.
-     */
+    @Override
     public MigrationInfo[] resolved() {
         return filterByState(it -> it.is(Category.RESOLVED));
     }
 
-    /**
-     * @return The failed migrations. An empty array if none.
-     */
+    @Override
     public MigrationInfo[] failed() {
         return filterByState(it -> it.is(Category.FAILED));
     }
 
-    /**
-     * @return The future migrations. An empty array if none.
-     */
+    @Override
     public MigrationInfo[] future() {
         return filterByState(it -> it.is(Category.FUTURE));
     }
@@ -537,9 +531,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
                             .toArray(MigrationInfo[]::new);
     }
 
-    /**
-     * @return The out of order migrations. An empty array if none.
-     */
+    @Override
     public MigrationInfo[] outOfOrder() {
         List<MigrationInfo> outOfOrderMigrations = new ArrayList<>();
         for (MigrationInfo migrationInfo : migrationInfo) {
