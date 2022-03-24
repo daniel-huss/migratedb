@@ -16,7 +16,7 @@
 
 package migratedb.integrationtest.util.dsl.internal
 
-import migratedb.core.api.MigrationVersion
+import migratedb.core.api.Version
 import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.api.migration.Context
 import migratedb.core.api.migration.JavaMigration
@@ -45,7 +45,7 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
 
     override fun code(name: String, code: (Connection) -> Unit) {
         codeMigrations.add(CodeMigration(name, object : JavaMigration {
-            private val version: MigrationVersion
+            private val version: Version
             private val description: String
             private val prefix = name[0].uppercase()
 
@@ -56,10 +56,9 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
                 }
             }
 
-            override fun getVersion(): MigrationVersion = version
+            override fun getVersion(): Version = version
             override fun getDescription(): String = description
             override fun getChecksum(): Int? = null
-            override fun isUndo(): Boolean = prefix == "U"
             override fun isBaselineMigration(): Boolean = false
             override fun canExecuteInTransaction() = true
             override fun migrate(context: Context) {

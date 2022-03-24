@@ -18,7 +18,7 @@ package migratedb.core.internal.resolver;
 
 import java.util.Objects;
 import migratedb.core.api.MigrationType;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.executor.MigrationExecutor;
 import migratedb.core.api.resolver.ResolvedMigration;
 
@@ -36,13 +36,13 @@ public class ResolvedMigrationImpl implements ResolvedMigration {
      */
     private final Integer equivalentChecksum;
     private final Integer checksum;
-    private final MigrationVersion version;
+    private final Version version;
     private final String description;
     private final MigrationType type;
     private final String physicalLocation;
     private final MigrationExecutor executor;
 
-    public ResolvedMigrationImpl(MigrationVersion version, String description, String script, Integer checksum,
+    public ResolvedMigrationImpl(Version version, String description, String script, Integer checksum,
                                  Integer equivalentChecksum, MigrationType type, String physicalLocation,
                                  MigrationExecutor executor) {
         this.version = version;
@@ -56,7 +56,7 @@ public class ResolvedMigrationImpl implements ResolvedMigration {
     }
 
     @Override
-    public MigrationVersion getVersion() {
+    public Version getVersion() {
         return version;
     }
 

@@ -21,7 +21,7 @@ import migratedb.core.api.Location.ClassPathLocation
 import migratedb.core.api.Location.CustomLocation
 import migratedb.core.api.Location.FileSystemLocation
 import migratedb.core.api.MigrationPattern
-import migratedb.core.api.MigrationVersion
+import migratedb.core.api.TargetVersion
 import migratedb.core.api.logging.LogSystem
 import migratedb.core.api.logging.LogSystems
 import migratedb.core.api.pattern.ValidatePattern
@@ -128,4 +128,4 @@ fun anyMigrationVersionString(): Arbitrary<String> = String.any()
         it.add("next", "latest", "current")
     }
 
-fun anyMigrationVersion(): Arbitrary<MigrationVersion> = anyMigrationVersionString().map(MigrationVersion::fromVersion)
+fun anyTargetVersion(): Arbitrary<TargetVersion> = anyMigrationVersionString().map(TargetVersion::parse)

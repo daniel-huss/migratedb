@@ -61,6 +61,7 @@ public class SqlMigrationResolver implements MigrationResolver {
         this.parsingContext = parsingContext;
     }
 
+    @Override
     public List<ResolvedMigration> resolveMigrations(Context context) {
         List<ResolvedMigration> migrations = new ArrayList<>();
         String[] suffixes = configuration.getSqlMigrationSuffixes();
@@ -146,7 +147,7 @@ public class SqlMigrationResolver implements MigrationResolver {
                     equivalentChecksum,
                     MigrationType.SQL,
                     resource.getName(),
-                    new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript, false, false)) {
+                    new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript, configuration.isBatch())) {
             });
         }
     }

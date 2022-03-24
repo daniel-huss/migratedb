@@ -72,7 +72,6 @@ import static migratedb.core.api.configuration.PropertyNames.SQL_MIGRATION_SUFFI
 import static migratedb.core.api.configuration.PropertyNames.TABLE;
 import static migratedb.core.api.configuration.PropertyNames.TABLESPACE;
 import static migratedb.core.api.configuration.PropertyNames.TARGET;
-import static migratedb.core.api.configuration.PropertyNames.UNDO_SQL_MIGRATION_PREFIX;
 import static migratedb.core.api.configuration.PropertyNames.URL;
 import static migratedb.core.api.configuration.PropertyNames.USER;
 import static migratedb.core.api.configuration.PropertyNames.VALIDATE_MIGRATION_NAMING;
@@ -116,8 +115,6 @@ import migratedb.core.api.DatabaseTypeRegister;
 import migratedb.core.api.Location;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfo;
-import migratedb.core.api.MigrationInfoService;
-import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.configuration.FluentConfiguration;
 import migratedb.core.api.configuration.PropertyNames;
 import migratedb.core.api.internal.database.base.DatabaseType;
@@ -128,6 +125,7 @@ import migratedb.core.api.output.OperationResult;
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl;
 import migratedb.core.internal.info.BuildInfo;
 import migratedb.core.internal.info.MigrationInfoDumper;
+import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -417,9 +415,6 @@ class MigrateDbCommand {
         if ("MIGRATEDB_LOGGERS".equals(key)) {
             return LOGGER;
         }
-        if ("MIGRATEDB_UNDO_SQL_MIGRATION_PREFIX".equals(key)) {
-            return UNDO_SQL_MIGRATION_PREFIX;
-        }
         if ("MIGRATEDB_URL".equals(key)) {
             return URL;
         }
@@ -664,8 +659,6 @@ class MigrateDbCommand {
             result = migratedb.baseline();
         } else if ("migrate".equals(operation)) {
             result = migratedb.migrate();
-        } else if ("undo".equals(operation)) {
-            result = migratedb.undo();
         } else if ("validate".equals(operation)) {
             if (arguments.shouldOutputJson()) {
                 result = migratedb.validateWithResult();
@@ -673,13 +666,12 @@ class MigrateDbCommand {
                 migratedb.validate();
             }
         } else if ("info".equals(operation)) {
-            MigrationInfoService info = migratedb.info();
-            MigrationInfo current = info.current();
-            MigrationVersion currentSchemaVersion = current == null ? MigrationVersion.EMPTY : current.getVersion();
+            var info = migratedb.info();
+            var current = info.current();
+            var currentSchemaVersion = current == null ? null : current.getVersion();
 
-            MigrationVersion schemaVersionToOutput =
-                currentSchemaVersion == null ? MigrationVersion.EMPTY : currentSchemaVersion;
-            LOG.info("Schema version: " + schemaVersionToOutput);
+            LOG.info("Schema version: " + (currentSchemaVersion == null ? SchemaHistory.EMPTY_SCHEMA_DESCRIPTION
+                                                                        : currentSchemaVersion));
             LOG.info("");
 
             result = info.getInfoResult();

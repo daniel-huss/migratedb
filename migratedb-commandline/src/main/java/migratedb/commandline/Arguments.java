@@ -33,7 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationState;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -72,7 +72,6 @@ public class Arguments {
             "clean",
             "info",
             "validate",
-            "undo",
             "baseline",
             "repair"
         ));
@@ -249,11 +248,11 @@ public class Arguments {
         return parseDate(INFO_UNTIL_DATE);
     }
 
-    public @Nullable MigrationVersion getInfoSinceVersion() {
+    public @Nullable Version getInfoSinceVersion() {
         return parseVersion(INFO_SINCE_VERSION);
     }
 
-    public @Nullable MigrationVersion getInfoUntilVersion() {
+    public @Nullable Version getInfoUntilVersion() {
         return parseVersion(INFO_UNTIL_VERSION);
     }
 
@@ -267,14 +266,14 @@ public class Arguments {
         return MigrationState.valueOf(stateStr.toUpperCase(Locale.ENGLISH));
     }
 
-    private @Nullable MigrationVersion parseVersion(String argument) {
+    private @Nullable Version parseVersion(String argument) {
         String versionStr = getArgumentValue(argument, args);
 
         if (versionStr.isEmpty()) {
             return null;
         }
 
-        return MigrationVersion.fromVersion(versionStr);
+        return Version.parse(versionStr);
     }
 
     private @Nullable Instant parseDate(String argument) {

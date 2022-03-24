@@ -59,7 +59,7 @@ public class SqlScriptCallbackFactory {
 
         LOG.debug("Scanning for SQL callbacks ...");
         Collection<Resource> resources = resourceProvider.getResources("",
-                                                                               configuration.getSqlMigrationSuffixes());
+                                                                       configuration.getSqlMigrationSuffixes());
         ResourceNameParser resourceNameParser = new ResourceNameParser(configuration);
 
         for (Resource resource : resources) {
@@ -139,7 +139,7 @@ public class SqlScriptCallbackFactory {
 
             boolean outputQueryResults = false;
 
-            sqlScriptExecutorFactory.createSqlScriptExecutor(context.getConnection(), false, batch, outputQueryResults)
+            sqlScriptExecutorFactory.createSqlScriptExecutor(context.getConnection(), batch, outputQueryResults)
                                     .execute(sqlScript);
         }
 

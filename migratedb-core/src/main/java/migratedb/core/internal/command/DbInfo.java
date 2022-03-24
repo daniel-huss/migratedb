@@ -16,6 +16,7 @@
  */
 package migratedb.core.internal.command;
 
+import java.util.EnumSet;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfoService;
 import migratedb.core.api.callback.Event;
@@ -25,6 +26,8 @@ import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
+import migratedb.core.internal.info.ValidationContext;
+import migratedb.core.internal.info.ValidationMatch;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 
 public class DbInfo {
@@ -35,8 +38,12 @@ public class DbInfo {
     private final CallbackExecutor callbackExecutor;
     private final Schema[] schemas;
 
-    public DbInfo(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                  Configuration configuration, Database database, CallbackExecutor callbackExecutor, Schema[] schemas) {
+    public DbInfo(MigrationResolver migrationResolver,
+                  SchemaHistory schemaHistory,
+                  Configuration configuration,
+                  Database database,
+                  CallbackExecutor callbackExecutor,
+                  Schema[] schemas) {
 
         this.migrationResolver = migrationResolver;
         this.schemaHistory = schemaHistory;
@@ -51,18 +58,17 @@ public class DbInfo {
 
         MigrationInfoServiceImpl migrationInfoService;
         try {
-            migrationInfoService =
-                new MigrationInfoServiceImpl(migrationResolver,
-                                             schemaHistory,
-                                             database,
-                                             configuration,
-                                             configuration.getTarget(),
-                                             configuration.isOutOfOrder(),
-                                             configuration.getCherryPick(),
-                                             true,
-                                             true,
-                                             true,
-                                             true);
+            var allowedMatches = EnumSet.allOf(ValidationMatch.class);
+            if (!configuration.isOutOfOrder()) {
+                allowedMatches.remove(ValidationMatch.OUT_OF_ORDER);
+            }
+            migrationInfoService = new MigrationInfoServiceImpl(migrationResolver,
+                                                                schemaHistory,
+                                                                database,
+                                                                configuration,
+                                                                configuration.getTarget(),
+                                                                configuration.getCherryPick(),
+                                                                new ValidationContext(allowedMatches));
             migrationInfoService.refresh();
             migrationInfoService.setAllSchemasEmpty(schemas);
         } catch (MigrateDbException e) {

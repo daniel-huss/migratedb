@@ -17,7 +17,7 @@
 package migratedb.core.api.migration;
 
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.internal.resolver.MigrationInfoHelper;
 
 
@@ -34,7 +34,7 @@ import migratedb.core.internal.resolver.MigrationInfoHelper;
  *
  * <p>The file name consists of the following parts:</p>
  * <ul>
- * <li><strong>Prefix:</strong> V for versioned migrations, U for undo migrations, R for repeatable migrations, B for
+ * <li><strong>Prefix:</strong> V for versioned migrations, R for repeatable migrations, B for
  * baseline migrations</li>
  * <li><strong>Version:</strong> Underscores (automatically replaced by dots at runtime) separate as many parts as
  * you like (Not for repeatable migrations)</li>
@@ -46,7 +46,7 @@ import migratedb.core.internal.resolver.MigrationInfoHelper;
  * migration category are provided by implementing the respective methods.</p>
  */
 public abstract class BaseJavaMigration implements JavaMigration {
-    private final MigrationVersion version;
+    private final Version version;
     private final String description;
 
     /**
@@ -75,7 +75,7 @@ public abstract class BaseJavaMigration implements JavaMigration {
     }
 
     @Override
-    public MigrationVersion getVersion() {
+    public Version getVersion() {
         return version;
     }
 
@@ -87,11 +87,6 @@ public abstract class BaseJavaMigration implements JavaMigration {
     @Override
     public Integer getChecksum() {
         return null;
-    }
-
-    @Override
-    public boolean isUndo() {
-        return false;
     }
 
     @Override

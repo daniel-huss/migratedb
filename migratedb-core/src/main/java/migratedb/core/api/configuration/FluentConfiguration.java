@@ -31,8 +31,9 @@ import migratedb.core.api.Location;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrateDbExtension;
 import migratedb.core.api.MigrationPattern;
-import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.ResourceProvider;
+import migratedb.core.api.TargetVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.callback.Callback;
 import migratedb.core.api.logging.LogSystem;
 import migratedb.core.api.logging.LogSystems;
@@ -111,7 +112,7 @@ public class FluentConfiguration implements Configuration {
     }
 
     @Override
-    public MigrationVersion getTarget() {
+    public TargetVersion getTarget() {
         return config.getTarget();
     }
 
@@ -231,7 +232,7 @@ public class FluentConfiguration implements Configuration {
     }
 
     @Override
-    public MigrationVersion getBaselineVersion() {
+    public Version getBaselineVersion() {
         return config.getBaselineVersion();
     }
 
@@ -755,8 +756,16 @@ public class FluentConfiguration implements Configuration {
      * </ul>
      * Defaults to {@code latest}.
      */
-    public FluentConfiguration target(MigrationVersion target) {
+    public FluentConfiguration target(TargetVersion target) {
         config.setTarget(target);
+        return this;
+    }
+
+    /**
+     * Sets the target version up to which MigrateDb should consider migrations.
+     */
+    public FluentConfiguration target(Version target) {
+        config.setTarget(TargetVersion.of(target));
         return this;
     }
 
@@ -781,8 +790,8 @@ public class FluentConfiguration implements Configuration {
     }
 
     /**
-     * Gets the migrations that MigrateDb should consider when migrating or undoing. Leave empty to consider all
-     * available migrations. Migrations not in this list will be ignored.
+     * Gets the migrations that MigrateDb should consider when migrating. Leave empty to consider all available
+     * migrations. Migrations not in this list will be ignored.
      * <i>MigrateDb Teams only</i>
      */
     public FluentConfiguration cherryPick(MigrationPattern... cherryPick) {
@@ -791,9 +800,9 @@ public class FluentConfiguration implements Configuration {
     }
 
     /**
-     * Gets the migrations that MigrateDb should consider when migrating or undoing. Leave empty to consider all
-     * available migrations. Migrations not in this list will be ignored. Values should be the version for versioned
-     * migrations (e.g. 1, 2.4, 6.5.3) or the description for repeatable migrations (e.g. Insert_Data, Create_Table)
+     * Gets the migrations that MigrateDb should consider when migrating. Leave empty to consider all available
+     * migrations. Migrations not in this list will be ignored. Values should be the version for versioned migrations
+     * (e.g. 1, 2.4, 6.5.3) or the description for repeatable migrations (e.g. Insert_Data, Create_Table)
      * <i>MigrateDb Teams only</i>
      */
     public FluentConfiguration cherryPick(String... cherryPickAsString) {
@@ -880,24 +889,6 @@ public class FluentConfiguration implements Configuration {
      */
     public FluentConfiguration baselineMigrationPrefix(String baselineMigrationPrefix) {
         config.setBaselineMigrationPrefix(baselineMigrationPrefix);
-        return this;
-    }
-
-    @Override
-    public String getUndoSqlMigrationPrefix() {
-        return config.getUndoSqlMigrationPrefix();
-    }
-
-    /**
-     * Sets the file name prefix for undo SQL migrations. (default: U) Undo SQL migrations are responsible for undoing
-     * the effects of the versioned migration with the same version. They have the following file name structure:
-     * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to U1.1__My_description.sql
-     * <i>MigrateDb Teams only</i>
-     *
-     * @param undoSqlMigrationPrefix The file name prefix for undo SQL migrations. (default: U)
-     */
-    public FluentConfiguration undoSqlMigrationPrefix(String undoSqlMigrationPrefix) {
-        config.setUndoSqlMigrationPrefix(undoSqlMigrationPrefix);
         return this;
     }
 
@@ -1009,7 +1000,7 @@ public class FluentConfiguration implements Configuration {
      *
      * @param baselineVersion The version to tag an existing schema with when executing baseline. (default: 1)
      */
-    public FluentConfiguration baselineVersion(MigrationVersion baselineVersion) {
+    public FluentConfiguration baselineVersion(Version baselineVersion) {
         config.setBaselineVersion(baselineVersion);
         return this;
     }
@@ -1020,7 +1011,7 @@ public class FluentConfiguration implements Configuration {
      * @param baselineVersion The version to tag an existing schema with when executing baseline. (default: 1)
      */
     public FluentConfiguration baselineVersion(String baselineVersion) {
-        config.setBaselineVersion(MigrationVersion.fromVersion(baselineVersion));
+        config.setBaselineVersion(Version.parse(baselineVersion));
         return this;
     }
 

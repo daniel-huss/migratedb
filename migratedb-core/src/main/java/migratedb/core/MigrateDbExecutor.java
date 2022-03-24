@@ -120,8 +120,10 @@ final class MigrateDbExecutor {
             }
             StringResource resource = new StringResource("", configuration.getInitSql());
             SqlScript sqlScript = sqlScriptFactory.createSqlScript(resource, true, resourceProvider);
-            boolean outputQueryResults = false;
-            noCallbackSqlScriptExecutorFactory.createSqlScriptExecutor(connection, false, false, outputQueryResults)
+            boolean outputQueryResults = configuration.isOutputQueryResults();
+            noCallbackSqlScriptExecutorFactory.createSqlScriptExecutor(connection,
+                                                                       configuration.isBatch(),
+                                                                       outputQueryResults)
                                               .execute(sqlScript);
         });
 

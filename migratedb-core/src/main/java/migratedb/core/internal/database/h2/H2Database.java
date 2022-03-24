@@ -18,7 +18,7 @@ package migratedb.core.internal.database.h2;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.internal.database.base.BaseDatabase;
@@ -70,13 +70,13 @@ public class H2Database extends BaseDatabase<H2Connection> {
     }
 
     @Override
-    protected MigrationVersion determineVersion() {
+    protected Version determineVersion() {
         String query = requiresV2MetadataColumnNames
                        ? "SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'info.BUILD_ID'"
                        : "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'info.BUILD_ID'";
         try {
             int buildId = getMainConnection().getJdbcTemplate().queryForInt(query);
-            return MigrationVersion.fromVersion(super.determineVersion().getVersion() + "." + buildId);
+            return Version.parse(super.determineVersion() + "." + buildId);
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to determine H2 build ID", e);
         }

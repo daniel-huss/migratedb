@@ -17,7 +17,7 @@
 package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.MigrationType
-import migratedb.core.api.MigrationVersion
+import migratedb.core.api.Version
 import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.api.internal.database.base.Database
 import migratedb.core.api.internal.database.base.Schema
@@ -72,7 +72,7 @@ class DatabaseImpl(
     private data class SchemaHistoryEntry(
         val type: MigrationType,
         val success: Boolean,
-        val version: MigrationVersion?,
+        val version: Version?,
         val description: String,
         val checksum: Int,
         val installedRank: Int?,

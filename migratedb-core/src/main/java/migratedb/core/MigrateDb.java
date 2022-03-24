@@ -32,7 +32,6 @@ import migratedb.core.api.output.BaselineResult;
 import migratedb.core.api.output.CleanResult;
 import migratedb.core.api.output.MigrateResult;
 import migratedb.core.api.output.RepairResult;
-import migratedb.core.api.output.UndoResult;
 import migratedb.core.api.output.ValidateResult;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.callback.CallbackExecutor;
@@ -45,7 +44,6 @@ import migratedb.core.internal.command.DbSchemas;
 import migratedb.core.internal.command.DbValidate;
 import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.schemahistory.SchemaHistory;
-import migratedb.core.internal.util.Development;
 import migratedb.core.internal.util.StringUtils;
 import migratedb.core.internal.util.WebsiteLinks;
 
@@ -127,6 +125,7 @@ public class MigrateDb {
      */
     public MigrateResult migrate() throws MigrateDbException {
         return migratedbExecutor.execute(new MigrateDbExecutor.Command<MigrateResult>() {
+            @Override
             public MigrateResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
                                          Database database,
                                          Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
@@ -208,6 +207,7 @@ public class MigrateDb {
      */
     public MigrationInfoService info() {
         return migratedbExecutor.execute(new MigrateDbExecutor.Command<MigrationInfoService>() {
+            @Override
             public MigrationInfoService execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
                                                 Database database,
                                                 Schema defaultSchema, Schema[] schemas,
@@ -239,6 +239,7 @@ public class MigrateDb {
      */
     public CleanResult clean() {
         return migratedbExecutor.execute(new MigrateDbExecutor.Command<CleanResult>() {
+            @Override
             public CleanResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
                                        Database database,
                                        Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
@@ -268,6 +269,7 @@ public class MigrateDb {
      */
     public void validate() throws MigrateDbException {
         migratedbExecutor.execute(new MigrateDbExecutor.Command<Void>() {
+            @Override
             public Void execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory, Database database,
                                 Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
                                 StatementInterceptor statementInterceptor) {
@@ -308,6 +310,7 @@ public class MigrateDb {
      */
     public ValidateResult validateWithResult() throws MigrateDbException {
         return migratedbExecutor.execute(new MigrateDbExecutor.Command<ValidateResult>() {
+            @Override
             public ValidateResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
                                           Database database,
                                           Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
@@ -338,6 +341,7 @@ public class MigrateDb {
      */
     public BaselineResult baseline() throws MigrateDbException {
         return migratedbExecutor.execute(new MigrateDbExecutor.Command<BaselineResult>() {
+            @Override
             public BaselineResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
                                           Database database,
                                           Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
@@ -377,6 +381,7 @@ public class MigrateDb {
      */
     public RepairResult repair() throws MigrateDbException {
         return migratedbExecutor.execute(new MigrateDbExecutor.Command<RepairResult>() {
+            @Override
             public RepairResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
                                         Database database,
                                         Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
@@ -392,21 +397,6 @@ public class MigrateDb {
                 return repairResult;
             }
         }, true);
-    }
-
-    /**
-     * <p>Undoes the most recently applied versioned migration. If target is specified, MigrateDb will attempt to undo
-     * versioned migrations in the order they were applied until it hits one with a version below the target. If there
-     * is no versioned migration to undo, calling undo has no effect.</p>
-     *
-     * <img src="https://no-website-yet.org/assets/balsamiq/command-undo.png" alt="undo">
-     *
-     * @return An object summarising the successfully undone migrations.
-     *
-     * @throws MigrateDbException when the undo failed.
-     */
-    public UndoResult undo() throws MigrateDbException {
-        return Development.TODO("Implement Undo");
     }
 
     private CleanResult doClean(Database database, SchemaHistory schemaHistory, Schema defaultSchema, Schema[] schemas,

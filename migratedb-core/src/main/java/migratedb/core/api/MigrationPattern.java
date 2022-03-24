@@ -25,7 +25,7 @@ public final class MigrationPattern {
         this.migrationName = migrationName;
     }
 
-    public boolean matches(MigrationVersion version, String description) {
+    public boolean matches(Version version, String description) {
         if (version != null) {
             String pattern = migrationName.replace("_", ".");
             return pattern.equals(version.toString());

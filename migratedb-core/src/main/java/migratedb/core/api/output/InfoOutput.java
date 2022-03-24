@@ -21,15 +21,9 @@ public class InfoOutput {
     public String version;
     public String description;
     public String type;
-    /**
-     * @deprecated Will be removed in MigrateDb V8 and replaced with {@code installedOnUTC}.
-     */
     public String installedOn;
-    private final String installedOnUTC;
     public String state;
-    public String undoable;
     public String filepath;
-    public String undoFilepath;
     public String installedBy;
     public int executionTime;
 
@@ -39,9 +33,7 @@ public class InfoOutput {
         String description,
         String type,
         String installedOn,
-        String installedOnUTC,
         String state,
-        String undoable,
         String filepath,
         String installedBy,
         int executionTime) {
@@ -50,15 +42,9 @@ public class InfoOutput {
         this.description = description;
         this.type = type;
         this.installedOn = installedOn;
-        this.installedOnUTC = installedOnUTC;
         this.state = state;
-        this.undoable = undoable;
         this.filepath = filepath;
         this.installedBy = installedBy;
         this.executionTime = executionTime;
-    }
-
-    public String getInstalledOnUTC() {
-        return installedOnUTC;
     }
 }

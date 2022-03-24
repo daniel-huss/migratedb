@@ -33,6 +33,7 @@ import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
+import migratedb.core.internal.info.ValidationContext;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.DateTimeUtils;
@@ -152,15 +153,13 @@ public class DbValidate {
 
         var result =
             ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(), database).execute(() -> {
-                MigrationInfoServiceImpl migrationInfoService =
-                    new MigrationInfoServiceImpl(migrationResolver, schemaHistory, database, configuration,
-                                                 configuration.getTarget(),
-                                                 configuration.isOutOfOrder(),
-                                                 configuration.getCherryPick(),
-                                                 pending,
-                                                 configuration.isIgnoreMissingMigrations(),
-                                                 configuration.isIgnoreIgnoredMigrations(),
-                                                 configuration.isIgnoreFutureMigrations());
+                var migrationInfoService = new MigrationInfoServiceImpl(migrationResolver,
+                                                                        schemaHistory,
+                                                                        database,
+                                                                        configuration,
+                                                                        configuration.getTarget(),
+                                                                        configuration.getCherryPick(),
+                                                                        new ValidationContext(configuration));
 
                 migrationInfoService.refresh();
 

@@ -21,7 +21,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldBeEmpty
 import migratedb.core.api.Location
 import migratedb.core.api.MigrateDbException
-import migratedb.core.api.MigrationVersion
+import migratedb.core.api.Version
 import migratedb.core.api.configuration.PropertyNames.ErrorOverrideString
 import migratedb.core.api.configuration.PropertyNames.Info
 import migratedb.core.api.configuration.PropertyNames.JdbcUrlString
@@ -148,7 +148,7 @@ internal class ClassicConfigurationTest {
                 File::class.java -> String.any().alpha().ofLength(1..10).map { "target/$it" }
                 Integer::class.java -> Int.any(1..Integer.MAX_VALUE).map { it.toString() }
                 java.lang.Boolean::class.java -> Boolean.any().map { it.toString() }
-                MigrationVersion::class.java -> anyMigrationVersionString()
+                Version::class.java -> anyMigrationVersionString()
                 ValidatePattern::class.java -> anyValidatePattern().map { it.pattern() }
                 Class::class.java -> just(UniversalDummy::class.java.name)
                 else -> throw IllegalStateException("Field type not implemented: $type")

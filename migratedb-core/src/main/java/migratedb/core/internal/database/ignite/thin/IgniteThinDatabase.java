@@ -21,7 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.internal.database.base.BaseDatabase;
@@ -50,11 +50,11 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
     }
 
     @Override
-    protected MigrationVersion determineVersion() {
+    protected Version determineVersion() {
         try {
             int buildId = getMainConnection().getJdbcTemplate().queryForInt(
                 "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'info.BUILD_ID'");
-            return MigrationVersion.fromVersion(super.determineVersion().getVersion() + "." + buildId);
+            return Version.parse(super.determineVersion() + "." + buildId);
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to determine Apache Ignite build ID", e);
         }

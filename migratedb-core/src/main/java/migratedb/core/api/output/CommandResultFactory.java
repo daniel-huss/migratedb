@@ -17,38 +17,35 @@
 package migratedb.core.api.output;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.function.Function;
 import migratedb.core.api.ErrorDetails;
 import migratedb.core.api.MigrationInfo;
-import migratedb.core.api.MigrationState;
-import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
-import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.info.BuildInfo;
+import migratedb.core.internal.schemahistory.SchemaHistory;
 
 public class CommandResultFactory {
-    public static InfoResult createInfoResult(Configuration configuration, Database database,
-                                              MigrationInfo[] migrationInfos, MigrationInfo current,
+    public static InfoResult createInfoResult(Configuration configuration,
+                                              Database database,
+                                              MigrationInfo[] migrationInfos,
+                                              MigrationInfo current,
                                               boolean allSchemasEmpty) {
         String migratedbVersion = BuildInfo.VERSION;
         String databaseName = getDatabaseName(configuration, database);
-        Set<MigrationInfo> undoableMigrations = getUndoMigrations(migrationInfos);
 
         List<InfoOutput> infoOutputs = new ArrayList<>();
         for (MigrationInfo migrationInfo : migrationInfos) {
-            infoOutputs.add(createInfoOutput(undoableMigrations, migrationInfo));
+            infoOutputs.add(createInfoOutput(migrationInfo));
         }
 
-        MigrationVersion currentSchemaVersion = current == null ? MigrationVersion.EMPTY : current.getVersion();
-        MigrationVersion schemaVersionToOutput =
-            currentSchemaVersion == null ? MigrationVersion.EMPTY : currentSchemaVersion;
-        String schemaVersion = schemaVersionToOutput.getVersion();
+        var currentSchemaVersion = current == null ? null : current.getVersion();
+        String schemaVersion = convertToString(currentSchemaVersion == null ? SchemaHistory.EMPTY_SCHEMA_DESCRIPTION
+                                                                            : currentSchemaVersion);
 
         return new InfoResult(
             migratedbVersion,
@@ -68,11 +65,6 @@ public class CommandResultFactory {
     public static CleanResult createCleanResult(String databaseName) {
         String migratedbVersion = BuildInfo.VERSION;
         return new CleanResult(migratedbVersion, databaseName);
-    }
-
-    public static UndoResult createUndoResult(String databaseName, Configuration configuration) {
-        String migratedbVersion = BuildInfo.VERSION;
-        return new UndoResult(migratedbVersion, databaseName, String.join(", ", configuration.getSchemas()));
     }
 
     public static BaselineResult createBaselineResult(String databaseName) {
@@ -103,88 +95,71 @@ public class CommandResultFactory {
         return new RepairResult(migratedbVersion, databaseName);
     }
 
-    public static InfoOutput createInfoOutput(Set<MigrationInfo> undoableMigrations, MigrationInfo migrationInfo) {
+    public static InfoOutput createInfoOutput(MigrationInfo migrationInfo) {
         return new InfoOutput(getCategory(migrationInfo),
-                              migrationInfo.getVersion() != null ? migrationInfo.getVersion().getVersion() : "",
+                              convertToString(migrationInfo.getVersion()),
                               migrationInfo.getDescription(),
-                              migrationInfo.getType() != null ? migrationInfo.getType().toString() : "",
-                              migrationInfo.getInstalledOn() != null ? migrationInfo.getInstalledOn().toString() : "",
+                              convertToString(migrationInfo.getType()),
+                              convertToString(migrationInfo.getInstalledOn()),
                               migrationInfo.getState().getDisplayName(),
-                              getUndoableStatus(migrationInfo, undoableMigrations),
-                              migrationInfo.getPhysicalLocation() != null ? migrationInfo.getPhysicalLocation() : "",
-                              getUndoablePath(migrationInfo, undoableMigrations),
-                              migrationInfo.getInstalledBy() != null ? migrationInfo.getInstalledBy() : "",
+                              convertToString(migrationInfo.getPhysicalLocation()),
+                              convertToString(migrationInfo.getInstalledBy()),
                               migrationInfo.getExecutionTime() != null ? migrationInfo.getExecutionTime() : 0);
     }
 
     public static MigrateOutput createMigrateOutput(MigrationInfo migrationInfo, int executionTime) {
         return new MigrateOutput(getCategory(migrationInfo),
-                                 migrationInfo.getVersion() != null ? migrationInfo.getVersion().getVersion() : "",
+                                 convertToString(migrationInfo.getVersion()),
                                  migrationInfo.getDescription(),
-                                 migrationInfo.getType() != null ? migrationInfo.getType().toString() : "",
-                                 migrationInfo.getPhysicalLocation() != null ? migrationInfo.getPhysicalLocation() : "",
+                                 convertToString(migrationInfo.getType()),
+                                 convertToString(migrationInfo.getPhysicalLocation()),
                                  executionTime);
-    }
-
-    public static UndoOutput createUndoOutput(ResolvedMigration migrationInfo, int executionTime) {
-        return new UndoOutput(
-            migrationInfo.getVersion().getVersion(),
-            migrationInfo.getDescription(),
-            migrationInfo.getPhysicalLocation() != null ? migrationInfo.getPhysicalLocation() : "",
-            executionTime);
     }
 
     public static ValidateOutput createValidateOutput(MigrationInfo migrationInfo, ErrorDetails validateError) {
         return new ValidateOutput(
-            migrationInfo.getVersion() != null ? migrationInfo.getVersion().getVersion() : "",
+            convertToString(migrationInfo.getVersion()),
             migrationInfo.getDescription(),
-            migrationInfo.getPhysicalLocation() != null ? migrationInfo.getPhysicalLocation() : "",
+            convertToString(migrationInfo.getPhysicalLocation()),
             validateError);
     }
 
     public static RepairOutput createRepairOutput(MigrationInfo migrationInfo) {
         return new RepairOutput(
-            migrationInfo.getVersion() != null ? migrationInfo.getVersion().getVersion() : "",
+            convertToString(migrationInfo.getVersion()),
             migrationInfo.getDescription(),
             migrationInfo.getPhysicalLocation() != null ? migrationInfo.getPhysicalLocation() : "");
     }
 
     public static RepairOutput createRepairOutput(AppliedMigration am) {
-        return new RepairOutput(am.getVersion() != null ? am.getVersion().getVersion() : "", am.getDescription(), "");
-    }
-
-    private static String getUndoableStatus(MigrationInfo migrationInfo, Set<MigrationInfo> undoableMigrations) {
-
-        return "";
-    }
-
-    private static String getUndoablePath(MigrationInfo migrationInfo, Set<MigrationInfo> undoableMigrations) {
-
-        return "";
-    }
-
-    private static Set<MigrationInfo> getUndoMigrations(MigrationInfo[] migrationInfos) {
-        Set<MigrationInfo> result = Collections.emptySet();
-        return result;
-    }
-
-    private static MigrationInfo[] removeAvailableUndoMigrations(MigrationInfo[] migrationInfos) {
-        return Arrays.stream(migrationInfos)
-                     .filter(m -> !m.getState().equals(MigrationState.AVAILABLE))
-                     .toArray(MigrationInfo[]::new);
+        return new RepairOutput(convertToString(am.getVersion()),
+                                am.getDescription(),
+                                "");
     }
 
     private static String getDatabaseName(Configuration configuration, Database database) {
         try {
             return database.getCatalog();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             try (Connection connection = configuration.getDataSource().getConnection()) {
                 String catalog = connection.getCatalog();
                 return catalog != null ? catalog : "";
-            } catch (Exception e1) {
+            } catch (RuntimeException | SQLException e1) {
                 return "";
             }
         }
+    }
+
+    private static String convertToString(Object value) {
+        return convertToString(value, Object::toString);
+    }
+
+    private static <T> String convertToString(T value, Function<? super T, String> transform) {
+        if (value == null) {
+            return "";
+        }
+        var transformed = transform.apply(value);
+        return transformed == null ? "" : transformed;
     }
 
     private static String getCategory(MigrationInfo migrationInfo) {

@@ -28,8 +28,9 @@ import migratedb.core.api.ExtensionConfig;
 import migratedb.core.api.Location;
 import migratedb.core.api.MigrateDbExtension;
 import migratedb.core.api.MigrationPattern;
-import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.ResourceProvider;
+import migratedb.core.api.TargetVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.callback.Callback;
 import migratedb.core.api.logging.LogSystem;
 import migratedb.core.api.migration.JavaMigration;
@@ -106,7 +107,7 @@ public interface Configuration {
      *
      * @return The version to tag an existing schema with when executing baseline. (default: 1)
      */
-    MigrationVersion getBaselineVersion();
+    Version getBaselineVersion();
 
     /**
      * Retrieves the description to tag an existing schema with when executing baseline.
@@ -164,16 +165,6 @@ public interface Configuration {
      * @return The file name prefix for baseline migration. (default: B)
      */
     String getBaselineMigrationPrefix();
-
-    /**
-     * The file name prefix for undo SQL migrations. Undo SQL migrations are responsible for undoing the effects of the
-     * versioned migration with the same version. They have the following file name structure:
-     * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to U1.1__My_description.sql
-     * <i>MigrateDb Teams only</i>
-     *
-     * @return The file name prefix for undo sql migrations. (default: U)
-     */
-    String getUndoSqlMigrationPrefix();
 
     /**
      * Retrieves the file name prefix for repeatable SQL migrations. Repeatable SQL migrations have the following file
@@ -268,7 +259,7 @@ public interface Configuration {
      *
      * @return The target version up to which MigrateDb should consider migrations. Defaults to {@code latest}
      */
-    MigrationVersion getTarget();
+    TargetVersion getTarget();
 
     /**
      * Whether to fail if no migration with the configured target version exists (default: {@code true})
@@ -276,11 +267,11 @@ public interface Configuration {
     boolean getFailOnMissingTarget();
 
     /**
-     * Gets the migrations that MigrateDb should consider when migrating or undoing. Leave empty to consider all
-     * available migrations. Migrations not in this list will be ignored.
+     * Gets the migrations that MigrateDb should consider when migrating. Leave empty to consider all available
+     * migrations. Migrations not in this list will be ignored.
      * <i>MigrateDb Teams only</i>
      *
-     * @return The migrations that MigrateDb should consider when migrating or undoing.
+     * @return The migrations that MigrateDb should consider when migrating.
      */
     MigrationPattern[] getCherryPick();
 

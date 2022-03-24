@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
@@ -56,7 +56,7 @@ public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
     }
 
     @Override
-    protected String computeVersionDisplayName(MigrationVersion version) {
+    protected String computeVersionDisplayName(Version version) {
         if (isAzure()) {
             return "Azure v" + getVersion().getMajorAsString();
         }

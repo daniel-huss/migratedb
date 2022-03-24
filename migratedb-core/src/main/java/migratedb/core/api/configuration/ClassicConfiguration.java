@@ -44,8 +44,9 @@ import migratedb.core.api.Location;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrateDbExtension;
 import migratedb.core.api.MigrationPattern;
-import migratedb.core.api.MigrationVersion;
 import migratedb.core.api.ResourceProvider;
+import migratedb.core.api.TargetVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.callback.Callback;
 import migratedb.core.api.logging.LogSystem;
 import migratedb.core.api.logging.LogSystems;
@@ -83,7 +84,7 @@ public class ClassicConfiguration implements Configuration {
     private String[] schemaNames = {};
     private String table = "migratedb_schema_history";
     private String tablespace;
-    private MigrationVersion target;
+    private TargetVersion target;
     private boolean failOnMissingTarget = true;
     private MigrationPattern[] cherryPick;
     private boolean placeholderReplacement = true;
@@ -94,7 +95,6 @@ public class ClassicConfiguration implements Configuration {
     private String scriptPlaceholderSuffix = "__";
     private String sqlMigrationPrefix = "V";
     private String baselineMigrationPrefix = "B";
-    private String undoSqlMigrationPrefix = "U";
     private String repeatableSqlMigrationPrefix = "R";
     private ResourceProvider resourceProvider = null;
     private ClassProvider<JavaMigration> javaMigrationClassProvider = null;
@@ -110,7 +110,7 @@ public class ClassicConfiguration implements Configuration {
     private boolean validateOnMigrate = true;
     private boolean cleanOnValidationError;
     private boolean cleanDisabled = true;
-    private MigrationVersion baselineVersion = MigrationVersion.fromVersion("1");
+    private Version baselineVersion = Version.parse("1");
     private String baselineDescription = "<< MigrateDB Baseline >>";
     private boolean baselineOnMigrate;
     private boolean outOfOrder;
@@ -189,7 +189,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     @Override
-    public MigrationVersion getTarget() {
+    public TargetVersion getTarget() {
         return target;
     }
 
@@ -309,7 +309,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     @Override
-    public MigrationVersion getBaselineVersion() {
+    public Version getBaselineVersion() {
         return baselineVersion;
     }
 
@@ -456,11 +456,6 @@ public class ClassicConfiguration implements Configuration {
     @Override
     public boolean isBatch() {
         return batch;
-    }
-
-    @Override
-    public String getUndoSqlMigrationPrefix() {
-        return undoSqlMigrationPrefix;
     }
 
     @Override
@@ -831,7 +826,7 @@ public class ClassicConfiguration implements Configuration {
      * </ul>
      * Defaults to {@code latest}.
      */
-    public void setTarget(MigrationVersion target) {
+    public void setTarget(TargetVersion target) {
         this.target = target;
     }
 
@@ -853,10 +848,10 @@ public class ClassicConfiguration implements Configuration {
     public void setTargetAsString(String target) {
         if (target.endsWith("?")) {
             setFailOnMissingTarget(false);
-            setTarget(MigrationVersion.fromVersion(target.substring(0, target.length() - 1)));
+            setTarget(TargetVersion.parse(target.substring(0, target.length() - 1)));
         } else {
             setFailOnMissingTarget(true);
-            setTarget(MigrationVersion.fromVersion(target));
+            setTarget(TargetVersion.parse(target));
         }
     }
 
@@ -865,17 +860,17 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Gets the migrations that MigrateDb should consider when migrating or undoing. Leave empty to consider all
-     * available migrations. Migrations not in this list will be ignored.
+     * Gets the migrations that MigrateDb should consider when migrating. Leave empty to consider all available
+     * migrations. Migrations not in this list will be ignored.
      */
     public void setCherryPick(MigrationPattern... cherryPick) {
         this.cherryPick = cherryPick;
     }
 
     /**
-     * Gets the migrations that MigrateDb should consider when migrating or undoing. Leave empty to consider all
-     * available migrations. Migrations not in this list will be ignored. Values should be the version for versioned
-     * migrations (e.g. 1, 2.4, 6.5.3) or the description for repeatable migrations (e.g. Insert_Data, Create_Table)
+     * Gets the migrations that MigrateDb should consider when migrating. Leave empty to consider all available
+     * migrations. Migrations not in this list will be ignored. Values should be the version for versioned migrations
+     * (e.g. 1, 2.4, 6.5.3) or the description for repeatable migrations (e.g. Insert_Data, Create_Table)
      */
     public void setCherryPick(String... cherryPickAsString) {
         this.cherryPick = Arrays.stream(cherryPickAsString)
@@ -967,17 +962,6 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setBaselineMigrationPrefix(String baselineMigrationPrefix) {
         this.baselineMigrationPrefix = baselineMigrationPrefix;
-    }
-
-    /**
-     * Sets the file name prefix for undo SQL migrations. (default: U) Undo SQL migrations are responsible for undoing
-     * the effects of the versioned migration with the same version. They have the following file name structure:
-     * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to U1.1__My_description.sql
-     *
-     * @param undoSqlMigrationPrefix The file name prefix for undo SQL migrations. (default: U)
-     */
-    public void setUndoSqlMigrationPrefix(String undoSqlMigrationPrefix) {
-        this.undoSqlMigrationPrefix = undoSqlMigrationPrefix;
     }
 
     /**
@@ -1117,7 +1101,7 @@ public class ClassicConfiguration implements Configuration {
      *
      * @param baselineVersion The version to tag an existing schema with when executing baseline. (default: 1)
      */
-    public void setBaselineVersion(MigrationVersion baselineVersion) {
+    public void setBaselineVersion(Version baselineVersion) {
         this.baselineVersion = baselineVersion;
     }
 
@@ -1127,7 +1111,7 @@ public class ClassicConfiguration implements Configuration {
      * @param baselineVersion The version to tag an existing schema with when executing baseline. (default: 1)
      */
     public void setBaselineVersionAsString(String baselineVersion) {
-        this.baselineVersion = MigrationVersion.fromVersion(baselineVersion);
+        this.baselineVersion = Version.parse(baselineVersion);
     }
 
     /**
@@ -1395,7 +1379,6 @@ public class ClassicConfiguration implements Configuration {
         setTable(configuration.getTable());
         setTablespace(configuration.getTablespace());
         setTarget(configuration.getTarget());
-        setUndoSqlMigrationPrefix(configuration.getUndoSqlMigrationPrefix());
         setValidateMigrationNaming(configuration.isValidateMigrationNaming());
         setValidateOnMigrate(configuration.isValidateOnMigrate());
 
@@ -1491,10 +1474,6 @@ public class ClassicConfiguration implements Configuration {
         String sqlMigrationPrefixProp = props.remove(PropertyNames.SQL_MIGRATION_PREFIX);
         if (sqlMigrationPrefixProp != null) {
             setSqlMigrationPrefix(sqlMigrationPrefixProp);
-        }
-        String undoSqlMigrationPrefixProp = props.remove(PropertyNames.UNDO_SQL_MIGRATION_PREFIX);
-        if (undoSqlMigrationPrefixProp != null) {
-            setUndoSqlMigrationPrefix(undoSqlMigrationPrefixProp);
         }
         String baselineMigrationPrefixProp = props.remove(PropertyNames.BASELINE_MIGRATION_PREFIX);
         if (baselineMigrationPrefixProp != null) {

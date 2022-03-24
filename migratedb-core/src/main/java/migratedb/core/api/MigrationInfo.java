@@ -17,24 +17,36 @@
 package migratedb.core.api;
 
 import java.time.Instant;
+import java.util.Comparator;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.resolver.ResolvedMigration;
+import migratedb.core.internal.info.MigrationExecutionOrdering;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Info about a migration. The natural ordering of this data structure corresponds to the execution order of the
- * migrations.
+ * Info about a migration.
  */
-public interface MigrationInfo extends Comparable<MigrationInfo> {
+public interface MigrationInfo {
+    static Comparator<MigrationInfo> executionOrder() {
+        return new MigrationExecutionOrdering();
+    }
+
+    /**
+     * @return Whether this is a repeatable migration.
+     */
+    default boolean isRepeatable() {
+        return getVersion() == null;
+    }
+
     /**
      * @return The resolved migration to aggregate the info from.
      */
-    ResolvedMigration getResolvedMigration();
+    @Nullable ResolvedMigration getResolvedMigration();
 
     /**
      * @return The applied migration to aggregate the info from.
      */
-    AppliedMigration getAppliedMigration();
+    @Nullable AppliedMigration getAppliedMigration();
 
     /**
      * @return The type of migration (BASELINE, SQL, JDBC, ...)
@@ -44,12 +56,12 @@ public interface MigrationInfo extends Comparable<MigrationInfo> {
     /**
      * @return The target version of this migration.
      */
-    Integer getChecksum();
+    @Nullable Integer getChecksum();
 
     /**
      * @return The schema version after the migration is complete.
      */
-    MigrationVersion getVersion();
+    @Nullable Version getVersion();
 
     /**
      * @return The description of the migration.
@@ -69,23 +81,23 @@ public interface MigrationInfo extends Comparable<MigrationInfo> {
     /**
      * @return The timestamp when this migration was installed. (Only for applied migrations)
      */
-    Instant getInstalledOn();
+    @Nullable Instant getInstalledOn();
 
     /**
      * @return The user that installed this migration. (Only for applied migrations)
      */
-    String getInstalledBy();
+    @Nullable String getInstalledBy();
 
     /**
      * @return The rank of this installed migration. This is the most precise way to sort applied migrations by
      * installation order. Migrations that were applied later have a higher rank. (Only for applied migrations)
      */
-    Integer getInstalledRank();
+    @Nullable Integer getInstalledRank();
 
     /**
      * @return The execution time (in millis) of this migration. (Only for applied migrations)
      */
-    Integer getExecutionTime();
+    @Nullable Integer getExecutionTime();
 
     /**
      * @return The physical location of the migration on disk.

@@ -107,11 +107,11 @@ public class OracleDatabaseType extends BaseDatabaseType {
 
         return new SqlScriptExecutorFactory() {
             @Override
-            public SqlScriptExecutor createSqlScriptExecutor(Connection connection, boolean undo, boolean batch,
+            public SqlScriptExecutor createSqlScriptExecutor(Connection connection, boolean batch,
                                                              boolean outputQueryResults) {
 
                 return new OracleSqlScriptExecutor(new JdbcTemplate(connection, thisRef)
-                    , callbackExecutor, undo, batch, outputQueryResults, statementInterceptor
+                    , callbackExecutor, batch, outputQueryResults, statementInterceptor
                 );
             }
         };

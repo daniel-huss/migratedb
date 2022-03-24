@@ -35,9 +35,19 @@ public interface MigrationInfoService extends InfoOutputProvider {
     MigrationInfo current();
 
     /**
+     * Retrieves the information of the next pending migration, if any.
+     *
+     * @return The info. {@code null} if no migration is pending.
+     */
+    default MigrationInfo next() {
+        var pending = pending();
+        return pending.length == 0 ? null : pending[0];
+    }
+
+    /**
      * Retrieves the full set of infos about pending migrations, available locally, but not yet applied to the DB.
      *
-     * @return The pending migrations. An empty array if none.
+     * @return The pending migrations, ordered by version. An empty array if none.
      */
     MigrationInfo[] pending();
 

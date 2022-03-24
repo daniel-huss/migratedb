@@ -19,7 +19,7 @@ package migratedb.core.internal.resource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.internal.util.Pair;
@@ -76,7 +76,7 @@ public class ResourceNameParser {
                 } else {
                     // ... and that must be a legitimate version
                     try {
-                        MigrationVersion.fromVersion(splitName.getLeft());
+                        Version.fromVersion(splitName.getLeft());
                     } catch (RuntimeException e) {
                         isValid = false;
                         validationMessage = "Invalid versioned migration name format: " + resourceName

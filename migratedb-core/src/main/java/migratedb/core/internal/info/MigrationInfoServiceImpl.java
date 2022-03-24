@@ -23,8 +23,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import migratedb.core.api.ErrorCode;
 import migratedb.core.api.ErrorDetails;
@@ -33,8 +34,10 @@ import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.MigrationInfoService;
 import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.MigrationState;
+import migratedb.core.api.MigrationState.Category;
 import migratedb.core.api.MigrationType;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.TargetVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
@@ -55,13 +58,9 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
     private final Database database;
     private final Context context;
     private final SchemaHistory schemaHistory;
-    private final MigrationVersion target;
+    private final TargetVersion target;
     private final MigrationPattern[] cherryPick;
-    private final boolean outOfOrder;
-    private final boolean pending;
-    private final boolean missing;
-    private final boolean ignored;
-    private final boolean future;
+    private final ValidationContext validationContext;
     /**
      * The migrations info calculated at the last refresh.
      */
@@ -69,61 +68,30 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
     /**
      * Whether all of the specified schemas are empty or not.
      */
-    private Boolean allSchemasEmpty;
+    private boolean allSchemasEmpty;
 
     /**
      * @param migrationResolver The migration resolver for available migrations.
      * @param schemaHistory     The schema history table for applied migrations.
      * @param configuration     The current configuration.
      * @param target            The target version up to which to retrieve the info.
-     * @param outOfOrder        Allows migrations to be run "out of order".
      * @param cherryPick        The migrations to consider when migration.
-     * @param pending           Whether pending migrations are allowed.
-     * @param missing           Whether missing migrations are allowed.
-     * @param ignored           Whether ignored migrations are allowed.
-     * @param future            Whether future migrations are allowed.
      */
     public MigrationInfoServiceImpl(MigrationResolver migrationResolver,
-                                    SchemaHistory schemaHistory, Database database, Configuration configuration,
-                                    MigrationVersion target, boolean outOfOrder, MigrationPattern[] cherryPick,
-                                    boolean pending, boolean missing, boolean ignored, boolean future) {
+                                    SchemaHistory schemaHistory,
+                                    Database database,
+                                    Configuration configuration,
+                                    TargetVersion target,
+                                    MigrationPattern[] cherryPick,
+                                    ValidationContext validationContext) {
         this.migrationResolver = migrationResolver;
         this.schemaHistory = schemaHistory;
         this.configuration = configuration;
         this.context = () -> configuration;
         this.database = database;
         this.target = target;
-        this.outOfOrder = outOfOrder;
         this.cherryPick = cherryPick;
-        this.pending = pending;
-        this.missing = missing;
-        this.ignored = ignored || cherryPick != null;
-        this.future = future;
-    }
-
-    private static final class VersionedKey {
-        public final MigrationVersion version;
-        public final boolean isUndo;
-
-        private VersionedKey(MigrationVersion version, boolean isUndo) {
-            this.version = version;
-            this.isUndo = isUndo;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(version, isUndo);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof VersionedKey)) {
-                return false;
-            }
-            var other = (VersionedKey) obj;
-            return Objects.equals(version, other.version) &&
-                   Objects.equals(isUndo, other.isUndo);
-        }
+        this.validationContext = validationContext;
     }
 
     private static final class AppliedMigrationWithAttribs {
@@ -142,88 +110,100 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
         var resolvedMigrations = migrationResolver.resolveMigrations(context);
         var appliedMigrationsInOrder = schemaHistory.allAppliedMigrations();
 
-        var context = new MigrationInfoContext();
-        context.outOfOrder = outOfOrder;
-        context.pending = pending;
-        context.missing = missing;
-        context.ignored = ignored;
-        context.future = future;
-        context.ignorePatterns = configuration.getIgnoreMigrationPatterns();
-        context.target = target;
-        context.cherryPick = cherryPick;
+        var versionContextBuilder = new VersionContext.Builder(configuration.getIgnoreMigrationPatterns(), cherryPick);
 
         // Group _resolved_ migrations into versioned and repeatable
         var versioned = onlyVersionedMigrations(resolvedMigrations);
         var repeatable = onlyRepeatableMigrations(resolvedMigrations);
-        updateStateFromVersionedResolvedMigrations(context, versioned);
+        updateStateFromVersionedResolvedMigrations(versionContextBuilder, versioned);
 
         // Group _applied_ migrations into versioned and repeatable
         var versionedApplied = onlyVersionedMigrations(appliedMigrationsInOrder);
         var appliedBaselineMigration = findAppliedBaselineMigration(versionedApplied);
         var repeatableApplied = onlyRepeatableMigrations(appliedMigrationsInOrder);
-        updateLatestRepeatableRuns(context, repeatableApplied);
 
-        // TODO
-        //
-        // There's a large code block missing here, probably something that deals with undo migrations.
-        //
-        //
-
-        updateStateFromSyntheticMigrations(context, versionedApplied);
+        // Mutate various state in version context builder and applied migration attributes -_-
+        updateLatestRepeatableRuns(versionContextBuilder, repeatableApplied);
+        updateStateFromSyntheticMigrations(versionContextBuilder, versionedApplied);
         updateStateFromSyntheticMigrations(repeatableApplied);
-        updateOutOfOrder(versionedApplied);
-        updateLastApplied(context, versionedApplied);
+        updateOutOfOrderAttribute(versionedApplied);
+        updateLastApplied(versionContextBuilder, versionedApplied);
+        updateTargetVersion(versionContextBuilder, versionedApplied, versioned);
 
-        // TODO
-        // Code block missing here, probably filtering that implements cherry-picking?
-        //
-        //
-
-        var notAppliedMigrations = onlyNotAppliedMigrations(versioned, versionedApplied);
-        var pendingMigrations = onlyPendingMigrations(notAppliedMigrations, context.latestBaselineMigration);
-        var pendingRepeatableMigrations = onlyPendingRepeatableMigrations(repeatable, repeatableApplied, context);
+        var versionContext = versionContextBuilder.build();
+        var nonAppliedMigrations = onlyNonAppliedMigrations(versioned, versionedApplied);
+        var pendingMigrations = onlyPendingMigrations(nonAppliedMigrations,
+                                                      versionContextBuilder.latestBaselineMigration);
+        var pendingRepeatableMigrations = onlyPendingRepeatableMigrations(repeatable,
+                                                                          repeatableApplied,
+                                                                          versionContext);
 
         // Time to build the new migration info list
         var newMigrationInfoList = new ArrayList<MigrationInfo>();
-        newMigrationInfoList.addAll(infoForAlreadyAppliedMigrations(versionedApplied, versioned, context));
-        newMigrationInfoList.addAll(infoForPendingMigrations(pendingMigrations, context));
-        newMigrationInfoList.addAll(infoForAlreadyAppliedRepeatableMigrations(repeatableApplied, repeatable, context));
-        newMigrationInfoList.addAll(infoForPendingRepeatableMigrations(pendingRepeatableMigrations, context));
+        newMigrationInfoList.addAll(infoForAlreadyAppliedMigrations(versionedApplied, versioned, versionContext));
+        newMigrationInfoList.addAll(infoForPendingMigrations(pendingMigrations, versionContext));
+        newMigrationInfoList.addAll(infoForAlreadyAppliedRepeatableMigrations(repeatableApplied,
+                                                                              repeatable,
+                                                                              versionContext));
+        newMigrationInfoList.addAll(infoForPendingRepeatableMigrations(pendingRepeatableMigrations, versionContext));
 
+        newMigrationInfoList.sort(MigrationInfo.executionOrder());
         failOnMissingTarget(newMigrationInfoList);
-        newMigrationInfoList.sort(Comparator.naturalOrder());
         migrationInfo = newMigrationInfoList;
+    }
 
-        // Now one might wonder why we mutate the context object here, aren't we done building the new migrationInfo?
-        //
-        // Well, if you look closely, you'll find that we've passed our mutable context object to MigrationInfoImpl,
-        // and our modifications will actually change its bloody behavior. It's good to know that pending() somehow
-        // seems to work even though we haven't finished setting up the context object.
-        //
-        // ... GENIUS!
-        //
-        // TODO MigrationInfo should be a dumb, immutable data structure. The computations should be done here, once, in
-        // SMALLLLLLL methods and with additional data structures if needed.
+    private void updateTargetVersion(VersionContext.Builder context,
+                                     List<AppliedMigrationWithAttribs> versionedApplied,
+                                     Map<Version, ResolvedMigration> versioned) {
+        context.target = target.mapVersion(version -> version)
+                               .orElseGet(Map.of(
+                                   TargetVersion.CURRENT, () -> resolveCurrentVersion(versionedApplied),
+                                   TargetVersion.LATEST, () -> resolveLatestVersion(versioned),
+                                   TargetVersion.NEXT, () -> resolveNextVersion(versioned, versionedApplied)
+                               ));
+    }
 
-        if (target == MigrationVersion.NEXT) {
-            MigrationInfo[] pending = pending();
-            if (pending.length == 0) {
-                context.target = null;
-            } else {
-                context.target = pending[0].getVersion();
-            }
-        } else if (MigrationVersion.CURRENT == target) {
-            context.target = context.lastApplied;
+    private @Nullable Version resolveNextVersion(Map<Version, ResolvedMigration> versioned,
+                                                 List<AppliedMigrationWithAttribs> versionedApplied) {
+        // Because baseline migrations supersede all previous versions, this isn't simply the first non-applied version
+        var nonApplied = new ArrayList<>(onlyNonAppliedMigrations(versioned, versionedApplied));
+        if (nonApplied.isEmpty()) {
+            return null;
         }
+        nonApplied.sort(Comparator.comparing(ResolvedMigration::getVersion));
+        for (var i = nonApplied.size() - 1; i >= 0; i--) {
+            var migration = nonApplied.get(i);
+            if (migration.getType().isBaselineMigration()) {
+                return migration.getVersion();
+            }
+        }
+        return nonApplied.get(0).getVersion();
+    }
+
+    private @Nullable Version resolveLatestVersion(Map<Version, ResolvedMigration> versioned) {
+        return versioned.keySet()
+                        .stream()
+                        .max(Comparator.naturalOrder())
+                        .orElse(null);
+    }
+
+    private @Nullable Version resolveCurrentVersion(List<AppliedMigrationWithAttribs> versionedApplied) {
+        // The highest applied version that is not deleted
+        return versionedApplied.stream()
+                               .filter(it -> it.migration.getType() != MigrationType.DELETE &&
+                                             !it.attribs.deleted)
+                               .map(it -> it.migration.getVersion())
+                               .max(Comparator.naturalOrder())
+                               .orElse(null);
     }
 
     private List<MigrationInfo> infoForPendingRepeatableMigrations(Set<ResolvedMigration> pendingRepeatableMigrations,
-                                                                   MigrationInfoContext context) {
+                                                                   VersionContext versionContext) {
         return pendingRepeatableMigrations.stream()
                                           .map(it -> new MigrationInfoImpl(it,
                                                                            null,
-                                                                           context,
-                                                                           false,
+                                                                           validationContext,
+                                                                           versionContext,
                                                                            false,
                                                                            false))
                                           .collect(Collectors.toList());
@@ -232,14 +212,14 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
     private List<MigrationInfo> infoForAlreadyAppliedRepeatableMigrations(
         List<AppliedMigrationWithAttribs> repeatableApplied,
         Map<String, ResolvedMigration> repeatable,
-        MigrationInfoContext context) {
+        VersionContext versionContext) {
         var result = new ArrayList<MigrationInfo>();
         for (var a : repeatableApplied) {
             var resolvedMigration = repeatable.get(a.migration.getDescription());
             result.add(new MigrationInfoImpl(resolvedMigration,
                                              a.migration,
-                                             context,
-                                             false,
+                                             validationContext,
+                                             versionContext,
                                              a.attribs.deleted,
                                              false));
         }
@@ -248,7 +228,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
 
     private Set<ResolvedMigration> onlyPendingRepeatableMigrations(Map<String, ResolvedMigration> repeatable,
                                                                    List<AppliedMigrationWithAttribs> repeatableApplied,
-                                                                   MigrationInfoContext context) {
+                                                                   VersionContext context) {
         var result = new HashSet<>(repeatable.values()); // We REMOVE already applied migrations from this set
         for (var av : repeatableApplied) {
             String desc = av.migration.getDescription();
@@ -268,7 +248,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
         return result;
     }
 
-    private void updateLatestRepeatableRuns(MigrationInfoContext context,
+    private void updateLatestRepeatableRuns(VersionContext.Builder versionContext,
                                             List<AppliedMigrationWithAttribs> repeatableApplied) {
         for (var a : repeatableApplied) {
             if (a.attribs.deleted && a.migration.getType() == MigrationType.DELETE) {
@@ -278,7 +258,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
 
             String desc = appliedRepeatableMigration.getDescription();
             int rank = appliedRepeatableMigration.getInstalledRank();
-            Map<String, Integer> latestRepeatableRuns = context.latestRepeatableRuns;
+            Map<String, Integer> latestRepeatableRuns = versionContext.latestRepeatableRuns;
 
             if (!latestRepeatableRuns.containsKey(desc) || (rank > latestRepeatableRuns.get(desc))) {
                 latestRepeatableRuns.put(desc, rank);
@@ -286,73 +266,62 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
         }
     }
 
-    private void failOnMissingTarget(ArrayList<MigrationInfo> newMigrationInfoList) {
-        if (configuration.getFailOnMissingTarget() &&
-            target != null &&
-            target != MigrationVersion.CURRENT &&
-            target != MigrationVersion.LATEST &&
-            target != MigrationVersion.NEXT) {
-            boolean targetFound = false;
-
-            for (MigrationInfo migration : newMigrationInfoList) {
-                if (target.compareTo(migration.getVersion()) == 0) {
-                    targetFound = true;
-                    break;
+    private void failOnMissingTarget(List<MigrationInfo> migrations) {
+        if (configuration.getFailOnMissingTarget() && target != null) {
+            target.withVersion(version -> {
+                boolean targetFound = migrations.stream()
+                                                .anyMatch(it -> version.equals(it.getVersion()));
+                if (!targetFound) {
+                    throw new MigrateDbException("No migration with a target version " + target +
+                                                 " could be found. Ensure target is specified correctly and the " +
+                                                 "migration" +
+                                                 " exists.");
                 }
-            }
-
-            if (!targetFound) {
-                throw new MigrateDbException("No migration with a target version " + target +
-                                             " could be found. Ensure target is specified correctly and the migration" +
-                                             " exists.");
-            }
+            }).orElseDoNothing(); // Symbolic targets are never missing (I guess)
         }
     }
 
     private List<MigrationInfo> infoForPendingMigrations(List<ResolvedMigration> pendingMigrations,
-                                                         MigrationInfoContext context) {
+                                                         VersionContext versionContext) {
         return pendingMigrations.stream()
                                 .map(it -> new MigrationInfoImpl(it,
                                                                  null,
-                                                                 context,
-                                                                 false,
+                                                                 validationContext,
+                                                                 versionContext,
                                                                  false,
                                                                  false))
                                 .collect(Collectors.toList());
     }
 
     private List<MigrationInfo> infoForAlreadyAppliedMigrations(List<AppliedMigrationWithAttribs> versionedApplied,
-                                                                Map<VersionedKey, ResolvedMigration> versioned,
-                                                                MigrationInfoContext context) {
+                                                                Map<Version, ResolvedMigration> versioned,
+                                                                VersionContext versionContext) {
         var result = new ArrayList<MigrationInfo>();
         for (var a : versionedApplied) {
-            var searchKey = new VersionedKey(a.migration.getVersion(), a.migration.getType().isUndo());
-            var correspondingResolvedMigration = versioned.get(searchKey);
+            var correspondingResolvedMigration = versioned.get(a.migration.getVersion());
             result.add(new MigrationInfoImpl(correspondingResolvedMigration,
                                              a.migration,
-                                             context,
+                                             validationContext,
+                                             versionContext,
                                              a.attribs.outOfOrder,
-                                             a.attribs.deleted,
-                                             a.attribs.undone));
+                                             a.attribs.deleted));
         }
         return result;
     }
 
     private List<ResolvedMigration> onlyPendingMigrations(Set<ResolvedMigration> notAppliedMigrations,
-                                                          MigrationVersion latestBaselineMigration) {
+                                                          Version latestBaselineMigration) {
         // The point of a baseline migration is to replace earlier migrations, so earlier migrations are NOT pending
         return notAppliedMigrations.stream()
                                    .filter(it -> it.getVersion().compareTo(latestBaselineMigration) >= 0)
                                    .collect(Collectors.toList());
     }
 
-    private Set<ResolvedMigration> onlyNotAppliedMigrations(Map<VersionedKey, ResolvedMigration> versioned,
+    private Set<ResolvedMigration> onlyNonAppliedMigrations(Map<Version, ResolvedMigration> versioned,
                                                             List<AppliedMigrationWithAttribs> versionedApplied) {
         var result = new HashSet<>(versioned.values()); // We REMOVE all that have been applied from this set
         for (var a : versionedApplied) {
-            var resolvedMigrationThatHasBeenApplied = versioned.get(
-                new VersionedKey(a.migration.getVersion(), a.migration.getType().isUndo())
-            );
+            var resolvedMigrationThatHasBeenApplied = versioned.get(a.migration.getVersion());
             if (resolvedMigrationThatHasBeenApplied != null && a.migration.getType() != MigrationType.DELETE &&
                 !a.attribs.deleted) {
                 result.remove(resolvedMigrationThatHasBeenApplied);
@@ -361,7 +330,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
         return result;
     }
 
-    private void updateLastApplied(MigrationInfoContext context,
+    private void updateLastApplied(VersionContext.Builder context,
                                    List<AppliedMigrationWithAttribs> versionedApplied) {
         context.lastApplied = versionedApplied.stream()
                                               .filter(it -> it.migration.getType() != MigrationType.DELETE &&
@@ -371,9 +340,9 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
                                               .orElse(null);
     }
 
-    private void updateOutOfOrder(List<AppliedMigrationWithAttribs> versionedApplied) {
+    private void updateOutOfOrderAttribute(List<AppliedMigrationWithAttribs> versionedApplied) {
         // Out of order is anything that doesn't increment the version
-        MigrationVersion prev = null;
+        Version prev = null;
         for (var va : versionedApplied) {
             if (prev != null && prev.compareTo(va.migration.getVersion()) > 0) {
                 va.attribs.outOfOrder = true;
@@ -398,8 +367,8 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
                      .orElse(null);
     }
 
-    private void updateStateFromVersionedResolvedMigrations(MigrationInfoContext context,
-                                                            Map<VersionedKey, ResolvedMigration> versioned) {
+    private void updateStateFromVersionedResolvedMigrations(VersionContext.Builder context,
+                                                            Map<Version, ResolvedMigration> versioned) {
         for (var migration : versioned.values()) {
             if (migration.getVersion().compareTo(context.lastResolved) > 0) {
                 context.lastResolved = migration.getVersion();
@@ -417,13 +386,11 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
                                  .collect(Collectors.toMap(ResolvedMigration::getDescription, it -> it));
     }
 
-    private Map<VersionedKey, ResolvedMigration> onlyVersionedMigrations(
+    private Map<Version, ResolvedMigration> onlyVersionedMigrations(
         Collection<ResolvedMigration> resolvedMigrations) {
         return resolvedMigrations.stream()
                                  .filter(it -> !it.isRepeatable())
-                                 .collect(Collectors.toMap(it -> new VersionedKey(it.getVersion(),
-                                                                                  it.getType().isUndo()),
-                                                           it -> it));
+                                 .collect(Collectors.toMap(ResolvedMigration::getVersion, it -> it));
     }
 
     private List<AppliedMigrationWithAttribs> onlyRepeatableMigrations(List<AppliedMigration> appliedMigrations) {
@@ -448,7 +415,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
         }
     }
 
-    private void updateStateFromSyntheticMigrations(MigrationInfoContext context,
+    private void updateStateFromSyntheticMigrations(VersionContext.Builder context,
                                                     List<AppliedMigrationWithAttribs> versionedApplied) {
         for (var v : versionedApplied) {
             if (v.migration.getType() == MigrationType.SCHEMA) {
@@ -486,7 +453,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
      * @param version          The version.
      * @param appliedVersioned The applied migrations.
      */
-    private void markVersionedAsDeleted(MigrationVersion version,
+    private void markVersionedAsDeleted(Version version,
                                         List<AppliedMigrationWithAttribs> appliedVersioned) {
         for (int i = appliedVersioned.size() - 1; i >= 0; i--) {
             var v = appliedVersioned.get(i);
@@ -510,103 +477,64 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
 
     @Override
     public MigrationInfo current() {
-        MigrationInfo current = null;
-        for (MigrationInfo migrationInfo : migrationInfo) {
-            if (migrationInfo.getState().isApplied()
-                && !MigrationState.DELETED.equals(migrationInfo.getState())
-                && !migrationInfo.getType().equals(MigrationType.DELETE)
+        return migrationInfo.stream()
+                            .filter(it -> it.getState().is(Category.APPLIED) &&
+                                          it.getState() != MigrationState.DELETED &&
+                                          it.getType() != MigrationType.DELETE &&
+                                          it.getVersion() != null)
+                            .max(Comparator.comparing(MigrationInfo::getVersion))
+                            .or(this::latestRepeatableMigration)
+                            .orElse(null);
+    }
 
-                && migrationInfo.getVersion() != null
-                && (current == null || migrationInfo.getVersion().compareTo(current.getVersion()) > 0)) {
-                current = migrationInfo;
-            }
-        }
-        if (current != null) {
-            return current;
-        }
-
-        // If no versioned migration has been applied so far, fall back to the latest repeatable one
+    private Optional<? extends MigrationInfo> latestRepeatableMigration() {
         for (int i = migrationInfo.size() - 1; i >= 0; i--) {
             MigrationInfo migrationInfo = this.migrationInfo.get(i);
-            if (migrationInfo.getState().isApplied()
+            if (migrationInfo.getState().is(Category.APPLIED)
                 && !MigrationState.DELETED.equals(migrationInfo.getState())
                 && !MigrationType.DELETE.equals(migrationInfo.getType())
-
             ) {
-                return migrationInfo;
+                return Optional.of(migrationInfo);
             }
         }
-
-        return null;
+        return Optional.empty();
     }
 
     @Override
     public MigrationInfo[] pending() {
-        List<MigrationInfo> pendingMigrations = new ArrayList<>();
-        for (MigrationInfo migrationInfo : migrationInfo) {
-            if (MigrationState.PENDING == migrationInfo.getState()) {
-                pendingMigrations.add(migrationInfo);
-            }
-        }
-
-        return pendingMigrations.toArray(new MigrationInfo[0]);
+        return filterByState(it -> it == MigrationState.PENDING);
     }
 
     @Override
     public MigrationInfo[] applied() {
-        List<MigrationInfo> appliedMigrations = new ArrayList<>();
-        for (MigrationInfo migrationInfo : migrationInfo) {
-            if (migrationInfo.getState().isApplied()) {
-                appliedMigrations.add(migrationInfo);
-            }
-        }
-
-        return appliedMigrations.toArray(new MigrationInfo[0]);
+        return filterByState(it -> it.is(Category.APPLIED));
     }
 
     /**
      * @return The resolved migrations. An empty array if none.
      */
     public MigrationInfo[] resolved() {
-        List<MigrationInfo> resolvedMigrations = new ArrayList<>();
-        for (MigrationInfo migrationInfo : migrationInfo) {
-            if (migrationInfo.getState().isResolved()) {
-                resolvedMigrations.add(migrationInfo);
-            }
-        }
-
-        return resolvedMigrations.toArray(new MigrationInfo[0]);
+        return filterByState(it -> it.is(Category.RESOLVED));
     }
 
     /**
      * @return The failed migrations. An empty array if none.
      */
     public MigrationInfo[] failed() {
-        List<MigrationInfo> failedMigrations = new ArrayList<>();
-        for (MigrationInfo migrationInfo : migrationInfo) {
-            if (migrationInfo.getState().isFailed()) {
-                failedMigrations.add(migrationInfo);
-            }
-        }
-
-        return failedMigrations.toArray(new MigrationInfo[0]);
+        return filterByState(it -> it.is(Category.FAILED));
     }
 
     /**
      * @return The future migrations. An empty array if none.
      */
     public MigrationInfo[] future() {
-        List<MigrationInfo> futureMigrations = new ArrayList<>();
-        for (MigrationInfo migrationInfo : migrationInfo) {
-            if (((migrationInfo.getState() == MigrationState.FUTURE_SUCCESS)
-                 || (migrationInfo.getState() == MigrationState.FUTURE_FAILED))
+        return filterByState(it -> it.is(Category.FUTURE));
+    }
 
-            ) {
-                futureMigrations.add(migrationInfo);
-            }
-        }
-
-        return futureMigrations.toArray(new MigrationInfo[0]);
+    private MigrationInfo[] filterByState(Predicate<MigrationState> predicate) {
+        return migrationInfo.stream()
+                            .filter(it -> predicate.test(it.getState()))
+                            .toArray(MigrationInfo[]::new);
     }
 
     /**

@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.nio.charset.Charset;
 import migratedb.core.api.Location;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.logging.LogSystems;
 import migratedb.core.api.pattern.ValidatePattern;
 
@@ -32,7 +32,7 @@ public class PropertyNames {
     public static final String BASELINE_DESCRIPTION = "migratedb.baselineDescription";
     @Info(typeHint = Boolean.class)
     public static final String BASELINE_ON_MIGRATE = "migratedb.baselineOnMigrate";
-    @Info(typeHint = MigrationVersion.class)
+    @Info(typeHint = Version.class)
     public static final String BASELINE_VERSION = "migratedb.baselineVersion";
     @Info(typeHint = Boolean.class)
     public static final String BATCH = "migratedb.batch";
@@ -122,12 +122,10 @@ public class PropertyNames {
     public static final String TABLE = "migratedb.table";
     @Info(typeHint = String.class)
     public static final String TABLESPACE = "migratedb.tablespace";
-    @Info(typeHint = MigrationVersion.class)
+    @Info(typeHint = Version.class)
     public static final String TARGET = "migratedb.target";
-    @Info(typeHint = MigrationVersion.class, commaSeparated = true)
+    @Info(typeHint = Version.class, commaSeparated = true)
     public static final String CHERRY_PICK = "migratedb.cherryPick";
-    @Info(typeHint = String.class)
-    public static final String UNDO_SQL_MIGRATION_PREFIX = "migratedb.undoSqlMigrationPrefix";
     @Info(typeHint = JdbcUrlString.class)
     public static final String URL = "migratedb.url";
     @Info(typeHint = String.class)

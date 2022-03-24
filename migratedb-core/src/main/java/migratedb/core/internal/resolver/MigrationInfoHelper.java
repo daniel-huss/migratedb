@@ -17,7 +17,7 @@
 package migratedb.core.internal.resolver;
 
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -34,10 +34,10 @@ public class MigrationInfoHelper {
     }
 
     public static final class VersionAndDescription {
-        public final @Nullable MigrationVersion version;
+        public final @Nullable Version version;
         public final String description;
 
-        public VersionAndDescription(@Nullable MigrationVersion version, String description) {
+        public VersionAndDescription(@Nullable Version version, String description) {
             this.version = version;
             this.description = description;
         }
@@ -78,7 +78,7 @@ public class MigrationInfoHelper {
                                              + prefix + separator + description + ")");
             }
             try {
-                return new VersionAndDescription(MigrationVersion.fromVersion(version), description);
+                return new VersionAndDescription(Version.parse(version), description);
             } catch (RuntimeException e) {
                 throw new MigrateDbException("Wrong versioned migration name format: " + migrationName
                                              + " (could not recognise version number " + version + ")", e);

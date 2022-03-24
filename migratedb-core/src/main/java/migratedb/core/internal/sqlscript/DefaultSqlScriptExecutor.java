@@ -33,7 +33,8 @@ public class DefaultSqlScriptExecutor implements SqlScriptExecutor {
     protected final JdbcTemplate jdbcTemplate;
 
     public DefaultSqlScriptExecutor(JdbcTemplate jdbcTemplate,
-                                    CallbackExecutor callbackExecutor, boolean undo, boolean batch,
+                                    CallbackExecutor callbackExecutor,
+                                    boolean batch,
                                     boolean outputQueryResults,
                                     StatementInterceptor statementInterceptor
     ) {

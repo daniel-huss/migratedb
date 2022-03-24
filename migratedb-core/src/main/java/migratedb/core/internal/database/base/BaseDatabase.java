@@ -19,7 +19,7 @@ package migratedb.core.internal.database.base;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import migratedb.core.api.MigrationType;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Connection;
 import migratedb.core.api.internal.database.base.Database;
@@ -60,7 +60,7 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
     /**
      * The 'major.minor' version of this database.
      */
-    private MigrationVersion version;
+    private Version version;
     /**
      * The user who applied the migrations.
      */
@@ -94,7 +94,7 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
     protected abstract C doGetConnection(java.sql.Connection connection);
 
     @Override
-    public final MigrationVersion getVersion() {
+    public final Version getVersion() {
         if (version == null) {
             version = determineVersion();
         }
@@ -106,7 +106,7 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
             throw new MigrateDbUpgradeRequiredException(
                 databaseType,
                 computeVersionDisplayName(getVersion()),
-                computeVersionDisplayName(MigrationVersion.fromVersion(oldestSupportedVersion)));
+                computeVersionDisplayName(Version.parse(oldestSupportedVersion)));
         }
     }
 
@@ -133,8 +133,8 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
     /**
      * Compute the user-friendly display name for this database version.
      */
-    protected String computeVersionDisplayName(MigrationVersion version) {
-        return version.getVersion();
+    protected String computeVersionDisplayName(Version version) {
+        return version.toString();
     }
 
     @Override
@@ -251,9 +251,9 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
     /**
      * @return The major and minor version of the database.
      */
-    protected MigrationVersion determineVersion() {
+    protected Version determineVersion() {
         try {
-            return MigrationVersion.fromVersion(
+            return Version.parse(
                 jdbcMetaData.getDatabaseMajorVersion() + "." + jdbcMetaData.getDatabaseMinorVersion());
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to determine the major version of the database", e);
@@ -324,6 +324,7 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
         return installedBy;
     }
 
+    @Override
     public void close() {
         if (!useSingleConnection() && migrationConnection != null) {
             migrationConnection.close();
@@ -384,6 +385,7 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
     protected void doCleanPostSchemas(Schema[] schemas) throws SQLException {
     }
 
+    @Override
     public Schema[] getAllSchemas() {
         throw new UnsupportedOperationException("Getting all schemas not supported for " + getDatabaseType().getName());
     }

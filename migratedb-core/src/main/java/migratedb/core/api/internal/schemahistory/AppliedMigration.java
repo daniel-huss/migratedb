@@ -20,7 +20,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Objects;
 import migratedb.core.api.MigrationType;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 
 /**
  * A migration applied to the database (maps to a row in the schema history table).
@@ -34,7 +34,7 @@ public class AppliedMigration implements Comparable<AppliedMigration> {
     /**
      * The target version of this migration. {@code null} if it is a repeatable migration.
      */
-    private final MigrationVersion version;
+    private final Version version;
 
     /**
      * The description of the migration.
@@ -91,9 +91,16 @@ public class AppliedMigration implements Comparable<AppliedMigration> {
      * @param executionTime The execution time (in millis) of this migration.
      * @param success       Flag indicating whether the migration was successful or not.
      */
-    public AppliedMigration(int installedRank, MigrationVersion version, String description,
-                            MigrationType type, String script, Integer checksum, Timestamp installedOn,
-                            String installedBy, int executionTime, boolean success) {
+    public AppliedMigration(int installedRank,
+                            Version version,
+                            String description,
+                            MigrationType type,
+                            String script,
+                            Integer checksum,
+                            Timestamp installedOn,
+                            String installedBy,
+                            int executionTime,
+                            boolean success) {
         this.installedRank = installedRank;
         this.version = version;
         this.description = description;
@@ -116,7 +123,7 @@ public class AppliedMigration implements Comparable<AppliedMigration> {
     /**
      * @return The target version of this migration.
      */
-    public MigrationVersion getVersion() {
+    public Version getVersion() {
         return version;
     }
 
@@ -208,6 +215,7 @@ public class AppliedMigration implements Comparable<AppliedMigration> {
                             success);
     }
 
+    @Override
     public int compareTo(AppliedMigration o) {
         return Integer.compare(installedRank, o.installedRank);
     }

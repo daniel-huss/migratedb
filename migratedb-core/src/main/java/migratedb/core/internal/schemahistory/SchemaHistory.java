@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.MigrationType;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
@@ -36,6 +36,7 @@ import migratedb.core.internal.util.StringUtils;
  * The schema history used to track all applied migrations.
  */
 public abstract class SchemaHistory {
+    public static final String EMPTY_SCHEMA_DESCRIPTION = "<< Empty Schema >>";
     public static final String NO_DESCRIPTION_MARKER = "<< no description >>";
 
     /**
@@ -182,7 +183,7 @@ public abstract class SchemaHistory {
      * @param executionTime The execution time (in millis) of this migration.
      * @param success       Flag indicating whether the migration was successful or not.
      */
-    public final void addAppliedMigration(MigrationVersion version, String description, MigrationType type,
+    public final void addAppliedMigration(Version version, String description, MigrationType type,
                                           String script, Integer checksum, int executionTime, boolean success) {
         int installedRank = type == MigrationType.SCHEMA ? 0 : calculateInstalledRank();
         addAppliedMigration(
@@ -209,7 +210,7 @@ public abstract class SchemaHistory {
         return appliedMigrations.get(appliedMigrations.size() - 1).getInstalledRank() + 1;
     }
 
-    public abstract void addAppliedMigration(int installedRank, MigrationVersion version, String description,
+    public abstract void addAppliedMigration(int installedRank, Version version, String description,
                                              MigrationType type, String script, Integer checksum,
                                              int executionTime, boolean success);
 

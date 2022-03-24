@@ -17,7 +17,7 @@
 package migratedb.core.internal.command;
 
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
@@ -41,7 +41,7 @@ public class DbBaseline {
     /**
      * The version to tag an existing schema with when executing baseline.
      */
-    private final MigrationVersion baselineVersion;
+    private final Version baselineVersion;
 
     /**
      * The description to tag an existing schema with when executing baseline.
@@ -67,7 +67,7 @@ public class DbBaseline {
      * @param callbackExecutor    The callback executor.
      * @param database            Database-specific functionality.
      */
-    public DbBaseline(SchemaHistory schemaHistory, MigrationVersion baselineVersion, String baselineDescription,
+    public DbBaseline(SchemaHistory schemaHistory, Version baselineVersion, String baselineDescription,
                       CallbackExecutor callbackExecutor, Database database) {
         this.schemaHistory = schemaHistory;
         this.baselineVersion = baselineVersion;
@@ -106,7 +106,7 @@ public class DbBaseline {
                             + baselineMarker.getVersion() + "," + baselineMarker.getDescription() + ")");
                     }
                 } else {
-                    if (schemaHistory.hasSchemasMarker() && baselineVersion.equals(MigrationVersion.fromVersion("0"))) {
+                    if (schemaHistory.hasSchemasMarker() && baselineVersion.equals(Version.fromVersion("0"))) {
                         throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
                                                      " with version 0 as this version was used for schema creation");
                     }

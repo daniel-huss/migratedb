@@ -30,7 +30,7 @@ import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.MigrationType;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.internal.database.base.Connection;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Table;
@@ -119,7 +119,6 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                             public Object call() {
                                 sqlScriptExecutorFactory.createSqlScriptExecutor(connection.getJdbcConnection(),
                                                                                  false,
-                                                                                 false,
                                                                                  true)
                                                         .execute(database.getCreateScript(sqlScriptFactory,
                                                                                           table,
@@ -153,9 +152,10 @@ class JdbcTableSchemaHistory extends SchemaHistory {
         return connection.lock(table, callable);
     }
 
-    @Override public void addAppliedMigration(int installedRank, MigrationVersion version, String description,
-                                              MigrationType type, String script, Integer checksum,
-                                              int executionTime, boolean success) {
+    @Override
+    public void addAppliedMigration(int installedRank, Version version, String description,
+                                    MigrationType type, String script, Integer checksum,
+                                    int executionTime, boolean success) {
         boolean tableIsLocked = false;
         connection.restoreOriginalState();
 
@@ -216,6 +216,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         try {
             cache.addAll(jdbcTemplate.query(query, new RowMapper<AppliedMigration>() {
+                @Override
                 public AppliedMigration mapRow(ResultSet rs) throws SQLException {
                     // Construct a map of lower-cased column names to ordinals. This is useful for databases that
                     // upper-case them - eg Snowflake with QUOTED-IDENTIFIERS-IGNORE-CASE turned on
@@ -231,14 +232,11 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                     if ("SPRING_JDBC".equals(type)) {
                         type = "JDBC";
                     }
-                    if ("UNDO_SPRING_JDBC".equals(type)) {
-                        type = "UNDO_JDBC";
-                    }
 
                     return new AppliedMigration(
                         rs.getInt(columnOrdinalMap.get("installed_rank")),
                         rs.getString(columnOrdinalMap.get("version")) != null
-                        ? MigrationVersion.fromVersion(rs.getString(columnOrdinalMap.get("version"))) : null,
+                        ? Version.parse(rs.getString(columnOrdinalMap.get("version"))) : null,
                         rs.getString(columnOrdinalMap.get("description")),
                         MigrationType.fromString(type),
                         rs.getString(columnOrdinalMap.get("script")),
@@ -298,7 +296,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                                      " WHERE " + database.quote("success") + " = " + database.getBooleanFalse() +
                                      " AND " +
                                      (appliedMigration.getVersion() != null ?
-                                      database.quote("version") + " = '" + appliedMigration.getVersion().getVersion() +
+                                      database.quote("version") + " = '" + appliedMigration.getVersion() +
                                       "'" :
                                       database.quote("description") + " = '" + appliedMigration.getDescription() +
                                       "'"));
@@ -337,7 +335,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         clearCache();
 
-        MigrationVersion version = appliedMigration.getVersion();
+        Version version = appliedMigration.getVersion();
 
         String description = resolvedMigration.getDescription();
         Integer checksum = resolvedMigration.getChecksum();
@@ -374,7 +372,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         clearCache();
 
-        MigrationVersion version = appliedMigration.getVersion();
+        Version version = appliedMigration.getVersion();
         String versionStr = version == null ? null : version.toString();
 
         if (version == null) {

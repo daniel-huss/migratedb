@@ -17,7 +17,8 @@
 package migratedb.core.internal.resource;
 
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents a resource name, parsed into its components.
@@ -77,9 +78,9 @@ public class ResourceName {
     /**
      * The version of the resource (eg. "1.2.3" for versioned migrations), or null for non-versioned resources
      */
-    public MigrationVersion getVersion() {
+    public @Nullable Version getVersion() {
         if (isVersioned()) {
-            return MigrationVersion.fromVersion(version);
+            return Version.parse(version);
         } else {
             return null;
         }

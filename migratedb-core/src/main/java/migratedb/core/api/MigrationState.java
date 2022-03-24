@@ -16,6 +16,9 @@
  */
 package migratedb.core.api;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+
 /**
  * The state of a migration.
  */
@@ -23,20 +26,20 @@ public enum MigrationState {
     /**
      * This migration has not been applied yet.
      */
-    PENDING("Pending", true, false, false),
+    PENDING("Pending", Category.RESOLVED),
     /**
      * This migration has not been applied yet, and won't be applied because target is set to a lower version.
      */
-    ABOVE_TARGET("Above Target", true, false, false),
+    ABOVE_TARGET("Above Target", Category.RESOLVED),
     /**
      * This migration was not applied against this DB, because the schema history table was baselined with a higher
      * version.
      */
-    BELOW_BASELINE("Below Baseline", true, false, false),
+    BELOW_BASELINE("Below Baseline", Category.RESOLVED),
     /**
      * This migration has baselined this DB.
      */
-    BASELINE("Baseline", true, true, false),
+    BASELINE("Baseline", Category.RESOLVED, Category.APPLIED),
     /**
      * When using cherryPick, this indicates a migration that was not in the cherry picked list. When not using
      * cherryPick, this usually indicates a problem.
@@ -46,14 +49,14 @@ public enum MigrationState {
      * <p>
      * Fix by increasing the version number, run clean and migrate again or rerun migration with outOfOrder enabled.
      */
-    IGNORED("Ignored", true, false, false),
+    IGNORED("Ignored", Category.RESOLVED),
     /**
      * This migration succeeded.
      * <p>
      * This migration was applied against this DB, but it is not available locally. This usually results from multiple
      * older migration files being consolidated into a single one.
      */
-    MISSING_SUCCESS("Missing", false, true, false),
+    MISSING_SUCCESS("Missing", Category.APPLIED),
     /**
      * This migration failed.
      * <p>
@@ -62,30 +65,22 @@ public enum MigrationState {
      * <p>
      * This should rarely, if ever, occur in practice.
      */
-    MISSING_FAILED("Failed (Missing)", false, true, true),
+    MISSING_FAILED("Failed (Missing)", Category.APPLIED, Category.FAILED),
     /**
      * This migration succeeded.
      */
-    SUCCESS("Success", true, true, false),
-    /**
-     * This versioned migration succeeded, but has since been undone.
-     */
-    UNDONE("Undone", true, true, false),
-    /**
-     * This undo migration is ready to be applied if desired.
-     */
-    AVAILABLE("Available", true, false, false),
+    SUCCESS("Success", Category.RESOLVED, Category.APPLIED),
     /**
      * This migration failed.
      */
-    FAILED("Failed", true, true, true),
+    FAILED("Failed", Category.RESOLVED, Category.APPLIED, Category.FAILED),
     /**
      * This migration succeeded.
      * <p>
      * This migration succeeded, but it was applied out of order. Rerunning the entire migration history might produce
      * different results!
      */
-    OUT_OF_ORDER("Out of Order", true, true, false),
+    OUT_OF_ORDER("Out of Order", Category.RESOLVED, Category.APPLIED),
     /**
      * This migration succeeded.
      * <p>
@@ -93,7 +88,7 @@ public enum MigrationState {
      * highest version available locally. It was most likely successfully installed by a future version of this
      * deployable.
      */
-    FUTURE_SUCCESS("Future", false, true, false),
+    FUTURE_SUCCESS("Future", Category.APPLIED, Category.FUTURE),
     /**
      * This migration failed.
      * <p>
@@ -101,45 +96,43 @@ public enum MigrationState {
      * highest version available locally. It most likely failed during the installation of a future version of this
      * deployable.
      */
-    FUTURE_FAILED("Failed (Future)", false, true, true),
+    FUTURE_FAILED("Failed (Future)",  Category.APPLIED, Category.FUTURE, Category.FAILED),
     /**
      * This is a repeatable migration that is outdated and should be re-applied.
      */
-    OUTDATED("Outdated", true, true, false),
+    OUTDATED("Outdated", Category.RESOLVED, Category.APPLIED),
     /**
      * This is a repeatable migration that is outdated and has already been superseded by a newer run.
      */
-    SUPERSEDED("Superseded", true, true, false),
+    SUPERSEDED("Superseded", Category.RESOLVED, Category.APPLIED),
     /**
      * This is a migration that has been marked as deleted.
      */
-    DELETED("Deleted", false, true, false);
+    DELETED("Deleted",  Category.APPLIED);
+
+    public enum Category {
+        RESOLVED, APPLIED, FAILED, FUTURE
+    }
 
     private final String displayName;
-    private final boolean resolved;
-    private final boolean applied;
-    private final boolean failed;
+    private final EnumSet<Category> categories;
+
+    MigrationState(String displayName, Category... categories) {
+        this.displayName = displayName;
+        this.categories = EnumSet.noneOf(Category.class);
+        this.categories.addAll(Arrays.asList(categories));
+    }
 
     MigrationState(String displayName, boolean resolved, boolean applied, boolean failed) {
         this.displayName = displayName;
-        this.resolved = resolved;
-        this.applied = applied;
-        this.failed = failed;
+        categories = EnumSet.noneOf(Category.class);
     }
 
     public String getDisplayName() {
         return displayName;
     }
 
-    public boolean isApplied() {
-        return applied;
-    }
-
-    public boolean isResolved() {
-        return resolved;
-    }
-
-    public boolean isFailed() {
-        return failed;
+    public boolean is(Category category) {
+        return categories.contains(category);
     }
 }

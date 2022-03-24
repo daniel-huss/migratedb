@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationType;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
@@ -186,7 +186,7 @@ public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
     }
 
     @Override
-    protected MigrationVersion determineVersion() {
+    protected Version determineVersion() {
         // Ignore the version from the JDBC metadata and use the version returned by the database since proxies such as
         // Azure or ProxySQL return incorrect versions
         String selectVersionOutput = BaseDatabaseType.getSelectVersionOutput(rawMainJdbcConnection);
@@ -196,11 +196,11 @@ public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
         return extractMySQLVersionFromString(selectVersionOutput);
     }
 
-    static MigrationVersion extractMySQLVersionFromString(String selectVersionOutput) {
+    static Version extractMySQLVersionFromString(String selectVersionOutput) {
         return extractVersionFromString(selectVersionOutput, MYSQL_VERSION_PATTERN);
     }
 
-    static MigrationVersion extractMariaDBVersionFromString(String selectVersionOutput) {
+    static Version extractMariaDBVersionFromString(String selectVersionOutput) {
         return extractVersionFromString(selectVersionOutput,
                                         MARIADB_VERSION_PATTERN,
                                         MARIADB_WITH_MAXSCALE_VERSION_PATTERN);
@@ -209,11 +209,11 @@ public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
     /*
      * Given a version string that may contain unwanted text, extract out the version part.
      */
-    private static MigrationVersion extractVersionFromString(String versionString, Pattern... patterns) {
+    private static Version extractVersionFromString(String versionString, Pattern... patterns) {
         for (Pattern pattern : patterns) {
             Matcher matcher = pattern.matcher(versionString);
             if (matcher.find()) {
-                return MigrationVersion.fromVersion(matcher.group(1));
+                return Version.parse(matcher.group(1));
             }
         }
         throw new MigrateDbException("Unable to determine version from '" + versionString + "'");
@@ -259,6 +259,7 @@ public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
         return "0";
     }
 
+    @Override
     public String getOpenQuote() {
         return "`";
     }

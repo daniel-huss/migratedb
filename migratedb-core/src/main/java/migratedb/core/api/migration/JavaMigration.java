@@ -16,7 +16,7 @@
  */
 package migratedb.core.api.migration;
 
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 
 /**
  * Interface to be implemented by Java-based Migrations.
@@ -41,7 +41,7 @@ public interface JavaMigration {
     /**
      * @return The version of the schema after the migration is complete. {@code null} for repeatable migrations.
      */
-    MigrationVersion getVersion();
+    Version getVersion();
 
     /**
      * @return The description of this migration for the migration history. Never {@code null}.
@@ -52,13 +52,6 @@ public interface JavaMigration {
      * @return The checksum of this migration.
      */
     Integer getChecksum();
-
-    /**
-     * Whether this is an undo migration for a previously applied versioned migration.
-     *
-     * @return {@code true} if it is, {@code false} if not. Always {@code false} for repeatable migrations.
-     */
-    boolean isUndo();
 
     /**
      * Whether this is a baseline migration.

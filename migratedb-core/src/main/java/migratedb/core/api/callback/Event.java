@@ -32,7 +32,6 @@ public enum Event {
      * operation.
      */
     AFTER_CLEAN_ERROR("afterCleanError"),
-
     /**
      * Fired before migrate is executed. This event will be fired in a separate transaction from the actual migrate
      * operation.
@@ -98,62 +97,6 @@ public enum Event {
      * operation.
      */
     AFTER_MIGRATE_ERROR("afterMigrateError"),
-
-    /**
-     * Fired before undo is executed. This event will be fired in a separate transaction from the actual undo
-     * operation.
-     * <p><i>MigrateDb Teams Edition only</i></p>
-     */
-    BEFORE_UNDO("beforeUndo"),
-    /**
-     * Fired before each individual undo is executed. This event will be fired within the same transaction (if any) as
-     * the undo and can be used for things like setting up connection parameters that are required by undo.
-     * <p><i>MigrateDb Teams Edition only</i></p>
-     */
-    BEFORE_EACH_UNDO("beforeEachUndo"),
-    /**
-     * Fired before each individual statement in an undo migration is executed. This event will be fired within the same
-     * transaction (if any) as the migration and can be used for things like asserting a statement complies with policy
-     * (for example: no grant statements allowed).
-     * <p><i>MigrateDb Teams Edition only</i></p>
-     */
-    BEFORE_EACH_UNDO_STATEMENT("beforeEachUndoStatement"),
-    /**
-     * Fired after each individual statement in an undo migration that succeeded. This event will be fired within the
-     * same transaction (if any) as the migration.
-     * <p><i>MigrateDb Teams Edition only</i></p>
-     */
-    AFTER_EACH_UNDO_STATEMENT("afterEachUndoStatement"),
-    /**
-     * Fired after each individual statement in an undo migration that failed. This event will be fired within the same
-     * transaction (if any) as the migration.
-     * <p><i>MigrateDb Teams Edition only</i></p>
-     */
-    AFTER_EACH_UNDO_STATEMENT_ERROR("afterEachUndoStatementError"),
-    /**
-     * Fired after each individual undo that succeeded. This event will be fired within the same transaction (if any) as
-     * the undo.
-     * <p><i>MigrateDb Teams Edition only</i></p>
-     */
-    AFTER_EACH_UNDO("afterEachUndo"),
-    /**
-     * Fired after each individual undo that failed. This event will be fired within the same transaction (if any) as
-     * the undo.
-     * <p><i>MigrateDb Teams Edition only</i></p>
-     */
-    AFTER_EACH_UNDO_ERROR("afterEachUndoError"),
-    /**
-     * Fired after undo has succeeded. This event will be fired in a separate transaction from the actual undo
-     * operation.
-     * <p><i>MigrateDb Teams Edition only</i></p>
-     */
-    AFTER_UNDO("afterUndo"),
-    /**
-     * Fired after undo has failed. This event will be fired in a separate transaction from the actual undo operation.
-     * <p><i>MigrateDb Teams Edition only</i></p>
-     */
-    AFTER_UNDO_ERROR("afterUndoError"),
-
     /**
      * Fired before validate is executed. This event will be fired in a separate transaction from the actual validate
      * operation.
@@ -169,7 +112,6 @@ public enum Event {
      * operation.
      */
     AFTER_VALIDATE_ERROR("afterValidateError"),
-
     /**
      * Fired before baseline is executed. This event will be fired in a separate transaction from the actual baseline
      * operation.
@@ -185,7 +127,6 @@ public enum Event {
      * operation.
      */
     AFTER_BASELINE_ERROR("afterBaselineError"),
-
     /**
      * Fired before repair is executed. This event will be fired in a separate transaction from the actual repair
      * operation.
@@ -250,8 +191,9 @@ public enum Event {
     CREATE_SCHEMA("createSchema");
 
     /**
- * The MigrateDB lifecycle events that can be handled in callbacks.
- */ private final String id;
+     * The MigrateDB lifecycle events that can be handled in callbacks.
+     */
+    private final String id;
 
     Event(String id) {
         this.id = id;

@@ -17,7 +17,7 @@
 package migratedb.core.testing
 
 import migratedb.core.api.MigrationPattern
-import migratedb.core.api.MigrationVersion
+import migratedb.core.api.TargetVersion
 import migratedb.core.api.configuration.ClassicConfiguration
 import migratedb.core.api.pattern.ValidatePattern
 import net.jqwik.api.Arbitraries
@@ -29,7 +29,7 @@ import net.jqwik.api.domains.DomainContextBase
 class MigrateDbDomain : DomainContextBase() {
 
     @Provide
-    fun migrationVersions(): Arbitrary<MigrationVersion> = anyMigrationVersion()
+    fun targetVersions(): Arbitrary<TargetVersion> = anyTargetVersion()
 
     @Provide
     fun migrationPatterns(): Arbitrary<MigrationPattern> = anyMigrationPattern()

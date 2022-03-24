@@ -20,13 +20,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.MigrationState;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.TargetVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.executor.Context;
@@ -41,12 +43,15 @@ import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
+import migratedb.core.internal.info.ValidationContext;
+import migratedb.core.internal.info.ValidationMatch;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.DateTimeUtils;
 import migratedb.core.internal.util.ExceptionUtils;
 import migratedb.core.internal.util.StopWatch;
 import migratedb.core.internal.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class DbMigrate {
     private static final Log LOG = Log.getLog(DbMigrate.class);
@@ -150,7 +155,7 @@ public class DbMigrate {
             if (count == 0) {
                 // No further migrations available
                 break;
-            } else if (configuration.getTarget() == MigrationVersion.NEXT) {
+            } else if (Objects.equals(configuration.getTarget(), TargetVersion.NEXT)) {
                 // With target=next we only execute one migration
                 break;
             }
@@ -171,29 +176,28 @@ public class DbMigrate {
      * @return The number of newly applied migrations.
      */
     private Integer migrateGroup(boolean firstRun) {
-        MigrationInfoServiceImpl infoService =
-            new MigrationInfoServiceImpl(migrationResolver,
-                                         schemaHistory,
-                                         database,
-                                         configuration,
-                                         configuration.getTarget(),
-                                         configuration.isOutOfOrder(),
-                                         configuration.getCherryPick(),
-                                         true,
-                                         true,
-                                         true,
-                                         true);
+        var allowedMatches = EnumSet.allOf(ValidationMatch.class);
+        if (!configuration.isOutOfOrder()) {
+            allowedMatches.remove(ValidationMatch.OUT_OF_ORDER);
+        }
+        var validationContext = new ValidationContext(allowedMatches);
+        var infoService = new MigrationInfoServiceImpl(migrationResolver,
+                                                       schemaHistory,
+                                                       database,
+                                                       configuration,
+                                                       configuration.getTarget(),
+                                                       configuration.getCherryPick(),
+                                                       new ValidationContext(allowedMatches));
         infoService.refresh();
 
-        MigrationInfo current = infoService.current();
-        MigrationVersion currentSchemaVersion = current == null ? MigrationVersion.EMPTY : current.getVersion();
+        var current = infoService.current();
+        var currentSchemaVersion = current == null ? null : current.getVersion();
+        var currentSchemaVersionString = currentSchemaVersion == null ? SchemaHistory.EMPTY_SCHEMA_DESCRIPTION
+                                                                      : currentSchemaVersion.toString();
         if (firstRun) {
-            LOG.info("Current version of schema " + schema + ": " + currentSchemaVersion);
+            LOG.info("Current version of schema " + schema + ": " + currentSchemaVersionString);
 
-            MigrationVersion schemaVersionToOutput =
-                currentSchemaVersion == null ? MigrationVersion.EMPTY : currentSchemaVersion;
-            migrateResult.initialSchemaVersion = schemaVersionToOutput.getVersion();
-
+            migrateResult.initialSchemaVersion = currentSchemaVersionString;
             if (configuration.isOutOfOrder()) {
                 String outOfOrderWarning =
                     "outOfOrder mode is active. Migration of schema " + schema + " may not be reproducible.";
@@ -207,13 +211,13 @@ public class DbMigrate {
             List<MigrationInfo> resolved = Arrays.asList(infoService.resolved());
             Collections.reverse(resolved);
             if (resolved.isEmpty()) {
-                LOG.error("Schema " + schema + " has version " + currentSchemaVersion
+                LOG.error("Schema " + schema + " has version " + currentSchemaVersionString
                           + ", but no migration could be resolved in the configured locations !");
             } else {
                 for (MigrationInfo migrationInfo : resolved) {
                     // Only consider versioned migrations
                     if (migrationInfo.getVersion() != null) {
-                        LOG.warn("Schema " + schema + " has a version (" + currentSchemaVersion
+                        LOG.warn("Schema " + schema + " has a version (" + currentSchemaVersionString
                                  + ") that is newer than the latest available migration ("
                                  + migrationInfo.getVersion() + ") !");
                         break;
@@ -246,8 +250,7 @@ public class DbMigrate {
                 continue;
             }
 
-            boolean isOutOfOrder = pendingMigration.getVersion() != null
-                                   && pendingMigration.getVersion().compareTo(currentSchemaVersion) < 0;
+            boolean isOutOfOrder = isOutOfOrder(pendingMigration, currentSchemaVersion);
 
             group.put(pendingMigration, isOutOfOrder);
 
@@ -263,6 +266,14 @@ public class DbMigrate {
             applyMigrations(group, skipExecutingMigrations);
         }
         return group.size();
+    }
+
+    private boolean isOutOfOrder(MigrationInfo pendingMigration, @Nullable Version currentSchemaVersion) {
+        var pendingVersion = pendingMigration.getVersion();
+        if (pendingVersion == null) {
+            return false;
+        }
+        return currentSchemaVersion != null && pendingVersion.compareTo(currentSchemaVersion) < 0;
     }
 
     private void logSummary(int migrationSuccessCount, long executionTime, String targetVersion) {
@@ -321,7 +332,7 @@ public class DbMigrate {
         boolean executeGroupInTransaction = true;
         boolean first = true;
 
-        for (Map.Entry<MigrationInfo, Boolean> entry : group.entrySet()) {
+        for (var entry : group.entrySet()) {
             ResolvedMigration resolvedMigration = entry.getKey().getResolvedMigration();
             boolean inTransaction = resolvedMigration.getExecutor().canExecuteInTransaction();
 
@@ -362,7 +373,7 @@ public class DbMigrate {
             }
         };
 
-        for (Map.Entry<MigrationInfo, Boolean> entry : group.entrySet()) {
+        for (var entry : group.entrySet()) {
             MigrationInfo migration = entry.getKey();
             boolean isOutOfOrder = entry.getValue();
 

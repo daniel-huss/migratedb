@@ -18,7 +18,7 @@ package migratedb.core.internal.database.sqlserver.synapse;
 
 import java.sql.Connection;
 import java.util.Date;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.internal.database.sqlserver.SQLServerConnection;
@@ -39,7 +39,7 @@ public class SynapseDatabase extends SQLServerDatabase {
     }
 
     @Override
-    protected String computeVersionDisplayName(MigrationVersion version) {
+    protected String computeVersionDisplayName(Version version) {
         return "Azure Synapse v" + getVersion().getMajorAsString();
     }
 

@@ -16,8 +16,8 @@
 package migratedb.core.testing
 
 import migratedb.core.api.ClassProvider
-import migratedb.core.api.MigrationVersion
 import migratedb.core.api.ResourceProvider
+import migratedb.core.api.Version
 import migratedb.core.api.callback.Callback
 import migratedb.core.api.callback.Context
 import migratedb.core.api.callback.Event
@@ -49,8 +49,8 @@ class UniversalDummy : Callback,
         return ByteArrayOutputStream(1)
     }
 
-    override fun getVersion(): MigrationVersion {
-        return MigrationVersion.fromVersion("1.0")
+    override fun getVersion(): Version {
+        return Version.parse("1.0")
     }
 
     override fun getDescription(): String {
@@ -59,10 +59,6 @@ class UniversalDummy : Callback,
 
     override fun getChecksum(): Int {
         return 1
-    }
-
-    override fun isUndo(): Boolean {
-        return false
     }
 
     override fun isBaselineMigration(): Boolean {

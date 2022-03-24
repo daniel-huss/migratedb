@@ -20,56 +20,41 @@ public enum MigrationType {
     /**
      * Schema creation migration.
      */
-    SCHEMA(true, false, false),
+    SCHEMA(true, false),
     /**
      * Baseline migration.
      */
-    BASELINE(true, false, false),
+    BASELINE(true, false),
     /**
-     * Deleted migration
+     * Deleted migration.
      */
-    DELETE(true, false, false),
+    DELETE(true, false),
     /**
      * SQL migrations.
      */
-    SQL(false, false, false),
+    SQL(false, false),
     /**
      * SQL baseline migrations.
      */
-    SQL_BASELINE(false, false, true),
-    /**
-     * Undo SQL migrations.
-     */
-    UNDO_SQL(false, true, false),
+    SQL_BASELINE(false, true),
     /**
      * JDBC Java-based migrations.
      */
-    JDBC(false, false, false),
+    JDBC(false, false),
     /**
      * JDBC Java-based baseline migrations.
      */
-    JDBC_BASELINE(false, false, true),
-    /**
-     * Undo JDBC java-based migrations.
-     */
-    UNDO_JDBC(false, true, false),
-
+    JDBC_BASELINE(false, true),
     /**
      * Migrations using custom MigrationResolvers.
      */
-    CUSTOM(false, false, false),
-    /**
-     * Undo migrations using custom MigrationResolvers.
-     */
-    UNDO_CUSTOM(false, true, false);
+    CUSTOM(false, false);
 
     private final boolean synthetic;
-    private final boolean undo;
     private final boolean baseline;
 
-    MigrationType(boolean synthetic, boolean undo, boolean baseline) {
+    MigrationType(boolean synthetic, boolean baseline) {
         this.synthetic = synthetic;
-        this.undo = undo;
         this.baseline = baseline;
     }
 
@@ -77,9 +62,6 @@ public enum MigrationType {
         // Convert legacy types to maintain compatibility
         if ("SPRING_JDBC".equals(migrationType)) {
             return JDBC;
-        }
-        if ("UNDO_SPRING_JDBC".equals(migrationType)) {
-            return UNDO_JDBC;
         }
         if ("SQL_STATE_SCRIPT".equals(migrationType)) {
             return SQL_BASELINE;
@@ -96,14 +78,6 @@ public enum MigrationType {
      */
     public boolean isSynthetic() {
         return synthetic;
-    }
-
-    /**
-     * @return Whether this is an undo migration, which has undone an earlier migration present in the schema history
-     * table.
-     */
-    public boolean isUndo() {
-        return undo;
     }
 
     /**

@@ -63,6 +63,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
     /**
      * @return The human-readable name for this database.
      */
+    @Override
     public abstract String getName();
 
     @Override
@@ -73,17 +74,20 @@ public abstract class BaseDatabaseType implements DatabaseType {
     /**
      * @return The JDBC type used to represent {@code null} in prepared statements.
      */
+    @Override
     public abstract int getNullType();
 
     /**
      * Whether this database type should handle the given JDBC url.
      */
+    @Override
     public abstract boolean handlesJDBCUrl(String url);
 
     /**
      * When identifying database types, the priority with which this type will be used. High numbers indicate that this
      * type will be used in preference to others.
      */
+    @Override
     public int getPriority() {
         return 0;
     }
@@ -94,6 +98,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
      *
      * @return The URL regex.
      */
+    @Override
     public Pattern getJDBCCredentialsPattern() {
         return defaultJdbcCredentialsPattern;
     }
@@ -109,6 +114,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
     /**
      * @return The full driver class name to be instantiated to handle this url.
      */
+    @Override
     public abstract String getDriverClass(String url, ClassLoader classLoader);
 
     /**
@@ -117,6 +123,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
      *
      * @return The JDBC driver class name, {@code null} if none.
      */
+    @Override
     public String getBackupDriverClass(String url, ClassLoader classLoader) {
         return null;
     }
@@ -125,9 +132,11 @@ public abstract class BaseDatabaseType implements DatabaseType {
      * This allows more fine-grained control over which DatabaseType handles which connection. MigrateDb will use the
      * first DatabaseType that returns true for this method.
      */
+    @Override
     public abstract boolean handlesDatabaseProductNameAndVersion(String databaseProductName,
                                                                  String databaseProductVersion, Connection connection);
 
+    @Override
     public Database createDatabase(Configuration configuration, boolean printInfo,
                                    JdbcConnectionFactory jdbcConnectionFactory,
                                    StatementInterceptor statementInterceptor) {
@@ -148,12 +157,15 @@ public abstract class BaseDatabaseType implements DatabaseType {
         return database;
     }
 
+    @Override
     public abstract Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
                                             StatementInterceptor statementInterceptor);
 
+    @Override
     public abstract BaseParser createParser(Configuration configuration, ResourceProvider resourceProvider,
                                             ParsingContext parsingContext);
 
+    @Override
     public SqlScriptFactory createSqlScriptFactory(Configuration configuration, ParsingContext parsingContext) {
         return (resource, mixed, resourceProvider) -> new ParserSqlScript(createParser(configuration,
                                                                                        resourceProvider,
@@ -164,23 +176,25 @@ public abstract class BaseDatabaseType implements DatabaseType {
                                                                           mixed);
     }
 
+    @Override
     public SqlScriptExecutorFactory createSqlScriptExecutorFactory(JdbcConnectionFactory jdbcConnectionFactory,
                                                                    CallbackExecutor callbackExecutor,
                                                                    StatementInterceptor statementInterceptor) {
         DatabaseType thisRef = this;
-        return (connection, undo, batch, outputQueryResults) ->
+        return (connection, batch, outputQueryResults) ->
             new DefaultSqlScriptExecutor(new JdbcTemplate(connection, thisRef),
                                          callbackExecutor,
-                                         undo,
                                          batch,
                                          outputQueryResults,
                                          statementInterceptor);
     }
 
+    @Override
     public DatabaseExecutionStrategy createExecutionStrategy(java.sql.Connection connection) {
         return new DefaultExecutionStrategy();
     }
 
+    @Override
     public ExecutionTemplate createTransactionalExecutionTemplate(Connection connection, boolean rollbackOnException) {
         return new TransactionalExecutionTemplate(connection, rollbackOnException);
     }
@@ -218,6 +232,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
      * @param props       The properties to write to.
      * @param classLoader The classLoader to use.
      */
+    @Override
     public void setDefaultConnectionProps(String url, Properties props, ClassLoader classLoader) {
     }
 
@@ -229,6 +244,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
      * @param props       The properties to write to.
      * @param classLoader The classLoader to use.
      */
+    @Override
     public void setConfigConnectionProps(Configuration config, Properties props, ClassLoader classLoader) {
     }
 
@@ -238,12 +254,14 @@ public abstract class BaseDatabaseType implements DatabaseType {
      *
      * @param props The properties to write to.
      */
+    @Override
     public void setOverridingConnectionProps(Map<String, String> props) {
     }
 
     /**
      * Only applicable to embedded databases that require this.
      */
+    @Override
     public void shutdownDatabase(String url, Driver driver) {
     }
 
@@ -251,6 +269,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
      * Detects whether a user is required from configuration. This may not be the case if the driver supports other
      * authentication mechanisms, or supports the user being encoded in the URL.
      */
+    @Override
     public boolean detectUserRequiredByUrl(String url) {
         return true;
     }
@@ -259,22 +278,27 @@ public abstract class BaseDatabaseType implements DatabaseType {
      * Detects whether a password is required from configuration. This may not be the case if the driver supports other
      * authentication mechanisms, or supports the password being encoded in the URL.
      */
+    @Override
     public boolean detectPasswordRequiredByUrl(String url) {
         return true;
     }
 
+    @Override
     public boolean externalAuthPropertiesRequired(String url, String username, String password) {
         return false;
     }
 
+    @Override
     public Properties getExternalAuthProperties(String url, String username) {
         return new Properties();
     }
 
+    @Override
     public Connection alterConnectionAsNeeded(Connection connection, Configuration configuration) {
         return connection;
     }
 
+    @Override
     public String instantiateClassExtendedErrorMessage() {
         return "";
     }

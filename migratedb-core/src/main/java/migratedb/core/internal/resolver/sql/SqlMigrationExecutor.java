@@ -36,11 +36,6 @@ public class SqlMigrationExecutor implements MigrationExecutor {
     private final SqlScript sqlScript;
 
     /**
-     * Whether this is part of an undo migration or a regular one.
-     */
-    private final boolean undo;
-
-    /**
      * Whether to batch SQL statements.
      */
     private final boolean batch;
@@ -50,11 +45,10 @@ public class SqlMigrationExecutor implements MigrationExecutor {
      *
      * @param sqlScript The SQL script that will be executed.
      */
-    SqlMigrationExecutor(SqlScriptExecutorFactory sqlScriptExecutorFactory, SqlScript sqlScript, boolean undo,
+    SqlMigrationExecutor(SqlScriptExecutorFactory sqlScriptExecutorFactory, SqlScript sqlScript,
                          boolean batch) {
         this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
         this.sqlScript = sqlScript;
-        this.undo = undo;
         this.batch = batch;
     }
 
@@ -74,7 +68,7 @@ public class SqlMigrationExecutor implements MigrationExecutor {
     private void executeOnce(Context context) {
         boolean outputQueryResults = false;
 
-        sqlScriptExecutorFactory.createSqlScriptExecutor(context.getConnection(), undo, batch, outputQueryResults)
+        sqlScriptExecutorFactory.createSqlScriptExecutor(context.getConnection(),  batch, outputQueryResults)
                                 .execute(sqlScript);
     }
 

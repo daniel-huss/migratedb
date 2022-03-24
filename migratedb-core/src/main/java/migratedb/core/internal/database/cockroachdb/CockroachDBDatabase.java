@@ -18,7 +18,7 @@ package migratedb.core.internal.database.cockroachdb;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
@@ -30,7 +30,7 @@ import migratedb.core.internal.util.StringUtils;
 
 public class CockroachDBDatabase extends BaseDatabase<CockroachDBConnection> {
 
-    private final MigrationVersion determinedVersion;
+    private final Version determinedVersion;
 
     public CockroachDBDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
                                StatementInterceptor statementInterceptor) {
@@ -67,7 +67,7 @@ public class CockroachDBDatabase extends BaseDatabase<CockroachDBConnection> {
                "CREATE INDEX IF NOT EXISTS \"" + table.getName() + "_s_idx\" ON " + table + " (\"success\");";
     }
 
-    private MigrationVersion rawDetermineVersion() {
+    private Version rawDetermineVersion() {
         String version;
         try {
             // Use rawMainJdbcConnection to avoid infinite recursion.
@@ -83,11 +83,11 @@ public class CockroachDBDatabase extends BaseDatabase<CockroachDBConnection> {
         int majorVersion = Integer.parseInt(version.substring(1, firstDot));
         String minorPatch = version.substring(firstDot + 1);
         int minorVersion = Integer.parseInt(minorPatch.substring(0, minorPatch.indexOf(".")));
-        return MigrationVersion.fromVersion(majorVersion + "." + minorVersion);
+        return Version.parse(majorVersion + "." + minorVersion);
     }
 
     @Override
-    protected MigrationVersion determineVersion() {
+    protected Version determineVersion() {
         return determinedVersion;
     }
 
@@ -100,6 +100,7 @@ public class CockroachDBDatabase extends BaseDatabase<CockroachDBConnection> {
         return getMainConnection().getJdbcTemplate().queryForString("SELECT * FROM [SHOW SESSION_USER]");
     }
 
+    @Override
     public boolean supportsDdlTransactions() {
         return false;
     }
@@ -109,10 +110,12 @@ public class CockroachDBDatabase extends BaseDatabase<CockroachDBConnection> {
         return true;
     }
 
+    @Override
     public String getBooleanTrue() {
         return "TRUE";
     }
 
+    @Override
     public String getBooleanFalse() {
         return "FALSE";
     }

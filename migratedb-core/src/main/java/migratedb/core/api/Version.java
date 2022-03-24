@@ -21,27 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
-public final class MigrationVersion implements Comparable<MigrationVersion> {
-    /**
-     * Version for an empty schema. Only a marker.
-     */
-    public static final MigrationVersion EMPTY = new MigrationVersion(null, "<< Empty Schema >>");
-    /**
-     * Latest version. Only a marker. For the real version use MigrateDb.info().latest() instead.
-     */
-    public static final MigrationVersion LATEST = new MigrationVersion(BigInteger.valueOf(-1), "<< Latest Version >>");
-    /**
-     * Current version. Only a marker. For the real version use MigrateDb.info().current() instead.
-     */
-    public static final MigrationVersion CURRENT = new MigrationVersion(BigInteger.valueOf(-2),
-                                                                        "<< Current Version >>");
-    /**
-     * Next version. Only a marker. For the real version use MigrateDb.info().next() instead.
-     */
-    public static final MigrationVersion NEXT = new MigrationVersion(BigInteger.valueOf(-3), "<< Next Version >>");
-
+/**
+ * Note: "1.0" and "1.0.0" are considered equivalent by {@link #compareTo(Version)} and {@link #equals(Object)}!
+ */
+public final class Version implements Comparable<Version> {
     /**
      * Regex for matching proper version format
      */
@@ -56,28 +40,26 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
     private final String displayText;
 
     /**
-     * Create a {@code MigrationVersion} from a version String.
-     *
-     * @param version The version String. The value {@code current} will be interpreted as the marker {@link #CURRENT},
-     *                {@code next} is mapped to {@link #NEXT}, and {@code latest} corresponds to {@link #LATEST}.
-     *
-     * @return The MigrationVersion
+     * Parses a version from {@code version}.
      */
-    @SuppressWarnings("ConstantConditions")
-    public static MigrationVersion fromVersion(String version) {
-        if ("current".equalsIgnoreCase(version)) {
-            return CURRENT;
-        }
-        if ("next".equalsIgnoreCase(version)) {
-            return NEXT;
-        }
-        if ("latest".equalsIgnoreCase(version) || LATEST.getVersion().equals(version)) {
-            return LATEST;
-        }
-        if (version == null) {
-            return EMPTY;
-        }
-        return new MigrationVersion(version);
+    public static Version parse(String version) {
+        return new Version(version);
+    }
+
+    /**
+     * Creates a {@code TargetVersion} from a version String.
+     *
+     * @param version The version String. The value {@code current} will be interpreted as {@link
+     *                TargetVersion#CURRENT}, {@code next} is mapped to {@link TargetVersion#NEXT}, and {@code latest}
+     *                corresponds to {@link TargetVersion#LATEST}.
+     *
+     * @return The version or marker.
+     *
+     * @deprecated This is just here for compatibility. Use {@link TargetVersion#parse} instead.
+     */
+    @Deprecated
+    public static TargetVersion fromVersion(String version) {
+        return TargetVersion.parse(version);
     }
 
     /**
@@ -86,47 +68,26 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
      * @param version The version in one of the following formats: 6, 6.0, 005, 1.2.3.4, 201004200021. <br>{@code null}
      *                means that this version refers to an empty schema.
      */
-    private MigrationVersion(String version) {
+    private Version(String version) {
         String normalizedVersion = version.replace('_', '.');
         this.versionParts = tokenize(normalizedVersion);
         this.displayText = normalizedVersion;
     }
 
     /**
-     * @param version     The version in one of the following formats: 6, 6.0, 005, 1.2.3.4, 201004200021. <br>{@code
-     *                    null} means that this version refers to an empty schema.
-     * @param displayText The alternative text to display instead of the version number.
+     * @return Version as String.
      */
-    private MigrationVersion(BigInteger version, String displayText) {
-        this.versionParts = new ArrayList<>();
-        versionParts.add(version);
-        this.displayText = displayText;
-    }
-
     @Override
     public String toString() {
         return displayText;
     }
 
-    /**
-     * @return Numeric version as String, {@code null} if this is the EMPTY marker.
-     */
-    public @Nullable String getVersion() {
-        if (equals(EMPTY)) {
-            return null;
-        }
-        if (equals(LATEST)) {
-            return Long.toString(Long.MAX_VALUE);
-        }
-        return displayText;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof MigrationVersion)) {
+        if (!(o instanceof Version)) {
             return false;
         }
-        return compareTo((MigrationVersion) o) == 0;
+        return compareTo((Version) o) == 0;
     }
 
     @Override
@@ -142,7 +103,7 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
      * @return {@code true} if this version is equal or newer, {@code false} if it is older.
      */
     public boolean isAtLeast(String otherVersion) {
-        return compareTo(MigrationVersion.fromVersion(otherVersion)) >= 0;
+        return compareTo(new Version(otherVersion)) >= 0;
     }
 
     /**
@@ -153,7 +114,7 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
      * @return {@code true} if this version is newer, {@code false} if it is not.
      */
     public boolean isNewerThan(String otherVersion) {
-        return compareTo(MigrationVersion.fromVersion(otherVersion)) > 0;
+        return compareTo(new Version(otherVersion)) > 0;
     }
 
     /**
@@ -164,7 +125,7 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
      * @return {@code true} if this major version is newer, {@code false} if it is not.
      */
     public boolean isMajorNewerThan(String otherVersion) {
-        return getMajor().compareTo(MigrationVersion.fromVersion(otherVersion).getMajor()) > 0;
+        return getMajor().compareTo(new Version(otherVersion).getMajor()) > 0;
     }
 
     /**
@@ -192,34 +153,10 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
     }
 
     @Override
-    public int compareTo(MigrationVersion o) {
-        // Ugh! So apparently, EMPTY, CURRENT and NEXT have no well-defined order except "less than others"
-        // while LATEST is the greatest value, even greater than versions whose major version is > Long.MAX_VALUE...
-
+    public int compareTo(Version o) {
         if (this == o) {
             return 0;
         }
-
-        if (o == null) {
-            return 1;
-        }
-
-        if (this == EMPTY || this == CURRENT || this == NEXT) {
-            return -1;
-        }
-
-        if (this == LATEST) {
-            return 1;
-        }
-
-        if (o == EMPTY || o == CURRENT || o == NEXT) {
-            return 1;
-        }
-
-        if (o == LATEST) {
-            return -1;
-        }
-
         List<BigInteger> parts1 = versionParts;
         List<BigInteger> parts2 = o.versionParts;
         int largestNumberOfParts = Math.max(parts1.size(), parts2.size());
@@ -236,13 +173,6 @@ public final class MigrationVersion implements Comparable<MigrationVersion> {
         return i < elements.size() ? elements.get(i) : BigInteger.ZERO;
     }
 
-    /**
-     * Splits this string into list of BigIntegers
-     *
-     * @param versionStr The string to split.
-     *
-     * @return The resulting array.
-     */
     private List<BigInteger> tokenize(String versionStr) {
         List<BigInteger> parts = new ArrayList<>();
         for (String part : SPLIT_REGEX.split(versionStr)) {

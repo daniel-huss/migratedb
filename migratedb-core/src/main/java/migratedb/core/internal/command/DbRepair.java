@@ -23,7 +23,7 @@ import java.util.Objects;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.MigrationState;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.TargetVersion;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Connection;
@@ -36,6 +36,7 @@ import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
+import migratedb.core.internal.info.ValidationContext;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.DateTimeUtils;
 import migratedb.core.internal.util.StopWatch;
@@ -101,13 +102,9 @@ public class DbRepair {
                                                                  schemaHistory,
                                                                  database,
                                                                  configuration,
-                                                                 MigrationVersion.LATEST,
-                                                                 true,
+                                                                 TargetVersion.LATEST,
                                                                  configuration.getCherryPick(),
-                                                                 true,
-                                                                 true,
-                                                                 true,
-                                                                 true);
+                                                                 ValidationContext.allAllowed());
 
         this.repairResult = CommandResultFactory.createRepairResult(database.getCatalog());
     }

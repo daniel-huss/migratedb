@@ -17,7 +17,7 @@
 package migratedb.core.api.resolver;
 
 import migratedb.core.api.MigrationType;
-import migratedb.core.api.MigrationVersion;
+import migratedb.core.api.Version;
 import migratedb.core.api.executor.MigrationExecutor;
 
 /**
@@ -27,7 +27,7 @@ public interface ResolvedMigration extends ChecksumMatcher {
     /**
      * @return The version of the database after applying this migration, {@code null} for repeatable migrations.
      */
-    MigrationVersion getVersion();
+    Version getVersion();
 
     /**
      * @return Whether this is a repeatable migration.
