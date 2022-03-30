@@ -56,7 +56,7 @@ public enum MigrationState {
      * This migration was applied against this DB, but it is not available locally. This usually results from multiple
      * older migration files being consolidated into a single one.
      */
-    MISSING_SUCCESS("Missing", Category.APPLIED),
+    MISSING_SUCCESS("Missing", Category.APPLIED, Category.MISSING),
     /**
      * This migration failed.
      * <p>
@@ -65,7 +65,7 @@ public enum MigrationState {
      * <p>
      * This should rarely, if ever, occur in practice.
      */
-    MISSING_FAILED("Failed (Missing)", Category.APPLIED, Category.FAILED),
+    MISSING_FAILED("Failed (Missing)", Category.APPLIED, Category.FAILED, Category.MISSING),
     /**
      * This migration succeeded.
      */
@@ -96,7 +96,7 @@ public enum MigrationState {
      * highest version available locally. It most likely failed during the installation of a future version of this
      * deployable.
      */
-    FUTURE_FAILED("Failed (Future)",  Category.APPLIED, Category.FUTURE, Category.FAILED),
+    FUTURE_FAILED("Failed (Future)", Category.APPLIED, Category.FUTURE, Category.FAILED),
     /**
      * This is a repeatable migration that is outdated and should be re-applied.
      */
@@ -108,10 +108,10 @@ public enum MigrationState {
     /**
      * This is a migration that has been marked as deleted.
      */
-    DELETED("Deleted",  Category.APPLIED);
+    DELETED("Deleted", Category.APPLIED);
 
     public enum Category {
-        RESOLVED, APPLIED, FAILED, FUTURE
+        RESOLVED, APPLIED, FAILED, FUTURE, MISSING
     }
 
     private final String displayName;

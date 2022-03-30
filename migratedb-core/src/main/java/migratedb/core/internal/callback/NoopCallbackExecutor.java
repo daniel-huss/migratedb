@@ -18,6 +18,7 @@ package migratedb.core.internal.callback;
 
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.callback.Event;
+import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.output.OperationResult;
 
 /**
@@ -31,7 +32,7 @@ public enum NoopCallbackExecutor implements CallbackExecutor {
     }
 
     @Override
-    public void onMigrateOrUndoEvent(Event event) {
+    public void onMigrateEvent(Event event) {
     }
 
     @Override

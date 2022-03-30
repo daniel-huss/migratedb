@@ -21,10 +21,10 @@ import migratedb.core.api.Version
 import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.api.internal.database.base.Database
 import migratedb.core.api.internal.database.base.Schema
+import migratedb.core.api.internal.jdbc.StatementInterceptor
 import migratedb.core.internal.callback.NoopCallbackExecutor
-import migratedb.core.internal.jdbc.JdbcConnectionFactory
-import migratedb.core.internal.jdbc.StatementInterceptor
-import migratedb.core.internal.parser.ParsingContext
+import migratedb.core.internal.jdbc.JdbcConnectionFactoryImpl
+import migratedb.core.internal.parser.ParsingContextImpl
 import migratedb.core.internal.resolver.MigrationInfoHelper
 import migratedb.core.internal.schemahistory.SchemaHistoryFactory
 import migratedb.integrationtest.database.DbSystem
@@ -56,7 +56,8 @@ class DatabaseImpl(
         val configuration = FluentConfiguration().also {
             if (schemaName != null) it.schemas(schemaName.toString())
         }
-        val connectionFactory = JdbcConnectionFactory(dataSource, configuration, StatementInterceptor.doNothing())
+        val connectionFactory =
+            JdbcConnectionFactoryImpl(dataSource, configuration, StatementInterceptor.doNothing())
         val db = databaseHandle.type.createDatabase(configuration, connectionFactory, StatementInterceptor.doNothing())
         val schema = SchemaHistoryFactory.scanSchemas(configuration, db).defaultSchema
         schemaHistory?.materializeInto(db, schema, connectionFactory)
@@ -97,7 +98,7 @@ class DatabaseImpl(
             )
         }
 
-        fun materializeInto(database: Database<*>, schema: Schema<*, *>, connectionFactory: JdbcConnectionFactory) {
+        fun materializeInto(database: Database<*>, schema: Schema<*, *>, connectionFactory: JdbcConnectionFactoryImpl) {
             val configuration = FluentConfiguration().also {
                 if (schema.name != null) it.schemas(schema.name)
                 it.table(table)
@@ -109,7 +110,7 @@ class DatabaseImpl(
             )
             val sqlScriptFactory = database.databaseType.createSqlScriptFactory(
                 configuration,
-                ParsingContext()
+                ParsingContextImpl()
             )
             val schemaHistory = SchemaHistoryFactory.getSchemaHistory(
                 configuration,

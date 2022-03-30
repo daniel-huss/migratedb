@@ -16,6 +16,7 @@
 
 package migratedb.integrationtest.database
 
+import io.kotest.assertions.throwables.shouldThrow
 import migratedb.core.api.internal.database.base.DatabaseType
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl
 import migratedb.core.internal.database.h2.H2DatabaseType
@@ -43,6 +44,13 @@ enum class H2 : DbSystem {
         private val databaseType = H2DatabaseType()
         private val databaseTypeRegister = DatabaseTypeRegisterImpl().also {
             it.registerDatabaseTypes(listOf(databaseType))
+        }
+
+        init {
+            // Check that H2 is not on the test class path (because our custom class loader delegates to its parent)
+            shouldThrow<ClassNotFoundException> {
+                Class.forName(driverClass)
+            }
         }
     }
 

@@ -22,6 +22,7 @@ import migratedb.core.api.Location.CustomLocation
 import migratedb.core.api.Location.FileSystemLocation
 import migratedb.core.api.MigrationPattern
 import migratedb.core.api.TargetVersion
+import migratedb.core.api.Version
 import migratedb.core.api.logging.LogSystem
 import migratedb.core.api.logging.LogSystems
 import migratedb.core.api.pattern.ValidatePattern
@@ -46,7 +47,10 @@ fun <T : Any> Arbitrary<T>.array(elementType: KClass<in T>): ArrayArbitrary<T, A
 }
 
 fun anyValidatePattern(): Arbitrary<ValidatePattern> {
-    return Combinators.combine(Arbitraries.of(validMigrationTypes), Arbitraries.of(validMigrationStates)).`as` { type, state ->
+    return Combinators.combine(
+        Arbitraries.of(validMigrationTypes),
+        Arbitraries.of(validMigrationStates)
+    ).`as` { type, state ->
         ValidatePattern.fromPattern("$type:$state")
     }
 }
@@ -124,8 +128,13 @@ fun anyMigrationVersionString(): Arbitrary<String> = String.any()
     .ofMaxSize(10)
     .map {
         it.joinToString(".")
-    }.edgeCases {
+    }
+
+fun anyMigrationVersion(): Arbitrary<Version> = anyMigrationVersionString().map(Version::parse)
+
+fun anyTargetVersionString(): Arbitrary<String> = anyMigrationVersionString()
+    .edgeCases {
         it.add("next", "latest", "current")
     }
 
-fun anyTargetVersion(): Arbitrary<TargetVersion> = anyMigrationVersionString().map(TargetVersion::parse)
+fun anyTargetVersion(): Arbitrary<TargetVersion> = anyTargetVersionString().map(TargetVersion::parse)

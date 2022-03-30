@@ -20,9 +20,9 @@ package migratedb.core.api.internal.database.base;
 import java.io.Closeable;
 import java.sql.DatabaseMetaData;
 import migratedb.core.api.Version;
-import migratedb.core.internal.sqlscript.Delimiter;
-import migratedb.core.internal.sqlscript.SqlScript;
-import migratedb.core.internal.sqlscript.SqlScriptFactory;
+import migratedb.core.api.internal.sqlscript.Delimiter;
+import migratedb.core.api.internal.sqlscript.SqlScript;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 
 public interface Database<C extends Connection> extends Closeable {
     /**

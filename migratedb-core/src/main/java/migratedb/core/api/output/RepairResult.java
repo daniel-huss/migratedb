@@ -18,7 +18,6 @@ package migratedb.core.api.output;
 
 import java.util.ArrayList;
 import java.util.List;
-import migratedb.core.internal.command.DbRepair;
 
 public class RepairResult extends OperationResult {
     public List<String> repairActions;
@@ -36,7 +35,7 @@ public class RepairResult extends OperationResult {
         this.operation = "repair";
     }
 
-    public void setRepairActions(DbRepair.CompletedRepairActions completedRepairActions) {
+    public void setRepairActions(CompletedRepairActions completedRepairActions) {
         if (completedRepairActions.removedFailedMigrations) {
             repairActions.add(completedRepairActions.removedMessage());
         }

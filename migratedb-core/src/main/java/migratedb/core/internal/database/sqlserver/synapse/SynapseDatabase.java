@@ -21,10 +21,10 @@ import java.util.Date;
 import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.sqlserver.SQLServerConnection;
 import migratedb.core.internal.database.sqlserver.SQLServerDatabase;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.StatementInterceptor;
 
 public class SynapseDatabase extends SQLServerDatabase {
 

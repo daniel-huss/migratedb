@@ -17,7 +17,6 @@
 package migratedb.core.internal.resolver.java;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.resolver.Context;
@@ -51,7 +50,7 @@ public class FixedJavaMigrationResolver implements MigrationResolver {
             migrations.add(new ResolvedJavaMigration(javaMigration));
         }
 
-        Collections.sort(migrations, new ResolvedMigrationComparator());
+        migrations.sort(new ResolvedMigrationComparator());
         return migrations;
     }
 }

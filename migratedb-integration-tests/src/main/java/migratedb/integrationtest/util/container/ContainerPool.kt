@@ -21,9 +21,9 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 /**
- * Pools containers for shared use, so the same container can be used by multiple threads, but only [size] containers
+ * Pools containers for shared use, so the same container can be used by multiple threads, but only up to [size] containers
  * may be running at any point in time. When a container is unused by any thread, it may be closed to make room for
- * other containers. "Using" a container is represented by holding an instance of [Lease], which must be closed when
+ * other containers. "Using" a container is represented by holding onto a [Lease], which must be closed when
  * you're done using the container.
  */
 class ContainerPool(private val size: Int) : AutoCloseable {
@@ -50,53 +50,62 @@ class ContainerPool(private val size: Int) : AutoCloseable {
         // @GuardedBy("leaseLock")
         private var leases: Int = 0
         private val futureContainer = async<AutoCloseable>(waitOnClose = true, containerInitializer)
+        private var closed: Boolean = false
 
         @Suppress("UNCHECKED_CAST")
         val container
             get() = futureContainer.get() as T
 
-        fun lease(): LeaseImpl<T> = leaseLock.withLock {
+        fun lease(): LeaseImpl<T> = leaseCountLock.withLock {
+            check(!closed)
             leases++
             LeaseImpl(this)
         }
 
-        fun leases() = leaseLock.withLock { leases }
+        fun leases() = leaseCountLock.withLock { leases }
 
-        fun unlease() = leaseLock.withLock {
+        fun unlease() = leaseCountLock.withLock {
             leases = (leases - 1).coerceAtLeast(0)
             if (leases == 0) maybeOneUnusedSlot.signalAll()
         }
 
-        override fun close() = futureContainer.close()
+        override fun close() = leaseCountLock.withLock {
+            if (!closed) {
+                futureContainer.close()
+                closed = true
+            }
+        }
     }
 
     private var closed = false
-    private val leaseLock = ReentrantLock()
-    private val slots = HashMap<String, Slot<*>>()
-    private val maybeOneUnusedSlot = leaseLock.newCondition()
+    private val leaseCountLock = ReentrantLock()
+    private val slotsByName = HashMap<String, Slot<*>>()
+    private val maybeOneUnusedSlot = leaseCountLock.newCondition()
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : AutoCloseable> lease(alias: String, containerInitializer: () -> T): Lease<T> {
-        leaseLock.withLock {
+    fun <T : AutoCloseable> lease(name: String, containerInitializer: () -> T): Lease<T> {
+        leaseCountLock.withLock {
             check(!closed)
-            slots[alias]?.let { return it.lease() as Lease<T> }
-            while (slots.size >= size) {
+            slotsByName[name]?.let { return it.lease() as Lease<T> }
+            while (slotsByName.size >= size) {
                 if (!removeOneSlotWithoutLeases()) {
                     maybeOneUnusedSlot.await()
                 }
                 check(!closed) // re-check needed after waiting for condition
             }
             val newSlot = Slot(containerInitializer)
-            slots[alias] = newSlot
+            slotsByName[name] = newSlot
             return newSlot.lease()
         }
     }
 
     private fun removeOneSlotWithoutLeases(): Boolean {
         var oneWasRemoved = false
-        val iter = slots.iterator()
+        val iter = slotsByName.iterator()
         while (iter.hasNext() && !oneWasRemoved) {
-            if (iter.next().value.leases() == 0) {
+            val candidate = iter.next().value
+            if (candidate.leases() == 0) {
+                candidate.close()
                 iter.remove()
                 oneWasRemoved = true
             }
@@ -106,10 +115,10 @@ class ContainerPool(private val size: Int) : AutoCloseable {
 
 
     override fun close() {
-        leaseLock.withLock {
+        leaseCountLock.withLock {
             if (closed) return
             closed = true
-            tryAll(slots.values.map { { it.close() } })
+            tryAll(slotsByName.values.map { { it.close() } })
             maybeOneUnusedSlot.signalAll()
         }
     }

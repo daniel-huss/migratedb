@@ -21,6 +21,7 @@ import migratedb.core.api.DatabaseTypeRegister;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.ExecutionTemplate;
 
 public class ExecutionTemplateFactory {
     /**

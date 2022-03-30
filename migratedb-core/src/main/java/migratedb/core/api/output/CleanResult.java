@@ -17,10 +17,11 @@
 package migratedb.core.api.output;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CleanResult extends OperationResult {
-    public ArrayList<String> schemasCleaned = new ArrayList<>();
-    public ArrayList<String> schemasDropped = new ArrayList<>();
+    public List<String> schemasCleaned = new ArrayList<>();
+    public List<String> schemasDropped = new ArrayList<>();
 
     public CleanResult(String migratedbVersion, String database) {
         this.migratedbVersion = migratedbVersion;

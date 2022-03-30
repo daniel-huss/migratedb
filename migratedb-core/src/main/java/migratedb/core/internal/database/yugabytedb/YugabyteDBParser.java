@@ -17,8 +17,8 @@
 package migratedb.core.internal.database.yugabytedb;
 
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.database.postgresql.PostgreSQLParser;
-import migratedb.core.internal.parser.ParsingContext;
 
 public class YugabyteDBParser extends PostgreSQLParser {
     protected YugabyteDBParser(Configuration configuration, ParsingContext parsingContext) {

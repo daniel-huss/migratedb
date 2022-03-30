@@ -16,55 +16,27 @@
 
 package migratedb.integrationtest.util.dsl.internal
 
-import migratedb.core.api.Version
-import migratedb.core.api.configuration.FluentConfiguration
-import migratedb.core.api.migration.Context
 import migratedb.core.api.migration.JavaMigration
+import migratedb.core.api.output.MigrateResult
 import migratedb.core.api.resource.Resource
-import migratedb.core.internal.resolver.MigrationInfoHelper.extractVersionAndDescription
 import migratedb.core.internal.resource.NameListResourceProvider
 import migratedb.core.internal.resource.StringResource
 import migratedb.integrationtest.util.dsl.RunMigrateSpec
 import java.sql.Connection
 
-class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
+class RunMigrateImpl(private val givenInfo: GivenInfo) : AbstractRunWithConfigSpec(givenInfo), RunMigrateSpec {
     data class ScriptMigration(val name: String, val sql: String)
     data class CodeMigration(val name: String, val code: JavaMigration)
 
     private val scriptMigrations = mutableListOf<ScriptMigration>()
     private val codeMigrations = mutableListOf<CodeMigration>()
-    private var config = FluentConfiguration().also { cfg ->
-        givenInfo.schemaName?.let {
-            cfg.schemas(it.toString())
-        }
-    }
 
     override fun script(name: String, sql: String) {
         scriptMigrations.add(ScriptMigration(name, sql))
     }
 
     override fun code(name: String, code: (Connection) -> Unit) {
-        codeMigrations.add(CodeMigration(name, object : JavaMigration {
-            private val version: Version
-            private val description: String
-            private val prefix = name[0].uppercase()
-
-            init {
-                extractVersionAndDescription(name, prefix, "__", prefix == "R").let {
-                    version = it.version!!
-                    description = it.description
-                }
-            }
-
-            override fun getVersion(): Version = version
-            override fun getDescription(): String = description
-            override fun getChecksum(): Int? = null
-            override fun isBaselineMigration(): Boolean = false
-            override fun canExecuteInTransaction() = true
-            override fun migrate(context: Context) {
-                code(context.connection)
-            }
-        }))
+        codeMigrations.add(CodeMigration(name, SimpleJavaMigration(name, code)))
     }
 
     override fun code(name: String, code: JavaMigration) {
@@ -75,22 +47,12 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
         givenInfo.databaseHandle.nextMutation(givenInfo.schemaName).apply(it)
     }
 
-    override fun withConfig(classLoader: ClassLoader?, block: (FluentConfiguration) -> Unit) {
-        config = when (classLoader) {
-            null -> FluentConfiguration()
-            else -> FluentConfiguration(classLoader)
-        }.also(block)
-    }
-
-    fun execute() {
+    fun execute(): MigrateResult = execute { config ->
         val scriptMap = scriptMigrations.associate {
             val name = "${it.name}.sql"
             name to StringResource(name, it.sql)
         }
-        FluentConfiguration(config.classLoader)
-            .configuration(config)
-            .dataSource(givenInfo.databaseHandle.newAdminConnection(givenInfo.namespace))
-            .javaMigrations(*codeMigrations.map { it.code }.toTypedArray())
+        config.javaMigrations(*codeMigrations.map { it.code }.toTypedArray())
             .resourceProvider(object : NameListResourceProvider(scriptMap.keys) {
                 override fun toResource(name: String): Resource {
                     return scriptMap.getValue(name)
@@ -100,3 +62,4 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : RunMigrateSpec {
             .migrate()
     }
 }
+

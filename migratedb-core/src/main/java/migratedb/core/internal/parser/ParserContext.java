@@ -19,7 +19,7 @@ package migratedb.core.internal.parser;
 import java.security.InvalidParameterException;
 import java.util.Stack;
 import migratedb.core.api.MigrateDbException;
-import migratedb.core.internal.sqlscript.Delimiter;
+import migratedb.core.api.internal.sqlscript.Delimiter;
 
 public class ParserContext {
     private int parensDepth = 0;

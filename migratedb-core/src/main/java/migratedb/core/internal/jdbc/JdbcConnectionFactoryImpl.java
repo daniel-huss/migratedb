@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,14 +22,16 @@ import javax.sql.DataSource;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.DatabaseType;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 
 /**
  * Utility class for dealing with jdbc connections.
  */
-public class JdbcConnectionFactory {
-    private static final Log LOG = Log.getLog(JdbcConnectionFactory.class);
+public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
+    private static final Log LOG = Log.getLog(JdbcConnectionFactoryImpl.class);
 
     private final DataSource dataSource;
     private final int connectRetries;
@@ -52,8 +53,8 @@ public class JdbcConnectionFactory {
      * @param configuration        The MigrateDb configuration.
      * @param statementInterceptor The statement interceptor. {@code null} if none.
      */
-    public JdbcConnectionFactory(DataSource dataSource, Configuration configuration,
-                                 StatementInterceptor statementInterceptor) {
+    public JdbcConnectionFactoryImpl(DataSource dataSource, Configuration configuration,
+                                     StatementInterceptor statementInterceptor) {
         this.dataSource = dataSource;
         this.connectRetries = configuration.getConnectRetries();
         this.connectRetriesInterval = configuration.getConnectRetriesInterval();
@@ -77,22 +78,27 @@ public class JdbcConnectionFactory {
         this.connectionInitializer = connectionInitializer;
     }
 
+    @Override
     public DatabaseType getDatabaseType() {
         return databaseType;
     }
 
+    @Override
     public String getJdbcUrl() {
         return jdbcUrl;
     }
 
+    @Override
     public String getDriverInfo() {
         return driverInfo;
     }
 
+    @Override
     public String getProductName() {
         return productName;
     }
 
+    @Override
     public Connection openConnection() throws MigrateDbException {
         Connection connection = firstConnection == null ? JdbcUtils.openConnection(dataSource,
                                                                                    connectRetries,
@@ -107,10 +113,6 @@ public class JdbcConnectionFactory {
 
         connection = databaseType.alterConnectionAsNeeded(connection, configuration);
         return connection;
-    }
-
-    public interface ConnectionInitializer {
-        void initialize(JdbcConnectionFactory jdbcConnectionFactory, Connection connection);
     }
 
     private static String getJdbcUrl(DatabaseMetaData databaseMetaData) {

@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.sqlscript;
+package migratedb.core.api.internal.sqlscript;
 
-import migratedb.core.api.internal.sqlscript.SqlStatementIterator;
 import migratedb.core.api.resource.Resource;
 
 /**

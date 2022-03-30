@@ -1,0 +1,118 @@
+<!--
+  ~ Copyright 2022 The MigrateDB contributors
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~         http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.unentscheidbar</groupId>
+        <artifactId>migratedb</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>migratedb-gradle-plugin</artifactId>
+    <name>MigrateDB - Gradle Plugin Builder</name>
+    <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.unentscheidbar</groupId>
+            <artifactId>migratedb-scanner</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- Sources to show in code coverage report -->
+        <sourceDirectory>
+            ${project.build.directory}/generated-sources/gradle-import
+        </sourceDirectory>
+        <!-- Unless we specify the output directory Jacoco won't find any classes to report coverage for. -->
+        <outputDirectory>
+            ${project.basedir}/migratedb-plugin/build/classes/java
+        </outputDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>import-gradle-sources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <scripts>
+                                <script xml:space="preserve">
+                                    new AntBuilder().copy(todir: project.build.sourceDirectory) {
+                                        fileset(dir:new File(project.basedir as File, 'migratedb-plugin/src/main/java'))
+                                    }
+                                </script>
+                            </scripts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <executable>${project.basedir}/gradlew</executable>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>gradle-test</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>test</phase>
+                        <configuration>
+                            <arguments>
+                                <argument>-DskipTests=${skipTests}</argument>
+                                <argument>test</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>gradle-assemble</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <arguments>
+                                <argument>-DskipTests=${skipTests}</argument>
+                                <argument>assemble</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>gradle-clean</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>clean</phase>
+                        <configuration>
+                            <arguments>
+                                <argument>clean</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

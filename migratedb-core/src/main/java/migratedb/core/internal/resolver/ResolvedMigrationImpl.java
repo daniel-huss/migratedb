@@ -27,7 +27,7 @@ import migratedb.core.api.resolver.ResolvedMigration;
  */
 public class ResolvedMigrationImpl implements ResolvedMigration {
     /**
-     * The name of the script to execute for this migration, relative to its classpath location.
+     * The name of the script to execute for this migration, relative to its classpath (?) location.
      */
     private final String script;
     /**
@@ -39,11 +39,16 @@ public class ResolvedMigrationImpl implements ResolvedMigration {
     private final Version version;
     private final String description;
     private final MigrationType type;
-    private final String physicalLocation;
+    private final String locationDescription;
     private final MigrationExecutor executor;
 
-    public ResolvedMigrationImpl(Version version, String description, String script, Integer checksum,
-                                 Integer equivalentChecksum, MigrationType type, String physicalLocation,
+    public ResolvedMigrationImpl(Version version,
+                                 String description,
+                                 String script,
+                                 Integer checksum,
+                                 Integer equivalentChecksum,
+                                 MigrationType type,
+                                 String locationDescription,
                                  MigrationExecutor executor) {
         this.version = version;
         this.description = description;
@@ -51,7 +56,7 @@ public class ResolvedMigrationImpl implements ResolvedMigration {
         this.checksum = checksum;
         this.equivalentChecksum = equivalentChecksum;
         this.type = type;
-        this.physicalLocation = physicalLocation;
+        this.locationDescription = locationDescription;
         this.executor = executor;
     }
 
@@ -81,8 +86,8 @@ public class ResolvedMigrationImpl implements ResolvedMigration {
     }
 
     @Override
-    public String getPhysicalLocation() {
-        return physicalLocation;
+    public String getLocationDescription() {
+        return locationDescription;
     }
 
     @Override
@@ -92,53 +97,31 @@ public class ResolvedMigrationImpl implements ResolvedMigration {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof ResolvedMigrationImpl)) {
             return false;
         }
-
-        ResolvedMigrationImpl migration = (ResolvedMigrationImpl) o;
-
-        if (!Objects.equals(checksum, migration.checksum)) {
-            return false;
-        }
-        if (!Objects.equals(equivalentChecksum, migration.equivalentChecksum)) {
-            return false;
-        }
-        if (!Objects.equals(description, migration.description)) {
-            return false;
-        }
-        if (!Objects.equals(script, migration.script)) {
-            return false;
-        }
-        if (type != migration.type) {
-            return false;
-        }
-        return Objects.equals(version, migration.version);
+        var other = (ResolvedMigrationImpl) o;
+        return Objects.equals(checksum, other.checksum) &&
+               Objects.equals(equivalentChecksum, other.equivalentChecksum) &&
+               Objects.equals(description, other.description) &&
+               Objects.equals(script, other.script) &&
+               Objects.equals(type, other.type);
     }
 
     @Override
     public int hashCode() {
-        int result = (version != null ? version.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (script != null ? script.hashCode() : 0);
-        result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
-        result = 31 * result + (equivalentChecksum != null ? equivalentChecksum.hashCode() : 0);
-        result = 31 * result + type.hashCode();
-        return result;
+        return Objects.hash(checksum, equivalentChecksum, description, script, type);
     }
 
     @Override
     public String toString() {
-        return "ResolvedMigrationImpl{" +
+        return getClass().getSimpleName() + "{" +
                "version=" + version +
                ", description='" + description + '\'' +
                ", script='" + script + '\'' +
                ", checksum=" + getChecksum() +
                ", type=" + type +
-               ", physicalLocation='" + physicalLocation + '\'' +
+               ", locationDescription='" + locationDescription + '\'' +
                ", executor=" + executor +
                '}';
     }

@@ -22,9 +22,9 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.executor.Context;
 import migratedb.core.api.executor.MigrationExecutor;
+import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.migration.JavaMigration;
-import migratedb.core.internal.database.DatabaseExecutionStrategy;
 
 /**
  * Adapter for executing migrations implementing JavaMigration.
@@ -47,8 +47,8 @@ public class JavaMigrationExecutor implements MigrationExecutor {
     @Override
     public void execute(Context context) throws SQLException {
         DatabaseType databaseType = context.getConfiguration()
-                .getDatabaseTypeRegister()
-                .getDatabaseTypeForConnection(context.getConnection());
+                                           .getDatabaseTypeRegister()
+                                           .getDatabaseTypeForConnection(context.getConnection());
 
         DatabaseExecutionStrategy strategy = databaseType.createExecutionStrategy(context.getConnection());
         strategy.execute(() -> {
@@ -73,7 +73,9 @@ public class JavaMigrationExecutor implements MigrationExecutor {
         } catch (SQLException e) {
             throw e;
         } catch (Exception e) {
-            if (e instanceof InterruptedException) Thread.currentThread().interrupt();
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             throw new MigrateDbException("Migration failed !", e);
         }
     }
@@ -86,5 +88,12 @@ public class JavaMigrationExecutor implements MigrationExecutor {
     @Override
     public boolean shouldExecute() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" +
+               "javaMigration=" + javaMigration +
+               '}';
     }
 }

@@ -17,9 +17,9 @@
 package migratedb.core.internal.database.cockroachdb;
 
 import java.sql.SQLException;
+import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
+import migratedb.core.api.internal.util.SqlCallable;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.database.DatabaseExecutionStrategy;
-import migratedb.core.internal.util.SqlCallable;
 
 /**
  * CockroachDB recommend the use of retries should we see a SQL error code 40001, which represents a lock wait timeout.
@@ -31,6 +31,7 @@ public class CockroachDBRetryingStrategy implements DatabaseExecutionStrategy {
     private static final String DEADLOCK_OR_TIMEOUT_ERROR_CODE = "40001";
     private static final int MAX_RETRIES = 50;
 
+    @Override
     public <T> T execute(SqlCallable<T> callable) throws SQLException {
         int retryCount = 0;
         while (true) {

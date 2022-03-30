@@ -1,4 +1,3 @@
-
 package migratedb.core.testing
 
 import io.kotest.assertions.fail
@@ -36,7 +35,7 @@ object ConfigSetters {
     val baselineDescription = Setter("setBaselineDescription", String.any().ofLength(1..100))
     val baselineMigrationPrefix = Setter("setBaselineMigrationPrefix", String.any().alpha().ofLength(1))
     val baselineOnMigrate = Setter("setBaselineOnMigrate", Boolean.any())
-    val baselineVersion = Setter("setBaselineVersion", anyTargetVersion())
+    val baselineVersion = Setter("setBaselineVersion", anyMigrationVersion())
     val baselineVersionAsString = Setter("setBaselineVersionAsString", anyMigrationVersionString())
     val batch = Setter("setBatch", Boolean.any())
     val callbacks = Setter("setCallbacks", Arbitraries.ofSuppliers(::UniversalDummy).array(Callback::class))
@@ -98,8 +97,7 @@ object ConfigSetters {
     val table = Setter("setTable", anySchemaObjectName())
     val tablespace = Setter("setTablespace", anySchemaObjectName())
     val target = Setter("setTarget", anyTargetVersion())
-    val targetAsString = Setter("setTargetAsString", anyMigrationVersionString())
-    val undoSqlMigrationPrefix = Setter("setUndoSqlMigrationPrefix", String.any().ofLength(1))
+    val targetAsString = Setter("setTargetAsString", anyTargetVersionString())
     val validateMigrationNaming = Setter("setValidateMigrationNaming", Boolean.any())
     val validateOnMigrate = Setter("setValidateOnMigrate", Boolean.any())
     val extensionConfig = Setter("setExtensionConfig", extensionConfigParamsArbitrary())

@@ -23,10 +23,10 @@ import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.jdbc.StatementInterceptor;
-import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
-import migratedb.core.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.internal.util.StringUtils;
 
 public class SchemaHistoryFactory {

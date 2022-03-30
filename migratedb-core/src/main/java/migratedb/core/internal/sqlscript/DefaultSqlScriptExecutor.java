@@ -17,14 +17,16 @@
 package migratedb.core.internal.sqlscript;
 
 import migratedb.core.api.callback.Warning;
+import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.Result;
 import migratedb.core.api.internal.jdbc.Results;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
+import migratedb.core.api.internal.sqlscript.SqlScript;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutor;
 import migratedb.core.api.internal.sqlscript.SqlStatement;
 import migratedb.core.api.internal.sqlscript.SqlStatementIterator;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.callback.CallbackExecutor;
-import migratedb.core.internal.jdbc.Result;
-import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.util.AsciiTable;
 
 public class DefaultSqlScriptExecutor implements SqlScriptExecutor {

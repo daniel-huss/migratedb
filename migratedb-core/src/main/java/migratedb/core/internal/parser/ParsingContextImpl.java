@@ -16,19 +16,19 @@
  */
 package migratedb.core.internal.parser;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.api.internal.resource.ResourceName;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.resource.ResourceName;
 
-public class ParsingContext {
-    private static final Log LOG = Log.getLog(ParsingContext.class);
+public class ParsingContextImpl implements ParsingContext {
+    private static final Log LOG = Log.getLog(ParsingContextImpl.class);
 
     private static final String DEFAULT_SCHEMA_PLACEHOLDER = "migratedb:defaultSchema";
     private static final String USER_PLACEHOLDER = "migratedb:user";
@@ -41,6 +41,7 @@ public class ParsingContext {
     private final Map<String, String> placeholders = new HashMap<>();
     private Database database;
 
+    @Override
     public Map<String, String> getPlaceholders() {
         return placeholders;
     }
@@ -49,6 +50,7 @@ public class ParsingContext {
         this.database = database;
     }
 
+    @Override
     public Database getDatabase() {
         return database;
     }
@@ -63,7 +65,6 @@ public class ParsingContext {
         String catalog = database.getCatalog();
         String currentUser = getCurrentUser(database);
 
-        // cf. MigrateDb.prepareSchemas()
         if (defaultSchemaName == null) {
             if (schemaNames.length > 0) {
                 defaultSchemaName = schemaNames[0];
@@ -81,11 +82,12 @@ public class ParsingContext {
         }
 
         placeholders.put(USER_PLACEHOLDER, currentUser);
-        placeholders.put(TIMESTAMP_PLACEHOLDER, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        placeholders.put(TIMESTAMP_PLACEHOLDER, Instant.now().toString());
         placeholders.put(WORKING_DIRECTORY_PLACEHOLDER, System.getProperty("user.dir"));
         placeholders.put(TABLE_PLACEHOLDER, configuration.getTable());
     }
 
+    @Override
     public void updateFilenamePlaceholder(ResourceName resourceName) {
         if (resourceName.isValid()) {
             placeholders.put(FILENAME_PLACEHOLDER, resourceName.getFilename());

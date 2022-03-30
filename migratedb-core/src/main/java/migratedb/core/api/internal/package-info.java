@@ -14,14 +14,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.util;
 
-import java.sql.SQLException;
-
-/**
- * An interface analogous to Callable but constrained so that implementations can only throw SqlException, not the more
- * generic Exception.
- */
-public interface SqlCallable<V> {
-    V call() throws SQLException;
-}
+package migratedb.core.api.internal;

@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.sqlscript;
+package migratedb.core.api.internal.util;
 
-import java.sql.Connection;
+import java.sql.SQLException;
 
-public interface SqlScriptExecutorFactory {
-    /**
-     * Creates a new executor for this SQL script.
-     *
-     * @return A new SQL script executor.
-     */
-    SqlScriptExecutor createSqlScriptExecutor(Connection connection, boolean batch, boolean outputQueryResults);
+/**
+ * An interface analogous to Callable but constrained so that implementations can only throw SqlException, not the more
+ * generic Exception.
+ */
+public interface SqlCallable<V> {
+    V call() throws SQLException;
 }

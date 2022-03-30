@@ -18,6 +18,7 @@ package migratedb.core.internal.sqlscript;
 
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.internal.jdbc.Results;
+import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.api.internal.sqlscript.SqlStatement;
 
 /**

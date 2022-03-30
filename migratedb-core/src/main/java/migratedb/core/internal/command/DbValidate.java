@@ -16,12 +16,15 @@
  */
 package migratedb.core.internal.command;
 
+import static migratedb.core.internal.jdbc.ExecutionTemplateFactory.createExecutionTemplate;
+
 import java.util.ArrayList;
 import java.util.List;
 import migratedb.core.api.ErrorCode;
 import migratedb.core.api.ErrorDetails;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.database.base.Connection;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
@@ -31,10 +34,9 @@ import migratedb.core.api.output.ValidateOutput;
 import migratedb.core.api.output.ValidateResult;
 import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
-import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
 import migratedb.core.internal.info.ValidationContext;
-import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
+import migratedb.core.internal.info.ValidationMatch;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.DateTimeUtils;
 import migratedb.core.internal.util.StopWatch;
@@ -73,7 +75,7 @@ public class DbValidate {
     /**
      * Whether pending migrations are allowed.
      */
-    private final boolean pending;
+    private final boolean allowPending;
 
     /**
      * The callback executor.
@@ -93,19 +95,23 @@ public class DbValidate {
      * @param schema            The schema containing the schema history table.
      * @param migrationResolver The migration resolver.
      * @param configuration     The current configuration.
-     * @param pending           Whether pending migrations are allowed.
+     * @param allowPending      Whether pending migrations are allowed.
      * @param callbackExecutor  The callback executor.
      */
-    public DbValidate(Database database, SchemaHistory schemaHistory, Schema schema,
+    public DbValidate(Database database,
+                      SchemaHistory schemaHistory,
+                      Schema schema,
                       MigrationResolver migrationResolver,
-                      Configuration configuration, boolean pending, CallbackExecutor callbackExecutor) {
+                      Configuration configuration,
+                      boolean allowPending,
+                      CallbackExecutor callbackExecutor) {
         this.database = database;
         this.connection = database.getMainConnection();
         this.schemaHistory = schemaHistory;
         this.schema = schema;
         this.migrationResolver = migrationResolver;
         this.configuration = configuration;
-        this.pending = pending;
+        this.allowPending = allowPending;
         this.callbackExecutor = callbackExecutor;
     }
 
@@ -132,7 +138,7 @@ public class DbValidate {
                 public Configuration getConfiguration() {
                     return configuration;
                 }
-            }).isEmpty() && !pending) {
+            }).isEmpty() && !allowPending) {
                 String validationErrorMessage = "Schema " + schema + " doesn't exist yet";
                 ErrorDetails validationError = new ErrorDetails(ErrorCode.SCHEMA_DOES_NOT_EXIST,
                                                                 validationErrorMessage);
@@ -151,22 +157,23 @@ public class DbValidate {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        var result =
-            ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(), database).execute(() -> {
-                var migrationInfoService = new MigrationInfoServiceImpl(migrationResolver,
-                                                                        schemaHistory,
-                                                                        database,
-                                                                        configuration,
-                                                                        configuration.getTarget(),
-                                                                        configuration.getCherryPick(),
-                                                                        new ValidationContext(configuration));
+        var result = createExecutionTemplate(connection.getJdbcConnection(), database).execute(() -> {
+            var validationContext = new ValidationContext(configuration)
+                .with(ValidationMatch.PENDING, allowPending);
+            var migrationInfoService = new MigrationInfoServiceImpl(migrationResolver,
+                                                                    schemaHistory,
+                                                                    database,
+                                                                    configuration,
+                                                                    configuration.getTarget(),
+                                                                    configuration.getCherryPick(),
+                                                                    validationContext);
 
-                migrationInfoService.refresh();
+            migrationInfoService.refresh();
 
-                int count = migrationInfoService.all().length;
-                List<ValidateOutput> invalidMigrations = migrationInfoService.validate();
-                return new CountAndInvalidMigrations(count, invalidMigrations);
-            });
+            int count = migrationInfoService.all().length;
+            List<ValidateOutput> invalidMigrations = migrationInfoService.validate();
+            return new CountAndInvalidMigrations(count, invalidMigrations);
+        });
 
         stopWatch.stop();
 

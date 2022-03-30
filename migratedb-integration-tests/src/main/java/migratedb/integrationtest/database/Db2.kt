@@ -19,9 +19,9 @@ package migratedb.integrationtest.database
 import com.github.dockerjava.api.model.Capability
 import com.ibm.db2.jcc.DB2SimpleDataSource
 import migratedb.core.api.configuration.FluentConfiguration
+import migratedb.core.api.internal.jdbc.StatementInterceptor
 import migratedb.core.internal.database.db2.DB2DatabaseType
-import migratedb.core.internal.jdbc.JdbcConnectionFactory
-import migratedb.core.internal.jdbc.StatementInterceptor
+import migratedb.core.internal.jdbc.JdbcConnectionFactoryImpl
 import migratedb.integrationtest.database.mutation.Db2CreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.Names
@@ -105,7 +105,7 @@ enum class Db2(image: String) : DbSystem {
         private val db = FluentConfiguration().let {
             val ds = container().dataSource()
             ds.awaitConnectivity(Duration.ofMinutes(5)).use { }
-            val connectionFactory = JdbcConnectionFactory(ds, it, StatementInterceptor.doNothing())
+            val connectionFactory = JdbcConnectionFactoryImpl(ds, it, StatementInterceptor.doNothing())
             type.createDatabase(it, connectionFactory, StatementInterceptor.doNothing())
         }
 

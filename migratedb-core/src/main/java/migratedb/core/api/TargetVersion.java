@@ -17,6 +17,7 @@
 package migratedb.core.api;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -96,7 +97,7 @@ public final class TargetVersion {
             this.mapper = mapper;
         }
 
-        public T orElseGet(Map<TargetVersion, Supplier<? extends T>> symbolMappers) {
+        public Optional<T> orElseGet(Map<TargetVersion, ? extends Supplier<Optional<T>>> symbolMappers) {
             if (version == null) {
                 var symbolMapper = symbolMappers.get(TargetVersion.this);
                 if (symbolMapper == null) {
@@ -104,7 +105,7 @@ public final class TargetVersion {
                 }
                 return symbolMapper.get();
             } else {
-                return mapper.apply(version);
+                return Optional.ofNullable(mapper.apply(version));
             }
         }
     }

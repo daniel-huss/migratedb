@@ -18,9 +18,9 @@ package migratedb.core.internal.database.cockroachdb;
 
 import java.sql.SQLException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.util.SqlCallable;
 import migratedb.core.internal.database.InsertRowLock;
 import migratedb.core.internal.database.base.BaseTable;
-import migratedb.core.internal.util.SqlCallable;
 
 /**
  * CockroachDB-specific table.

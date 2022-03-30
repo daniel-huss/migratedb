@@ -22,27 +22,29 @@ import migratedb.core.api.ClassProvider;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.callback.Callback;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.api.internal.sqlscript.SqlScript;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.resolver.MigrationResolver;
-import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.callback.DefaultCallbackExecutor;
 import migratedb.core.internal.callback.NoopCallbackExecutor;
 import migratedb.core.internal.callback.SqlScriptCallbackFactory;
 import migratedb.core.internal.configuration.ConfigurationValidator;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.StatementInterceptor;
-import migratedb.core.internal.parser.ParsingContext;
+import migratedb.core.internal.jdbc.JdbcConnectionFactoryImpl;
+import migratedb.core.internal.parser.ParsingContextImpl;
 import migratedb.core.internal.resolver.CompositeMigrationResolver;
 import migratedb.core.internal.resource.ResourceNameValidator;
 import migratedb.core.internal.resource.StringResource;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.schemahistory.SchemaHistoryFactory;
-import migratedb.core.internal.sqlscript.SqlScript;
-import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
-import migratedb.core.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.internal.util.LocationScanner;
 
 final class MigrateDbExecutor {
@@ -83,8 +85,12 @@ final class MigrateDbExecutor {
      * @return The result of the command.
      */
     public <T> T execute(Command<T> command, boolean scannerRequired) {
-        return Log.withLogSystem(configuration.getLogger(),
-                                 () -> doExecute(command, scannerRequired));
+        var logSystem = configuration.getLogger();
+        if (logSystem != null) {
+            return Log.withLogSystem(logSystem, () -> doExecute(command, scannerRequired));
+        } else {
+            return doExecute(command, scannerRequired);
+        }
     }
 
     private <T> T doExecute(Command<T> command, boolean scannerRequired) {
@@ -100,12 +106,12 @@ final class MigrateDbExecutor {
 
         resourceNameValidator.validateSQLMigrationNaming(resourceProvider, configuration);
 
-        JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory(configuration.getDataSource(),
-                                                                                configuration,
-                                                                                statementInterceptor);
+        var jdbcConnectionFactory = new JdbcConnectionFactoryImpl(configuration.getDataSource(),
+                                                                  configuration,
+                                                                  statementInterceptor);
 
         var databaseType = jdbcConnectionFactory.getDatabaseType();
-        var parsingContext = new ParsingContext();
+        var parsingContext = new ParsingContextImpl();
         var sqlScriptFactory = databaseType.createSqlScriptFactory(configuration, parsingContext);
 
         var noCallbackSqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(

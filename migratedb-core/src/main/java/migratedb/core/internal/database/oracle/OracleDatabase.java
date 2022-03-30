@@ -23,9 +23,9 @@ import java.util.HashSet;
 import java.util.Set;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.util.StringUtils;
 
 public class OracleDatabase extends BaseDatabase<OracleConnection> {

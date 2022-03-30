@@ -3,10 +3,13 @@ plugins {
     id 'groovy'
     id 'com.gradle.plugin-publish' version '0.20.0'
     id 'maven-publish'
+    id 'jacoco'
 }
 
+apply plugin: BuildHelper
+
 group 'de.unentscheidbar'
-version '0.1.0'
+version versionFromMavenProject()
 
 String scannerArtifact = "de.unentscheidbar:migratedb-scanner:${project.version}"
 
@@ -47,6 +50,10 @@ java {
     }
 }
 
+jacoco {
+    toolVersion = "0.8.7"
+}
+
 dependencies {
     runtimeOnly gradleApi()
     implementation scannerArtifact
@@ -59,6 +66,28 @@ tasks.withType(AbstractArchiveTask) {
     reproducibleFileOrder = true
 }
 
+
 tasks.withType(Test).configureEach {
+    onlyIf {
+        (!Boolean.valueOf(System.getProperty("skipTests", "false")))
+    }
     useJUnitPlatform()
+    jacoco {
+        destinationFile = layout.projectDirectory.dir("..").dir("target").file("jacoco.exec").getAsFile()
+    }
+}
+
+class BuildHelper implements Plugin<Project> {
+    @Override
+    void apply(Project project) {
+        project.extensions.add("versionFromMavenProject", {
+            // IDE doesn't know groovy-xml is on class path, so we instantiate via reflection to get rid of
+            // an ugly error message.
+            ("groovy.xml.XmlSlurper" as Class).getConstructor().newInstance()
+                    .parse(new File(project.projectDir, '../pom.xml'))
+                    .parent
+                    .version
+                    .text()
+        })
+    }
 }

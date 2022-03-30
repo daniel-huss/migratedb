@@ -27,16 +27,16 @@ import migratedb.core.api.ErrorCode;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
-import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.resolver.java.FixedJavaMigrationResolver;
 import migratedb.core.internal.resolver.java.JavaMigrationResolver;
 import migratedb.core.internal.resolver.sql.SqlMigrationResolver;
-import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
-import migratedb.core.internal.sqlscript.SqlScriptFactory;
 
 /**
  * Facility for retrieving and sorting the available migrations from the classpath through the various migration
@@ -83,6 +83,7 @@ public class CompositeMigrationResolver implements MigrationResolver {
      *
      * @throws MigrateDbException when the available migrations have overlapping versions.
      */
+    @Override
     public List<ResolvedMigration> resolveMigrations(Context context) {
         if (availableMigrations == null) {
             availableMigrations = doFindAvailableMigrations(context);
@@ -130,25 +131,21 @@ public class CompositeMigrationResolver implements MigrationResolver {
             ResolvedMigration current = migrations.get(i);
             ResolvedMigration next = migrations.get(i + 1);
             if (resolvedMigrationComparator.compare(current, next) == 0) {
-
-                if (current.getVersion() != null) {
-                    throw new MigrateDbException(String.format(
-                        "Found more than one migration with version %s\nOffenders:\n-> %s (%s)\n-> %s (%s)",
-                        current.getVersion(),
-                        current.getPhysicalLocation(),
-                        current.getType(),
-                        next.getPhysicalLocation(),
-                        next.getType()),
-                                                 ErrorCode.DUPLICATE_VERSIONED_MIGRATION);
+                if (current.getType().isBaselineMigration() ^ next.getType().isBaselineMigration()) {
+                    continue;
                 }
-                throw new MigrateDbException(String.format(
-                    "Found more than one repeatable migration with description %s\nOffenders:\n-> %s (%s)\n-> %s (%s)",
-                    current.getDescription(),
-                    current.getPhysicalLocation(),
-                    current.getType(),
-                    next.getPhysicalLocation(),
-                    next.getType()),
-                                             ErrorCode.DUPLICATE_REPEATABLE_MIGRATION);
+                if (current.getVersion() != null) {
+                    throw new MigrateDbException(
+                        "Found more than one migration with version " + current.getVersion() + "\nOffenders:\n-> " +
+                        current.getLocationDescription() + " (" + current.getType() + ")\n-> " +
+                        next.getLocationDescription() + " (" + next.getType() + ")",
+                        ErrorCode.DUPLICATE_VERSIONED_MIGRATION);
+                }
+                throw new MigrateDbException(
+                    "Found more than one repeatable migration with description " + current.getDescription() +
+                    "\nOffenders:\n-> " + current.getLocationDescription() + " (" + current.getType() + ")\n-> " +
+                    next.getLocationDescription() + " (" + next.getType() + ")",
+                    ErrorCode.DUPLICATE_REPEATABLE_MIGRATION);
             }
         }
     }

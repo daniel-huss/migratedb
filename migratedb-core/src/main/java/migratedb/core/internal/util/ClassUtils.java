@@ -162,7 +162,12 @@ public enum ClassUtils {
             return null;
         }
         try {
-            return Paths.get(location.toURI()).toAbsolutePath().toString();
+            var packagePath = StringUtils.tokenizeToStringArray(aClass.getName(), ".");
+            var path = Paths.get(location.toURI()).toAbsolutePath();
+            for (var packagePart : packagePath) {
+                path = path.resolve(packagePart);
+            }
+            return path.toString();
         } catch (URISyntaxException e) {
             return null;
         }

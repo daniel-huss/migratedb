@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.sqlscript;
 
-import migratedb.core.api.ResourceProvider;
-import migratedb.core.api.resource.Resource;
+package migratedb.integrationtest.database
 
-public interface SqlScriptFactory {
-    /**
-     * @return A new SQL script.
-     */
-    SqlScript createSqlScript(Resource resource, boolean mixed, ResourceProvider resourceProvider);
-}
+/**
+ * Use this when any database system will do (and speed is most important).
+ */
+object SomeInMemoryDb : DbSystem by H2.V2_1_210

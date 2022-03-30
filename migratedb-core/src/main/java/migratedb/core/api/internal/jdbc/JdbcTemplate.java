@@ -31,7 +31,6 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.internal.jdbc.JdbcNullTypes;
 import migratedb.core.internal.jdbc.JdbcUtils;
-import migratedb.core.internal.jdbc.Result;
 import migratedb.core.internal.jdbc.WarningImpl;
 
 /**

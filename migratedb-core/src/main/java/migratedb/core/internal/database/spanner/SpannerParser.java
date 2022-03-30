@@ -18,9 +18,9 @@ package migratedb.core.internal.database.spanner;
 
 import java.util.List;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.Token;
 
 public class SpannerParser extends BaseParser {
@@ -35,6 +35,7 @@ public class SpannerParser extends BaseParser {
         return '`';
     }
 
+    @Override
     protected char getAlternativeIdentifierQuote() {
         return '\"';
     }

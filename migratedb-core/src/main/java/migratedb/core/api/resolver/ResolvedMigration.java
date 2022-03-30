@@ -58,10 +58,10 @@ public interface ResolvedMigration extends ChecksumMatcher {
     MigrationType getType();
 
     /**
-     * @return The physical location of the migration on disk. Used for more precise error reporting in case of
-     * conflict.
+     * @return Description of the location of the migration (on disk, if possible). Used for more precise error
+     * reporting in case of conflict.
      */
-    String getPhysicalLocation();
+    String getLocationDescription();
 
     /**
      * @return The executor to run this migration.

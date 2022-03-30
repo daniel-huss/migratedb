@@ -19,10 +19,10 @@ package migratedb.core.internal.resolver.sql;
 import java.sql.SQLException;
 import migratedb.core.api.executor.Context;
 import migratedb.core.api.executor.MigrationExecutor;
+import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.api.internal.database.base.DatabaseType;
-import migratedb.core.internal.database.DatabaseExecutionStrategy;
-import migratedb.core.internal.sqlscript.SqlScript;
-import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScript;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
 
 /**
  * Database migration based on a sql file.
@@ -68,7 +68,7 @@ public class SqlMigrationExecutor implements MigrationExecutor {
     private void executeOnce(Context context) {
         boolean outputQueryResults = false;
 
-        sqlScriptExecutorFactory.createSqlScriptExecutor(context.getConnection(),  batch, outputQueryResults)
+        sqlScriptExecutorFactory.createSqlScriptExecutor(context.getConnection(), batch, outputQueryResults)
                                 .execute(sqlScript);
     }
 
@@ -80,5 +80,12 @@ public class SqlMigrationExecutor implements MigrationExecutor {
     @Override
     public boolean shouldExecute() {
         return sqlScript.shouldExecute();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" +
+               "sqlScript=" + sqlScript +
+               '}';
     }
 }

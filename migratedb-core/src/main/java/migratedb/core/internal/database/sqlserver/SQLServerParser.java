@@ -21,13 +21,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
-import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PeekingReader;
 import migratedb.core.internal.parser.Token;
 import migratedb.core.internal.parser.TokenType;
-import migratedb.core.internal.sqlscript.Delimiter;
 
 public class SQLServerParser extends BaseParser {
     // #2175, 2298, 2542: Various system sprocs, mostly around replication, cannot be executed within a transaction.

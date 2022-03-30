@@ -17,7 +17,9 @@
 package migratedb.integrationtest.util.dsl
 
 import migratedb.core.api.configuration.FluentConfiguration
+import migratedb.core.api.migration.JavaMigration
 
 interface RunWithConfigSpec {
     fun withConfig(classLoader: ClassLoader? = null, block: (FluentConfiguration) -> Unit)
+    fun createMigrations(names: Collection<String>): Array<JavaMigration>
 }

@@ -18,10 +18,10 @@ package migratedb.core.internal.database.mysql.tidb;
 
 import java.sql.Connection;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.mysql.MySQLConnection;
 import migratedb.core.internal.database.mysql.MySQLDatabase;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.StatementInterceptor;
 
 public class TiDBDatabase extends MySQLDatabase {
 

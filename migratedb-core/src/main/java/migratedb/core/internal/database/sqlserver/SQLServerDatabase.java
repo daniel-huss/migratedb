@@ -27,10 +27,10 @@ import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
+import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.internal.database.base.BaseDatabase;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.StatementInterceptor;
-import migratedb.core.internal.sqlscript.Delimiter;
 import migratedb.core.internal.util.StringUtils;
 
 public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {

@@ -16,7 +16,6 @@
  */
 package migratedb.core.internal.info;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -24,22 +23,25 @@ import java.util.Map;
 import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.Version;
 import migratedb.core.api.pattern.ValidatePattern;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class VersionContext {
+    /**
+     * VersionContext is immutable, this builder is mutable.
+     */
     static final class Builder {
         private final List<ValidatePattern> ignorePatterns;
         private final List<MigrationPattern> cherryPick;
-        public final Map<String, Integer> latestRepeatableRuns = new HashMap<>();
+        public Map<String, Integer> latestRepeatableRuns = new HashMap<>();
         public Version target;
-        public Version schema;
         public Version baseline;
         public Version lastResolved;
         public Version lastApplied;
         public Version latestBaselineMigration;
 
-        Builder(ValidatePattern[] ignorePatterns, MigrationPattern[] cherryPick) {
-            this.ignorePatterns = Arrays.asList(ignorePatterns);
-            this.cherryPick = Arrays.asList(cherryPick);
+        Builder(@Nullable ValidatePattern[] ignorePatterns, @Nullable MigrationPattern[] cherryPick) {
+            this.ignorePatterns = ignorePatterns == null ? List.of() : Arrays.asList(ignorePatterns);
+            this.cherryPick = cherryPick == null ? List.of() : Arrays.asList(cherryPick);
         }
 
         VersionContext build() {
@@ -50,7 +52,6 @@ final class VersionContext {
     public final List<ValidatePattern> ignorePatterns;
     public final Version target;
     public final List<MigrationPattern> cherryPick;
-    public final Version schema;
     public final Version baseline;
     public final Version lastResolved;
     public final Version lastApplied;
@@ -58,11 +59,10 @@ final class VersionContext {
     public final Map<String, Integer> latestRepeatableRuns;
 
     private VersionContext(Builder b) {
-        this.ignorePatterns = new ArrayList<>(b.ignorePatterns);
-        this.cherryPick = new ArrayList<>(b.cherryPick);
-        this.latestRepeatableRuns = new HashMap<>(b.latestRepeatableRuns);
+        this.ignorePatterns = List.copyOf(b.ignorePatterns);
+        this.cherryPick = List.copyOf(b.cherryPick);
+        this.latestRepeatableRuns = Map.copyOf(b.latestRepeatableRuns);
         this.target = b.target;
-        this.schema = b.schema;
         this.baseline = b.baseline;
         this.lastResolved = b.lastResolved;
         this.lastApplied = b.lastApplied;

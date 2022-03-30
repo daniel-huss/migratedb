@@ -16,6 +16,7 @@
 
 package migratedb.integrationtest.database
 
+import io.kotest.assertions.throwables.shouldThrow
 import migratedb.core.api.internal.database.base.DatabaseType
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl
 import migratedb.core.internal.database.hsqldb.HSQLDBDatabaseType
@@ -45,6 +46,13 @@ enum class Hsqldb : DbSystem {
         private val databaseType = HSQLDBDatabaseType()
         private val databaseTypeRegister = DatabaseTypeRegisterImpl().also {
             it.registerDatabaseTypes(listOf(databaseType))
+        }
+
+        init {
+            // Check that HSQLDB is not on the test class path (because our custom class loader delegates to its parent)
+            shouldThrow<ClassNotFoundException> {
+                Class.forName(driverClass)
+            }
         }
     }
 

@@ -20,14 +20,12 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.Version;
 import migratedb.core.internal.resolver.MigrationInfoHelper;
 
-
 /**
  * <p>This is the recommended class to extend for implementing Java-based Migrations.</p>
  * <p>Subclasses should follow the default MigrateDB naming convention of having a class name with the following
  * structure:</p>
  * <ul>
  * <li><strong>Versioned Migrations:</strong> V2__Add_new_table</li>
- * <li><strong>Undo Migrations:</strong> U2__Add_new_table</li>
  * <li><strong>Repeatable Migrations:</strong> R__Add_new_table</li>
  * <li><strong>Baseline Migrations:</strong> B2__Add_new_table</li>
  * </ul>
@@ -46,6 +44,8 @@ import migratedb.core.internal.resolver.MigrationInfoHelper;
  * migration category are provided by implementing the respective methods.</p>
  */
 public abstract class BaseJavaMigration implements JavaMigration {
+    private final boolean isBaseline;
+    private final boolean isRepeatable;
     private final Version version;
     private final String description;
 
@@ -56,31 +56,32 @@ public abstract class BaseJavaMigration implements JavaMigration {
         String shortName = getClass().getSimpleName();
         String prefix = null;
 
-        boolean repeatable = shortName.startsWith("R");
+        isRepeatable = shortName.startsWith("R");
+        isBaseline = shortName.startsWith("B");
 
-        if (shortName.startsWith("V") || repeatable) {
+        if (shortName.startsWith("V") || isBaseline || isRepeatable) {
             prefix = shortName.substring(0, 1);
         }
         if (prefix == null) {
             throw new MigrateDbException("Invalid Java-based migration class name: " + getClass().getName() +
-                                         " => ensure it starts with V, R" +
+                                         " => ensure it starts with V, R, B" +
 
                                          " or implement JavaMigration directly for " +
                                          "non-default naming");
         }
 
-        var info = MigrationInfoHelper.extractVersionAndDescription(shortName, prefix, "__", repeatable);
-        version = info.version;
-        description = info.description;
+        var info = MigrationInfoHelper.extractVersionAndDescription(shortName, prefix, "__", isRepeatable);
+        this.version = info.version;
+        this.description = info.description;
     }
 
     @Override
-    public Version getVersion() {
+    public final Version getVersion() {
         return version;
     }
 
     @Override
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
@@ -90,8 +91,8 @@ public abstract class BaseJavaMigration implements JavaMigration {
     }
 
     @Override
-    public boolean isBaselineMigration() {
-        return false;
+    public final boolean isBaselineMigration() {
+        return isBaseline;
     }
 
     @Override

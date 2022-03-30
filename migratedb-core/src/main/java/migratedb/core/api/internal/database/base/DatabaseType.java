@@ -23,15 +23,15 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.callback.CallbackExecutor;
+import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
+import migratedb.core.api.internal.jdbc.ExecutionTemplate;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.Parser;
-import migratedb.core.internal.callback.CallbackExecutor;
-import migratedb.core.internal.database.DatabaseExecutionStrategy;
-import migratedb.core.internal.jdbc.ExecutionTemplate;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.StatementInterceptor;
-import migratedb.core.internal.parser.ParsingContext;
-import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
-import migratedb.core.internal.sqlscript.SqlScriptFactory;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 
 /**
  * Extension point for supported database types. Instances are unmodifiable.
@@ -115,10 +115,10 @@ public interface DatabaseType {
      *
      * @return The appropriate Database class.
      */
-    Database createDatabase(
-        Configuration configuration, boolean printInfo,
-        JdbcConnectionFactory jdbcConnectionFactory,
-        StatementInterceptor statementInterceptor
+    Database createDatabase(Configuration configuration,
+                            boolean printInfo,
+                            JdbcConnectionFactory jdbcConnectionFactory,
+                            StatementInterceptor statementInterceptor
     );
 
     /**
@@ -129,10 +129,9 @@ public interface DatabaseType {
      *
      * @return The Database.
      */
-    Database createDatabase(
-        Configuration configuration,
-        JdbcConnectionFactory jdbcConnectionFactory,
-        StatementInterceptor statementInterceptor
+    Database createDatabase(Configuration configuration,
+                            JdbcConnectionFactory jdbcConnectionFactory,
+                            StatementInterceptor statementInterceptor
     );
 
     /**
@@ -142,11 +141,7 @@ public interface DatabaseType {
      *
      * @return The Parser.
      */
-    Parser createParser(
-        Configuration configuration
-        , ResourceProvider resourceProvider
-        , ParsingContext parsingContext
-    );
+    Parser createParser(Configuration configuration, ResourceProvider resourceProvider, ParsingContext parsingContext);
 
     /**
      * Initializes the SqlScriptFactory used by this Database Type.
@@ -155,9 +150,8 @@ public interface DatabaseType {
      *
      * @return The SqlScriptFactory.
      */
-    SqlScriptFactory createSqlScriptFactory(
-        Configuration configuration,
-        ParsingContext parsingContext);
+    SqlScriptFactory createSqlScriptFactory(Configuration configuration,
+                                            ParsingContext parsingContext);
 
     /**
      * Initializes the SqlScriptExecutorFactory used by this Database Type.
@@ -166,10 +160,9 @@ public interface DatabaseType {
      *
      * @return The SqlScriptExecutorFactory.
      */
-    SqlScriptExecutorFactory createSqlScriptExecutorFactory(
-        JdbcConnectionFactory jdbcConnectionFactory,
-        CallbackExecutor callbackExecutor,
-        StatementInterceptor statementInterceptor
+    SqlScriptExecutorFactory createSqlScriptExecutorFactory(JdbcConnectionFactory jdbcConnectionFactory,
+                                                            CallbackExecutor callbackExecutor,
+                                                            StatementInterceptor statementInterceptor
     );
 
     /**

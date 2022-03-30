@@ -30,7 +30,7 @@ import migratedb.core.testing.MigrateDbDomain
 import migratedb.core.testing.UniversalDummy
 import migratedb.core.testing.anyErrorOverride
 import migratedb.core.testing.anyLocation
-import migratedb.core.testing.anyMigrationVersionString
+import migratedb.core.testing.anyTargetVersionString
 import migratedb.core.testing.anyValidatePattern
 import migratedb.core.testing.comparableProperties
 import migratedb.core.testing.diffWith
@@ -148,7 +148,7 @@ internal class ClassicConfigurationTest {
                 File::class.java -> String.any().alpha().ofLength(1..10).map { "target/$it" }
                 Integer::class.java -> Int.any(1..Integer.MAX_VALUE).map { it.toString() }
                 java.lang.Boolean::class.java -> Boolean.any().map { it.toString() }
-                Version::class.java -> anyMigrationVersionString()
+                Version::class.java -> anyTargetVersionString()
                 ValidatePattern::class.java -> anyValidatePattern().map { it.pattern() }
                 Class::class.java -> just(UniversalDummy::class.java.name)
                 else -> throw IllegalStateException("Field type not implemented: $type")

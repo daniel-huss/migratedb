@@ -23,18 +23,20 @@ import java.util.Objects;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.MigrationState;
+import migratedb.core.api.MigrationState.Category;
 import migratedb.core.api.TargetVersion;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.database.base.Connection;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.output.CommandResultFactory;
+import migratedb.core.api.output.CompletedRepairActions;
 import migratedb.core.api.output.RepairResult;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
-import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
 import migratedb.core.internal.info.ValidationContext;
 import migratedb.core.internal.schemahistory.SchemaHistory;
@@ -129,7 +131,7 @@ public class DbRepair {
                         configuration.getCherryPick());
                     migrationInfoService.refresh();
 
-                    completedActions.deletedMissingMigrations = markMissingMigrationsAsDeleted();
+                    completedActions.deletedMissingMigrations = markUnavailableMigrationsAsDeleted();
 
                     completedActions.alignedAppliedMigrationChecksums = alignAppliedMigrationsWithResolvedMigrations();
                     return completedActions;
@@ -158,7 +160,7 @@ public class DbRepair {
         return repairResult;
     }
 
-    private boolean markMissingMigrationsAsDeleted() {
+    private boolean markUnavailableMigrationsAsDeleted() {
         boolean removed = false;
         for (MigrationInfo migrationInfo : migrationInfoService.all()) {
             if (migrationInfo.getType().isSynthetic()
@@ -169,13 +171,11 @@ public class DbRepair {
 
             AppliedMigration applied = migrationInfo.getAppliedMigration();
             MigrationState state = migrationInfo.getState();
-            boolean isMigrationMissing =
-                state == MigrationState.MISSING_SUCCESS || state == MigrationState.MISSING_FAILED ||
-                state == MigrationState.FUTURE_SUCCESS || state == MigrationState.FUTURE_FAILED;
-            boolean isMigrationIgnored = Arrays.stream(configuration.getIgnoreMigrationPatterns())
+            boolean isUnavailable = state.is(Category.MISSING) || state.is(Category.FUTURE);
+            boolean isIgnoredByPattern = Arrays.stream(configuration.getIgnoreMigrationPatterns())
                                                .anyMatch(p -> p.matchesMigration(migrationInfo.getVersion() != null,
                                                                                  state));
-            if (isMigrationMissing && !isMigrationIgnored) {
+            if (isUnavailable && !isIgnoredByPattern) {
                 schemaHistory.delete(applied);
                 removed = true;
                 repairResult.migrationsDeleted.add(CommandResultFactory.createRepairOutput(migrationInfo));
@@ -242,21 +242,4 @@ public class DbRepair {
         return !Objects.equals(resolved.getType(), applied.getType());
     }
 
-    public static class CompletedRepairActions {
-        public boolean removedFailedMigrations = false;
-        public boolean deletedMissingMigrations = false;
-        public boolean alignedAppliedMigrationChecksums = false;
-
-        public String removedMessage() {
-            return "Removed failed migrations";
-        }
-
-        public String deletedMessage() {
-            return "Deleted missing migrations";
-        }
-
-        public String alignedMessage() {
-            return "Aligned applied migration checksums";
-        }
-    }
 }

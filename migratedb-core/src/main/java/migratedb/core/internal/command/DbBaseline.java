@@ -19,12 +19,12 @@ package migratedb.core.internal.command;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.Version;
 import migratedb.core.api.callback.Event;
+import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.output.BaselineResult;
 import migratedb.core.api.output.CommandResultFactory;
-import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 
 /**

@@ -25,13 +25,13 @@ import migratedb.core.api.MigrationType;
 import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.database.mysql.mariadb.MariaDBDatabaseType;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.StatementInterceptor;
 
 public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
     // See https://mariadb.com/kb/en/version/

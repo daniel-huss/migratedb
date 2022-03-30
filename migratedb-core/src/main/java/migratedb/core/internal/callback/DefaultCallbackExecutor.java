@@ -27,6 +27,7 @@ import migratedb.core.api.callback.Callback;
 import migratedb.core.api.callback.Context;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.database.base.Connection;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
@@ -70,7 +71,7 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
     }
 
     @Override
-    public void onMigrateOrUndoEvent(Event event) {
+    public void onMigrateEvent(Event event) {
         execute(event, database.getMigrationConnection());
     }
 
@@ -89,6 +90,7 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
         }
     }
 
+    @Override
     public void onOperationFinishEvent(Event event, OperationResult operationResult) {
         Context context = new SimpleContext(configuration,
                                             database.getMigrationConnection(),

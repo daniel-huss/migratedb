@@ -17,11 +17,16 @@
 
 package migratedb.core.api.internal.parser;
 
+import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.sqlscript.SqlScriptMetadata;
 import migratedb.core.api.internal.sqlscript.SqlStatementIterator;
 import migratedb.core.api.resource.Resource;
-import migratedb.core.internal.sqlscript.SqlScriptMetadata;
 
 public interface Parser {
+    Configuration getConfiguration();
+
+    ParsingContext getParsingContext();
+
     /**
      * Parses this resource into a stream of statements.
      *

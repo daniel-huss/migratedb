@@ -25,9 +25,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.Result;
 import migratedb.core.api.internal.jdbc.Results;
-import migratedb.core.internal.jdbc.Result;
-import migratedb.core.internal.sqlscript.Delimiter;
+import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.internal.sqlscript.ParsedSqlStatement;
 
 /**

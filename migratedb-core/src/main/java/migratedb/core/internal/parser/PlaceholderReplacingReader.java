@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
 
 public class PlaceholderReplacingReader extends FilterReader {
     private final String prefix;

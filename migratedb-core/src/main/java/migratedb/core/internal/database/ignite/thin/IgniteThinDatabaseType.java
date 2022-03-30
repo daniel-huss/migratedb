@@ -21,11 +21,11 @@ import java.sql.Types;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
+import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.database.base.BaseDatabaseType;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.parser.ParsingContext;
 
 /*
  * # Apache Ignite Thin: jdbc:ignite:thin://<hostAndPortRange0>[,<hostAndPortRange1>]...[,
@@ -38,6 +38,7 @@ import migratedb.core.internal.parser.ParsingContext;
  * `jdbc:ignite:thin://127.0.0.1` as the JDBC URL, no username or password
  * */
 public class IgniteThinDatabaseType extends BaseDatabaseType {
+    @Override
     public String getName() {
         return "Apache Ignite";
     }

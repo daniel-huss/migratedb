@@ -24,8 +24,12 @@ import migratedb.core.api.Version;
 
 /**
  * A migration applied to the database (maps to a row in the schema history table).
+ * <p>
+ * Its natural ordering is inconsistent with equals().
  */
-public class AppliedMigration implements Comparable<AppliedMigration> {
+public final class AppliedMigration implements Comparable<AppliedMigration> {
+    // TODO natural ordering should be consistent with equals()
+
     /**
      * The order in which this migration was applied amongst all others. (For out of order detection)
      */

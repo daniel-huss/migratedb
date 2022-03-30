@@ -20,12 +20,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.sqlserver.SQLServerDatabaseType;
 import migratedb.core.internal.database.sqlserver.SQLServerEngineEdition;
 import migratedb.core.internal.exception.MigrateDbSqlException;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.StatementInterceptor;
 
 public class SynapseDatabaseType extends SQLServerDatabaseType {
     @Override

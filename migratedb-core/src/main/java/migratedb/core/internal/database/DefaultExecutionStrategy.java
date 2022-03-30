@@ -17,12 +17,14 @@
 package migratedb.core.internal.database;
 
 import java.sql.SQLException;
-import migratedb.core.internal.util.SqlCallable;
+import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
+import migratedb.core.api.internal.util.SqlCallable;
 
 /**
  * The default execution strategy for a {@code SQLCallable}, which performs a single execution.
  */
 public class DefaultExecutionStrategy implements DatabaseExecutionStrategy {
+    @Override
     public <T> T execute(SqlCallable<T> callable) throws SQLException {
         return callable.call();
     }

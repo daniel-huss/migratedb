@@ -20,7 +20,7 @@ import java.io.FilterReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
-import migratedb.core.internal.sqlscript.Delimiter;
+import migratedb.core.api.internal.sqlscript.Delimiter;
 
 public class PeekingReader extends FilterReader {
     private int[] peekBuffer = new int[256];

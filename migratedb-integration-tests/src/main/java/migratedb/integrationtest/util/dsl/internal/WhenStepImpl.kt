@@ -16,24 +16,28 @@
 
 package migratedb.integrationtest.util.dsl.internal
 
+import migratedb.core.api.MigrationInfoService
+import migratedb.core.api.output.MigrateResult
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.dsl.Dsl
+import migratedb.integrationtest.util.dsl.RunInfoSpec
 import migratedb.integrationtest.util.dsl.RunMigrateSpec
 
 class WhenStepImpl<G : Any>(given: G, givenInfo: GivenInfo) : Dsl.WhenStep<G>, AbstractAfterGiven<G>(given, givenInfo) {
-    private val executableActions = mutableListOf<() -> Unit>()
 
-    override fun migrate(block: (RunMigrateSpec).() -> Unit) {
+    override fun migrate(block: (RunMigrateSpec).() -> Unit): MigrateResult {
         val runMigrate = RunMigrateImpl(givenInfo)
         runMigrate.block()
-        executableActions.add(runMigrate::execute)
+        return runMigrate.execute()
+    }
+
+    override fun info(block: (RunInfoSpec).() -> Unit): MigrationInfoService {
+        val runInfo = RunInfoImpl(givenInfo)
+        runInfo.block()
+        return runInfo.execute()
     }
 
     override fun arbitraryMutation(): IndependentDatabaseMutation {
         return givenInfo.databaseHandle.nextMutation(givenInfo.schemaName)
-    }
-
-    fun executeActions() {
-        executableActions.forEach { it() }
     }
 }

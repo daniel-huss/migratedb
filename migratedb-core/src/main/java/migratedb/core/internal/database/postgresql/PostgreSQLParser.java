@@ -20,15 +20,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
-import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PeekingReader;
 import migratedb.core.internal.parser.Recorder;
 import migratedb.core.internal.parser.StatementType;
 import migratedb.core.internal.parser.Token;
 import migratedb.core.internal.parser.TokenType;
-import migratedb.core.internal.sqlscript.Delimiter;
 import migratedb.core.internal.sqlscript.ParsedSqlStatement;
 
 public class PostgreSQLParser extends BaseParser {
@@ -115,7 +115,7 @@ public class PostgreSQLParser extends BaseParser {
 
         boolean isDBVerUnder12 = true;
         try {
-            isDBVerUnder12 = !parsingContext.getDatabase().getVersion().isAtLeast("12");
+            isDBVerUnder12 = !getParsingContext().getDatabase().getVersion().isAtLeast("12");
         } catch (RuntimeException e) {
             LOG.debug("Unable to determine database version: " + e.getMessage());
         }

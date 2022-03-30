@@ -28,13 +28,13 @@ import migratedb.core.api.callback.Callback;
 import migratedb.core.api.callback.Context;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.resource.ResourceName;
+import migratedb.core.api.internal.sqlscript.SqlScript;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.resource.Resource;
-import migratedb.core.internal.resource.ResourceName;
 import migratedb.core.internal.resource.ResourceNameParser;
-import migratedb.core.internal.sqlscript.SqlScript;
-import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
-import migratedb.core.internal.sqlscript.SqlScriptFactory;
 
 /**
  * Callback factory, looking for SQL scripts (named like on the callback methods) inside the configured locations.

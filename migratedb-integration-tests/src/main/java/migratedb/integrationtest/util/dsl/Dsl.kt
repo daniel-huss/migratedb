@@ -16,6 +16,8 @@
 
 package migratedb.integrationtest.util.dsl
 
+import migratedb.core.api.MigrationInfoService
+import migratedb.core.api.output.MigrateResult
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.SafeIdentifier
@@ -55,7 +57,6 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
                         val w = whenStep.block()
                         return object : WhenStepResult<G, W> {
                             override fun then(block: (ThenStep<G>).(W) -> Unit) {
-                                whenStep.executeActions()
                                 val thenStep = ThenStepImpl(g, givenInfo)
                                 thenStep.block(w)
                             }
@@ -80,7 +81,8 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
     }
 
     interface WhenStep<G> : AfterGiven<G> {
-        fun migrate(block: RunMigrateSpec.() -> Unit)
+        fun migrate(block: RunMigrateSpec.() -> Unit): MigrateResult
+        fun info(block: RunInfoSpec.() -> Unit): MigrationInfoService
         fun arbitraryMutation(): IndependentDatabaseMutation
     }
 

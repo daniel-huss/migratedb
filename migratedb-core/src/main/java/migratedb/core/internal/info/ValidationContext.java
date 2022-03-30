@@ -58,7 +58,22 @@ public final class ValidationContext {
         this.allowed = EnumSet.copyOf(allowed);
     }
 
+    private ValidationContext(EnumSet<ValidationMatch> allowed, boolean doNotCopy) {
+        assert doNotCopy;
+        this.allowed = allowed;
+    }
+
     boolean allows(ValidationMatch f) {
         return allowed.contains(f);
+    }
+
+    public ValidationContext with(ValidationMatch match, boolean allow) {
+        var newAllowed = EnumSet.copyOf(allowed);
+        if (allow) {
+            newAllowed.add(match);
+        } else {
+            newAllowed.remove(match);
+        }
+        return new ValidationContext(newAllowed, true);
     }
 }

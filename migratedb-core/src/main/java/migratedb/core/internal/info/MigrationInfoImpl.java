@@ -168,21 +168,25 @@ final class MigrationInfoImpl implements MigrationInfo {
             return MigrationState.IGNORED;
         }
 
-        if (resolvedMigration.getVersion() != null) {
-            if (resolvedMigration.getVersion().compareTo(versionContext.baseline) < 0) {
+        var version = resolvedMigration.getVersion();
+        if (version != null) {
+            if (versionContext.baseline != null &&
+                version.compareTo(versionContext.baseline) < 0) {
                 return MigrationState.BELOW_BASELINE;
             }
             if (versionContext.target != null &&
-                resolvedMigration.getVersion().compareTo(versionContext.target) > 0) {
+                version.compareTo(versionContext.target) > 0) {
                 return MigrationState.ABOVE_TARGET;
             }
-            if ((resolvedMigration.getVersion().compareTo(versionContext.lastApplied) < 0) &&
+            if (versionContext.lastApplied != null &&
+                version.compareTo(versionContext.lastApplied) < 0 &&
                 !validationContext.allows(ValidationMatch.OUT_OF_ORDER)) {
                 return MigrationState.IGNORED;
             }
-            if (resolvedMigration.getVersion().compareTo(versionContext.latestBaselineMigration) < 0 ||
-                (resolvedMigration.getVersion().compareTo(versionContext.latestBaselineMigration) == 0 &&
-                 !resolvedMigration.getType().isBaselineMigration())) {
+            if (versionContext.latestBaselineMigration != null &&
+                (version.compareTo(versionContext.latestBaselineMigration) < 0 ||
+                 (version.compareTo(versionContext.latestBaselineMigration) == 0 &&
+                  !resolvedMigration.getType().isBaselineMigration()))) {
                 return MigrationState.IGNORED;
             }
         }
@@ -232,7 +236,7 @@ final class MigrationInfoImpl implements MigrationInfo {
     @Override
     public String getPhysicalLocation() {
         if (resolvedMigration != null) {
-            return resolvedMigration.getPhysicalLocation();
+            return resolvedMigration.getLocationDescription();
         }
         return "";
     }

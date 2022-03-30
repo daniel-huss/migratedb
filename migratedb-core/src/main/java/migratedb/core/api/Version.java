@@ -154,6 +154,7 @@ public final class Version implements Comparable<Version> {
 
     @Override
     public int compareTo(Version o) {
+        // For historic reasons, this comparator
         if (this == o) {
             return 0;
         }

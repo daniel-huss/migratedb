@@ -16,7 +16,7 @@
  */
 package migratedb.core.internal.database.base;
 
-import static migratedb.core.internal.sqlscript.SqlScriptMetadata.getMetadataResource;
+import static migratedb.core.internal.sqlscript.SqlScriptMetadataImpl.getMetadataResource;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -28,24 +28,24 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.callback.CallbackExecutor;
+import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.DatabaseType;
+import migratedb.core.api.internal.jdbc.ExecutionTemplate;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.logging.Log;
-import migratedb.core.internal.callback.CallbackExecutor;
-import migratedb.core.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.internal.database.DefaultExecutionStrategy;
-import migratedb.core.internal.jdbc.ExecutionTemplate;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.internal.jdbc.JdbcUtils;
-import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.jdbc.TransactionalExecutionTemplate;
 import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.sqlscript.DefaultSqlScriptExecutor;
 import migratedb.core.internal.sqlscript.ParserSqlScript;
-import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
-import migratedb.core.internal.sqlscript.SqlScriptFactory;
 
 public abstract class BaseDatabaseType implements DatabaseType {
     protected static final Log LOG = Log.getLog(BaseDatabaseType.class);
@@ -167,13 +167,13 @@ public abstract class BaseDatabaseType implements DatabaseType {
 
     @Override
     public SqlScriptFactory createSqlScriptFactory(Configuration configuration, ParsingContext parsingContext) {
-        return (resource, mixed, resourceProvider) -> new ParserSqlScript(createParser(configuration,
-                                                                                       resourceProvider,
-                                                                                       parsingContext),
-                                                                          resource,
-                                                                          getMetadataResource(resourceProvider,
-                                                                                              resource),
-                                                                          mixed);
+        return (resource, mixed, resourceProvider) ->
+            new ParserSqlScript(createParser(configuration,
+                                             resourceProvider,
+                                             parsingContext),
+                                resource,
+                                getMetadataResource(resourceProvider, resource),
+                                mixed);
     }
 
     @Override

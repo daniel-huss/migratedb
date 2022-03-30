@@ -23,9 +23,7 @@ public class ResolvedMigrationComparator implements Comparator<ResolvedMigration
     @Override
     public int compare(ResolvedMigration o1, ResolvedMigration o2) {
         if ((o1.getVersion() != null) && o2.getVersion() != null) {
-            int v = o1.getVersion().compareTo(o2.getVersion());
-
-            return v;
+            return o1.getVersion().compareTo(o2.getVersion());
         }
         if (o1.getVersion() != null) {
             return -1;

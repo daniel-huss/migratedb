@@ -23,7 +23,7 @@ import migratedb.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
 
-internal class SelfTest : IntegrationTest() {
+class SelfTest : IntegrationTest() {
     @ParameterizedTest
     @ArgumentsSource(DbSystem.All::class)
     fun `Database system is supported by test DSL`(dbSystem: DbSystem) = withDsl(dbSystem) {

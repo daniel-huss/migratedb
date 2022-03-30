@@ -37,6 +37,8 @@ import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.internal.jdbc.RowMapper;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.output.CommandResultFactory;
 import migratedb.core.api.output.RepairResult;
@@ -44,8 +46,6 @@ import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.jdbc.JdbcNullTypes;
-import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
-import migratedb.core.internal.sqlscript.SqlScriptFactory;
 
 /**
  * Supports reading and writing to the schema history table.
@@ -389,8 +389,14 @@ class JdbcTableSchemaHistory extends SchemaHistory {
         try {
             jdbcTemplate.update(database.getInsertStatement(table),
                                 calculateInstalledRank(),
-                                versionObj, appliedMigration.getDescription(), "DELETE", appliedMigration.getScript(),
-                                checksumObj, database.getInstalledBy(), 0, appliedMigration.isSuccess());
+                                versionObj,
+                                appliedMigration.getDescription(),
+                                "DELETE",
+                                appliedMigration.getScript(),
+                                checksumObj,
+                                database.getInstalledBy(),
+                                0,
+                                appliedMigration.isSuccess());
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to repair Schema History table " + table
                                             + " for version " + version, e);

@@ -28,15 +28,16 @@ import java.util.regex.Pattern;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.parser.Parser;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.api.internal.resource.ResourceName;
+import migratedb.core.api.internal.sqlscript.Delimiter;
+import migratedb.core.api.internal.sqlscript.SqlScriptMetadata;
 import migratedb.core.api.internal.sqlscript.SqlStatement;
 import migratedb.core.api.internal.sqlscript.SqlStatementIterator;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.resource.Resource;
-import migratedb.core.internal.resource.ResourceName;
 import migratedb.core.internal.resource.ResourceNameParser;
-import migratedb.core.internal.sqlscript.Delimiter;
 import migratedb.core.internal.sqlscript.ParsedSqlStatement;
-import migratedb.core.internal.sqlscript.SqlScriptMetadata;
 import migratedb.core.internal.util.BomStrippingReader;
 import migratedb.core.internal.util.IOUtils;
 import migratedb.core.internal.util.WebsiteLinks;
@@ -48,13 +49,13 @@ public abstract class BaseParser implements Parser {
 
     protected static final Log LOG = Log.getLog(BaseParser.class);
 
-    public final Configuration configuration;
+    private final Configuration configuration;
     private final int peekDepth;
     private final char identifierQuote;
     private final char alternativeIdentifierQuote;
     private final char alternativeStringLiteralQuote;
     private final Set<String> validKeywords;
-    public final ParsingContext parsingContext;
+    private final ParsingContext parsingContext;
 
     protected BaseParser(Configuration configuration, ParsingContext parsingContext, int peekDepth) {
         this.configuration = configuration;
@@ -64,6 +65,16 @@ public abstract class BaseParser implements Parser {
         this.alternativeStringLiteralQuote = getAlternativeStringLiteralQuote();
         this.validKeywords = getValidKeywords();
         this.parsingContext = parsingContext;
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    @Override
+    public ParsingContext getParsingContext() {
+        return parsingContext;
     }
 
     protected Delimiter getDefaultDelimiter() {

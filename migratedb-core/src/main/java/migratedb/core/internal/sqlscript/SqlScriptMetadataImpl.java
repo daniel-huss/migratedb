@@ -21,14 +21,15 @@ import static migratedb.core.internal.configuration.ConfigUtils.loadConfiguratio
 import java.util.HashMap;
 import java.util.Map;
 import migratedb.core.api.ResourceProvider;
+import migratedb.core.api.internal.parser.Parser;
+import migratedb.core.api.internal.sqlscript.SqlScriptMetadata;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.configuration.ConfigUtils;
-import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.PlaceholderReplacingReader;
 
-public class SqlScriptMetadata {
-    private static final Log LOG = Log.getLog(SqlScriptMetadata.class);
+public class SqlScriptMetadataImpl implements SqlScriptMetadata {
+    private static final Log LOG = Log.getLog(SqlScriptMetadataImpl.class);
     private static final String EXECUTE_IN_TRANSACTION = "executeInTransaction";
     private static final String ENCODING = "encoding";
     private static final String PLACEHOLDER_REPLACEMENT = "placeholderReplacement";
@@ -39,48 +40,54 @@ public class SqlScriptMetadata {
     private final boolean placeholderReplacement;
     private final boolean shouldExecute;
 
-    private SqlScriptMetadata(Map<String, String> metadata) {
+    private SqlScriptMetadataImpl(Map<String, String> metadata) {
         // Make copy to prevent removing elements from the original
-        metadata = new HashMap<>(metadata);
+        var copy = new HashMap<>(metadata);
 
-        this.executeInTransaction = ConfigUtils.removeBoolean(metadata, EXECUTE_IN_TRANSACTION);
-        this.encoding = metadata.remove(ENCODING);
+        this.executeInTransaction = ConfigUtils.removeBoolean(copy, EXECUTE_IN_TRANSACTION);
+        this.encoding = copy.remove(ENCODING);
 
-        this.placeholderReplacement = Boolean.parseBoolean(metadata.getOrDefault(PLACEHOLDER_REPLACEMENT, "true"));
-        metadata.remove(PLACEHOLDER_REPLACEMENT);
+        this.placeholderReplacement = Boolean.parseBoolean(copy.getOrDefault(PLACEHOLDER_REPLACEMENT, "true"));
+        copy.remove(PLACEHOLDER_REPLACEMENT);
 
         this.shouldExecute = true;
 
-        ConfigUtils.reportUnrecognisedProperties(metadata, null);
+        ConfigUtils.reportUnrecognisedProperties(copy, null);
     }
 
+    @Override
     public Boolean executeInTransaction() {
         return executeInTransaction;
     }
 
+    @Override
     public String encoding() {
         return encoding;
     }
 
+    @Override
     public boolean placeholderReplacement() {
         return placeholderReplacement;
     }
 
+    @Override
     public boolean shouldExecute() {
         return shouldExecute;
     }
 
     public static boolean isMultilineBooleanExpression(String line) {
-        return !line.startsWith(SHOULD_EXECUTE) && (line.contains("==") || line.contains("!="));
+        return !line.startsWith(SqlScriptMetadataImpl.SHOULD_EXECUTE) && (line.contains("==") || line.contains("!="));
     }
 
-    public static SqlScriptMetadata fromResource(Resource resource, BaseParser parser) {
+    public static SqlScriptMetadata fromResource(Resource resource, Parser parser) {
         if (resource != null) {
             LOG.debug("Found script configuration: " + resource.getName());
-            return new SqlScriptMetadata(loadConfiguration(
-                    PlaceholderReplacingReader.create(parser.configuration, parser.parsingContext, resource.read(parser.configuration.getEncoding()))));
+            return new SqlScriptMetadataImpl(loadConfiguration(
+                PlaceholderReplacingReader.create(parser.getConfiguration(),
+                                                  parser.getParsingContext(),
+                                                  resource.read(parser.getConfiguration().getEncoding()))));
         }
-        return new SqlScriptMetadata(new HashMap<>());
+        return new SqlScriptMetadataImpl(new HashMap<>());
     }
 
     public static Resource getMetadataResource(ResourceProvider resourceProvider, Resource resource) {

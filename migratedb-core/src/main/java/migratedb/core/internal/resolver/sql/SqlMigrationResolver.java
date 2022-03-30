@@ -24,21 +24,21 @@ import migratedb.core.api.MigrationType;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.api.internal.resource.ResourceName;
+import migratedb.core.api.internal.sqlscript.SqlScript;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.api.resource.Resource;
-import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.PlaceholderReplacingReader;
 import migratedb.core.internal.resolver.ChecksumCalculator;
 import migratedb.core.internal.resolver.ResolvedMigrationComparator;
 import migratedb.core.internal.resolver.ResolvedMigrationImpl;
-import migratedb.core.internal.resource.ResourceName;
 import migratedb.core.internal.resource.ResourceNameParser;
-import migratedb.core.internal.sqlscript.SqlScript;
-import migratedb.core.internal.sqlscript.SqlScriptExecutorFactory;
-import migratedb.core.internal.sqlscript.SqlScriptFactory;
 
 /**
  * Migration resolver for SQL file resources.
@@ -139,15 +139,16 @@ public class SqlMigrationResolver implements MigrationResolver {
             Integer checksum = getChecksumForResource(repeatable, resources);
             Integer equivalentChecksum = getEquivalentChecksumForResource(repeatable, resources);
 
+            var isBaseline = filename.startsWith(configuration.getBaselineMigrationPrefix());
             migrations.add(new ResolvedMigrationImpl(
-                    result.getVersion(),
-                    result.getDescription(),
-                    resource.getName(),
-                    checksum,
-                    equivalentChecksum,
-                    MigrationType.SQL,
-                    resource.getName(),
-                    new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript, configuration.isBatch())) {
+                result.getVersion(),
+                result.getDescription(),
+                resource.getName(),
+                checksum,
+                equivalentChecksum,
+                isBaseline ? MigrationType.SQL_BASELINE : MigrationType.SQL,
+                resource.getName(),
+                new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript, configuration.isBatch())) {
             });
         }
     }

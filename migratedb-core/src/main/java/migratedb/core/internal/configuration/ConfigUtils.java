@@ -16,7 +16,7 @@
  */
 package migratedb.core.internal.configuration;
 
-import static migratedb.core.internal.sqlscript.SqlScriptMetadata.isMultilineBooleanExpression;
+import static migratedb.core.internal.sqlscript.SqlScriptMetadataImpl.isMultilineBooleanExpression;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -16,6 +16,8 @@
  */
 package migratedb.core.internal.command;
 
+import static migratedb.core.internal.jdbc.ExecutionTemplateFactory.createExecutionTemplate;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +25,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfo;
@@ -33,6 +36,7 @@ import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.executor.Context;
 import migratedb.core.api.executor.MigrationExecutor;
+import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.database.base.Connection;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
@@ -41,11 +45,9 @@ import migratedb.core.api.output.CommandResultFactory;
 import migratedb.core.api.output.MigrateResult;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
-import migratedb.core.internal.callback.CallbackExecutor;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
 import migratedb.core.internal.info.ValidationContext;
 import migratedb.core.internal.info.ValidationMatch;
-import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.DateTimeUtils;
 import migratedb.core.internal.util.ExceptionUtils;
@@ -92,7 +94,7 @@ public class DbMigrate {
      * Starts the actual migration.
      */
     public MigrateResult migrate() throws MigrateDbException {
-        callbackExecutor.onMigrateOrUndoEvent(Event.BEFORE_MIGRATE);
+        callbackExecutor.onMigrateEvent(Event.BEFORE_MIGRATE);
 
         migrateResult = CommandResultFactory.createMigrateResult(database.getCatalog(), configuration);
 
@@ -116,14 +118,14 @@ public class DbMigrate {
 
             logSummary(count, stopWatch.getTotalTimeMillis(), migrateResult.targetSchemaVersion);
         } catch (MigrateDbException e) {
-            callbackExecutor.onMigrateOrUndoEvent(Event.AFTER_MIGRATE_ERROR);
+            callbackExecutor.onMigrateEvent(Event.AFTER_MIGRATE_ERROR);
             throw e;
         }
 
         if (count > 0) {
-            callbackExecutor.onMigrateOrUndoEvent(Event.AFTER_MIGRATE_APPLIED);
+            callbackExecutor.onMigrateEvent(Event.AFTER_MIGRATE_APPLIED);
         }
-        callbackExecutor.onMigrateOrUndoEvent(Event.AFTER_MIGRATE);
+        callbackExecutor.onMigrateEvent(Event.AFTER_MIGRATE);
 
         return migrateResult;
     }
@@ -162,7 +164,7 @@ public class DbMigrate {
         }
 
         if (isPreviousVersioned) {
-            callbackExecutor.onMigrateOrUndoEvent(Event.AFTER_VERSIONED);
+            callbackExecutor.onMigrateEvent(Event.AFTER_VERSIONED);
         }
 
         return total;
@@ -244,7 +246,7 @@ public class DbMigrate {
             }
         }
 
-        LinkedHashMap<MigrationInfo, Boolean> group = new LinkedHashMap<>();
+        Map<MigrationInfo, Boolean> group = new LinkedHashMap<>();
         for (MigrationInfo pendingMigration : infoService.pending()) {
             if (appliedResolvedMigrations.contains(pendingMigration.getResolvedMigration())) {
                 continue;
@@ -293,16 +295,16 @@ public class DbMigrate {
     /**
      * Applies this migration to the database. The migration state and the execution time are updated accordingly.
      */
-    private void applyMigrations(LinkedHashMap<MigrationInfo, Boolean> group, boolean skipExecutingMigrations) {
+    private void applyMigrations(Map<MigrationInfo, Boolean> group, boolean skipExecutingMigrations) {
         boolean executeGroupInTransaction = isExecuteGroupInTransaction(group);
         StopWatch stopWatch = new StopWatch();
         try {
             if (executeGroupInTransaction) {
-                ExecutionTemplateFactory.createExecutionTemplate(connectionUserObjects.getJdbcConnection(), database)
-                                        .execute(() -> {
-                                            doMigrateGroup(group, stopWatch, skipExecutingMigrations, true);
-                                            return null;
-                                        });
+                createExecutionTemplate(connectionUserObjects.getJdbcConnection(), database)
+                    .execute(() -> {
+                        doMigrateGroup(group, stopWatch, skipExecutingMigrations, true);
+                        return null;
+                    });
             } else {
                 doMigrateGroup(group, stopWatch, skipExecutingMigrations, false);
             }
@@ -328,7 +330,7 @@ public class DbMigrate {
         }
     }
 
-    private boolean isExecuteGroupInTransaction(LinkedHashMap<MigrationInfo, Boolean> group) {
+    private boolean isExecuteGroupInTransaction(Map<MigrationInfo, Boolean> group) {
         boolean executeGroupInTransaction = true;
         boolean first = true;
 
@@ -359,7 +361,7 @@ public class DbMigrate {
         return executeGroupInTransaction;
     }
 
-    private void doMigrateGroup(LinkedHashMap<MigrationInfo, Boolean> group, StopWatch stopWatch,
+    private void doMigrateGroup(Map<MigrationInfo, Boolean> group, StopWatch stopWatch,
                                 boolean skipExecutingMigrations, boolean isExecuteInTransaction) {
         Context context = new Context() {
             @Override
@@ -382,8 +384,8 @@ public class DbMigrate {
             stopWatch.start();
 
             if (isPreviousVersioned && migration.getVersion() == null) {
-                callbackExecutor.onMigrateOrUndoEvent(Event.AFTER_VERSIONED);
-                callbackExecutor.onMigrateOrUndoEvent(Event.BEFORE_REPEATABLES);
+                callbackExecutor.onMigrateEvent(Event.AFTER_VERSIONED);
+                callbackExecutor.onMigrateEvent(Event.BEFORE_REPEATABLES);
                 isPreviousVersioned = false;
             }
 

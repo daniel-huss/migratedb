@@ -16,6 +16,7 @@
 
 package migratedb.integrationtest.database
 
+import io.kotest.assertions.throwables.shouldThrow
 import migratedb.core.api.internal.database.base.DatabaseType
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl
 import migratedb.core.internal.database.sqlite.SQLiteDatabaseType
@@ -68,6 +69,10 @@ enum class Sqlite : DbSystem {
 
         init {
             System.setProperty("org.sqlite.tmpdir", newTempDir("sqlite-driver").toString())
+            // Check that SQLite is not on the test class path (because our custom class loader delegates to its parent)
+            shouldThrow<ClassNotFoundException> {
+                Class.forName(driverClass)
+            }
         }
     }
 

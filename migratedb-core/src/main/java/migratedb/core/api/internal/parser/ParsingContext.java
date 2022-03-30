@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.jdbc;
 
-import java.util.concurrent.Callable;
+package migratedb.core.api.internal.parser;
 
-/**
- * Spring-like template for executing operations in the context of a database connection.
- */
-public interface ExecutionTemplate {
+import java.util.Map;
+import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.resource.ResourceName;
 
-    /**
-     * Executes this callback within the context of the connection
-     *
-     * @param callback The callback to execute.
-     *
-     * @return The result of the callback.
-     */
-    <T> T execute(Callable<T> callback);
+public interface ParsingContext {
+    Map<String, String> getPlaceholders();
+
+    Database getDatabase();
+
+    void updateFilenamePlaceholder(ResourceName resourceName);
 }

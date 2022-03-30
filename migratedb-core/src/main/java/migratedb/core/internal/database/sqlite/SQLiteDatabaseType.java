@@ -21,11 +21,11 @@ import java.sql.Types;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
+import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.database.base.BaseDatabaseType;
-import migratedb.core.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.parser.ParsingContext;
 import migratedb.core.internal.util.FeatureDetector;
 
 public class SQLiteDatabaseType extends BaseDatabaseType {

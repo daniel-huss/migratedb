@@ -22,6 +22,7 @@ import java.util.List;
 import migratedb.core.api.Version;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.resource.ResourceName;
 import migratedb.core.internal.util.Pair;
 
 public class ResourceNameParser {

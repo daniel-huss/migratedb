@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.internal.resource;
+package migratedb.core.api.internal.resource;
 
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.Version;
@@ -26,7 +25,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * Versioned and Undo migrations are named in the form prefixVERSIONseparatorDESCRIPTIONsuffix; Repeatable migrations
  * and callbacks are named in the form prefixSeparatorDESCRIPTIONsuffix
  */
-public class ResourceName {
+public final class ResourceName {
     private final String prefix;
     private final String version;
     private final String separator;

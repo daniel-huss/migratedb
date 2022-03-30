@@ -16,9 +16,9 @@
  */
 package migratedb.core.internal.database.oracle;
 
+import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.internal.callback.CallbackExecutor;
-import migratedb.core.internal.jdbc.StatementInterceptor;
+import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.sqlscript.DefaultSqlScriptExecutor;
 
 @SuppressWarnings("SqlResolve")

@@ -33,8 +33,7 @@ public class ResolvedJavaMigration extends ResolvedMigrationImpl {
               javaMigration.getClass().getName(),
               javaMigration.getChecksum(),
               null,
-
-              MigrationType.JDBC,
+              javaMigration.isBaselineMigration() ? MigrationType.JDBC_BASELINE : MigrationType.JDBC,
               ClassUtils.guessLocationOnDisk(javaMigration.getClass()),
               new JavaMigrationExecutor(javaMigration)
         );

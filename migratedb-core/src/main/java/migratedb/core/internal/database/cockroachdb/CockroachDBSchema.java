@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.util.SqlCallable;
 import migratedb.core.internal.database.base.BaseSchema;
-import migratedb.core.internal.util.SqlCallable;
 
 public class CockroachDBSchema extends BaseSchema<CockroachDBDatabase, CockroachDBTable> {
     /**
