@@ -55,14 +55,6 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Database Support -->
-        <dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>google-cloud-storage</artifactId>
-            <version>${version.gcs.internal}</version>
-            <optional>true</optional>
-        </dependency>
-
         <!-- Test scope -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

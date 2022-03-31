@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import migratedb.core.api.ClassProvider;
 import migratedb.core.api.DatabaseTypeRegister;
@@ -61,6 +60,7 @@ import migratedb.core.internal.jdbc.DriverDataSource;
 import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.Locations;
 import migratedb.core.internal.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * JavaBean-style configuration for MigrateDB. This is primarily meant for compatibility with scenarios where the new

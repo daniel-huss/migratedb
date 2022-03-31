@@ -87,11 +87,9 @@
         <version.commons-codec>1.15</version.commons-codec>
         <version.commons-io>2.11.0</version.commons-io>
         <version.commons-logging>1.2</version.commons-logging>
-        <version.gcs.internal>1.113.13</version.gcs.internal>
         <version.groovy>3.0.9</version.groovy>
         <version.gson>2.9.0</version.gson>
         <version.h2.latest>2.1.210</version.h2.latest>
-        <version.httpclient>4.5.13</version.httpclient>
         <version.java>11</version.java>
         <version.jimfs>1.2</version.jimfs>
         <version.jqwik>1.6.5</version.jqwik>
