@@ -56,15 +56,15 @@ build-time scanners.
 * Logging during MigrateDB execution is disabled by default, can be changed via "logger"
 configuration option.
 * Custom logging configuration is now only active while MigrateDB actually executes and no longer
-mutates global state. Afaik there is no mutable global state in the library now.
+mutates global state.Afaik there is no mutable global state in the library now.
 * By default, logging outside of MigrateDB execution is silenced.
 Can be changed by application code via Log.setDefaultLogSystem().
 * Configuration code that is specific to command line stuff has been moved to CLI artifact.
+* 🔥 Built-in script placeholder migratedb:timestamp now formatted as ISO-8601 instant.
 * Updated some driver versions that ship with the CLI artifact.
 * 🔥 CLI no longer bundles a whole JDK.
 * Un-deprecated ignore***Migrations() configuration options.
 * Converted README to Asciidoc.
-* Built-in script placeholder migratedb:timestamp now formatted as ISO-8601 instant.
 
 === Deprecated
 

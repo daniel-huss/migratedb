@@ -68,7 +68,9 @@ public class TransactionalExecutionTemplate implements ExecutionTemplate {
             connection.commit();
             return result;
         } catch (Exception e) {
-            if (e instanceof InterruptedException) Thread.currentThread().interrupt();
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             RuntimeException rethrow;
             if (e instanceof SQLException) {
                 rethrow = new MigrateDbSqlException("Unable to commit transaction", (SQLException) e);

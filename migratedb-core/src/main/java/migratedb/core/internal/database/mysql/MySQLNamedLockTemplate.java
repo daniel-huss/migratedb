@@ -62,6 +62,9 @@ public class MySQLNamedLockTemplate {
             throw new MigrateDbSqlException("Unable to acquire MySQL named lock: " + lockName, e);
         } catch (Exception e) {
             RuntimeException rethrow;
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             if (e instanceof RuntimeException) {
                 rethrow = (RuntimeException) e;
             } else {

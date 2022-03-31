@@ -20,7 +20,6 @@
     <id>no-jre</id>
     <formats>
         <format>tar.gz</format>
-        <format>zip</format>
     </formats>
     <baseDirectory>migratedb-${project.version}</baseDirectory>
     <componentDescriptors>

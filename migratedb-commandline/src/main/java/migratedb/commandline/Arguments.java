@@ -302,7 +302,7 @@ public class Arguments {
         }
         if (result == null) {
             throw new MigrateDbException("'" + dateStr + "' is an invalid value for the " + argument + " option. " +
-                                         "The expected format is either '" + ISO_DATE_TIME + "' or '" +
+                                         "The expected format is either ISO-8601 date/time or '" +
                                          OLD_DATE_FORMAT + "', like '13/10/2020 16:30'.");
         }
         return result;

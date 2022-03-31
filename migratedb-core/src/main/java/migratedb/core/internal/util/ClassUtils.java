@@ -17,14 +17,18 @@
 package migratedb.core.internal.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
+import java.util.function.Function;
 import migratedb.core.api.MigrateDbException;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public enum ClassUtils {
     ;
@@ -45,6 +49,12 @@ public enum ClassUtils {
         try {
             return (T) Class.forName(className, true, classLoader).getConstructor().newInstance();
         } catch (ReflectiveOperationException | RuntimeException e) {
+            if (e instanceof InvocationTargetException) {
+                var cause = e.getCause();
+                if (cause instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+            }
             throw new MigrateDbException("Unable to instantiate class " + className + " : " + e.getMessage(), e);
         }
     }
@@ -98,7 +108,7 @@ public enum ClassUtils {
         try {
             classLoader.loadClass(className);
             return true;
-        } catch (Throwable ex) {
+        } catch (ReflectiveOperationException | LinkageError ignored) {
             // Class or one of its dependencies is not present...
             return false;
         }
@@ -118,7 +128,7 @@ public enum ClassUtils {
         try {
             Class<?> service = classLoader.loadClass(serviceName);
             return ServiceLoader.load(service).iterator().hasNext();
-        } catch (Throwable ex) {
+        } catch (ReflectiveOperationException | ServiceConfigurationError | LinkageError ignored) {
             // Class or one of its dependencies is not present...
             return false;
         }
@@ -182,16 +192,29 @@ public enum ClassUtils {
      *
      * @return The value of the field.
      *
-     * @throws MigrateDbException Thrown when the instantiation failed.
+     * @throws MigrateDbException If the field value cannot be read.
      */
     public static String getStaticFieldValue(String className, String fieldName, ClassLoader classLoader) {
         try {
-            Class<?> clazz = Class.forName(className, true, classLoader);
+            return getStaticFieldValue(Class.forName(className, true, classLoader), fieldName);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            throw new MigrateDbException(
+                "Unable to obtain field value " + className + "." + fieldName + " : " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Gets the String value of a static field.
+     *
+     * @throws MigrateDbException If the field value cannot be read.
+     */
+    public static String getStaticFieldValue(Class<?> clazz, String fieldName) {
+        try {
             Field field = clazz.getField(fieldName);
             return (String) field.get(null);
         } catch (ReflectiveOperationException | RuntimeException e) {
             throw new MigrateDbException(
-                "Unable to obtain field value " + className + "." + fieldName + " : " + e.getMessage(), e);
+                "Unable to obtain field value " + clazz.getName() + "." + fieldName + " : " + e.getMessage(), e);
         }
     }
 
@@ -213,5 +236,34 @@ public enum ClassUtils {
         }
         assert result != null;
         return result;
+    }
+
+    public static <E extends Exception> Object invoke(Class<?> clazz, String methodName,
+                                                      Object receiver,
+                                                      Class<?>[] paramTypes,
+                                                      Object[] params,
+                                                      Function<? super Throwable, @Nullable E> exceptionMapper)
+    throws E {
+        try {
+            var method = clazz.getMethod(methodName, paramTypes);
+            return method.invoke(receiver, params);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new MigrateDbException("Cannot invoke " + clazz.getName() + "." + methodName, e);
+        } catch (InvocationTargetException e) {
+            var cause = e.getCause();
+            if (cause instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            var thrown = exceptionMapper.apply(e);
+            if (thrown == null) {
+                throw new MigrateDbException("Cannot invoke " + clazz.getName() + "." + methodName, cause);
+            } else {
+                throw thrown;
+            }
+        }
+    }
+
+    public static String getClassName(@Nullable Object obj) {
+        return obj == null ? null : obj.getClass().getName();
     }
 }

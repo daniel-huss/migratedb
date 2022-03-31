@@ -159,7 +159,7 @@ public class H2Database extends BaseDatabase<H2Connection> {
                 user = DEFAULT_USER;
             }
             return user;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             if (compatibilityMode == CompatibilityMode.Oracle) {
                 return DEFAULT_USER;
             }

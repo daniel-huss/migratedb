@@ -25,10 +25,6 @@
     <name>MigrateDB - Maven Plugin</name>
     <packaging>maven-plugin</packaging>
 
-    <properties>
-        <version.maven-api>3.8.4</version.maven-api>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>de.unentscheidbar</groupId>
@@ -77,6 +73,15 @@
                 <configuration>
                     <locales>en</locales>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-license</id>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

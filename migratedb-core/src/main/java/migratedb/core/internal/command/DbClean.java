@@ -86,7 +86,7 @@ public class DbClean {
             List<String> dropSchemas = new ArrayList<>();
             try {
                 dropSchemas = schemaHistory.getSchemasCreatedByMigrateDb();
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 LOG.error("Error while checking whether the schemas should be dropped. Schemas will not be dropped", e);
             }
 

@@ -85,7 +85,7 @@ import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_WALLET
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
@@ -94,6 +94,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -108,6 +110,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import migratedb.core.MigrateDb;
@@ -366,7 +372,7 @@ class MigrateDbCommand {
         }
         if (key.matches("MIGRATEDB_PLACEHOLDERS_.+")) {
             return PLACEHOLDERS_PROPERTY_PREFIX +
-                   key.substring("MIGRATEDB_PLACEHOLDERS_".length()).toLowerCase(Locale.ENGLISH);
+                   key.substring("MIGRATEDB_PLACEHOLDERS_".length()).toLowerCase(Locale.ROOT);
         }
 
         if (key.matches("MIGRATEDB_JDBC_PROPERTIES_.+")) {
@@ -488,7 +494,7 @@ class MigrateDbCommand {
         for (File jarFile : jarFiles) {
             try {
                 urls.add(jarFile.toURI().toURL());
-            } catch (Exception e) {
+            } catch (MalformedURLException | RuntimeException e) {
                 throw new MigrateDbException("Unable to load " + jarFile.getPath(), e);
             }
         }
@@ -594,19 +600,54 @@ class MigrateDbCommand {
         var config = new HashMap<String, String>();
         try {
             if (stdin != null) {
-                try (var bufferedReader = new BufferedReader(new InputStreamReader(stdin, UTF_8))) {
+                try (var reader = waitForStdin()) {
                     LOG.debug("Attempting to load configuration from standard input");
-                    var configFromStdin = loadConfiguration(bufferedReader);
+                    var configFromStdin = loadConfiguration(reader);
                     if (configFromStdin.isEmpty()) {
                         LOG.warn("Configuration from standard input is empty");
                     }
                     config.putAll(configFromStdin);
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException | IOException | ExecutionException | InterruptedException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             LOG.debug("Could not load configuration from standard input " + e.getMessage());
         }
         return config;
+    }
+
+    /**
+     * In some scenarios, attempting to read from STDIN may block forever when there is no data. In this case we want
+     * the application to terminate instead of haning forever.
+     */
+    private Reader waitForStdin() throws ExecutionException, InterruptedException {
+        var exec = Executors.newSingleThreadExecutor((r) -> {
+            var thread = new Thread(r);
+            thread.setName("Waiting for " + stdin);
+            thread.setDaemon(true);
+            return thread;
+        });
+        var stream = stdin;
+        assert stream != null;
+        var future = exec.submit(() -> {
+            if (stream.available() == 0) {
+                var markSupport = new BufferedInputStream(stream);
+                markSupport.mark(2);
+                if (markSupport.read() == -1) { // read() blocks (maybe forever)
+                    throw new MigrateDbException("No input provided");
+                }
+                markSupport.reset();
+                return new InputStreamReader(markSupport, UTF_8);
+            }
+            return new InputStreamReader(stream, UTF_8);
+        });
+        try {
+            return future.get(10, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            throw new MigrateDbException("Timeout while waiting for STDIN");
+        }
     }
 
     private void makeRelativeLocationsBasedOnWorkingDirectory(Map<String, String> config) {
@@ -767,9 +808,8 @@ class MigrateDbCommand {
         LOG.info("schemas                      : Comma-separated list of the schemas managed by MigrateDb");
         LOG.info("table                        : Name of MigrateDB's schema history table");
         LOG.info("locations                    : Classpath locations to scan recursively for migrations");
-        LOG.info(
-            "failOnMissingLocations       : Whether to fail if a location specified in the migratedb.locations option" +
-            " doesn't exist");
+        LOG.info("failOnMissingLocations       : Whether to fail if a location specified in the migratedb.locations " +
+                 "option doesn't exist");
         LOG.info("resolvers                    : Comma-separated list of custom MigrationResolvers");
         LOG.info("skipDefaultResolvers         : Skips default resolvers (jdbc, sql and Spring-jdbc)");
         LOG.info("sqlMigrationPrefix           : File name prefix for versioned SQL migrations");
@@ -789,9 +829,7 @@ class MigrateDbCommand {
         LOG.info("installedBy                  : Username that will be recorded in the schema history table");
         LOG.info("target                       : Target version up to which MigrateDB should use migrations");
         LOG.info("outOfOrder                   : Allows migrations to be run \"out of order\"");
-        LOG.info(
-            "callbacks                    : Comma-separated list of MigrateDbCallback classes, or locations to scan " +
-            "for MigrateDbCallback classes");
+        LOG.info("callbacks                    : Comma-separated list of MigrateDbCallback classes");
         LOG.info("skipDefaultCallbacks         : Skips default callbacks (sql)");
         LOG.info("validateOnMigrate            : Validate when running migrate");
         LOG.info("validateMigrationNaming      : Validate file names of SQL migrations (including callbacks)");
@@ -807,9 +845,8 @@ class MigrateDbCommand {
         LOG.info("configFiles                  : Comma-separated list of config files to use");
         LOG.info("configFileEncoding           : Encoding to use when loading the config files");
         LOG.info("jarDirs                      : Comma-separated list of dirs for Jdbc drivers & Java migrations");
-        LOG.info(
-            "createSchemas                : Whether MigrateDB should attempt to create the schemas specified in the " +
-            "schemas property");
+        LOG.info("createSchemas                : Whether MigrateDB should attempt to create the schemas specified " +
+                 "in theschemas property");
         LOG.info("outputFile                   : Send output to the specified file alongside the console");
         LOG.info("outputType                   : Serialise the output in the given format, Values: json");
         LOG.info("");

@@ -50,6 +50,7 @@
             <outputDirectory>conf</outputDirectory>
             <includes>
                 <include>migratedb.conf</include>
+                <include>drivers.json</include>
             </includes>
             <fileMode>644</fileMode>
         </fileSet>
@@ -73,8 +74,7 @@
             <directory>src/main/assembly</directory>
             <outputDirectory>licenses</outputDirectory>
             <includes>
-                <include>migratedb-community.txt</include>
-                <include>LICENSES-THIRD-PARTY.txt</include>
+                <include>migratedb.txt</include>
             </includes>
             <fileMode>644</fileMode>
             <filtered>true</filtered>

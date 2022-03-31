@@ -65,7 +65,9 @@ public class CockroachRetryingTransactionalExecutionTemplate extends Transaction
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
-                if (e instanceof InterruptedException) Thread.currentThread().interrupt();
+                if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
                 throw new MigrateDbException(e);
             }
             retryCount++;

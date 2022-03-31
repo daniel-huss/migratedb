@@ -25,13 +25,20 @@
     <artifactId>migratedb-core</artifactId>
     <name>MigrateDB - Core Library</name>
 
-    <properties>
-        <kotlin.version>1.6.10</kotlin.version>
-    </properties>
-
-
     <dependencies>
-        <!-- Optional loggers -->
+        <!-- Static analysis annotations -->
+        <dependency>
+            <groupId>org.checkerframework</groupId>
+            <artifactId>checker-qual</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apiguardian</groupId>
+            <artifactId>apiguardian-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Supported log systems -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -42,52 +49,18 @@
             <artifactId>commons-logging</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- Others -->
-        <dependency>
-            <groupId>org.jboss</groupId>
-            <artifactId>jboss-vfs</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <optional>true</optional>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>google-cloud-storage</artifactId>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- Database Support -->
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-storage</artifactId>
+            <version>${version.gcs.internal}</version>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc10</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.apiguardian</groupId>
-            <artifactId>apiguardian-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Test scope -->
@@ -106,6 +79,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <version>${version.h2.latest}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -142,21 +116,7 @@
                 <executions>
                     <execution>
                         <id>copy-license</id>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
                         <phase>generate-resources</phase>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>..</directory>
-                                    <includes>
-                                        <include>LICENSE.txt</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                            <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -19,7 +19,6 @@ package migratedb.core.internal.database.oracle;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 import migratedb.core.api.MigrateDbException;
@@ -37,7 +36,6 @@ import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.util.ClassUtils;
-import oracle.jdbc.OracleConnection;
 
 public class OracleDatabaseType extends BaseDatabaseType {
     // Oracle usernames/passwords can be 1-30 chars, can only contain alphanumerics and # _ $
@@ -148,41 +146,81 @@ public class OracleDatabaseType extends BaseDatabaseType {
 
     @Override
     public Connection alterConnectionAsNeeded(Connection connection, Configuration configuration) {
-        Map<String, String> jdbcProperties = configuration.getJdbcProperties();
-
-        if (jdbcProperties != null && jdbcProperties.containsKey(OracleConnection.PROXY_USER_NAME)) {
+        var accessor = new ReflectiveOracleAccessor(connection, configuration);
+        if (accessor.isProxyUserNameConfigured()) {
             try {
-                OracleConnection oracleConnection;
-
-                try {
-                    if (connection instanceof OracleConnection) {
-                        oracleConnection = (OracleConnection) connection;
-                    } else if (connection.isWrapperFor(OracleConnection.class)) {
-                        // This includes com.zaxxer.HikariCP.HikariProxyConnection, potentially other unknown wrapper
-                        // types
-                        oracleConnection = connection.unwrap(OracleConnection.class);
-                    } else {
-                        throw new MigrateDbException(
-                            "Unable to extract Oracle connection type from '" + connection.getClass().getName() + "'");
-                    }
-                } catch (SQLException e) {
-                    throw new MigrateDbException(
-                        "Unable to unwrap connection type '" + connection.getClass().getName() + "'", e);
-                }
-
-                if (!oracleConnection.isProxySession()) {
-                    Properties props = new Properties();
-                    props.putAll(configuration.getJdbcProperties());
-                    oracleConnection.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
-                }
+                accessor.openProxySession();
             } catch (MigrateDbException e) {
                 LOG.warn(e.getMessage());
             } catch (SQLException e) {
                 throw new MigrateDbException("Unable to open proxy session: " + e.getMessage(), e);
             }
         }
-
         return super.alterConnectionAsNeeded(connection, configuration);
     }
 
+    /**
+     * Avoids a possibly conflicting dependency on the Oracle JDBC driver.
+     */
+    private static final class ReflectiveOracleAccessor {
+        private static final String oracleClassName = "oracle.jdbc.OracleConnection";
+
+        private final Connection connection;
+        private final Configuration configuration;
+        private final Class<?> oracleConnectionClass;
+
+        ReflectiveOracleAccessor(Connection connection, Configuration configuration) {
+            this.configuration = configuration;
+            this.connection = connection;
+            this.oracleConnectionClass = ClassUtils.loadClass(oracleClassName, configuration.getClassLoader());
+        }
+
+        private boolean isProxySession(Object oracleConnection) throws SQLException {
+            var result = ClassUtils.invoke(oracleConnectionClass,
+                                           "isProxySession",
+                                           oracleConnection,
+                                           new Class[0],
+                                           new Object[0],
+                                           e -> e instanceof SQLException ? (SQLException) e : null
+            );
+            if (result instanceof Boolean) {
+                return (Boolean) result;
+            }
+            throw new MigrateDbException("Expected boolean result, got " + ClassUtils.getClassName(result));
+        }
+
+        void openProxySession() throws SQLException {
+            Object oracleConnection;
+            if (oracleConnectionClass.isInstance(connection)) {
+                oracleConnection = connection;
+            } else if (connection.isWrapperFor(oracleConnectionClass)) {
+                oracleConnection = connection.unwrap(oracleConnectionClass);
+            } else {
+                throw new MigrateDbException(
+                    "Unable to extract Oracle connection type from '" + connection.getClass().getName() + "'");
+            }
+
+            if (!isProxySession(oracleConnection)) {
+                openProxySession(oracleConnection);
+            }
+        }
+
+        boolean isProxyUserNameConfigured() {
+            var jdbcProperties = configuration.getJdbcProperties();
+            return jdbcProperties != null &&
+                   jdbcProperties.containsKey(ClassUtils.getStaticFieldValue(oracleConnectionClass, "PROXY_USER_NAME"));
+        }
+
+        private void openProxySession(Object oracleConnection) throws SQLException {
+            Properties props = new Properties();
+            props.putAll(configuration.getJdbcProperties());
+            var proxytypeUserName = ClassUtils.getStaticFieldValue(oracleConnectionClass, "PROXYTYPE_USER_NAME");
+            ClassUtils.invoke(oracleConnectionClass,
+                              "openProxySession",
+                              oracleConnection,
+                              new Class[] { String.class, Properties.class },
+                              new Object[] { proxytypeUserName, props },
+                              e -> e instanceof SQLException ? (SQLException) e : null);
+        }
+    }
 }

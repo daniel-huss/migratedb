@@ -163,7 +163,7 @@ public class DriverDataSource implements DataSource {
             }
             try {
                 this.driver = ClassUtils.instantiate(backupDriverClass, classLoader);
-            } catch (Exception e1) {
+            } catch (RuntimeException e1) {
                 // Only report original exception about primary driver
                 throw new MigrateDbException(
                     "Unable to instantiate JDBC driver: " + driverClass + " or backup driver: " + backupDriverClass +
