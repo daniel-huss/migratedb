@@ -32,7 +32,7 @@ fun deleteOnExit(dir: Path) = synchronized(dirsToDeleteOnExit) {
  */
 fun newTempDir(name: String, deleteOnExit: Boolean = true): Path {
     return Files.createTempDirectory(
-        buildDirectory().resolve("temp").resolve(*name.toSafeFileName()).also {
+        buildDirectory.resolve("temp").resolve(*name.toSafeFileName()).also {
             it.createDirectories()
         },
         "it"

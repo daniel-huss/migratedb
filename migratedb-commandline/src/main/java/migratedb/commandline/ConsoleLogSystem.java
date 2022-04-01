@@ -40,30 +40,30 @@ public class ConsoleLogSystem implements LogSystem {
     @Override
     public void debug(String logName, String message) {
         if (isDebugEnabled(logName)) {
-            stdout.println("DEBUG: " + message);
+            stdout.println("DEBUG   " + message);
         }
     }
 
     @Override
     public void info(String logName, String message) {
         if (level.compareTo(LogLevel.INFO) <= 0) {
-            stdout.println(message);
+            stdout.println("INFO    " + message);
         }
     }
 
     @Override
     public void warn(String logName, String message) {
-        stdout.println("WARNING: " + message);
+        stdout.println("WARNING " + message);
     }
 
     @Override
     public void error(String logName, String message) {
-        stderr.println("ERROR: " + message);
+        stderr.println("ERROR   " + message);
     }
 
     @Override
     public void error(String logName, String message, Exception e) {
-        stderr.println("ERROR: " + message);
+        stderr.println("ERROR   " + message);
         e.printStackTrace(stderr);
     }
 }

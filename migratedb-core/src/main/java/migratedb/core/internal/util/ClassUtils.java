@@ -19,6 +19,7 @@ package migratedb.core.internal.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -158,7 +159,7 @@ public enum ClassUtils {
      *
      * @return The absolute path of the .class file (or null).
      */
-    public static String guessLocationOnDisk(Class<?> aClass) {
+    public static Path guessLocationOnDisk(Class<?> aClass) {
         ProtectionDomain protectionDomain = aClass.getProtectionDomain();
         if (protectionDomain == null) {
             return null;
@@ -177,7 +178,7 @@ public enum ClassUtils {
             for (var packagePart : packagePath) {
                 path = path.resolve(packagePart);
             }
-            return path.toString();
+            return path.resolve(".class");
         } catch (URISyntaxException e) {
             return null;
         }

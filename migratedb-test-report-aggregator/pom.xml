@@ -33,9 +33,8 @@
         </dependency>
         <dependency>
             <groupId>de.unentscheidbar</groupId>
-            <artifactId>migratedb-integration-tests</artifactId>
+            <artifactId>migratedb-commandline</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope><!-- Only execution data is considered for the report. -->
         </dependency>
         <dependency>
             <groupId>de.unentscheidbar</groupId>
@@ -46,6 +45,12 @@
             <groupId>de.unentscheidbar</groupId>
             <artifactId>migratedb-gradle-plugin</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.unentscheidbar</groupId>
+            <artifactId>migratedb-integration-tests</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope><!-- Only execution data is considered for the report. -->
         </dependency>
     </dependencies>
 

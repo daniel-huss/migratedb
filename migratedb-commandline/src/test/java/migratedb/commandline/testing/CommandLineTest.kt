@@ -15,4 +15,10 @@
  */
 package migratedb.commandline.testing
 
-abstract class CommandLineTest
+abstract class CommandLineTest {
+    fun withCommandLine(block: (Dsl).() -> Unit) {
+        Dsl().use {
+            block(it)
+        }
+    }
+}

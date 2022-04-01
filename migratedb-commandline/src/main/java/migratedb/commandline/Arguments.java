@@ -18,6 +18,9 @@ package migratedb.commandline;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -46,6 +49,9 @@ public class Arguments {
     private static final List<String> PRINT_USAGE_FLAGS = Arrays.asList("-?", "-h", "--help");
 
     // Command line specific configuration options
+    private static final String FILE_SYSTEM_URI = "fileSystemUri";
+    private static final String DRIVER_NAMES = "driverNames";
+    private static final String INSTALLATION_DIR = "baseDirectory";
     private static final String OUTPUT_FILE = "outputFile";
     private static final String OUTPUT_TYPE = "outputType";
     private static final String CONFIG_FILE_ENCODING = "configFileEncoding";
@@ -73,7 +79,8 @@ public class Arguments {
             "info",
             "validate",
             "baseline",
-            "repair"
+            "repair",
+            "download-drivers"
         ));
         operationsAndFlags.addAll(PRINT_VERSION_AND_EXIT_FLAGS);
         operationsAndFlags.addAll(PRINT_USAGE_FLAGS);
@@ -165,7 +172,10 @@ public class Arguments {
                INFO_UNTIL_DATE.equals(configurationOptionName) ||
                INFO_SINCE_VERSION.equals(configurationOptionName) ||
                INFO_UNTIL_VERSION.equals(configurationOptionName) ||
-               INFO_OF_STATE.equals(configurationOptionName);
+               INFO_OF_STATE.equals(configurationOptionName) ||
+               INSTALLATION_DIR.equals(configurationOptionName) ||
+               DRIVER_NAMES.equals(configurationOptionName) ||
+               FILE_SYSTEM_URI.equalsIgnoreCase(configurationOptionName);
     }
 
     private static String getConfigurationOptionNameFromArg(String arg) {
@@ -266,6 +276,16 @@ public class Arguments {
         return MigrationState.valueOf(stateStr.toUpperCase(Locale.ENGLISH));
     }
 
+    public String getInstallationDirectory() {
+        var arg = getArgumentValue(INSTALLATION_DIR, args);
+        return arg.isEmpty() ? System.getProperty("user.dir") : arg;
+    }
+
+    public List<String> getDriverNames() {
+        String commaSeparatedList = getArgumentValue(DRIVER_NAMES, args);
+        return Arrays.asList(StringUtils.tokenizeToStringArray(commaSeparatedList, ","));
+    }
+
     private @Nullable Version parseVersion(String argument) {
         String versionStr = getArgumentValue(argument, args);
 
@@ -326,5 +346,14 @@ public class Arguments {
 
     public Map<String, String> getConfiguration() {
         return getConfigurationFromArgs(args);
+    }
+
+    public FileSystem getFileSystem() {
+        var uri = getArgumentValue(FILE_SYSTEM_URI, args);
+        if (uri.isEmpty()) {
+            return FileSystems.getDefault();
+        } else {
+            return FileSystems.getFileSystem(URI.create(uri));
+        }
     }
 }

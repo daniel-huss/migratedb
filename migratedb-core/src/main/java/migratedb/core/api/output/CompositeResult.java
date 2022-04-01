@@ -16,8 +16,9 @@
  */
 package migratedb.core.api.output;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CompositeResult extends OperationResult {
-    public LinkedList<OperationResult> individualResults = new LinkedList<>();
+    public List<OperationResult> individualResults = new ArrayList<>();
 }

@@ -26,13 +26,20 @@ import migratedb.core.internal.logging.NoLogSystem;
 public class Main {
     public static void main(String[] args) {
         Arguments arguments = new Arguments(args);
+        var realStdOut = System.out;
+        var realStdErr = System.err;
+        if (arguments.shouldOutputJson()) {
+            // Cannot allow anyone else (rogue loggers!) to write to stdout/stderr
+            System.setOut(new DiscardingPrintStream());
+            System.setErr(new DiscardingPrintStream());
+        }
         Log.setDefaultLogSystem(getDefaultLogSystem(arguments));
         int exitCode;
         try {
             exitCode = new MigrateDbCommand(arguments,
                                             System.console(),
-                                            System.out,
-                                            System.err,
+                                            realStdOut,
+                                            realStdErr,
                                             System.in,
                                             System.getenv())
                 .run();
@@ -43,7 +50,6 @@ public class Main {
     }
 
     private static LogSystem getDefaultLogSystem(Arguments arguments) {
-        // In case of JSON output, nothing but valid JSON must be written to STDOUT/STDERR, so we silence our loggers.
         if (arguments.shouldOutputJson()) {
             return NoLogSystem.INSTANCE;
         }

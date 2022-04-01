@@ -19,7 +19,6 @@
 
 setlocal
 
-@REM Set the current directory to the installation directory
 set INSTALLDIR=%~dp0
 
 if exist "%INSTALLDIR%\jre\bin\java.exe" (
@@ -37,7 +36,7 @@ if "%JAVA_ARGS%"=="" (
   set JAVA_ARGS=
 )
 
-%JAVA_CMD% -Djava.library.path="%INSTALLDIR%\native" %JAVA_ARGS% -cp "%CLASSPATH%;%INSTALLDIR%\lib\*;%INSTALLDIR%\lib\aad\*;%INSTALLDIR%\lib\oracle_wallet\*;%INSTALLDIR%\lib\%MIGRATEDB_EDITION%\*;%INSTALLDIR%\drivers\*;%INSTALLDIR%\drivers\gcp\*" org.migratedb.commandline.Main %*
+%JAVA_CMD% -Djava.library.path="%INSTALLDIR%\native" %JAVA_ARGS% -cp "%CLASSPATH%;%INSTALLDIR%\lib\*;%INSTALLDIR%\drivers\*" migratedb.commandline.Main "-baseDirectory=%INSTALLDIR%" %*
 
 @REM Exit using the same code returned from Java
 EXIT /B %ERRORLEVEL%

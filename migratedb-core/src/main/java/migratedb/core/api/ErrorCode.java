@@ -18,6 +18,7 @@ package migratedb.core.api;
 
 public enum ErrorCode {
     // general error codes
+    CLI_USAGE,
     FAULT,
     ERROR,
     JDBC_DRIVER,

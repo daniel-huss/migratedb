@@ -50,7 +50,7 @@
             <outputDirectory>conf</outputDirectory>
             <includes>
                 <include>migratedb.conf</include>
-                <include>drivers.json</include>
+                <include>drivers.yaml</include>
             </includes>
             <fileMode>644</fileMode>
         </fileSet>

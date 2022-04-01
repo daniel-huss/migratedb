@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -67,6 +68,7 @@ public class FileSystemResourceProvider implements ResourceProvider {
                     return FileVisitResult.CONTINUE;
                 }
             });
+        } catch (NoSuchFileException ignored) {
         } catch (IOException e) {
             throw new MigrateDbException("Failed to walk directory " + baseDir, e);
         }

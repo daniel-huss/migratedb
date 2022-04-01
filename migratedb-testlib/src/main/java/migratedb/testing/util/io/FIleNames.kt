@@ -33,6 +33,7 @@ fun String.toSafeFileName(): Array<String> {
 /**
  * @return The value of ${project.build.directory}
  */
-fun buildDirectory(): Path = Paths.get("target").toAbsolutePath()
+val buildDirectory: Path
+    get() = Paths.get("target").toAbsolutePath()
 
 fun Path.resolve(vararg paths: String) = paths.fold(this) { p, seg -> p.resolve(seg) }

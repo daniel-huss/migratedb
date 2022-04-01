@@ -36,7 +36,7 @@ fi
 CP="$CLASSPATH:$INSTALLDIR/lib/*:$INSTALLDIR/drivers/*"
 
 if `command -v cygpath > /dev/null`; then CP=`cygpath -pw "$CP"`; fi
-"$JAVA_CMD" $JAVA_ARGS -cp "$CP" org.migratedb.commandline.Main "$@"
+"$JAVA_CMD" $JAVA_ARGS -cp "$CP" migratedb.commandline.Main "-baseDirectory=$INSTALLDIR" "$@"
 
 # Exit using the same code returned from Java
 exit $?
