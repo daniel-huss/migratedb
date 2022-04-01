@@ -134,7 +134,7 @@ class Dsl : AutoCloseable {
         /**
          * The execution data for this build.
          */
-        private val myJacocoDestFile = buildDirectory.resolve("jacoco.exec")
+        private val myJacocoDestFile = buildDirectory.resolve("jacoco-it.exec")
 
         private fun mergeJacocoExecutionData(other: File) = synchronized(this) {
             if (!myJacocoDestFile.exists()) {
