@@ -13,8 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.unentscheidbar</groupId>
@@ -44,28 +43,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-        </dependency>
-
-        <!-- Eclipse Aether for artifact download from Maven Central -->
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-aether-provider</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-connector-basic</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-transport-file</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-transport-http</artifactId>
         </dependency>
 
         <!-- JDBC drivers -->
@@ -109,11 +86,11 @@
             <artifactId>jdbc</artifactId>
             <version>4.50.7.1</version>
         </dependency>
-        <!--        <dependency>  Wow, lots of Unsafe memory access in this one, stay away
-                    <groupId>org.apache.ignite</groupId>
-                    <artifactId>???</artifactId>
-                    <version>2.12.0</version>
-                </dependency>-->
+        <dependency>
+            <groupId>de.unentscheidbar</groupId>
+            <artifactId>ignite-thin-jdbc-driver</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

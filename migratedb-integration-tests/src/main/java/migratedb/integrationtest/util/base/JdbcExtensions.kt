@@ -68,11 +68,17 @@ fun DataSource.awaitConnectivity(timeout: Duration = Duration.ofSeconds(10)): Co
             if (!conn.isValid(1)) throw SQLException()
             return conn
         } catch (e: Exception) {
-            runCatching { conn?.close() }.exceptionOrNull()?.takeUnless { it == e }
-                ?.let {
-                    e.addSuppressed(it)
-                    if (it is InterruptedException) Thread.currentThread().interrupt()
+            if (e is InterruptedException) {
+                Thread.currentThread().interrupt()
+            }
+            runCatching {
+                conn?.close()
+            }.exceptionOrNull()?.let {
+                if (it is InterruptedException) {
+                    Thread.currentThread().interrupt()
                 }
+                e.addSuppressed(it)
+            }
             if (e !is SQLException) throw e
             val delay = delays[i.coerceAtMost(delays.size - 1)].toLong()
             val elapsed = System.nanoTime() - start

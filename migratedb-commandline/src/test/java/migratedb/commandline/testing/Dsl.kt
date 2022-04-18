@@ -57,7 +57,7 @@ class Dsl : AutoCloseable {
             val stdErr = Exec.async { InputStreamReader(process.errorStream, Charsets.UTF_8).use { it.readLines() } }
             val stdOut = Exec.async { InputStreamReader(process.inputStream, Charsets.UTF_8).use { it.readLines() } }
             if (!process.waitFor(5, TimeUnit.MINUTES)) {
-                fail("Process $process seems to hang")
+                fail("$process seems to hang")
             }
             val exitCode = process.exitValue()
             return CliOutput(exitCode = exitCode, stdOut = stdOut(), stdErr = stdErr())

@@ -84,6 +84,7 @@ interface DbSystem {
             H2.values(),
             Hsqldb.values(),
             Informix.values(),
+            Ignite.values(),
             MariaDb.values(),
             MySql.values(),
             Oracle.values(),
