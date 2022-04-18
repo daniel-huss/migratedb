@@ -128,7 +128,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.apiguardian</groupId>
                 <artifactId>apiguardian-api</artifactId>
@@ -139,13 +138,11 @@
                 <artifactId>checker-qual</artifactId>
                 <version>${version.checkerframework}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy-ant</artifactId>
                 <version>${version.groovy}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.google.android</groupId>
                 <artifactId>android</artifactId>
@@ -166,7 +163,6 @@
                 <artifactId>logback-classic</artifactId>
                 <version>${version.logback}</version>
             </dependency>
-
             <dependency>
                 <groupId>io.kotest</groupId>
                 <artifactId>kotest-assertions-core-jvm</artifactId>
@@ -336,7 +332,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M5</version>
+                    <version>3.0.0-M6</version>
                     <configuration>
                         <excludes combine.children="override">
                             <!-- No need to exclude anything -->
@@ -345,7 +341,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.0.0-M5</version>
+                    <version>3.0.0-M6</version>
                     <executions>
                         <execution>
                             <goals>
@@ -421,7 +417,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.8.1</version>
+                    <version>2.10.0</version>
                     <configuration>
                         <generateBackupPoms>false</generateBackupPoms>
                     </configuration>
