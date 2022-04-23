@@ -117,7 +117,7 @@ public class MigrateDb {
     /**
      * <p>Starts the database migration. All pending migrations will be applied in order.
      * Calling migrate on an up-to-date database has no effect.</p>
-     * <img src="https://no-website-yet.org/assets/balsamiq/command-migrate.png" alt="migrate">
+     * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-migrate.png" alt="migrate">
      *
      * @return An object summarising the successfully applied migrations.
      *
@@ -199,7 +199,7 @@ public class MigrateDb {
     /**
      * <p>Retrieves the complete information about all the migrations including applied, pending and current migrations
      * with details and status.</p>
-     * <img src="https://no-website-yet.org/assets/balsamiq/command-info.png" alt="info">
+     * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-info.png" alt="info">
      *
      * @return All migrations sorted by version, oldest first.
      *
@@ -231,7 +231,7 @@ public class MigrateDb {
     /**
      * <p>Drops all objects (tables, views, procedures, triggers, ...) in the configured schemas.
      * The schemas are cleaned in the order specified by the {@code schemas} property.</p>
-     * <img src="https://no-website-yet.org/assets/balsamiq/command-clean.png" alt="clean">
+     * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-clean.png" alt="clean">
      *
      * @return An object summarising the actions taken
      *
@@ -263,7 +263,7 @@ public class MigrateDb {
      * <li>versions have been resolved that haven't been applied yet</li>
      * </ul>
      *
-     * <img src="https://no-website-yet.org/assets/balsamiq/command-validate.png" alt="validate">
+     * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-validate.png" alt="validate">
      *
      * @throws MigrateDbException when the validation failed.
      */
@@ -303,7 +303,7 @@ public class MigrateDb {
      * <li>versions have been resolved that haven't been applied yet</li>
      * </ul>
      *
-     * <img src="https://no-website-yet.org/assets/balsamiq/command-validate.png" alt="validate">
+     * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-validate.png" alt="validate">
      *
      * @throws MigrateDbException when the validation failed.
      * @returns An object summarising the validation results
@@ -333,7 +333,7 @@ public class MigrateDb {
     /**
      * <p>Baselines an existing database, excluding all migrations up to and including baselineVersion.</p>
      *
-     * <img src="https://no-website-yet.org/assets/balsamiq/command-baseline.png" alt="baseline">
+     * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-baseline.png" alt="baseline">
      *
      * @return An object summarising the actions taken
      *
@@ -373,7 +373,7 @@ public class MigrateDb {
      * <li>Realign the checksums, descriptions and types of the applied migrations with the ones of the available
      * migrations</li>
      * </ul>
-     * <img src="https://no-website-yet.org/assets/balsamiq/command-repair.png" alt="repair">
+     * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-repair.png" alt="repair">
      *
      * @return An object summarising the actions taken
      *

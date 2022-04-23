@@ -1,4 +1,4 @@
-= https://no-website-yet.org[MigrateDB]
+= https://daniel-huss.github.io/migratedb[MigrateDB]
 
 image:https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat[GitHub license,link=http://www.apache.org/licenses/LICENSE-2.0]
 
@@ -14,7 +14,7 @@ Current not testable: Sybase ASE, Redshift
 
 == Documentation
 
-https://no-website-yet.org
+https://daniel-huss.github.io/migratedb[Website]
 
 xref:CHANGELOG.adoc[Changelog]
 
@@ -25,7 +25,7 @@ New features are unlikely to be added, unless they are requested by a large numb
 
 == How to contribute
 
-https://no-website-yet.org/documentation/contribute
+https://daniel-huss.github.io/migratedb/documentation/contribute
 
 == Legacy
 

@@ -653,8 +653,9 @@ public class ClassicConfiguration implements Configuration {
 
     /**
      * Ignore migrations that match this comma-separated list of patterns when validating migrations. Each pattern is of
-     * the form {@code <migration_type>:<migration_state>}. See https://no-website-yet.org/documentation/configuration
-     * /parameters/ignoreMigrationPatterns for full details.
+     * the form {@code <migration_type>:<migration_state>}. See
+     * https://daniel-huss.github.io/migratedb/documentation/configuration /parameters/ignoreMigrationPatterns for full
+     * details.
      * <p>Example: repeatable:missing,versioned:pending,*:failed
      */
     public void setIgnoreMigrationPatterns(String... ignoreMigrationPatterns) {
