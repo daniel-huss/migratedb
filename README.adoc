@@ -10,7 +10,7 @@ Evolve your database schema easily and reliably across all your instances.
 
 Oracle, SQL Server, DB2, MySQL, MariaDB, PostgreSQL, CockroachDB, Informix, H2, HSQLDB, Derby, SQLite, Firebird
 
-Current not testable: Sybase ASE, Redshift
+Current not testable: Sybase ASE, Redshift, Apache Ignite
 
 == Documentation
 
@@ -20,6 +20,7 @@ xref:CHANGELOG.adoc[Changelog]
 
 == Support
 
+The main priority of this project is stability.
 Bugs will be fixed, and new software versions will be supported as long as the changes are testable.
 New features are unlikely to be added, unless they are requested by a large number of users.
 

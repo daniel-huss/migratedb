@@ -86,11 +86,6 @@
             <artifactId>jdbc</artifactId>
             <version>4.50.7.1</version>
         </dependency>
-        <dependency>
-            <groupId>de.unentscheidbar</groupId>
-            <artifactId>ignite-thin-jdbc-driver</artifactId>
-            <version>0.1-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
     <build>

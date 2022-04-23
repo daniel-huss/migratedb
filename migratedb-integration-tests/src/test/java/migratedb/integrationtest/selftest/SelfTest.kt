@@ -19,15 +19,13 @@ package migratedb.integrationtest.selftest
 import io.kotest.matchers.collections.shouldContainAll
 import migratedb.core.api.MigrationType
 import migratedb.integrationtest.database.DbSystem
-import migratedb.integrationtest.database.Ignite
 import migratedb.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ArgumentsSource
 
 class SelfTest : IntegrationTest() {
     @ParameterizedTest
-    //@ArgumentsSource(DbSystem.All::class)
-    @EnumSource(Ignite::class)
+    @ArgumentsSource(DbSystem.All::class)
     fun `Database system is supported by test DSL`(dbSystem: DbSystem) = withDsl(dbSystem) {
         given {
             database {
