@@ -20,21 +20,24 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.assertions.fail
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.maps.shouldContainAll
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import migratedb.core.api.MigrationInfo
 import migratedb.core.api.MigrationInfoService
+import migratedb.core.api.MigrationState
 import migratedb.core.api.MigrationType
 import migratedb.core.api.Version
 import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.integrationtest.database.SomeInMemoryDb
 import migratedb.integrationtest.util.base.IntegrationTest
+import migratedb.integrationtest.util.base.defaultChecksum
 
-abstract class MigrationInfoTest : IntegrationTest() {
+abstract class AbstractMigrationInfoTest : IntegrationTest() {
     object DoNotCheck : CharSequence by ""
 
     interface SimpleSchemaHistorySpec {
-        fun entry(name: String, type: MigrationType, success: Boolean)
+        fun entry(name: String, type: MigrationType, success: Boolean, checksumDelta: Int = 0)
     }
 
     inner class TestCase(
@@ -42,14 +45,17 @@ abstract class MigrationInfoTest : IntegrationTest() {
         private val configModifier: (FluentConfiguration).() -> Unit = {},
         availableMigrations: List<String>,
         expectedAll: List<String>? = null,
-        expectedPending: List<String> = emptyList(),
-        expectedApplied: List<String>? = emptyList(),
+        expectedPending: List<String>? = null,
+        expectedApplied: List<String>? = null,
         expectedResolved: List<String>? = null,
-        expectedFailed: List<String> = emptyList(),
-        expectedFuture: List<String> = emptyList(),
-        expectedOutOfOrder: List<String> = emptyList(),
+        expectedFailed: List<String>? = null,
+        expectedFuture: List<String>? = null,
+        expectedOutOfOrder: List<String>? = null,
+        expectedOutdated: List<String>? = null,
         expectedCurrent: CharSequence? = DoNotCheck,
         expectedNext: CharSequence? = DoNotCheck,
+        expectedState: Map<String, MigrationState>? = null,
+        expectedStatesInAppliedOrder: Map<String, List<MigrationState>>? = null,
     ) {
         private val expectedAll = expectedAll.addDescriptionIfMissing()
         private val expectedPending = expectedPending.addDescriptionIfMissing()
@@ -58,8 +64,11 @@ abstract class MigrationInfoTest : IntegrationTest() {
         private val expectedFailed = expectedFailed.addDescriptionIfMissing()
         private val expectedFuture = expectedFuture.addDescriptionIfMissing()
         private val expectedOutOfOrder = expectedOutOfOrder.addDescriptionIfMissing()
+        private val expectedOutdated = expectedOutdated.addDescriptionIfMissing()
         private val expectedCurrent = expectedCurrent?.addDescriptionIfMissing()
         private val expectedNext = expectedNext?.addDescriptionIfMissing()
+        private val expectedState = expectedState?.mapKeys { (k, _) -> k.addDescriptionIfMissing() }
+        private val expectedStatesInAppliedOrder = expectedStatesInAppliedOrder?.mapKeys { (k, _) -> k.addDescriptionIfMissing() }
 
         init {
             withDsl(SomeInMemoryDb) {
@@ -68,8 +77,14 @@ abstract class MigrationInfoTest : IntegrationTest() {
                         existingSchemaHistory {
                             val history = this
                             object : SimpleSchemaHistorySpec {
-                                override fun entry(name: String, type: MigrationType, success: Boolean) {
-                                    history.entry(name.addDescriptionIfMissing(), type, success)
+                                override fun entry(name: String, type: MigrationType, success: Boolean, checksumDelta: Int) {
+                                    val nameWithDescription = name.addDescriptionIfMissing()
+                                    history.entry(
+                                        name = nameWithDescription,
+                                        type = type,
+                                        success = success,
+                                        checksum = nameWithDescription.defaultChecksum() + checksumDelta
+                                    )
                                 }
                             }.apply(schemaHistory)
                         }
@@ -94,7 +109,7 @@ abstract class MigrationInfoTest : IntegrationTest() {
                     expectedAll?.let { actual.all().shouldMatch(it) }
                 }
                 withClue("pending()") {
-                    expectedPending.let { actual.pending().shouldMatch(it) }
+                    expectedPending?.let { actual.pending().shouldMatch(it) }
                 }
                 withClue("applied") {
                     expectedApplied?.let { actual.applied().shouldMatch(it) }
@@ -103,13 +118,16 @@ abstract class MigrationInfoTest : IntegrationTest() {
                     expectedResolved?.let { actual.resolved().shouldMatch(it) }
                 }
                 withClue("failed()") {
-                    expectedFailed.let { actual.failed().shouldMatch(it) }
+                    expectedFailed?.let { actual.failed().shouldMatch(it) }
                 }
                 withClue("future()") {
-                    expectedFuture.let { actual.future().shouldMatch(it) }
+                    expectedFuture?.let { actual.future().shouldMatch(it) }
                 }
-                withClue("outOfOrder") {
-                    expectedOutOfOrder.let { actual.outOfOrder().shouldMatch(it) }
+                withClue("outOfOrder()") {
+                    expectedOutOfOrder?.let { actual.outOfOrder().shouldMatch(it) }
+                }
+                withClue("expectedOutdated()") {
+                    expectedOutdated?.let { actual.outdated().shouldMatch(it) }
                 }
                 withClue("current()") {
                     when {
@@ -126,6 +144,26 @@ abstract class MigrationInfoTest : IntegrationTest() {
                     }
                 }
             }
+            withClue("state") {
+                val grouped = actual.all()
+                    .groupBy { it.describe() }
+                    .mapValues { (_, v) -> v.map { it.state }.toList() }
+
+                expectedState?.let { expected ->
+                    grouped.entries.firstOrNull { (_, v) -> v.toSet().size > 1 }?.let {
+                        fail(
+                            "Cannot use expectedState because at least one migration has multiple ocurrences." +
+                                    " Use expectedStatesInAppliedOrder.\n$it"
+                        )
+                    }
+                    grouped.mapValues { (_, v) -> v.first() }
+                        .shouldContainAll(expected)
+                }
+
+                expectedStatesInAppliedOrder?.let { expected ->
+                    grouped.shouldContainAll(expected)
+                }
+            }
         }
 
         private fun CharSequence.addDescriptionIfMissing() = when (this) {
@@ -134,7 +172,7 @@ abstract class MigrationInfoTest : IntegrationTest() {
         }
 
         private fun String.addDescriptionIfMissing() = when {
-            !contains("__") -> "${this}__$this"
+            !contains("__") -> "${this}__V${this.drop(1)}"
             else -> this
         }
 
@@ -158,19 +196,13 @@ abstract class MigrationInfoTest : IntegrationTest() {
         }
 
         private fun MigrationInfo.matches(name: String): Boolean {
-            val desc = describe()
-            return when {
-                isRepeatable -> desc == name
-                else -> (desc == name) ||
-                        (desc.startsWith("B") &&
-                                name.startsWith(("V")) &&
-                                desc.drop(1) == name.drop(1))
-            }
+            return name == describe()
         }
 
         private fun MigrationInfo.describe() = when {
             isRepeatable -> "R__" + description.spaceToUnderscore()
-            else -> "V" + version?.dotToUnderscrore() + "__" + description.spaceToUnderscore()
+            else -> (if (type.isBaselineMigration) "B" else "V") +
+                    version?.dotToUnderscrore() + "__" + description.spaceToUnderscore()
         }
 
         private fun Version.dotToUnderscrore() = toString().replace('.', '_')

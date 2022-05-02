@@ -19,5 +19,5 @@ package migratedb.integrationtest.util.dsl
 import migratedb.core.api.MigrationType
 
 interface SchemaHistorySpec {
-    fun entry(name: String, type: MigrationType, success: Boolean, installedRank: Int? = null, checksum: Int = 0)
+    fun entry(name: String, type: MigrationType, success: Boolean, installedRank: Int? = null, checksum: Int? = null)
 }

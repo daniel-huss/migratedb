@@ -16,10 +16,11 @@
 
 package migratedb.integrationtest.info
 
+import migratedb.core.api.MigrationState.IGNORED
 import migratedb.core.api.MigrationType
 import org.junit.jupiter.api.Test
 
-class SimpleCasesTest : MigrationInfoTest() {
+class SimpleCasesTest : AbstractMigrationInfoTest() {
     @Test
     fun `Everything empty`() {
         TestCase(
@@ -33,25 +34,44 @@ class SimpleCasesTest : MigrationInfoTest() {
 
     @Test
     fun `Single already applied migration`() {
-        val single = "V1__One_Already_Applied"
+        val v1 = "V1"
         TestCase(
-            availableMigrations = listOf(single),
+            availableMigrations = listOf(v1),
             schemaHistory = {
-                entry(single, MigrationType.SQL, true)
+                entry(v1, MigrationType.SQL, true)
             },
-            expectedAll = listOf(single),
-            expectedApplied = listOf(single),
+            expectedAll = listOf(v1),
+            expectedApplied = listOf(v1),
         )
     }
 
     @Test
     fun `Single pending migration`() {
-        val single = "V1__One_Already_Applied"
+        val v1 = "V1"
         TestCase(
-            availableMigrations = listOf(single),
-            expectedAll = listOf(single),
-            expectedPending = listOf(single),
+            availableMigrations = listOf(v1),
+            expectedAll = listOf(v1),
+            expectedPending = listOf(v1),
             expectedApplied = emptyList(),
+        )
+    }
+
+    @Test
+    fun `Single ignored migration`() {
+        val v1 = "V1"
+        TestCase(
+            availableMigrations = listOf(v1),
+            configModifier = {
+                cherryPick("2")
+            },
+            expectedAll = listOf(v1),
+            expectedResolved = listOf(v1),
+            expectedApplied = emptyList(),
+            expectedCurrent = null,
+            expectedPending = emptyList(),
+            expectedState = mapOf(
+                "V1" to IGNORED
+            )
         )
     }
 }

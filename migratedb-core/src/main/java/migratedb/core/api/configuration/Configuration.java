@@ -157,10 +157,10 @@ public interface Configuration {
     String getSqlMigrationPrefix();
 
     /**
-     * The file name prefix for baseline migrations. Baseline migrations represent all migrations with {@code version <=
-     * current baseline migration version} while keeping older migrations if needed for upgrading older deployments.
-     * They have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults
-     * translates to SB.1__My_description.sql
+     * The file name prefix for baseline migrations. Baseline migrations represent all migrations with
+     * {@code version <= current baseline migration version} while keeping older migrations if needed for upgrading
+     * older deployments. They have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which
+     * using the defaults translates to SB.1__My_description.sql
      *
      * @return The file name prefix for baseline migration. (default: B)
      */
@@ -433,8 +433,9 @@ public interface Configuration {
 
     /**
      * Ignore migrations that match this comma-separated list of patterns when validating migrations. Each pattern is of
-     * the form {@code <migration_type>:<migration_state>}. See https://no-website-yet
-     * .org/documentation/configuration/parameters/ignoreMigrationPatterns for full details.
+     * the form {@code <migration_type>:<migration_state>}. See  <a
+     * href="https://daniel-huss.github.io/migratedb/documentation/configuration/parameters/ignoreMigrationPatterns">the
+     * website</a> for full details.
      * <p>Example: repeatable:missing,versioned:pending,*:failed
      */
     ValidatePattern[] getIgnoreMigrationPatterns();

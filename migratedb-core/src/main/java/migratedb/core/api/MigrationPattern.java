@@ -16,7 +16,9 @@
  */
 package migratedb.core.api;
 
+import java.util.Arrays;
 import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class MigrationPattern {
     private final String migrationName;
@@ -25,7 +27,23 @@ public final class MigrationPattern {
         this.migrationName = migrationName;
     }
 
-    public boolean matches(Version version, String description) {
+    /**
+     * @return {@code true} iff {@code patterns} is null/empty or one of them matches the {@code version}.
+     */
+    public static boolean anyMatchOrEmpty(Version version, MigrationPattern @Nullable [] patterns) {
+        return patterns == null || patterns.length == 0 ||
+               Arrays.stream(patterns).anyMatch(it -> it.matches(version, null));
+    }
+
+    /**
+     * @return {@code true} iff {@code patterns} is null/empty or one of them matches the {@code description}.
+     */
+    public static boolean anyMatchOrEmpty(String description, MigrationPattern @Nullable [] patterns) {
+        return patterns == null || patterns.length == 0 ||
+               Arrays.stream(patterns).anyMatch(it -> it.matches(null, description));
+    }
+
+    public boolean matches(@Nullable Version version, @Nullable String description) {
         if (version != null) {
             String pattern = migrationName.replace("_", ".");
             return pattern.equals(version.toString());

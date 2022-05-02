@@ -22,7 +22,11 @@ import migratedb.core.api.migration.JavaMigration
 import migratedb.core.internal.resolver.MigrationInfoHelper
 import java.sql.Connection
 
-class SimpleJavaMigration(name: String, private val code: (Connection) -> Unit) : JavaMigration {
+class SimpleJavaMigration(
+    name: String,
+    private val code: (Connection) -> Unit,
+    private val checksum: Int? = null
+) : JavaMigration {
     private val version: Version?
     private val description: String
     private val prefix = name[0].uppercase()
@@ -36,7 +40,7 @@ class SimpleJavaMigration(name: String, private val code: (Connection) -> Unit) 
 
     override fun getVersion(): Version? = version
     override fun getDescription(): String = description
-    override fun getChecksum(): Int? = null
+    override fun getChecksum(): Int? = checksum
     override fun isBaselineMigration(): Boolean = prefix == "B"
     override fun canExecuteInTransaction() = true
     override fun migrate(context: Context) {

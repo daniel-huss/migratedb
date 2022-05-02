@@ -30,27 +30,28 @@ import migratedb.core.internal.util.AbbreviationUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class MigrationInfoImpl implements MigrationInfo {
-    private final ResolvedMigration resolvedMigration;
-    private final AppliedMigration appliedMigration;
+    private final @Nullable ResolvedMigration resolvedMigration;
+    private final @Nullable AppliedMigration appliedMigration;
     private final ValidationContext validationContext;
-    private final boolean outOfOrder;
-    private final boolean deleted;
-    private final boolean shouldNotExecuteMigration;
     private final VersionContext versionContext;
+    private final MigrationState state;
+    private final boolean shouldNotExecuteMigration;
 
-    MigrationInfoImpl(ResolvedMigration resolvedMigration,
-                      AppliedMigration appliedMigration,
+    MigrationInfoImpl(@Nullable ResolvedMigration resolvedMigration,
+                      @Nullable AppliedMigration appliedMigration,
                       ValidationContext validationContext,
                       VersionContext versionContext,
-                      boolean outOfOrder,
-                      boolean deleted) {
+                      MigrationState state,
+                      boolean shouldNotExecuteMigration) {
+        if (resolvedMigration == null && appliedMigration == null) {
+            throw new IllegalArgumentException("One of (resolved migration, applied migration) must not be null");
+        }
         this.resolvedMigration = resolvedMigration;
         this.appliedMigration = appliedMigration;
         this.validationContext = validationContext;
         this.versionContext = versionContext;
-        this.outOfOrder = outOfOrder;
-        this.deleted = deleted;
-        this.shouldNotExecuteMigration = shouldNotExecuteMigration(resolvedMigration);
+        this.state = state;
+        this.shouldNotExecuteMigration = shouldNotExecuteMigration;
     }
 
     @Override
@@ -105,100 +106,7 @@ final class MigrationInfoImpl implements MigrationInfo {
 
     @Override
     public MigrationState getState() {
-        if (deleted) {
-            return MigrationState.DELETED;
-        }
-
-        if (appliedMigration == null) {
-            return stateOfNotYetAppliedMigration();
-        }
-
-        if (MigrationType.DELETE == appliedMigration.getType()) {
-            return MigrationState.SUCCESS;  // XXX Whaaaa?
-        }
-
-        if (MigrationType.BASELINE == appliedMigration.getType()) {
-            return MigrationState.BASELINE;
-        }
-
-        if (resolvedMigration == null && isVersionedOrLatestRepeatable()) {
-            return stateOfUnresolvedVersionedOrLatestRepeatableMigration();
-        }
-
-        if (!appliedMigration.isSuccess()) {
-            return MigrationState.FAILED;
-        }
-
-        if (appliedMigration.isRepeatable()) {
-            if (appliedMigration.getInstalledRank() ==
-                versionContext.latestRepeatableRuns.get(appliedMigration.getDescription())) {
-                if (resolvedMigration != null && resolvedMigration.checksumMatches(appliedMigration.getChecksum())) {
-                    return MigrationState.SUCCESS;
-                }
-                return MigrationState.OUTDATED;
-            }
-            return MigrationState.SUPERSEDED;
-        }
-
-        if (outOfOrder) {
-            return MigrationState.OUT_OF_ORDER;
-        }
-        return MigrationState.SUCCESS;
-    }
-
-    private MigrationState stateOfUnresolvedVersionedOrLatestRepeatableMigration() {
-        if (MigrationType.SCHEMA == appliedMigration.getType()) {
-            return MigrationState.SUCCESS;
-        }
-        if ((appliedMigration.getVersion() == null) || getVersion().compareTo(versionContext.lastResolved) < 0) {
-            if (appliedMigration.isSuccess()) {
-                return MigrationState.MISSING_SUCCESS;
-            }
-            return MigrationState.MISSING_FAILED;
-        } else {
-            if (appliedMigration.isSuccess()) {
-                return MigrationState.FUTURE_SUCCESS;
-            }
-            return MigrationState.FUTURE_FAILED;
-        }
-    }
-
-    private MigrationState stateOfNotYetAppliedMigration() {
-        if (shouldNotExecuteMigration) {
-            return MigrationState.IGNORED;
-        }
-
-        var version = resolvedMigration.getVersion();
-        if (version != null) {
-            if (versionContext.baseline != null &&
-                version.compareTo(versionContext.baseline) < 0) {
-                return MigrationState.BELOW_BASELINE;
-            }
-            if (versionContext.target != null &&
-                version.compareTo(versionContext.target) > 0) {
-                return MigrationState.ABOVE_TARGET;
-            }
-            if (versionContext.lastApplied != null &&
-                version.compareTo(versionContext.lastApplied) < 0 &&
-                !validationContext.allows(ValidationMatch.OUT_OF_ORDER)) {
-                return MigrationState.IGNORED;
-            }
-            if (versionContext.latestBaselineMigration != null &&
-                (version.compareTo(versionContext.latestBaselineMigration) < 0 ||
-                 (version.compareTo(versionContext.latestBaselineMigration) == 0 &&
-                  !resolvedMigration.getType().isBaselineMigration()))) {
-                return MigrationState.IGNORED;
-            }
-        }
-        return MigrationState.PENDING;
-    }
-
-    private boolean isVersionedOrLatestRepeatable() {
-        if (appliedMigration.getVersion() != null) {
-            return true;
-        }
-        Integer latestRepeatableRank = versionContext.latestRepeatableRuns.get(appliedMigration.getDescription());
-        return latestRepeatableRank == null || appliedMigration.getInstalledRank() == latestRepeatableRank;
+        return state;
     }
 
     @Override
@@ -324,7 +232,7 @@ final class MigrationInfoImpl implements MigrationInfo {
         }
 
         if (resolvedMigration != null && appliedMigration != null
-            && getType() != MigrationType.DELETE
+            && getType() != MigrationType.DELETED
 
         ) {
             String migrationIdentifier = appliedMigration.getVersion() == null ?
@@ -332,7 +240,7 @@ final class MigrationInfoImpl implements MigrationInfo {
                                          appliedMigration.getScript() :
                                          // Versioned migrations
                                          "version " + appliedMigration.getVersion();
-            if (getVersion() == null || getVersion().compareTo(versionContext.baseline) > 0) {
+            if (getVersion() == null || getVersion().compareTo(versionContext.baselineVersion) > 0) {
                 if (resolvedMigration.getType() != appliedMigration.getType()) {
                     String mismatchMessage = createMismatchMessage("type",
                                                                    migrationIdentifier,
@@ -364,11 +272,6 @@ final class MigrationInfoImpl implements MigrationInfo {
         return null;
     }
 
-    private boolean shouldNotExecuteMigration(ResolvedMigration resolvedMigration) {
-        return resolvedMigration != null && resolvedMigration.getExecutor() != null &&
-               !resolvedMigration.getExecutor().shouldExecute();
-    }
-
     private boolean descriptionMismatch(ResolvedMigration resolvedMigration, AppliedMigration appliedMigration) {
         // For some databases, we can't put an empty description into the history table
         if (SchemaHistory.NO_DESCRIPTION_MARKER.equals(appliedMigration.getDescription())) {
@@ -386,5 +289,13 @@ final class MigrationInfoImpl implements MigrationInfo {
                              ". Either revert the changes to the migration, or run repair to update the schema " +
                              "history.",
                              migrationIdentifier, applied, resolved);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" +
+               "resolved.version=" + (resolvedMigration == null ? null : resolvedMigration.getVersion()) +
+               ", applied.version=" + (appliedMigration == null ? null : appliedMigration.getVersion()) +
+               '}';
     }
 }

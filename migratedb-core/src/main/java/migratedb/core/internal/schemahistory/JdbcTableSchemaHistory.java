@@ -391,7 +391,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                                 calculateInstalledRank(),
                                 versionObj,
                                 appliedMigration.getDescription(),
-                                "DELETE",
+                                "DELETED",
                                 appliedMigration.getScript(),
                                 checksumObj,
                                 database.getInstalledBy(),

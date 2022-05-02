@@ -18,19 +18,20 @@ package migratedb.core.api;
 
 public enum MigrationType {
     /**
-     * Schema creation migration.
+     * Schema creation marker.
      */
     SCHEMA(true, false),
     /**
-     * Baseline migration.
+     * Baseline marker inserted by the baseline command. Its presence means that the current database state was accepted
+     * as the corresponding version without actually making any changes.
      */
     BASELINE(true, false),
     /**
-     * Deleted migration.
+     * Deletion marker inserted by the repair command when it finds missing/future migrations.
      */
-    DELETE(true, false),
+    DELETED(true, false),
     /**
-     * SQL migrations.
+     * SQL incremental migrations.
      */
     SQL(false, false),
     /**
@@ -38,24 +39,20 @@ public enum MigrationType {
      */
     SQL_BASELINE(false, true),
     /**
-     * JDBC Java-based migrations.
+     * JDBC Java-based incremental migrations.
      */
     JDBC(false, false),
     /**
      * JDBC Java-based baseline migrations.
      */
-    JDBC_BASELINE(false, true),
-    /**
-     * Migrations using custom MigrationResolvers.
-     */
-    CUSTOM(false, false);
+    JDBC_BASELINE(false, true);
 
     private final boolean synthetic;
-    private final boolean baseline;
+    private final boolean baselineMigration;
 
-    MigrationType(boolean synthetic, boolean baseline) {
+    MigrationType(boolean synthetic, boolean baselineMigration) {
         this.synthetic = synthetic;
-        this.baseline = baseline;
+        this.baselineMigration = baselineMigration;
     }
 
     public static MigrationType fromString(String migrationType) {
@@ -69,12 +66,15 @@ public enum MigrationType {
         if ("JDBC_STATE_SCRIPT".equals(migrationType)) {
             return JDBC_BASELINE;
         }
+        if ("DELETE".equals(migrationType)) {
+            return DELETED;
+        }
         return valueOf(migrationType);
     }
 
     /**
-     * @return Whether this is a synthetic migration type, which is only ever present in the schema history table, but
-     * never discovered by migration resolvers.
+     * @return Whether this is a synthetic marker migration type, which is only ever present in the schema history
+     * table, but never discovered by migration resolvers.
      */
     public boolean isSynthetic() {
         return synthetic;
@@ -82,9 +82,10 @@ public enum MigrationType {
 
     /**
      * @return Whether this is a baseline migration, which represents all migrations with version <= current baseline
-     * migration version.
+     * migration version. Note that the special baseline marker {@link #BASELINE} is not a real migration, and therefore
+     * not a baseline migration.
      */
     public boolean isBaselineMigration() {
-        return baseline;
+        return baselineMigration;
     }
 }

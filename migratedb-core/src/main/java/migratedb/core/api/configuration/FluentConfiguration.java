@@ -462,8 +462,8 @@ public class FluentConfiguration implements Configuration {
     /**
      * The username that will be recorded in the schema history table as having applied the migration.
      *
-     * @param installedBy The username or {@code null} for the current database user of the connection. (default: {@code
-     *                    null}).
+     * @param installedBy The username or {@code null} for the current database user of the connection. (default:
+     *                    {@code null}).
      */
     public FluentConfiguration installedBy(String installedBy) {
         config.setInstalledBy(installedBy);
@@ -570,8 +570,9 @@ public class FluentConfiguration implements Configuration {
 
     /**
      * Ignore migrations that match this comma-separated list of patterns when validating migrations. Each pattern is of
-     * the form {@code <migration_type>:<migration_state>}. See https://no-website-yet
-     * .org/documentation/configuration/parameters/ignoreMigrationPatterns for full details.
+     * the form {@code <migration_type>:<migration_state>}. See <a
+     * href="https://daniel-huss.github.io/migratedb/documentation/configuration/parameters/ignoreMigrationPatterns">the
+     * website</a> for full details.
      *
      * <p>Example: repeatable:missing,versioned:pending,*:failed
      */
@@ -603,8 +604,8 @@ public class FluentConfiguration implements Configuration {
     /**
      * Whether to automatically call validate or not when running migrate.
      *
-     * @param validateOnMigrate {@code true} if validate should be called. {@code false} if not. (default: {@code
-     *                          true})
+     * @param validateOnMigrate {@code true} if validate should be called. {@code false} if not. (default:
+     *                          {@code true})
      */
     public FluentConfiguration validateOnMigrate(boolean validateOnMigrate) {
         config.setValidateOnMigrate(validateOnMigrate);
@@ -619,8 +620,8 @@ public class FluentConfiguration implements Configuration {
      * SCM.
      * <b>Warning! Do not enable in production!</b>
      *
-     * @param cleanOnValidationError {@code true} if clean should be called. {@code false} if not. (default: {@code
-     *                               false})
+     * @param cleanOnValidationError {@code true} if clean should be called. {@code false} if not. (default:
+     *                               {@code false})
      */
     public FluentConfiguration cleanOnValidationError(boolean cleanOnValidationError) {
         config.setCleanOnValidationError(cleanOnValidationError);
@@ -1036,8 +1037,8 @@ public class FluentConfiguration implements Configuration {
      * Be careful when enabling this as it removes the safety net that ensures MigrateDb does not migrate the wrong
      * database in case of a configuration mistake!
      *
-     * @param baselineOnMigrate {@code true} if baseline should be called on migrate for non-empty schemas, {@code
-     *                          false} if not. (default: {@code false})
+     * @param baselineOnMigrate {@code true} if baseline should be called on migrate for non-empty schemas,
+     *                          {@code false} if not. (default: {@code false})
      */
     public FluentConfiguration baselineOnMigrate(boolean baselineOnMigrate) {
         config.setBaselineOnMigrate(baselineOnMigrate);
@@ -1048,8 +1049,8 @@ public class FluentConfiguration implements Configuration {
      * Allows migrations to be run "out of order". If you already have versions 1 and 3 applied, and now a version 2 is
      * found, it will be applied too instead of being ignored.
      *
-     * @param outOfOrder {@code true} if outOfOrder migrations should be applied, {@code false} if not. (default: {@code
-     *                   false})
+     * @param outOfOrder {@code true} if outOfOrder migrations should be applied, {@code false} if not. (default:
+     *                   {@code false})
      */
     public FluentConfiguration outOfOrder(boolean outOfOrder) {
         config.setOutOfOrder(outOfOrder);
@@ -1223,8 +1224,8 @@ public class FluentConfiguration implements Configuration {
     /**
      * Configures MigrateDb with these properties. This overwrites any existing configuration. Property names are
      * documented in {@link PropertyNames}. To use a custom ClassLoader, setClassLoader() must be called prior to
-     * calling this method. To support the configuration of extensions, those extensions must be activated via {@code
-     * useExtension} prior to calling this method.
+     * calling this method. To support the configuration of extensions, those extensions must be activated via
+     * {@code useExtension} prior to calling this method.
      *
      * @param properties Properties used for configuration.
      *

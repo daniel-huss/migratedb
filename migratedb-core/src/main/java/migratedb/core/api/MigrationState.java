@@ -24,7 +24,7 @@ import java.util.EnumSet;
  */
 public enum MigrationState {
     /**
-     * This migration has not been applied yet.
+     * This migration has not been applied, yet.
      */
     PENDING("Pending", Category.RESOLVED),
     /**
@@ -37,17 +37,13 @@ public enum MigrationState {
      */
     BELOW_BASELINE("Below Baseline", Category.RESOLVED),
     /**
-     * This migration has baselined this DB.
+     * The current DB state was accepted as the corresponding version without making any changes.
      */
     BASELINE("Baseline", Category.RESOLVED, Category.APPLIED),
     /**
      * When using cherryPick, this indicates a migration that was not in the cherry picked list. When not using
-     * cherryPick, this usually indicates a problem.
-     * <p>
-     * This migration was not applied against this DB, because a migration with a higher version has already been
-     * applied. This probably means some checkins happened out of order.
-     * <p>
-     * Fix by increasing the version number, run clean and migrate again or rerun migration with outOfOrder enabled.
+     * cherryPick, this usually indicates a problem: The migration was ignored because a higher version has already been
+     * applied.
      */
     IGNORED("Ignored", Category.RESOLVED),
     /**
@@ -62,8 +58,6 @@ public enum MigrationState {
      * <p>
      * This migration was applied against this DB, but it is not available locally. This usually results from multiple
      * older migration files being consolidated into a single one.
-     * <p>
-     * This should rarely, if ever, occur in practice.
      */
     MISSING_FAILED("Failed (Missing)", Category.APPLIED, Category.FAILED, Category.MISSING),
     /**
@@ -98,7 +92,7 @@ public enum MigrationState {
      */
     FUTURE_FAILED("Failed (Future)", Category.APPLIED, Category.FUTURE, Category.FAILED),
     /**
-     * This is a repeatable migration that is outdated and should be re-applied.
+     * This is a repeatable migration that has been applied, but is outdated and should be re-applied.
      */
     OUTDATED("Outdated", Category.RESOLVED, Category.APPLIED),
     /**
@@ -108,7 +102,8 @@ public enum MigrationState {
     /**
      * This is a migration that has been marked as deleted.
      */
-    DELETED("Deleted", Category.APPLIED);
+    DELETED("Deleted", Category.APPLIED),
+    ;
 
     public enum Category {
         RESOLVED, APPLIED, FAILED, FUTURE, MISSING

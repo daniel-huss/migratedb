@@ -224,7 +224,7 @@ public final class AppliedMigration implements Comparable<AppliedMigration> {
         return Integer.compare(installedRank, o.installedRank);
     }
 
-    public boolean isRepeatable() {
-        return getVersion() == null;
+    public boolean isExecutionOfRepeatableMigration() {
+        return !getType().isSynthetic() && getVersion() == null;
     }
 }

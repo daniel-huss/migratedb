@@ -75,14 +75,14 @@ class DatabaseImpl(
         val success: Boolean,
         val version: Version?,
         val description: String,
-        val checksum: Int,
+        val checksum: Int?,
         val installedRank: Int?,
     )
 
     inner class SchemaHistorySpecImpl(private val table: String) : SchemaHistorySpec {
         private val entries = mutableListOf<SchemaHistoryEntry>()
 
-        override fun entry(name: String, type: MigrationType, success: Boolean, installedRank: Int?, checksum: Int) {
+        override fun entry(name: String, type: MigrationType, success: Boolean, installedRank: Int?, checksum: Int?) {
             val repeatable = name.startsWith("R")
             val prefix = name.take(1)
             val info = MigrationInfoHelper.extractVersionAndDescription(name, prefix, "__", repeatable)

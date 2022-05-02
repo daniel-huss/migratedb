@@ -21,45 +21,34 @@ package migratedb.core.api;
  */
 public interface MigrationInfoService extends InfoOutputProvider {
     /**
-     * Retrieves the full set of infos about applied, current and future migrations.
-     *
-     * @return The full set of infos. An empty array if none.
+     * @return The full set of info about applied, current and future migrations. An empty array if none.
      */
     MigrationInfo[] all();
 
     /**
-     * Retrieves the information of the current applied migration, if any.
-     *
-     * @return The info. {@code null} if no migrations have been applied yet.
+     * @return Information about the current applied migration or {@code null} if no migrations have been applied yet.
      */
     MigrationInfo current();
 
     /**
-     * Retrieves the information of the next pending migration, if any.
-     *
-     * @return The info. {@code null} if no migration is pending.
+     * @return The next pending migration or {@code null} if no migration is pending. This will be the first outdated
+     * repeatable migration if no pending versioned migration exists.
      */
-    default MigrationInfo next() {
-        var pending = pending();
-        return pending.length == 0 ? null : pending[0];
-    }
+    MigrationInfo next();
 
     /**
-     * Retrieves the full set of infos about pending migrations, available locally, but not yet applied to the DB.
-     *
-     * @return The pending migrations, ordered by version. An empty array if none.
+     * @return All pending migrations, available locally, but not yet applied to the DB, ordered by version. An empty
+     * array if none.
      */
     MigrationInfo[] pending();
 
     /**
-     * Retrieves the full set of infos about the migrations applied to the DB.
-     *
-     * @return The applied migrations. An empty array if none.
+     * @return All applied migrations. An empty array if none.
      */
     MigrationInfo[] applied();
 
     /**
-     * @return The resolved migrations. An empty array if none.
+     * @return All resolved migrations. An empty array if none.
      */
     MigrationInfo[] resolved();
 
@@ -77,4 +66,9 @@ public interface MigrationInfoService extends InfoOutputProvider {
      * @return The out of order migrations. An empty array if none.
      */
     MigrationInfo[] outOfOrder();
+
+    /**
+     * @return All outdated repeatable migrations. An empty array if none.
+     */
+    MigrationInfo[] outdated();
 }

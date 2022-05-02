@@ -18,6 +18,7 @@ package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.api.migration.JavaMigration
+import migratedb.integrationtest.util.base.defaultChecksum
 import migratedb.integrationtest.util.dsl.RunWithConfigSpec
 
 abstract class AbstractRunWithConfigSpec(private val givenInfo: GivenInfo) : RunWithConfigSpec {
@@ -30,7 +31,11 @@ abstract class AbstractRunWithConfigSpec(private val givenInfo: GivenInfo) : Run
 
     override fun createMigrations(names: Collection<String>): Array<JavaMigration> {
         return names.map {
-            SimpleJavaMigration(it, givenInfo.databaseHandle.nextMutation(givenInfo.schemaName)::apply)
+            SimpleJavaMigration(
+                name = it,
+                code = givenInfo.databaseHandle.nextMutation(givenInfo.schemaName)::apply,
+                checksum = it.defaultChecksum()
+            )
         }.toTypedArray()
     }
 
