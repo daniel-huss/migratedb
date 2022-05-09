@@ -152,9 +152,7 @@ public class MigrateDb {
                         }
                     }
 
-                    if (!nonEmptySchemas.isEmpty()
-
-                    ) {
+                    if (!nonEmptySchemas.isEmpty() && !configuration.isSkipExecutingMigrations()) {
                         if (configuration.isBaselineOnMigrate()) {
                             doBaseline(schemaHistory, callbackExecutor, database);
                         } else {

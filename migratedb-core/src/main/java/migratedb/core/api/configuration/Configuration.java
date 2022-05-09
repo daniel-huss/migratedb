@@ -364,8 +364,6 @@ public interface Configuration {
      * <p>
      * Use in conjunction with {@code cherryPick} to skip specific migrations instead of all pending ones.
      *
-     * <i>MigrateDb Teams only</i>
-     *
      * @return {@code true} if executing the migrations should be skipped on migrate, {@code false} if not. (default:
      * {@code false})
      */
