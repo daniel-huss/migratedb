@@ -100,7 +100,7 @@ internal class ClassicConfigurationTest {
         shouldThrow<MigrateDbException> {
             ClassicConfiguration().configure(
                 mapOf(
-                    "migratedb.group" to "true",
+                    PropertyNames.GROUP to "true",
                     "migratedb.unsupportedThingy" to "somehing"
                 )
             )

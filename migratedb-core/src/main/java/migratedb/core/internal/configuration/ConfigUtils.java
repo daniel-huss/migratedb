@@ -49,7 +49,6 @@ public enum ConfigUtils {
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     private static Map<String, String> tryLoadConfig(BufferedReader reader)
     throws IOException {
         String[] lines = reader.lines().toArray(String[]::new);

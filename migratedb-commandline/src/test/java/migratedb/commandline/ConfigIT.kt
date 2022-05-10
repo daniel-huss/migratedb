@@ -16,11 +16,55 @@
 
 package migratedb.commandline
 
+import io.kotest.assertions.asClue
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.file.shouldBeAFile
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldBeEqualIgnoringCase
 import migratedb.commandline.testing.CommandLineTest
+import migratedb.commandline.testing.Dsl
+import migratedb.core.api.configuration.PropertyNames
+import migratedb.core.api.output.BaselineResult
+import migratedb.core.internal.configuration.ConfigUtils
 import org.junit.jupiter.api.Test
+import java.io.StringWriter
+import java.util.*
 
 class ConfigIT : CommandLineTest() {
     @Test
-    fun `foo`() = withCommandLine {
+    fun `Default config file exists`() = withCommandLine {
+        defaultConfigFile.shouldBeAFile()
+    }
+
+    @Test
+    fun `Default config file is being used `() = withCommandLine {
+        withDefaultConfig {
+            it[PropertyNames.URL] = "jdbc:h2:mem:blargh"
+            it[PropertyNames.BASELINE_VERSION] = "17"
+        }
+        exec("-outputType=json", "baseline").asClue {
+            it.exitCode.shouldBe(0)
+            it.parseAs(BaselineResult::class).apply {
+                baselineVersion.shouldBe("17")
+                successfullyBaselined.shouldBeTrue()
+                database.shouldBeEqualIgnoringCase("blargh")
+            }
+        }
+    }
+
+    private val Dsl.defaultConfigFile get() = configDir.resolve("migratedb.conf")
+    private fun Dsl.withDefaultConfig(block: (MutableMap<String, String>) -> Unit) {
+        val config = defaultConfigFile.reader().use {
+            LinkedHashMap(ConfigUtils.loadConfiguration(it))
+        }
+        block(config)
+        Properties().apply {
+            putAll(config)
+            val text = StringWriter().use {
+                store(it, null)
+                it.toString().replace("\\:", ":")
+            }
+            defaultConfigFile.writeText(text)
+        }
     }
 }

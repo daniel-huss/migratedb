@@ -20,12 +20,9 @@ import io.kotest.assertions.asClue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldStartWith
 import migratedb.commandline.testing.CommandLineTest
-import org.junit.jupiter.api.extension.ExtensionContext
+import migratedb.testing.util.base.Args
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.ArgumentsProvider
 import org.junit.jupiter.params.provider.ArgumentsSource
-import java.util.stream.Stream
 
 class HelpIT : CommandLineTest() {
     @ParameterizedTest
@@ -38,13 +35,9 @@ class HelpIT : CommandLineTest() {
         }
     }
 
-    class HelpArgs : ArgumentsProvider {
-        override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
-            return Stream.of(
-                emptyList(),
-                listOf("help"),
-                listOf("--help"),
-            ).map { Arguments.of(it) }
-        }
-    }
+    class HelpArgs : Args(
+        emptyList(),
+        listOf("help"),
+        listOf("--help")
+    )
 }

@@ -69,8 +69,11 @@ class Dsl : AutoCloseable {
         }
     }
 
+    val configDir = installationDir.resolve("conf")
+    val defaultMigrationsDir = installationDir.resolve("sql")
+
     val driversInSpec
-        get() = installationDir.resolve("conf").resolve("drivers.yaml").let { driversFile ->
+        get() = configDir.resolve("drivers.yaml").let { driversFile ->
             driversFile.inputStream().buffered().use { stream ->
                 Yaml().loadAs(stream, DownloadDriversCommand.DriverDefinitions::class.java)
                     .drivers.map { it.alias!! }

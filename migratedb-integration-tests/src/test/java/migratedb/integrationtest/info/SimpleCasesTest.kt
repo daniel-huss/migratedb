@@ -19,6 +19,7 @@ package migratedb.integrationtest.info
 import migratedb.core.api.MigrationState.IGNORED
 import migratedb.core.api.MigrationType
 import org.junit.jupiter.api.Test
+import kotlin.random.Random
 
 class SimpleCasesTest : AbstractMigrationInfoTest() {
     @Test
@@ -72,6 +73,18 @@ class SimpleCasesTest : AbstractMigrationInfoTest() {
             expectedState = mapOf(
                 "V1" to IGNORED
             )
+        )
+    }
+
+    @Test
+    fun `Lots of versioned migrations exist`() {
+        val allVersions = (1..10_000)
+        val allNames = allVersions.map { "V$it" }
+        TestCase(
+            availableMigrations = allNames.shuffled(Random(0)),
+            expectedAll = allNames,
+            expectedResolved = allNames,
+            expectedPending = allNames
         )
     }
 }

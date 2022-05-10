@@ -18,9 +18,18 @@ package migratedb.core.internal.info;
 
 import java.util.Comparator;
 import migratedb.core.api.MigrationInfo;
+import migratedb.core.api.MigrationInfoService;
 import migratedb.core.api.MigrationState;
 import migratedb.core.api.MigrationState.Category;
 
+/**
+ * The ordering used by {@link MigrationInfoService}. It places
+ * <ul>
+ *     <li>applied migrations before resolved pending migrations</li>
+ *     <li>lower versions before higher versions for pending migrations</li>
+ *     <li>versioned migrations before repeatable migrations</li>
+ * </ul>
+ */
 public final class MigrationExecutionOrdering implements Comparator<MigrationInfo> {
     @Override
     public int compare(MigrationInfo o1, MigrationInfo o2) {
@@ -50,9 +59,6 @@ public final class MigrationExecutionOrdering implements Comparator<MigrationInf
         return compareVersion(o1, o2);
     }
 
-    /**
-     * @return The result between a comparison of these MigrationInfoImpl's versions.
-     */
     private int compareVersion(MigrationInfo o1, MigrationInfo o2) {
         if (o1.getVersion() != null && o2.getVersion() != null) {
             return o1.getVersion().compareTo(o2.getVersion());
