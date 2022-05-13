@@ -27,6 +27,7 @@ import migratedb.core.api.logging.Log;
 import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.configuration.ConfigUtils;
 import migratedb.core.internal.parser.PlaceholderReplacingReader;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class SqlScriptMetadataImpl implements SqlScriptMetadata {
     private static final Log LOG = Log.getLog(SqlScriptMetadataImpl.class);
@@ -79,7 +80,7 @@ public class SqlScriptMetadataImpl implements SqlScriptMetadata {
         return !line.startsWith(SqlScriptMetadataImpl.SHOULD_EXECUTE) && (line.contains("==") || line.contains("!="));
     }
 
-    public static SqlScriptMetadata fromResource(Resource resource, Parser parser) {
+    public static SqlScriptMetadata fromResource(@Nullable Resource resource, Parser parser) {
         if (resource != null) {
             LOG.debug("Found script configuration: " + resource.getName());
             return new SqlScriptMetadataImpl(loadConfiguration(

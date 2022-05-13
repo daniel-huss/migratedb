@@ -63,7 +63,7 @@ public class SqlScriptCallbackFactory {
         ResourceNameParser resourceNameParser = new ResourceNameParser(configuration);
 
         for (Resource resource : resources) {
-            ResourceName parsedName = resourceNameParser.parse(resource.getName());
+            ResourceName parsedName = resourceNameParser.parse(resource.getLastNameComponent());
             if (!parsedName.isValid()) {
                 continue;
             }

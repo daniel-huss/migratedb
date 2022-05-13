@@ -22,7 +22,7 @@ xref:CHANGELOG.adoc[Changelog]
 
 The main priority of this project is stability.
 Bugs will be fixed, and new software versions will be supported as long as the changes are testable.
-New features are unlikely to be added, unless they are requested by a large number of users.
+New features are unlikely to be added, unless they are requested by a large number (>1) of users.
 
 == How to contribute
 
@@ -30,7 +30,7 @@ https://daniel-huss.github.io/migratedb/documentation/contribute
 
 == Legacy
 
-This project was forked from Flyway 7.15. There is no affiliation between this project and the owners of the Flyway trademark.
+This project was forked from Flyway 7.15. There is no affiliation whatsoever between this project and the owners of the Flyway trademark.
 
 Bug fixes from the forked project have been ported manually up to commit 77bb799 (2022-03-10 17:28:00)
 

@@ -31,7 +31,7 @@ fun String.toSafeFileName(): Array<String> {
 }
 
 /**
- * @return The value of ${project.build.directory}
+ * @return The value of ${project.build.directory} (which we don't change, so it's the default 'target')
  */
 val buildDirectory: Path
     get() = Paths.get("target").toAbsolutePath()

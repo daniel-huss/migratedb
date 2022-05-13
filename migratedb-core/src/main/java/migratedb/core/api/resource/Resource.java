@@ -24,9 +24,17 @@ import java.nio.charset.Charset;
  */
 public interface Resource {
     /**
-     * @return The path of this resource, separated by forward slashes ({@code "/"} on all platforms. Never ends with a slash.
+     * @return The path of this resource, separated by forward slashes ({@code "/"} on all platforms. Never ends with a
+     * slash.
      */
     String getName();
+
+    /**
+     * @return Just the last component of the name of this resource, the "file name".
+     */
+    default String getLastNameComponent() {
+        return lastNameComponentOf(getName());
+    }
 
     /**
      * @return A hint that describes the physical location of this resource (like a full path to a file on disk)
@@ -37,4 +45,12 @@ public interface Resource {
      * @return The contents of the resource.
      */
     Reader read(Charset charset);
+
+    static String lastNameComponentOf(String name) {
+        var lastIndex = name.lastIndexOf('/');
+        if (lastIndex == -1) {
+            return name;
+        }
+        return name.substring(lastIndex + 1);
+    }
 }

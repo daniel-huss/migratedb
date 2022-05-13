@@ -42,7 +42,7 @@ public class ResourceNameValidator {
         ResourceNameParser resourceNameParser = new ResourceNameParser(configuration);
 
         for (Resource resource : getAllSqlResources(provider, configuration)) {
-            String filename = resource.getName();
+            String filename = resource.getLastNameComponent();
             LOG.debug("Validating " + filename);
             ResourceName result = resourceNameParser.parse(filename);
             if (!result.isValid()) {

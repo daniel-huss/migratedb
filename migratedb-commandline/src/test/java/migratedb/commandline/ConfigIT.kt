@@ -18,6 +18,8 @@ package migratedb.commandline
 
 import io.kotest.assertions.asClue
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.file.shouldBeADirectory
 import io.kotest.matchers.file.shouldBeAFile
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEqualIgnoringCase
@@ -38,7 +40,7 @@ class ConfigIT : CommandLineTest() {
 
     @Test
     fun `Default config file is being used `() = withCommandLine {
-        withDefaultConfig {
+        changeDefaultConfig {
             it[PropertyNames.URL] = "jdbc:h2:mem:blargh"
             it[PropertyNames.BASELINE_VERSION] = "17"
         }
@@ -52,8 +54,34 @@ class ConfigIT : CommandLineTest() {
         }
     }
 
+    @Test
+    fun `Default migrations directory is being scanned for sql files`() = withCommandLine {
+        defaultMigrationsDir.shouldBeADirectory()
+        defaultMigrationsDir.resolve("V1__First.sql")
+            .writeText("create table _first(id int)")
+        defaultMigrationsDir.resolve("V2__Second.sql")
+            .writeText("create table _second(id int)")
+        defaultMigrationsDir.resolve("subdir").resolve("V3__Third.sql").apply {
+            parentFile.mkdirs()
+            writeText("create table _third(id int)")
+        }
+        val dbUrl = "jdbc:h2:${installationDir.resolve("mydb.h2").absolutePath}"
+        exec("-url=$dbUrl", "-user=sa", "-password=", "-validateMigrationNaming=true", "migrate").asClue {
+            it.exitCode.shouldBe(0)
+            withDatabase(dbUrl) { sql ->
+                sql.query(
+                    """select table_name 
+                    | from information_schema.tables s
+                    | where s.table_schema = CURRENT_SCHEMA""".trimMargin()
+                ) { rs, _ -> rs.getString(1) }
+                    .map(String::lowercase)
+                    .shouldContainAll("_first", "_second", "_third")
+            }
+        }
+    }
+
     private val Dsl.defaultConfigFile get() = configDir.resolve("migratedb.conf")
-    private fun Dsl.withDefaultConfig(block: (MutableMap<String, String>) -> Unit) {
+    private fun Dsl.changeDefaultConfig(block: (MutableMap<String, String>) -> Unit) {
         val config = defaultConfigFile.reader().use {
             LinkedHashMap(ConfigUtils.loadConfiguration(it))
         }

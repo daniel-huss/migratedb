@@ -15,10 +15,20 @@
  */
 package migratedb.commandline.testing
 
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.datasource.SingleConnectionDataSource
+import java.sql.DriverManager
+
 abstract class CommandLineTest {
     fun withCommandLine(block: (Dsl).() -> Unit) {
         Dsl().use {
             block(it)
+        }
+    }
+
+    fun <T> withDatabase(url: String, user: String = "sa", password: String = "", block: (JdbcTemplate) -> T) {
+        DriverManager.getConnection(url, user, password).use {
+            block(JdbcTemplate(SingleConnectionDataSource(it, true)))
         }
     }
 }

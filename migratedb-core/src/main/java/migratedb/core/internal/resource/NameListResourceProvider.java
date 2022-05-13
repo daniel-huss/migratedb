@@ -43,21 +43,10 @@ public abstract class NameListResourceProvider implements ResourceProvider {
     @Override
     public final Collection<Resource> getResources(String prefix, String... suffixes) {
         return Arrays.stream(names)
-                     .filter(it -> StringUtils.startsAndEndsWith(lastNameComponentOf(it), prefix, suffixes))
+                     .filter(it -> StringUtils.startsAndEndsWith(Resource.lastNameComponentOf(it), prefix, suffixes))
                      .map(this::toResource)
                      .collect(Collectors.toList());
     }
 
     protected abstract Resource toResource(String name);
-
-    private String lastNameComponentOf(String name) {
-        var lastIndex = name.lastIndexOf('/');
-        if (lastIndex == -1) {
-            return name;
-        }
-        if (lastIndex >= name.length()) {
-            return "";
-        }
-        return name.substring(lastIndex + 1);
-    }
 }

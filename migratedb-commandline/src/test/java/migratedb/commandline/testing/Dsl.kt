@@ -41,7 +41,18 @@ import kotlin.io.path.createFile
 import kotlin.io.path.exists
 
 class Dsl : AutoCloseable {
-    private val installationDir = newInstallationDirectory()
+    val installationDir = newInstallationDirectory()
+    val configDir = installationDir.resolve("conf")
+    val defaultMigrationsDir = installationDir.resolve("sql")
+    val driversInSpec
+        get() = configDir.resolve("drivers.yaml").let { driversFile ->
+            driversFile.inputStream().buffered().use { stream ->
+                Yaml().loadAs(stream, DownloadDriversCommand.DriverDefinitions::class.java)
+                    .drivers.map { it.alias!! }
+            }
+        }
+
+
     private val jacocoDestFile = TFile(installationDir, "jacoco.exec", NULL)
     private val executable = installationDir.resolve("migratedb")
 
@@ -68,17 +79,6 @@ class Dsl : AutoCloseable {
             }
         }
     }
-
-    val configDir = installationDir.resolve("conf")
-    val defaultMigrationsDir = installationDir.resolve("sql")
-
-    val driversInSpec
-        get() = configDir.resolve("drivers.yaml").let { driversFile ->
-            driversFile.inputStream().buffered().use { stream ->
-                Yaml().loadAs(stream, DownloadDriversCommand.DriverDefinitions::class.java)
-                    .drivers.map { it.alias!! }
-            }
-        }
 
     override fun close() {
         installationDir.rm_r()
@@ -139,7 +139,7 @@ class Dsl : AutoCloseable {
          */
         private val myJacocoDestFile = buildDirectory.resolve("jacoco-it.exec")
 
-        private fun mergeJacocoExecutionData(other: File) = synchronized(this) {
+        private fun mergeJacocoExecutionData(other: File) = synchronized(Dsl::class) {
             if (!myJacocoDestFile.exists()) {
                 myJacocoDestFile.parent?.createDirectories()
                 myJacocoDestFile.createFile()

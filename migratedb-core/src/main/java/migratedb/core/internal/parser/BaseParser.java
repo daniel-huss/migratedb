@@ -115,7 +115,7 @@ public abstract class BaseParser implements Parser {
         Recorder recorder = new Recorder();
         ParserContext context = new ParserContext(getDefaultDelimiter());
 
-        String filename = resource.getName();
+        String filename = resource.getLastNameComponent();
         LOG.debug("Parsing " + filename + " ...");
 
         ResourceName result = new ResourceNameParser(configuration).parse(filename);

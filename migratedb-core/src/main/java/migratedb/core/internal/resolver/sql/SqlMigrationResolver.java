@@ -125,7 +125,7 @@ public class SqlMigrationResolver implements MigrationResolver {
         ResourceNameParser resourceNameParser = new ResourceNameParser(configuration);
 
         for (Resource resource : resourceProvider.getResources(prefix, suffixes)) {
-            String filename = resource.getName();
+            String filename = resource.getLastNameComponent();
             ResourceName result = resourceNameParser.parse(filename);
             if (!result.isValid() || isSqlCallback(result) || !prefix.equals(result.getPrefix())) {
                 continue;
@@ -143,11 +143,11 @@ public class SqlMigrationResolver implements MigrationResolver {
             migrations.add(new ResolvedMigrationImpl(
                 result.getVersion(),
                 result.getDescription(),
-                resource.getName(),
+                resource.getLastNameComponent(),
                 checksum,
                 equivalentChecksum,
                 isBaseline ? MigrationType.SQL_BASELINE : MigrationType.SQL,
-                resource.getName(),
+                resource.describeLocation(),
                 new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript, configuration.isBatch())) {
             });
         }

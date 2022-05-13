@@ -44,7 +44,12 @@ public class FileSystemResourceProvider implements ResourceProvider {
 
     @Override
     public Resource getResource(String name) {
-        return new FileSystemResource(baseDir.resolve(name), baseDir);
+        var file = baseDir.resolve(name);
+        if (Files.exists(file)) {
+            return new FileSystemResource(baseDir.resolve(name), baseDir);
+        } else {
+            return null;
+        }
     }
 
     @Override
