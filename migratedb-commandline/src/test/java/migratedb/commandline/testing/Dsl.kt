@@ -57,9 +57,10 @@ class Dsl : AutoCloseable {
     private val jacocoDestFile = TFile(installationDir, "jacoco.exec", NULL)
     private val executable = installationDir.resolve("migratedb")
 
-    fun exec(vararg args: String): CliOutput {
+    fun exec(vararg args: String) = exec(args.toList())
+    fun exec(args: List<String>): CliOutput {
         executable.setExecutable(true)
-        val process = ProcessBuilder(executable.absolutePath, *args)
+        val process = ProcessBuilder(listOf(executable.absolutePath) + args)
             .directory(installationDir)
             .apply {
                 environment()["JAVA_ARGS"] = "-javaagent:${jacocoAgentJar.absolutePath}=" +

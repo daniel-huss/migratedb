@@ -153,11 +153,6 @@ public abstract class Location {
             var trimmed = StringUtils.trimChar(namePrefix, '/');
             this.namePrefix = trimmed.isEmpty() ? "" : trimmed + "/";
             this.classLoader = classLoader;
-
-            {
-                System.err.println("CLASS PATH LOCATION: " + namePrefix + " @ " + classLoader);
-            }
-
         }
 
         @Override

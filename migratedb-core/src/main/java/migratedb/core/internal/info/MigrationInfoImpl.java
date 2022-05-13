@@ -55,12 +55,12 @@ final class MigrationInfoImpl implements MigrationInfo {
     }
 
     @Override
-    public ResolvedMigration getResolvedMigration() {
+    public @Nullable ResolvedMigration getResolvedMigration() {
         return resolvedMigration;
     }
 
     @Override
-    public AppliedMigration getAppliedMigration() {
+    public @Nullable AppliedMigration getAppliedMigration() {
         return appliedMigration;
     }
 
@@ -69,6 +69,7 @@ final class MigrationInfoImpl implements MigrationInfo {
         if (appliedMigration != null) {
             return appliedMigration.getType();
         }
+        assert resolvedMigration != null;
         return resolvedMigration.getType();
     }
 
@@ -77,6 +78,7 @@ final class MigrationInfoImpl implements MigrationInfo {
         if (appliedMigration != null) {
             return appliedMigration.getChecksum();
         }
+        assert resolvedMigration != null;
         return resolvedMigration.getChecksum();
     }
 
@@ -85,6 +87,7 @@ final class MigrationInfoImpl implements MigrationInfo {
         if (appliedMigration != null) {
             return appliedMigration.getVersion();
         }
+        assert resolvedMigration != null;
         return resolvedMigration.getVersion();
     }
 
@@ -93,6 +96,7 @@ final class MigrationInfoImpl implements MigrationInfo {
         if (appliedMigration != null) {
             return appliedMigration.getDescription();
         }
+        assert resolvedMigration != null;
         return resolvedMigration.getDescription();
     }
 
@@ -101,6 +105,7 @@ final class MigrationInfoImpl implements MigrationInfo {
         if (appliedMigration != null) {
             return appliedMigration.getScript();
         }
+        assert resolvedMigration != null;
         return resolvedMigration.getScript();
     }
 
@@ -175,24 +180,26 @@ final class MigrationInfoImpl implements MigrationInfo {
             return new ErrorDetails(ErrorCode.FAILED_VERSIONED_MIGRATION, errorMessage);
         }
 
-        if ((resolvedMigration == null)
-            && !appliedMigration.getType().isSynthetic()
+        if ((resolvedMigration == null)) {
+            assert appliedMigration != null;
+            if (!appliedMigration.getType().isSynthetic()
 
-            && (MigrationState.SUPERSEDED != state)
-            && (!validationContext.allows(ValidationMatch.MISSING) ||
-                (MigrationState.MISSING_SUCCESS != state && MigrationState.MISSING_FAILED != state))
-            && (!validationContext.allows(ValidationMatch.FUTURE) ||
-                (MigrationState.FUTURE_SUCCESS != state && MigrationState.FUTURE_FAILED != state))) {
-            if (appliedMigration.getVersion() != null) {
-                String errorMessage = "Detected applied migration not resolved locally: " + getVersion() +
-                                      ". If you removed this migration intentionally, run repair to mark the " +
-                                      "migration as deleted.";
-                return new ErrorDetails(ErrorCode.APPLIED_VERSIONED_MIGRATION_NOT_RESOLVED, errorMessage);
-            } else {
-                String errorMessage = "Detected applied migration not resolved locally: " + getDescription() +
-                                      ". If you removed this migration intentionally, run repair to mark the " +
-                                      "migration as deleted.";
-                return new ErrorDetails(ErrorCode.APPLIED_REPEATABLE_MIGRATION_NOT_RESOLVED, errorMessage);
+                && (MigrationState.SUPERSEDED != state)
+                && (!validationContext.allows(ValidationMatch.MISSING) ||
+                    (MigrationState.MISSING_SUCCESS != state && MigrationState.MISSING_FAILED != state))
+                && (!validationContext.allows(ValidationMatch.FUTURE) ||
+                    (MigrationState.FUTURE_SUCCESS != state && MigrationState.FUTURE_FAILED != state))) {
+                if (appliedMigration.getVersion() != null) {
+                    String errorMessage = "Detected applied migration not resolved locally: " + getVersion() +
+                                          ". If you removed this migration intentionally, run repair to mark the " +
+                                          "migration as deleted.";
+                    return new ErrorDetails(ErrorCode.APPLIED_VERSIONED_MIGRATION_NOT_RESOLVED, errorMessage);
+                } else {
+                    String errorMessage = "Detected applied migration not resolved locally: " + getDescription() +
+                                          ". If you removed this migration intentionally, run repair to mark the " +
+                                          "migration as deleted.";
+                    return new ErrorDetails(ErrorCode.APPLIED_REPEATABLE_MIGRATION_NOT_RESOLVED, errorMessage);
+                }
             }
         }
 
@@ -240,7 +247,8 @@ final class MigrationInfoImpl implements MigrationInfo {
                                          appliedMigration.getScript() :
                                          // Versioned migrations
                                          "version " + appliedMigration.getVersion();
-            if (getVersion() == null || getVersion().compareTo(versionContext.baselineVersion) > 0) {
+            if (getVersion() == null || versionContext.baselineVersion == null ||
+                getVersion().compareTo(versionContext.baselineVersion) > 0) {
                 if (resolvedMigration.getType() != appliedMigration.getType()) {
                     String mismatchMessage = createMismatchMessage("type",
                                                                    migrationIdentifier,

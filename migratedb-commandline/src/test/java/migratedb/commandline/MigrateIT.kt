@@ -16,11 +16,40 @@
 
 package migratedb.commandline
 
+import io.kotest.assertions.asClue
+import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.shouldBe
 import migratedb.commandline.testing.CommandLineTest
+import migratedb.commandline.testing.TestMigrationsJar
+import migratedb.commandline.testing.migration.V1__First_Migration
+import migratedb.commandline.testing.migration.V2__Second_Migration
 import org.junit.jupiter.api.Test
 
 class MigrateIT : CommandLineTest() {
     @Test
-    fun `foo`() = withCommandLine {
+    fun `Can run multiple times to reach latest target`() = withCommandLine {
+        TestMigrationsJar.copyTo(defaultJarsDir.resolve("v1_and_v2.jar"))
+        defaultMigrationsDir.resolve("V3__Third_Migration.sql")
+            .writeText("create table _third_from_script(id int)")
+
+        val dbUrl = "jdbc:h2:${installationDir.resolve("mydb.h2").absolutePath}"
+        val args = listOf("-X", "-url=$dbUrl", "-user=sa", "-password=", "-locations=filesystem:sql,db/migration")
+        exec(args + listOf("-target=1", "migrate")).asClue {
+            it.exitCode.shouldBe(0)
+        }
+        exec(args + listOf("-target=2", "migrate")).asClue {
+            it.exitCode.shouldBe(0)
+        }
+        exec(args + listOf("-target=latest", "migrate")).asClue {
+            it.exitCode.shouldBe(0)
+        }
+        withDatabase(dbUrl) { db ->
+            db.tablesInCurrentSchema().map { it.lowercase() }
+                .shouldContainAll(
+                    V1__First_Migration.CREATED_TABLE.lowercase(),
+                    V2__Second_Migration.CREATED_TABLE.lowercase(),
+                    "_third_from_script"
+                )
+        }
     }
 }

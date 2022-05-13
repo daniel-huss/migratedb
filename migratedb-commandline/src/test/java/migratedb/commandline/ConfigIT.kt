@@ -60,10 +60,8 @@ class ConfigIT : CommandLineTest() {
     @Test
     fun `Default migrations directory is being scanned for sql files`() = withCommandLine {
         defaultMigrationsDir.shouldBeADirectory()
-        defaultMigrationsDir.resolve("V1__First.sql")
-            .writeText("create table _script1(id int)")
-        defaultMigrationsDir.resolve("V2__Second.sql")
-            .writeText("create table _script2(id int)")
+        defaultMigrationsDir.resolve("V1__First.sql").writeText("create table _script1(id int)")
+        defaultMigrationsDir.resolve("V2__Second.sql").writeText("create table _script2(id int)")
         defaultMigrationsDir.resolve("subdir").resolve("V3__Third.sql").apply {
             parentFile.mkdirs()
             writeText("create table _script3(id int)")
@@ -71,12 +69,8 @@ class ConfigIT : CommandLineTest() {
         val dbUrl = "jdbc:h2:${installationDir.resolve("mydb.h2").absolutePath}"
         exec("-url=$dbUrl", "-user=sa", "-password=", "-validateMigrationNaming=true", "migrate").asClue {
             it.exitCode.shouldBe(0)
-            withDatabase(dbUrl) { sql ->
-                sql.query(
-                    """select table_name 
-                    | from information_schema.tables s
-                    | where s.table_schema = CURRENT_SCHEMA""".trimMargin()
-                ) { rs, _ -> rs.getString(1) }
+            withDatabase(dbUrl) { db ->
+                db.tablesInCurrentSchema()
                     .map(String::lowercase)
                     .shouldContainAll("_script1", "_script2", "_script3")
             }
@@ -90,12 +84,8 @@ class ConfigIT : CommandLineTest() {
         val dbUrl = "jdbc:h2:${installationDir.resolve("mydb.h2").absolutePath}"
         exec("-url=$dbUrl", "-user=sa", "-password=", "-locations=db/migration", "migrate").asClue {
             it.exitCode.shouldBe(0)
-            withDatabase(dbUrl) { sql ->
-                sql.query(
-                    """select table_name 
-                    | from information_schema.tables s
-                    | where s.table_schema = CURRENT_SCHEMA""".trimMargin()
-                ) { rs, _ -> rs.getString(1) }
+            withDatabase(dbUrl) { db ->
+                db.tablesInCurrentSchema()
                     .map(String::lowercase)
                     .shouldContainAll(
                         V1__First_Migration.CREATED_TABLE.lowercase(),

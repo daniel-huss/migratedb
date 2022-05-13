@@ -31,4 +31,10 @@ abstract class CommandLineTest {
             block(JdbcTemplate(SingleConnectionDataSource(it, true)))
         }
     }
+
+    fun JdbcTemplate.tablesInCurrentSchema(): List<String> {
+        return query("select table_name from information_schema.tables s where s.table_schema = CURRENT_SCHEMA") { rs, _ ->
+            rs.getString(1)
+        }
+    }
 }
