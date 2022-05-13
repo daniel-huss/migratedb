@@ -252,7 +252,7 @@ class MigrateDbCommand {
     }
 
     private String expandEnvironmentVariables(String value) {
-        Pattern pattern = Pattern.compile("\\$\\{([A-Za-z0-9_]+)}");
+        Pattern pattern = Pattern.compile("\\$\\{(\\w+)}");
         Matcher matcher = pattern.matcher(value);
         String expandedValue = value;
 
@@ -320,7 +320,6 @@ class MigrateDbCommand {
      */
     private FluentConfiguration loadDefaultConfigurationFiles() {
         Map<String, String> configMap = loadDefaultConfigurationFiles(installationDir, "UTF-8");
-
         return new FluentConfiguration().configuration(configMap);
     }
 
@@ -341,7 +340,6 @@ class MigrateDbCommand {
                                                encoding,
                                                false));
         configMap.putAll(loadConfigurationFile(fileSystem.getPath(CONFIG_FILE_NAME), encoding, false));
-
         return configMap;
     }
 
@@ -404,7 +402,7 @@ class MigrateDbCommand {
 
     /**
      * In some scenarios, attempting to read from STDIN may block forever when there is no data. In this case we want
-     * the application to terminate instead of haning forever.
+     * the application to terminate instead of waiting forever.
      */
     private Reader waitForStdin() throws ExecutionException, InterruptedException {
         var exec = Executors.newSingleThreadExecutor((r) -> {
@@ -452,11 +450,8 @@ class MigrateDbCommand {
 
     private Map<String, String> overrideConfiguration(Map<String, String> existingConfiguration,
                                                       Map<String, String> newConfiguration) {
-        Map<String, String> combinedConfiguration = new HashMap<>();
-
-        combinedConfiguration.putAll(existingConfiguration);
+        Map<String, String> combinedConfiguration = new HashMap<>(existingConfiguration);
         combinedConfiguration.putAll(newConfiguration);
-
         return combinedConfiguration;
     }
 
@@ -524,7 +519,6 @@ class MigrateDbCommand {
             printUsage();
             throw new MigrateDbException("Invalid operation");
         }
-
         return result;
     }
 
@@ -709,7 +703,7 @@ class MigrateDbCommand {
                               .collect(Collectors.toList())
                 );
             } catch (NotDirectoryException | NoSuchFileException e) {
-                LOG.warn("Directory for Java Migrations not found: " + dirName);
+                LOG.warn("Directory for Java migrations not found: " + dirName);
             }
         }
         return jarFiles;

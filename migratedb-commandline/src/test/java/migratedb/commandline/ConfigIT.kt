@@ -25,6 +25,9 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEqualIgnoringCase
 import migratedb.commandline.testing.CommandLineTest
 import migratedb.commandline.testing.Dsl
+import migratedb.commandline.testing.TestMigrationsJar
+import migratedb.commandline.testing.migration.V1__First_Migration
+import migratedb.commandline.testing.migration.V2__Second_Migration
 import migratedb.core.api.configuration.PropertyNames
 import migratedb.core.api.output.BaselineResult
 import migratedb.core.internal.configuration.ConfigUtils
@@ -58,12 +61,12 @@ class ConfigIT : CommandLineTest() {
     fun `Default migrations directory is being scanned for sql files`() = withCommandLine {
         defaultMigrationsDir.shouldBeADirectory()
         defaultMigrationsDir.resolve("V1__First.sql")
-            .writeText("create table _first(id int)")
+            .writeText("create table _script1(id int)")
         defaultMigrationsDir.resolve("V2__Second.sql")
-            .writeText("create table _second(id int)")
+            .writeText("create table _script2(id int)")
         defaultMigrationsDir.resolve("subdir").resolve("V3__Third.sql").apply {
             parentFile.mkdirs()
-            writeText("create table _third(id int)")
+            writeText("create table _script3(id int)")
         }
         val dbUrl = "jdbc:h2:${installationDir.resolve("mydb.h2").absolutePath}"
         exec("-url=$dbUrl", "-user=sa", "-password=", "-validateMigrationNaming=true", "migrate").asClue {
@@ -75,7 +78,29 @@ class ConfigIT : CommandLineTest() {
                     | where s.table_schema = CURRENT_SCHEMA""".trimMargin()
                 ) { rs, _ -> rs.getString(1) }
                     .map(String::lowercase)
-                    .shouldContainAll("_first", "_second", "_third")
+                    .shouldContainAll("_script1", "_script2", "_script3")
+            }
+        }
+    }
+
+    @Test
+    fun `Default jars directory is being scanned for migration code`() = withCommandLine {
+        defaultJarsDir.shouldBeADirectory()
+        TestMigrationsJar.copyTo(defaultJarsDir.resolve("my-migrations.jar"))
+        val dbUrl = "jdbc:h2:${installationDir.resolve("mydb.h2").absolutePath}"
+        exec("-url=$dbUrl", "-user=sa", "-password=", "-locations=db/migration", "migrate").asClue {
+            it.exitCode.shouldBe(0)
+            withDatabase(dbUrl) { sql ->
+                sql.query(
+                    """select table_name 
+                    | from information_schema.tables s
+                    | where s.table_schema = CURRENT_SCHEMA""".trimMargin()
+                ) { rs, _ -> rs.getString(1) }
+                    .map(String::lowercase)
+                    .shouldContainAll(
+                        V1__First_Migration.CREATED_TABLE.lowercase(),
+                        V2__Second_Migration.CREATED_TABLE.lowercase()
+                    )
             }
         }
     }

@@ -55,7 +55,12 @@ public abstract class Location {
             var providerClass = locationString.substring(CustomLocation.PREFIX.length());
             return CustomLocation.fromClass(providerClass, classLoader);
         } else {
-            var packageName = locationString.substring(ClassPathLocation.PREFIX.length());
+            String packageName;
+            if (locationString.startsWith(ClassPathLocation.PREFIX)) {
+                packageName = locationString.substring(ClassPathLocation.PREFIX.length());
+            } else {
+                packageName = locationString;
+            }
             return new ClassPathLocation(packageName, classLoader);
         }
     }
@@ -148,6 +153,11 @@ public abstract class Location {
             var trimmed = StringUtils.trimChar(namePrefix, '/');
             this.namePrefix = trimmed.isEmpty() ? "" : trimmed + "/";
             this.classLoader = classLoader;
+
+            {
+                System.err.println("CLASS PATH LOCATION: " + namePrefix + " @ " + classLoader);
+            }
+
         }
 
         @Override
@@ -161,6 +171,7 @@ public abstract class Location {
                 private final List<Class<?>> classes = readLines(CLASS_LIST_RESOURCE_NAME)
                     .stream()
                     .map(it -> ClassUtils.loadClass(it, classLoader))
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toUnmodifiableList());
 
                 @Override

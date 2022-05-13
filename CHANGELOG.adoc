@@ -81,6 +81,7 @@ Extensions must be activated in configuration via useExtension().
 * 🔥 Gradle plugin(s) for executing migrations, etc. (just script it!).
 * 🔥 Explicit support for log4j2 (just use its SLF4 binding?).
 * 🔥 The "empty" migration version.
+* 🔥 Support for wildcards in `filesystem:` locations.
 
 === Fixed
 

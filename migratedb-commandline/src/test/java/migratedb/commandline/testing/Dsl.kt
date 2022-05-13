@@ -44,6 +44,7 @@ class Dsl : AutoCloseable {
     val installationDir = newInstallationDirectory()
     val configDir = installationDir.resolve("conf")
     val defaultMigrationsDir = installationDir.resolve("sql")
+    val defaultJarsDir = installationDir.resolve("jars")
     val driversInSpec
         get() = configDir.resolve("drivers.yaml").let { driversFile ->
             driversFile.inputStream().buffered().use { stream ->
