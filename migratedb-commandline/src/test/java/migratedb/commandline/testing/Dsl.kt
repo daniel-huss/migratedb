@@ -33,6 +33,7 @@ import org.jacoco.agent.AgentJar
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.InputStreamReader
+import java.io.OutputStream
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.io.path.appendBytes
@@ -57,8 +58,8 @@ class Dsl : AutoCloseable {
     private val jacocoDestFile = TFile(installationDir, "jacoco.exec", NULL)
     private val executable = installationDir.resolve("migratedb")
 
-    fun exec(vararg args: String) = exec(args.toList())
-    fun exec(args: List<String>): CliOutput {
+    fun exec(vararg args: String, stdin: (OutputStream) -> Unit = {}) = exec(args.toList(), stdin)
+    fun exec(args: List<String>, stdin: (OutputStream) -> Unit = {}): CliOutput {
         executable.setExecutable(true)
         val process = ProcessBuilder(listOf(executable.absolutePath) + args)
             .directory(installationDir)
@@ -67,10 +68,15 @@ class Dsl : AutoCloseable {
                         "destfile=${jacocoDestFile.absolutePath}"
             }.start()
         try {
+            Exec.async {
+                stdin(process.outputStream)
+                process.outputStream.flush()
+                process.outputStream.close()
+            }
             val stdErr = Exec.async { InputStreamReader(process.errorStream, Charsets.UTF_8).use { it.readLines() } }
             val stdOut = Exec.async { InputStreamReader(process.inputStream, Charsets.UTF_8).use { it.readLines() } }
             if (!process.waitFor(5, TimeUnit.MINUTES)) {
-                fail("$process seems to hang")
+                fail("$process seems to be frozen")
             }
             val exitCode = process.exitValue()
             return CliOutput(exitCode = exitCode, stdOut = stdOut(), stdErr = stdErr())

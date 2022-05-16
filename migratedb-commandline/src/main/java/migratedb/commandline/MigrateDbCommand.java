@@ -89,10 +89,10 @@ class MigrateDbCommand {
     private final PrintStream stderr;
     private final @Nullable InputStream stdin;
     private final Map<String, String> environment;
+    private final FileSystem fileSystem;
     private final Path installationDir;
     private final Path driversDir;
     private final Path configDir;
-    private final FileSystem fileSystem;
 
     private @MonotonicNonNull MigrateDb migrateDb;
 

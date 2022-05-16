@@ -26,7 +26,15 @@ abstract class Args private constructor(
     private val args: () -> Sequence<List<Any?>>
 ) : ArgumentsProvider {
 
+    enum class OneParam {
+        YES
+    }
+
     constructor(vararg args: List<Any?>) : this({ args.asSequence() })
+
+    @Suppress("UNUSED_PARAMETER")
+    constructor(functionHasOneParameter: OneParam, vararg args: Any?) : this({ args.asSequence().map { listOf(it) } })
+
 
     override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
         return args().asStream().map { Arguments.arguments(*it.toTypedArray()) }

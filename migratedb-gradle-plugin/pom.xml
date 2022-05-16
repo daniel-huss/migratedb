@@ -34,37 +34,11 @@
     </dependencies>
 
     <build>
-        <!-- Sources to show in code coverage report -->
-        <sourceDirectory>
-            ${project.build.directory}/generated-sources/gradle-import
-        </sourceDirectory>
         <!-- Unless we specify the output directory Jacoco won't find any classes to report coverage for. -->
         <outputDirectory>
             ${project.basedir}/migratedb-plugin/build/classes/java
         </outputDirectory>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.gmavenplus</groupId>
-                <artifactId>gmavenplus-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>import-gradle-sources</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <scripts>
-                                <script xml:space="preserve">
-                                    new AntBuilder().copy(todir: project.build.sourceDirectory) {
-                                        fileset(dir:new File(project.basedir as File, 'migratedb-plugin/src/main/java'))
-                                    }
-                                </script>
-                            </scripts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>

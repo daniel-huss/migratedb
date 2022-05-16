@@ -101,7 +101,7 @@
         <version.p6spy>3.9.1</version.p6spy>
         <version.slf4j>1.7.30</version.slf4j>
         <version.spring-jdbc>4.3.30.RELEASE</version.spring-jdbc>
-        <version.testcontainers>1.16.2</version.testcontainers>
+        <version.testcontainers>1.17.1</version.testcontainers>
         <version.jacoco>0.8.7</version.jacoco>
     </properties>
 

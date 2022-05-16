@@ -47,11 +47,14 @@ class SharedResources private constructor() : ExtensionContext.Store.CloseableRe
     fun <T : GenericContainer<*>> container(alias: String, setup: () -> T): Lease<T> {
         synchronized(lock) {
             checkNotClosed()
+            val logConsumer = getOrCreateLogConsumer(alias)
             return containerPool.lease(alias) {
+                // This code block might be called from a different thread and must not acquire any lock, otherwise
+                // deadlocks will occur, that's why the log consumer is built eagerly from the synchronized block.
                 setup().also {
                     it.withNetworkAliases(alias)
                     it.withNetwork(network)
-                    it.withLogConsumer(getOrCreateLogConsumer(alias))
+                    it.withLogConsumer(logConsumer)
                     it.start()
                 }
             }

@@ -21,6 +21,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldStartWith
 import migratedb.commandline.testing.CommandLineTest
 import migratedb.testing.util.base.Args
+import migratedb.testing.util.base.Args.OneParam.YES
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
 
@@ -36,7 +37,8 @@ class HelpIT : CommandLineTest() {
     }
 
     class HelpArgs : Args(
-        emptyList(),
+        functionHasOneParameter = YES,
+        emptyList<String>(),
         listOf("help"),
         listOf("--help")
     )

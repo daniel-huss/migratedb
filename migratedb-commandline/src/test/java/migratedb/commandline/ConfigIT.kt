@@ -95,6 +95,37 @@ class ConfigIT : CommandLineTest() {
         }
     }
 
+    @Test
+    fun `Can read config file from stdin`() = withCommandLine {
+        defaultJarsDir.shouldBeADirectory()
+        TestMigrationsJar.copyTo(defaultJarsDir.resolve("my-migrations.jar"))
+        val dbUrl = "jdbc:h2:${installationDir.resolve("mydb.h2").absolutePath}"
+        exec("-X", "-configFiles=-", "migrate") { stdin ->
+            stdin.writer().apply {
+                write(
+                    """
+                        migratedb.url=$dbUrl
+                        migratedb.user=sa
+                        migratedb.password=
+                        migratedb.locations=db/migration
+                """.trimIndent()
+                )
+                flush()
+            }
+        }.asClue {
+            it.exitCode.shouldBe(0)
+            withDatabase(dbUrl) { db ->
+                db.tablesInCurrentSchema()
+                    .map(String::lowercase)
+                    .shouldContainAll(
+                        V1__First_Migration.CREATED_TABLE.lowercase(),
+                        V2__Second_Migration.CREATED_TABLE.lowercase()
+                    )
+            }
+        }
+    }
+
+
     private val Dsl.defaultConfigFile get() = configDir.resolve("migratedb.conf")
     private fun Dsl.changeDefaultConfig(block: (MutableMap<String, String>) -> Unit) {
         val config = defaultConfigFile.reader().use {

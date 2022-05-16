@@ -44,6 +44,7 @@
             <groupId>de.unentscheidbar</groupId>
             <artifactId>migratedb-gradle-plugin</artifactId>
             <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>de.unentscheidbar</groupId>

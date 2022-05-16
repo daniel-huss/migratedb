@@ -29,7 +29,7 @@ import kotlin.concurrent.withLock
 class ContainerPool(private val size: Int) : AutoCloseable {
 
     init {
-        check(size > 0)
+        check(size > 3)
     }
 
     private class LeaseImpl<T : AutoCloseable>(val slot: Slot<T>) : Lease<T> {

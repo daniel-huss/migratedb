@@ -82,9 +82,15 @@ class SimpleCasesTest : AbstractMigrationInfoTest() {
         val allNames = allVersions.map { "V$it" }
         TestCase(
             availableMigrations = allNames.shuffled(Random(0)),
+            schemaHistory = {
+                allNames.take(5_000).forEach {
+                    entry(it, MigrationType.SQL, true)
+                }
+            },
             expectedAll = allNames,
             expectedResolved = allNames,
-            expectedPending = allNames
+            expectedPending = allNames.drop(5_000),
+            expectedApplied = allNames.take(5_000)
         )
     }
 }
