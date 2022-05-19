@@ -30,6 +30,16 @@ import migratedb.core.internal.info.BuildInfo;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 
 public class CommandResultFactory {
+    public static LiberateResult createLiberateResult(Configuration configuration,
+                                                      Database database,
+                                                      String schemaHistorySchema,
+                                                      String schemaHistoryTable) {
+        return new LiberateResult(BuildInfo.VERSION,
+                                  getDatabaseName(configuration, database),
+                                  schemaHistorySchema,
+                                  schemaHistoryTable);
+    }
+
     public static InfoResult createInfoResult(Configuration configuration,
                                               Database database,
                                               MigrationInfo[] migrationInfos,
@@ -58,7 +68,6 @@ public class CommandResultFactory {
 
     public static MigrateResult createMigrateResult(String databaseName, Configuration configuration) {
         String migratedbVersion = BuildInfo.VERSION;
-
         return new MigrateResult(migratedbVersion, databaseName, String.join(", ", configuration.getSchemas()));
     }
 

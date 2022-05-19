@@ -514,6 +514,8 @@ class MigrateDbCommand {
             result = info.getInfoResult();
         } else if ("repair".equals(operation)) {
             result = migrateDb.repair();
+        } else if ("liberate".equals(operation)) {
+            result = migrateDb.liberate();
         } else {
             LOG.error("Invalid operation: " + operation);
             printUsage();

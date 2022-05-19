@@ -45,6 +45,13 @@ public abstract class SchemaHistory {
     protected Table table;
 
     /**
+     * @return The schema history table.
+     */
+    public Table getTable() {
+        return table;
+    }
+
+    /**
      * Acquires an exclusive read-write lock on the schema history table. This lock will be released automatically upon
      * completion.
      *

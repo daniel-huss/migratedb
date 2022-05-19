@@ -50,10 +50,34 @@ import migratedb.core.internal.util.LocationScanner;
 final class MigrateDbExecutor {
     private static final Log LOG = Log.getLog(MigrateDbExecutor.class);
 
+    static final class CommandContext {
+        public final MigrationResolver migrationResolver;
+        public final SchemaHistory schemaHistory;
+        public final Database database;
+        public final Schema defaultSchema;
+        public final Schema[] schemas;
+        public final CallbackExecutor callbackExecutor;
+        public final StatementInterceptor statementInterceptor;
+
+        CommandContext(MigrationResolver migrationResolver,
+                       SchemaHistory schemaHistory,
+                       Database database,
+                       Schema defaultSchema,
+                       Schema[] schemas,
+                       CallbackExecutor callbackExecutor,
+                       StatementInterceptor statementInterceptor) {
+            this.migrationResolver = migrationResolver;
+            this.schemaHistory = schemaHistory;
+            this.database = database;
+            this.defaultSchema = defaultSchema;
+            this.schemas = schemas;
+            this.callbackExecutor = callbackExecutor;
+            this.statementInterceptor = statementInterceptor;
+        }
+    }
+
     interface Command<T> {
-        T execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory, Database database,
-                  Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
-                  StatementInterceptor statementInterceptor);
+        T execute(CommandContext context);
     }
 
     /**
@@ -98,7 +122,7 @@ final class MigrateDbExecutor {
 
         configurationValidator.validate(configuration);
 
-        StatementInterceptor statementInterceptor = null; //TODO implement?
+        StatementInterceptor statementInterceptor = StatementInterceptor.doNothing(); //TODO implement?
 
         var resourceProviderClassProviders = createResourceAndClassProviders(scannerRequired);
         ResourceProvider resourceProvider = resourceProviderClassProviders.resourceProvider;
@@ -171,7 +195,7 @@ final class MigrateDbExecutor {
                 schemas.defaultSchema,
                 statementInterceptor);
 
-            result = command.execute(
+            var commandContext = new CommandContext(
                 createMigrationResolver(resourceProvider,
                                         classProvider,
                                         sqlScriptExecutorFactory,
@@ -182,7 +206,10 @@ final class MigrateDbExecutor {
                 schemas.defaultSchema,
                 schemas.all.toArray(new Schema[0]),
                 callbackExecutor,
-                statementInterceptor);
+                statementInterceptor
+            );
+
+            result = command.execute(commandContext);
         } finally {
             showMemoryUsage();
         }
@@ -200,8 +227,7 @@ final class MigrateDbExecutor {
         }
     }
 
-    private ResourceAndClassProviders createResourceAndClassProviders(
-        boolean scannerRequired) {
+    private ResourceAndClassProviders createResourceAndClassProviders(boolean scannerRequired) {
         ResourceProvider resourceProvider;
         ClassProvider<JavaMigration> classProvider;
         if (!scannerRequired && configuration.isSkipDefaultResolvers() && configuration.isSkipDefaultCallbacks()) {

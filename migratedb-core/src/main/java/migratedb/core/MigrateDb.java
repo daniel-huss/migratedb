@@ -28,10 +28,10 @@ import migratedb.core.api.exception.MigrateDbValidateException;
 import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.output.BaselineResult;
 import migratedb.core.api.output.CleanResult;
+import migratedb.core.api.output.LiberateResult;
 import migratedb.core.api.output.MigrateResult;
 import migratedb.core.api.output.RepairResult;
 import migratedb.core.api.output.ValidateResult;
@@ -39,6 +39,7 @@ import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.command.DbBaseline;
 import migratedb.core.internal.command.DbClean;
 import migratedb.core.internal.command.DbInfo;
+import migratedb.core.internal.command.DbLiberate;
 import migratedb.core.internal.command.DbMigrate;
 import migratedb.core.internal.command.DbRepair;
 import migratedb.core.internal.command.DbSchemas;
@@ -64,7 +65,7 @@ public class MigrateDb {
     private static final Log LOG = Log.getLog(MigrateDb.class);
 
     private final ClassicConfiguration configuration;
-    private final MigrateDbExecutor migratedbExecutor;
+    private final MigrateDbExecutor executor;
 
     /**
      * This is your starting point. This creates a configuration which can be customized to your needs before being
@@ -104,7 +105,7 @@ public class MigrateDb {
      */
     public MigrateDb(Configuration configuration) {
         this.configuration = new ClassicConfiguration(configuration);
-        this.migratedbExecutor = new MigrateDbExecutor(configuration);
+        this.executor = new MigrateDbExecutor(configuration);
     }
 
     /**
@@ -112,6 +113,14 @@ public class MigrateDb {
      */
     public Configuration getConfiguration() {
         return new ClassicConfiguration(configuration);
+    }
+
+    public LiberateResult liberate() {
+        return executor.execute(context -> new DbLiberate(context.schemaHistory,
+                                                          configuration,
+                                                          context.database,
+                                                          context.schemas).liberate(),
+                                false);
     }
 
     /**
@@ -123,74 +132,71 @@ public class MigrateDb {
      *
      * @throws MigrateDbException when the migration failed.
      */
-    public MigrateResult migrate() throws MigrateDbException {
-        return migratedbExecutor.execute(new MigrateDbExecutor.Command<MigrateResult>() {
-            @Override
-            public MigrateResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                         Database database,
-                                         Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
-                                         StatementInterceptor statementInterceptor) {
-                if (configuration.isValidateOnMigrate()) {
-                    ValidateResult validateResult = doValidate(database,
-                                                               migrationResolver,
-                                                               schemaHistory,
-                                                               defaultSchema,
-                                                               schemas,
-                                                               callbackExecutor,
-                                                               true);
-                    if (!validateResult.validationSuccessful && !configuration.isCleanOnValidationError()) {
-                        throw new MigrateDbValidateException(validateResult.errorDetails,
-                                                             validateResult.getAllErrorMessages());
-                    }
+    public MigrateResult migrate() {
+        return executor.execute(context -> {
+            if (configuration.isValidateOnMigrate()) {
+                ValidateResult validateResult = doValidate(context.database,
+                                                           context.migrationResolver,
+                                                           context.schemaHistory,
+                                                           context.defaultSchema,
+                                                           context.schemas,
+                                                           context.callbackExecutor,
+                                                           true);
+                if (!validateResult.validationSuccessful && !configuration.isCleanOnValidationError()) {
+                    throw new MigrateDbValidateException(validateResult.errorDetails,
+                                                         validateResult.getAllErrorMessages());
                 }
-
-                if (!schemaHistory.exists()) {
-                    List<Schema> nonEmptySchemas = new ArrayList<>();
-                    for (Schema schema : schemas) {
-                        if (schema.exists() && !schema.empty()) {
-                            nonEmptySchemas.add(schema);
-                        }
-                    }
-
-                    if (!nonEmptySchemas.isEmpty() && !configuration.isSkipExecutingMigrations()) {
-                        if (configuration.isBaselineOnMigrate()) {
-                            doBaseline(schemaHistory, callbackExecutor, database);
-                        } else {
-                            // Second check for MySQL which is sometimes flaky otherwise
-                            if (!schemaHistory.exists()) {
-                                throw new MigrateDbException("Found non-empty schema(s) " +
-                                                             StringUtils.collectionToCommaDelimitedString(
-                                                                 nonEmptySchemas) +
-                                                             " but no schema history table. Use baseline()" +
-                                                             " or set baselineOnMigrate to true to initialize the " +
-                                                             "schema history table.");
-                            }
-                        }
-                    } else {
-                        if (configuration.getCreateSchemas()) {
-                            new DbSchemas(database, schemas, schemaHistory, callbackExecutor).create(false);
-                        } else if (!defaultSchema.exists()) {
-                            LOG.warn("The configuration option 'createSchemas' is false.\n" +
-                                     "However, the schema history table still needs a schema to reside in.\n" +
-                                     "You must manually create a schema for the schema history table to reside in.\n" +
-                                     "See " + WebsiteLinks.CREATE_SCHEMAS);
-                        }
-
-                        schemaHistory.create(false);
-                    }
-                }
-
-                MigrateResult result = new DbMigrate(database,
-                                                     schemaHistory,
-                                                     defaultSchema,
-                                                     migrationResolver,
-                                                     configuration,
-                                                     callbackExecutor).migrate();
-
-                callbackExecutor.onOperationFinishEvent(Event.AFTER_MIGRATE_OPERATION_FINISH, result);
-
-                return result;
             }
+
+            if (!context.schemaHistory.exists()) {
+                List<Schema> nonEmptySchemas = new ArrayList<>();
+                for (Schema schema : context.schemas) {
+                    if (schema.exists() && !schema.empty()) {
+                        nonEmptySchemas.add(schema);
+                    }
+                }
+
+                if (!nonEmptySchemas.isEmpty() && !configuration.isSkipExecutingMigrations()) {
+                    if (configuration.isBaselineOnMigrate()) {
+                        doBaseline(context.schemaHistory, context.callbackExecutor, context.database);
+                    } else {
+                        // Second check for MySQL which is sometimes flaky otherwise
+                        if (!context.schemaHistory.exists()) {
+                            throw new MigrateDbException("Found non-empty schema(s) " +
+                                                         StringUtils.collectionToCommaDelimitedString(
+                                                             nonEmptySchemas) +
+                                                         " but no schema history table. Use baseline()" +
+                                                         " or set baselineOnMigrate to true to initialize the " +
+                                                         "schema history table.");
+                        }
+                    }
+                } else {
+                    if (configuration.getCreateSchemas()) {
+                        new DbSchemas(context.database,
+                                      context.schemas,
+                                      context.schemaHistory,
+                                      context.callbackExecutor).create(false);
+                    } else if (!context.defaultSchema.exists()) {
+                        LOG.warn("The configuration option 'createSchemas' is false.\n" +
+                                 "However, the schema history table still needs a schema to reside in.\n" +
+                                 "You must manually create a schema for the schema history table to reside in.\n" +
+                                 "See " + WebsiteLinks.CREATE_SCHEMAS);
+                    }
+
+                    context.schemaHistory.create(false);
+                }
+            }
+
+            MigrateResult result = new DbMigrate(context.database,
+                                                 context.schemaHistory,
+                                                 context.defaultSchema,
+                                                 context.migrationResolver,
+                                                 configuration,
+                                                 context.callbackExecutor).migrate();
+
+            context.callbackExecutor.onOperationFinishEvent(Event.AFTER_MIGRATE_OPERATION_FINISH, result);
+
+            return result;
         }, true);
     }
 
@@ -204,25 +210,18 @@ public class MigrateDb {
      * @throws MigrateDbException when the info retrieval failed.
      */
     public MigrationInfoService info() {
-        return migratedbExecutor.execute(new MigrateDbExecutor.Command<MigrationInfoService>() {
-            @Override
-            public MigrationInfoService execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                                Database database,
-                                                Schema defaultSchema, Schema[] schemas,
-                                                CallbackExecutor callbackExecutor,
-                                                StatementInterceptor statementInterceptor) {
-                MigrationInfoService migrationInfoService = new DbInfo(migrationResolver,
-                                                                       schemaHistory,
-                                                                       configuration,
-                                                                       database,
-                                                                       callbackExecutor,
-                                                                       schemas).info();
+        return executor.execute(context -> {
+            MigrationInfoService migrationInfoService = new DbInfo(context.migrationResolver,
+                                                                   context.schemaHistory,
+                                                                   configuration,
+                                                                   context.database,
+                                                                   context.callbackExecutor,
+                                                                   context.schemas).info();
 
-                callbackExecutor.onOperationFinishEvent(Event.AFTER_INFO_OPERATION_FINISH,
-                                                        migrationInfoService.getInfoResult());
+            context.callbackExecutor.onOperationFinishEvent(Event.AFTER_INFO_OPERATION_FINISH,
+                                                            migrationInfoService.getInfoResult());
 
-                return migrationInfoService;
-            }
+            return migrationInfoService;
         }, true);
     }
 
@@ -236,18 +235,16 @@ public class MigrateDb {
      * @throws MigrateDbException when the clean fails.
      */
     public CleanResult clean() {
-        return migratedbExecutor.execute(new MigrateDbExecutor.Command<CleanResult>() {
-            @Override
-            public CleanResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                       Database database,
-                                       Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
-                                       StatementInterceptor statementInterceptor) {
-                CleanResult cleanResult = doClean(database, schemaHistory, defaultSchema, schemas, callbackExecutor);
+        return executor.execute(context -> {
+            CleanResult cleanResult = doClean(context.database,
+                                              context.schemaHistory,
+                                              context.defaultSchema,
+                                              context.schemas,
+                                              context.callbackExecutor);
 
-                callbackExecutor.onOperationFinishEvent(Event.AFTER_CLEAN_OPERATION_FINISH, cleanResult);
+            context.callbackExecutor.onOperationFinishEvent(Event.AFTER_CLEAN_OPERATION_FINISH, cleanResult);
 
-                return cleanResult;
-            }
+            return cleanResult;
         }, false);
     }
 
@@ -266,28 +263,23 @@ public class MigrateDb {
      * @throws MigrateDbException when the validation failed.
      */
     public void validate() throws MigrateDbException {
-        migratedbExecutor.execute(new MigrateDbExecutor.Command<Void>() {
-            @Override
-            public Void execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory, Database database,
-                                Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
-                                StatementInterceptor statementInterceptor) {
-                ValidateResult validateResult = doValidate(database,
-                                                           migrationResolver,
-                                                           schemaHistory,
-                                                           defaultSchema,
-                                                           schemas,
-                                                           callbackExecutor,
-                                                           configuration.isIgnorePendingMigrations());
+        executor.<Void>execute(context -> {
+            ValidateResult validateResult = doValidate(context.database,
+                                                       context.migrationResolver,
+                                                       context.schemaHistory,
+                                                       context.defaultSchema,
+                                                       context.schemas,
+                                                       context.callbackExecutor,
+                                                       configuration.isIgnorePendingMigrations());
 
-                callbackExecutor.onOperationFinishEvent(Event.AFTER_VALIDATE_OPERATION_FINISH, validateResult);
+            context.callbackExecutor.onOperationFinishEvent(Event.AFTER_VALIDATE_OPERATION_FINISH, validateResult);
 
-                if (!validateResult.validationSuccessful && !configuration.isCleanOnValidationError()) {
-                    throw new MigrateDbValidateException(validateResult.errorDetails,
-                                                         validateResult.getAllErrorMessages());
-                }
-
-                return null;
+            if (!validateResult.validationSuccessful && !configuration.isCleanOnValidationError()) {
+                throw new MigrateDbValidateException(validateResult.errorDetails,
+                                                     validateResult.getAllErrorMessages());
             }
+
+            return null;
         }, true);
     }
 
@@ -307,24 +299,18 @@ public class MigrateDb {
      * @returns An object summarising the validation results
      */
     public ValidateResult validateWithResult() throws MigrateDbException {
-        return migratedbExecutor.execute(new MigrateDbExecutor.Command<ValidateResult>() {
-            @Override
-            public ValidateResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                          Database database,
-                                          Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
-                                          StatementInterceptor statementInterceptor) {
-                ValidateResult validateResult = doValidate(database,
-                                                           migrationResolver,
-                                                           schemaHistory,
-                                                           defaultSchema,
-                                                           schemas,
-                                                           callbackExecutor,
-                                                           configuration.isIgnorePendingMigrations());
+        return executor.execute(context -> {
+            ValidateResult validateResult = doValidate(context.database,
+                                                       context.migrationResolver,
+                                                       context.schemaHistory,
+                                                       context.defaultSchema,
+                                                       context.schemas,
+                                                       context.callbackExecutor,
+                                                       configuration.isIgnorePendingMigrations());
 
-                callbackExecutor.onOperationFinishEvent(Event.AFTER_VALIDATE_OPERATION_FINISH, validateResult);
+            context.callbackExecutor.onOperationFinishEvent(Event.AFTER_VALIDATE_OPERATION_FINISH, validateResult);
 
-                return validateResult;
-            }
+            return validateResult;
         }, true);
     }
 
@@ -338,28 +324,27 @@ public class MigrateDb {
      * @throws MigrateDbException when the schema baselining failed.
      */
     public BaselineResult baseline() throws MigrateDbException {
-        return migratedbExecutor.execute(new MigrateDbExecutor.Command<BaselineResult>() {
-            @Override
-            public BaselineResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                          Database database,
-                                          Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
-                                          StatementInterceptor statementInterceptor) {
-                if (configuration.getCreateSchemas()) {
-                    new DbSchemas(database, schemas, schemaHistory, callbackExecutor).create(true);
-                } else {
-                    LOG.warn("The configuration option 'createSchemas' is false.\n" +
-                             "Even though MigrateDb is configured not to create any schemas, the schema history table" +
-                             " still needs a schema to reside in.\n" +
-                             "You must manually create a schema for the schema history table to reside in.\n" + "See " +
-                             WebsiteLinks.CREATE_SCHEMAS);
-                }
-
-                BaselineResult baselineResult = doBaseline(schemaHistory, callbackExecutor, database);
-
-                callbackExecutor.onOperationFinishEvent(Event.AFTER_BASELINE_OPERATION_FINISH, baselineResult);
-
-                return baselineResult;
+        return executor.execute(context -> {
+            if (configuration.getCreateSchemas()) {
+                new DbSchemas(context.database,
+                              context.schemas,
+                              context.schemaHistory,
+                              context.callbackExecutor).create(true);
+            } else {
+                LOG.warn("The configuration option 'createSchemas' is false.\n" +
+                         "Even though MigrateDb is configured not to create any schemas, the schema history table" +
+                         " still needs a schema to reside in.\n" +
+                         "You must manually create a schema for the schema history table to reside in.\n" + "See " +
+                         WebsiteLinks.CREATE_SCHEMAS);
             }
+
+            BaselineResult baselineResult = doBaseline(context.schemaHistory,
+                                                       context.callbackExecutor,
+                                                       context.database);
+
+            context.callbackExecutor.onOperationFinishEvent(Event.AFTER_BASELINE_OPERATION_FINISH, baselineResult);
+
+            return baselineResult;
         }, false);
     }
 
@@ -378,22 +363,16 @@ public class MigrateDb {
      * @throws MigrateDbException when the schema history table repair failed.
      */
     public RepairResult repair() throws MigrateDbException {
-        return migratedbExecutor.execute(new MigrateDbExecutor.Command<RepairResult>() {
-            @Override
-            public RepairResult execute(MigrationResolver migrationResolver, SchemaHistory schemaHistory,
-                                        Database database,
-                                        Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
-                                        StatementInterceptor statementInterceptor) {
-                RepairResult repairResult = new DbRepair(database,
-                                                         migrationResolver,
-                                                         schemaHistory,
-                                                         callbackExecutor,
-                                                         configuration).repair();
+        return executor.execute(context -> {
+            RepairResult repairResult = new DbRepair(context.database,
+                                                     context.migrationResolver,
+                                                     context.schemaHistory,
+                                                     context.callbackExecutor,
+                                                     configuration).repair();
 
-                callbackExecutor.onOperationFinishEvent(Event.AFTER_REPAIR_OPERATION_FINISH, repairResult);
+            context.callbackExecutor.onOperationFinishEvent(Event.AFTER_REPAIR_OPERATION_FINISH, repairResult);
 
-                return repairResult;
-            }
+            return repairResult;
         }, true);
     }
 
