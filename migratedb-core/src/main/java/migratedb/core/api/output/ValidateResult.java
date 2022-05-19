@@ -47,9 +47,9 @@ public class ValidateResult extends OperationResult {
         this.validationSuccessful = validationSuccessful;
         this.validateCount = validateCount;
         this.invalidMigrations = invalidMigrations;
-        this.warnings.addAll(warnings);
         this.validationError = validationError;
         this.operation = "validate";
+        warnings.forEach(this::addWarning);
     }
 
     /**

@@ -182,7 +182,7 @@ final class MigrationInfoImpl implements MigrationInfo {
 
         if ((resolvedMigration == null)) {
             assert appliedMigration != null;
-            if (!appliedMigration.getType().isSynthetic()
+            if (!appliedMigration.getType().isExclusiveToAppliedMigrations()
 
                 && (MigrationState.SUPERSEDED != state)
                 && (!validationContext.allows(ValidationMatch.MISSING) ||

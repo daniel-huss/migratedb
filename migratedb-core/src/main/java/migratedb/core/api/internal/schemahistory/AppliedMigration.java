@@ -28,7 +28,7 @@ import migratedb.core.api.Version;
  * Its natural ordering is inconsistent with equals().
  */
 public final class AppliedMigration implements Comparable<AppliedMigration> {
-    // TODO natural ordering should be consistent with equals()
+    // TODO This is not a value type, so it does not need a natural ordering
 
     /**
      * The order in which this migration was applied amongst all others. (For out of order detection)
@@ -225,6 +225,8 @@ public final class AppliedMigration implements Comparable<AppliedMigration> {
     }
 
     public boolean isExecutionOfRepeatableMigration() {
-        return !getType().isSynthetic() && getVersion() == null;
+        return getVersion() == null &&
+               !getType().equals(MigrationType.BASELINE) &&
+               !getType().equals(MigrationType.SCHEMA);
     }
 }

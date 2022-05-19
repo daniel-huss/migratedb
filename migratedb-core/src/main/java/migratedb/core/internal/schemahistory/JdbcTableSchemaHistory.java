@@ -339,7 +339,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         String description = resolvedMigration.getDescription();
         Integer checksum = resolvedMigration.getChecksum();
-        MigrationType type = appliedMigration.getType().isSynthetic()
+        MigrationType type = appliedMigration.getType().isExclusiveToAppliedMigrations()
                              ? appliedMigration.getType()
                              : resolvedMigration.getType();
 
@@ -387,16 +387,11 @@ class JdbcTableSchemaHistory extends SchemaHistory {
             appliedMigration.getChecksum() == null ? JdbcNullTypes.IntegerNull : appliedMigration.getChecksum();
 
         try {
-            jdbcTemplate.update(database.getInsertStatement(table),
-                                calculateInstalledRank(),
-                                versionObj,
-                                appliedMigration.getDescription(),
-                                "DELETED",
-                                appliedMigration.getScript(),
-                                checksumObj,
-                                database.getInstalledBy(),
-                                0,
-                                appliedMigration.isSuccess());
+            jdbcTemplate.update("UPDATE " + table
+                                + " SET "
+                                + database.quote("type") + "=? , "
+                                + " WHERE " + database.quote("installed_rank") + "=?",
+                                "DELETED", appliedMigration.getInstalledRank());
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to repair Schema History table " + table
                                             + " for version " + version, e);

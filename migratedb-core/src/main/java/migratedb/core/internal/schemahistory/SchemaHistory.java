@@ -65,13 +65,14 @@ public abstract class SchemaHistory {
     public abstract void create(boolean baseline);
 
     /**
-     * Checks whether the schema history table contains at least one non-synthetic applied migration.
+     * Checks whether the schema history table contains at least one applied migration, not counting markers for schema
+     * creation or baselining.
      *
      * @return {@code true} if it does, {@code false} if it doesn't.
      */
-    public final boolean hasNonSyntheticAppliedMigrations() {
+    public final boolean hasAppliedMigrations() {
         for (AppliedMigration appliedMigration : allAppliedMigrations()) {
-            if (!appliedMigration.getType().isSynthetic()
+            if (!appliedMigration.getType().isExclusiveToAppliedMigrations()
 
             ) {
                 return true;

@@ -163,19 +163,17 @@ public class DbRepair {
     private boolean markUnavailableMigrationsAsDeleted() {
         boolean removed = false;
         for (MigrationInfo migrationInfo : migrationInfoService.all()) {
-            if (migrationInfo.getType().isSynthetic()
-
-            ) {
+            if (migrationInfo.getType().isExclusiveToAppliedMigrations()) {
                 continue;
             }
 
             AppliedMigration applied = migrationInfo.getAppliedMigration();
             MigrationState state = migrationInfo.getState();
-            boolean isUnavailable = state.is(Category.MISSING) || state.is(Category.FUTURE);
+            boolean shouldDelete = state.is(Category.MISSING) && !state.is(Category.FUTURE);
             boolean isIgnoredByPattern = Arrays.stream(configuration.getIgnoreMigrationPatterns())
                                                .anyMatch(p -> p.matchesMigration(migrationInfo.getVersion() != null,
                                                                                  state));
-            if (isUnavailable && !isIgnoredByPattern) {
+            if (shouldDelete && !isIgnoredByPattern) {
                 schemaHistory.delete(applied);
                 removed = true;
                 repairResult.migrationsDeleted.add(CommandResultFactory.createRepairOutput(migrationInfo));
@@ -195,7 +193,7 @@ public class DbRepair {
             if (resolved != null
                 && resolved.getVersion() != null
                 && applied != null
-                && !applied.getType().isSynthetic()
+                && !applied.getType().isExclusiveToAppliedMigrations()
 
                 && migrationInfo.getState() != MigrationState.IGNORED
                 && updateNeeded(resolved, applied)) {
@@ -208,7 +206,7 @@ public class DbRepair {
             if (resolved != null
                 && resolved.getVersion() == null
                 && applied != null
-                && !applied.getType().isSynthetic()
+                && !applied.getType().isExclusiveToAppliedMigrations()
 
                 && migrationInfo.getState() != MigrationState.IGNORED
                 && resolved.checksumMatchesWithoutBeingIdentical(applied.getChecksum())) {

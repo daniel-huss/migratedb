@@ -59,6 +59,9 @@ Can be changed by application code via Log.setDefaultLogSystem().
 * Updated some driver versions that ship with the CLI artifact.
 * 🔥 CLI no longer bundles a whole JDK.
 * Un-deprecated ignoreXXXMigrations() configuration options.
+* 🔥 When the repair command marks migrations as deleted it no longer inserts an extra row into the schema history table.
+* 🔥 Future migrations are no longer (?) marked as deleted by the repair command.
+* 🔥 Some additional states of schema history corruption are now detected.
 * Converted README to Asciidoc.
 * Removed a compile-time dependency on Oracle JDBC driver classes from the core library.
 * Builds should now be reproducible.

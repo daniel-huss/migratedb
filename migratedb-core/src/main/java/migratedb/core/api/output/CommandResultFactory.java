@@ -163,7 +163,7 @@ public class CommandResultFactory {
     }
 
     private static String getCategory(MigrationInfo migrationInfo) {
-        if (migrationInfo.getType().isSynthetic()) {
+        if (migrationInfo.getType().isExclusiveToAppliedMigrations()) {
             return "";
         }
         if (migrationInfo.getVersion() == null) {

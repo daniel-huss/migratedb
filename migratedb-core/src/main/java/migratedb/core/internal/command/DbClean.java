@@ -105,7 +105,7 @@ public class DbClean {
             Schema schema = schemaList.get(i);
             if (!schema.exists()) {
                 String unknownSchemaWarning = "Unable to clean unknown schema: " + schema;
-                cleanResult.warnings.add(unknownSchemaWarning);
+                cleanResult.addWarning(unknownSchemaWarning);
                 LOG.warn(unknownSchemaWarning);
                 schemaList.remove(i);
             } else {

@@ -17,23 +17,78 @@
 package migratedb.integrationtest.info
 
 import migratedb.core.api.MigrationState.DELETED
+import migratedb.core.api.MigrationState.IGNORED
 import migratedb.core.api.MigrationType
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 class DeletionTest : AbstractMigrationInfoTest() {
-    @Test
-    fun `V1 deleted after being applied`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `R__A deleted after being applied`(appliedSuccessfully: Boolean) {
         TestCase(
             availableMigrations = listOf(),
             schemaHistory = {
-                entry("V1", MigrationType.SQL, true)
-                entry("V1", MigrationType.DELETED, true)
+                entry("R__A", MigrationType.DELETED, appliedSuccessfully)
             },
-            // Surprising, but the forked project didn't report deleted applied migrations here
+            expectedApplied = listOf("R__A"),
+            expectedCurrent = null,
+            expectedNext = null,
+            expectedState = mapOf(
+                "R__A" to DELETED
+            )
+        )
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `V1 deleted after being applied`(appliedSuccessfully: Boolean) {
+        TestCase(
+            availableMigrations = listOf("V1"),
+            schemaHistory = {
+                entry("V1", MigrationType.DELETED, appliedSuccessfully)
+            },
             expectedCurrent = null,
             expectedNext = null,
             expectedState = mapOf(
                 "V1" to DELETED
+            )
+        )
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `V1 deleted before being applied`(appliedSuccessfully: Boolean) {
+        // A deleted future migration should not lead to an exception although
+        // the repair commmand doesn't mark future migrations as deleted.
+        TestCase(
+            availableMigrations = listOf(),
+            schemaHistory = {
+                entry("V1", MigrationType.DELETED, appliedSuccessfully)
+            },
+            expectedCurrent = null,
+            expectedNext = null,
+            expectedState = mapOf(
+                "V1" to DELETED
+            )
+        )
+    }
+
+    @Test
+    fun `V1 deleted, V2 not deleted, V3 deleted`() {
+        TestCase(
+            availableMigrations = listOf("V1", "V2", "V3"),
+            schemaHistory = {
+                entry("V1", MigrationType.DELETED, true)
+                entry("V3", MigrationType.DELETED, false)
+            },
+            expectedCurrent = null,
+            expectedNext = null,
+            expectedState = mapOf(
+                "V1" to DELETED,
+                "V2" to IGNORED,
+                "V3" to DELETED
             )
         )
     }

@@ -204,7 +204,7 @@ public class DbMigrate {
                 String outOfOrderWarning =
                     "outOfOrder mode is active. Migration of schema " + schema + " may not be reproducible.";
                 LOG.warn(outOfOrderWarning);
-                migrateResult.warnings.add(outOfOrderWarning);
+                migrateResult.addWarning(outOfOrderWarning);
             }
         }
 
@@ -309,6 +309,8 @@ public class DbMigrate {
             }
         } catch (MigrateDbMigrateException e) {
             MigrationInfo migration = e.getMigration();
+            var resolvedMigration = migration.getResolvedMigration();
+            assert resolvedMigration != null;
             String failedMsg = "Migration of " + toMigrationText(migration, e.isOutOfOrder()) + " failed!";
             if (database.supportsDdlTransactions() && executeGroupInTransaction) {
                 LOG.error(failedMsg + " Changes successfully rolled back.");
@@ -321,7 +323,7 @@ public class DbMigrate {
                                                   migration.getDescription(),
                                                   migration.getType(),
                                                   migration.getScript(),
-                                                  migration.getResolvedMigration().getChecksum(),
+                                                  resolvedMigration.getChecksum(),
                                                   executionTime,
                                                   false);
             }
@@ -334,7 +336,8 @@ public class DbMigrate {
         boolean first = true;
 
         for (var entry : group.entrySet()) {
-            ResolvedMigration resolvedMigration = entry.getKey().getResolvedMigration();
+            var resolvedMigration = entry.getKey().getResolvedMigration();
+            assert resolvedMigration != null;
             boolean inTransaction = resolvedMigration.getExecutor().canExecuteInTransaction();
 
             if (first) {
@@ -375,14 +378,16 @@ public class DbMigrate {
         };
 
         for (var entry : group.entrySet()) {
-            MigrationInfo migration = entry.getKey();
+            var migrationInfo = entry.getKey();
+            var resolvedMigration = migrationInfo.getResolvedMigration();
+            assert resolvedMigration != null;
             boolean isOutOfOrder = entry.getValue();
 
-            String migrationText = toMigrationText(migration, isOutOfOrder);
+            String migrationText = toMigrationText(migrationInfo, isOutOfOrder);
 
             stopWatch.start();
 
-            if (isPreviousVersioned && migration.getVersion() == null) {
+            if (isPreviousVersioned && migrationInfo.getVersion() == null) {
                 callbackExecutor.onMigrateEvent(Event.AFTER_VERSIONED);
                 callbackExecutor.onMigrateEvent(Event.BEFORE_REPEATABLES);
                 isPreviousVersioned = false;
@@ -397,7 +402,7 @@ public class DbMigrate {
                 connectionUserObjects.changeCurrentSchemaTo(schema);
 
                 try {
-                    callbackExecutor.setMigrationInfo(migration);
+                    callbackExecutor.setMigrationInfo(migrationInfo);
                     callbackExecutor.onEachMigrateOrUndoEvent(Event.BEFORE_EACH_MIGRATE);
                     try {
                         LOG.info("Migrating " + migrationText);
@@ -408,18 +413,18 @@ public class DbMigrate {
                         if (database.useSingleConnection() && !isExecuteInTransaction) {
                             context.getConnection().setAutoCommit(true);
                         }
-                        migration.getResolvedMigration().getExecutor().execute(context);
+                        resolvedMigration.getExecutor().execute(context);
                         if (database.useSingleConnection() && !isExecuteInTransaction) {
                             context.getConnection().setAutoCommit(oldAutoCommit);
                         }
 
-                        appliedResolvedMigrations.add(migration.getResolvedMigration());
+                        appliedResolvedMigrations.add(resolvedMigration);
                     } catch (MigrateDbException e) {
                         callbackExecutor.onEachMigrateOrUndoEvent(Event.AFTER_EACH_MIGRATE_ERROR);
-                        throw new MigrateDbMigrateException(migration, isOutOfOrder, e);
+                        throw new MigrateDbMigrateException(migrationInfo, isOutOfOrder, e);
                     } catch (SQLException e) {
                         callbackExecutor.onEachMigrateOrUndoEvent(Event.AFTER_EACH_MIGRATE_ERROR);
-                        throw new MigrateDbMigrateException(migration, isOutOfOrder, e);
+                        throw new MigrateDbMigrateException(migrationInfo, isOutOfOrder, e);
                     }
 
                     LOG.debug("Successfully completed migration of " + migrationText);
@@ -432,20 +437,22 @@ public class DbMigrate {
             stopWatch.stop();
             int executionTime = (int) stopWatch.getTotalTimeMillis();
 
-            migrateResult.migrations.add(CommandResultFactory.createMigrateOutput(migration, executionTime));
+            migrateResult.migrations.add(CommandResultFactory.createMigrateOutput(migrationInfo, executionTime));
 
-            schemaHistory.addAppliedMigration(migration.getVersion(),
-                                              migration.getDescription(),
-                                              migration.getType(),
-                                              migration.getScript(),
-                                              migration.getResolvedMigration().getChecksum(),
+            schemaHistory.addAppliedMigration(migrationInfo.getVersion(),
+                                              migrationInfo.getDescription(),
+                                              migrationInfo.getType(),
+                                              migrationInfo.getScript(),
+                                              resolvedMigration.getChecksum(),
                                               executionTime,
                                               true);
         }
     }
 
     private String toMigrationText(MigrationInfo migration, boolean isOutOfOrder) {
-        MigrationExecutor migrationExecutor = migration.getResolvedMigration().getExecutor();
+        var resolvedMigration = migration.getResolvedMigration();
+        assert resolvedMigration != null;
+        MigrationExecutor migrationExecutor = resolvedMigration.getExecutor();
         String migrationText;
         if (migration.getVersion() != null) {
             migrationText = "schema " + schema + " to version " + doQuote(migration.getVersion()

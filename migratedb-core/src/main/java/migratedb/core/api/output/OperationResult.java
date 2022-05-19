@@ -26,6 +26,13 @@ import org.checkerframework.framework.qual.TypeUseLocation;
 public abstract class OperationResult {
     public String migratedbVersion;
     public String database;
-    public List<String> warnings = new LinkedList<>();
+    public List<String> warnings;
     public String operation;
+
+    public void addWarning(String warning) {
+        if (warnings == null) {
+            warnings = new LinkedList<>();
+        }
+        warnings.add(warning);
+    }
 }

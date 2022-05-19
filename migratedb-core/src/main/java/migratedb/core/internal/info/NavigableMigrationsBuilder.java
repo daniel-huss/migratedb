@@ -178,7 +178,6 @@ class NavigableMigrationsBuilder {
                            () -> allAppliedMigrationsInExecutionOrder
                                .stream()
                                .filter(it -> !MigrationType.SCHEMA.equals(it.getType()) &&
-                                             !MigrationType.DELETED.equals(it.getType()) &&
                                              !it.isExecutionOfRepeatableMigration())
                                .collect(toList()));
     }

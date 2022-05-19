@@ -27,7 +27,7 @@ public enum MigrationType {
      */
     BASELINE(true, false),
     /**
-     * Deletion marker inserted by the repair command when it finds missing/future migrations.
+     * A migration that has been deleted by the repair command.
      */
     DELETED(true, false),
     /**
@@ -47,11 +47,11 @@ public enum MigrationType {
      */
     JDBC_BASELINE(false, true);
 
-    private final boolean synthetic;
+    private final boolean isExclusiveToAppliedMigrations;
     private final boolean baselineMigration;
 
-    MigrationType(boolean synthetic, boolean baselineMigration) {
-        this.synthetic = synthetic;
+    MigrationType(boolean isExclusiveToAppliedMigrations, boolean baselineMigration) {
+        this.isExclusiveToAppliedMigrations = isExclusiveToAppliedMigrations;
         this.baselineMigration = baselineMigration;
     }
 
@@ -73,11 +73,11 @@ public enum MigrationType {
     }
 
     /**
-     * @return Whether this is a synthetic marker migration type, which is only ever present in the schema history
-     * table, but never discovered by migration resolvers.
+     * @return Whether this migration type is only ever present in the schema history table, but never discovered by
+     * migration resolvers.
      */
-    public boolean isSynthetic() {
-        return synthetic;
+    public boolean isExclusiveToAppliedMigrations() {
+        return isExclusiveToAppliedMigrations;
     }
 
     /**

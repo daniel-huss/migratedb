@@ -111,7 +111,7 @@ public class DbBaseline {
                                                      " with version 0 as this version was used for schema creation");
                     }
 
-                    if (schemaHistory.hasNonSyntheticAppliedMigrations()) {
+                    if (schemaHistory.hasAppliedMigrations()) {
                         throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
                                                      " as it already contains migrations");
                     }
