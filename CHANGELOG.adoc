@@ -83,11 +83,12 @@ If the deleted migration re-appears, another repair will un-delete it.
 Extensions must be activated in configuration via useExtension().
 * Dependencies on native libraries along with colored console output.
 * Telemetry via "update check".
-* 🔥 Maven plugin(s) for executing migrations, etc. (just script it!).
-* 🔥 Gradle plugin(s) for executing migrations, etc. (just script it!).
-* 🔥 Explicit support for log4j2 (just use its SLF4 binding?).
+* 🔥 Maven plugin(s) for executing migrations, etc. (just script it?).
+* 🔥 Gradle plugin(s) for executing migrations, etc. (just script it?).
+* 🔥 Explicit support for log4j2 (just use its SLF4J binding?).
 * 🔥 The "empty" migration version.
 * 🔥 Support for wildcards in `filesystem:` locations.
+* 🔥 InsertRowLock because of the deadlocks it caused.
 
 === Fixed
 

@@ -19,16 +19,22 @@ package migratedb.testing.util.base
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
+import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.isSubclassOf
 
 object Exec {
-    @PublishedApi
-    internal val executor: ExecutorService = Executors.newCachedThreadPool {
-        Thread(it).apply { isDaemon = true }
+    private val threadFactory = object : ThreadFactory {
+        private val delegate = Executors.defaultThreadFactory()
+        override fun newThread(r: Runnable) = delegate.newThread(r).also {
+            it.isDaemon = true
+        }
     }
+
+    @PublishedApi
+    internal val executor: ExecutorService = Executors.newCachedThreadPool(threadFactory)
 
     inline fun <reified T> async(waitOnClose: Boolean = false, noinline block: () -> T): CloseableFuture<T> {
         return CloseableFuture(waitOnClose, T::class.isSubclassOf(AutoCloseable::class), executor.submit(block))

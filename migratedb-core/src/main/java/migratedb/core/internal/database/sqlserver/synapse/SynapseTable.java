@@ -17,50 +17,27 @@
 package migratedb.core.internal.database.sqlserver.synapse;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.TimeZone;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.internal.database.InsertRowLock;
+import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.sqlserver.SQLServerDatabase;
 import migratedb.core.internal.database.sqlserver.SQLServerSchema;
 import migratedb.core.internal.database.sqlserver.SQLServerTable;
 
 public class SynapseTable extends SQLServerTable {
-    private final InsertRowLock insertRowLock;
+    private static final Log LOG = Log.getLog(SynapseTable.class);
 
     SynapseTable(JdbcTemplate jdbcTemplate, SQLServerDatabase database, String databaseName, SQLServerSchema schema,
                  String name) {
         super(jdbcTemplate, database, databaseName, schema, name);
-        this.insertRowLock = new InsertRowLock(jdbcTemplate, 10);
     }
 
     @Override
     protected void doLock() throws SQLException {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        Timestamp currentDateTime = new Timestamp(cal.getTime().getTime());
-
-        String updateLockStatement = "UPDATE " + this + " SET installed_on = '" + currentDateTime +
-                                     "' WHERE version = '?' AND description = 'migratedb-lock'";
-        String deleteExpiredLockStatement =
-            "DELETE FROM " + this + " WHERE description = 'migratedb-lock' AND installed_on < '?'";
-
-        if (lockDepth == 0) {
-            insertRowLock.doLock(database.getInsertStatement(this),
-                                 updateLockStatement,
-                                 deleteExpiredLockStatement,
-                                 database.getBooleanTrue());
-        }
+        LOG.debug("Unable to lock " + this + " as Synapse does not support locking. " +
+                  "No concurrent migration supported.");
     }
 
     @Override
-    protected void doUnlock() throws SQLException {
-        if (lockDepth == 1) {
-            insertRowLock.doUnlock(getDeleteLockTemplate());
-        }
-    }
-
-    private String getDeleteLockTemplate() {
-        return "DELETE FROM " + this + " WHERE version = '?' AND description = 'migratedb-lock'";
+    protected void doUnlock() {
     }
 }

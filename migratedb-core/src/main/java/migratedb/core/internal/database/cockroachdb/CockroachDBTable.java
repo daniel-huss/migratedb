@@ -19,22 +19,19 @@ package migratedb.core.internal.database.cockroachdb;
 import java.sql.SQLException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.internal.util.SqlCallable;
-import migratedb.core.internal.database.InsertRowLock;
+import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseTable;
 
 /**
  * CockroachDB-specific table.
  * <p>
- * Note that CockroachDB doesn't support table locks. We therefore use a row in the schema history as a lock indicator;
- * if another process has inserted such a row we wait (potentially indefinitely) for it to be removed before carrying
- * out a migration.
+ * Note that CockroachDB doesn't support table locks.
  */
 public class CockroachDBTable extends BaseTable<CockroachDBDatabase, CockroachDBSchema> {
-    private final InsertRowLock insertRowLock;
+    private static final Log LOG = Log.getLog(CockroachDBTable.class);
 
     CockroachDBTable(JdbcTemplate jdbcTemplate, CockroachDBDatabase database, CockroachDBSchema schema, String name) {
         super(jdbcTemplate, database, schema, name);
-        this.insertRowLock = new InsertRowLock(jdbcTemplate, 10);
     }
 
     @Override
@@ -86,29 +83,11 @@ public class CockroachDBTable extends BaseTable<CockroachDBDatabase, CockroachDB
 
     @Override
     protected void doLock() throws SQLException {
-        String updateLockStatement =
-            "UPDATE " + this + " SET installed_on = now() WHERE version = '?' AND DESCRIPTION = 'migratedb-lock'";
-        String deleteExpiredLockStatement =
-            " DELETE FROM " + this +
-            " WHERE DESCRIPTION = 'migratedb-lock'" +
-            " AND installed_on < TIMESTAMP '?'";
-
-        if (lockDepth == 0) {
-            insertRowLock.doLock(database.getInsertStatement(this),
-                                 updateLockStatement,
-                                 deleteExpiredLockStatement,
-                                 database.getBooleanTrue());
-        }
+        LOG.debug("Unable to lock " + this + " as CockroachDB does not support locking. " +
+                  "No concurrent migration supported.");
     }
 
     @Override
-    protected void doUnlock() throws SQLException {
-        if (lockDepth == 1) {
-            insertRowLock.doUnlock(getDeleteLockTemplate());
-        }
-    }
-
-    private String getDeleteLockTemplate() {
-        return "DELETE FROM " + this + " WHERE version = '?' AND DESCRIPTION = 'migratedb-lock'";
+    protected void doUnlock() {
     }
 }
