@@ -16,6 +16,7 @@
 package migratedb.core.internal.info;
 
 import java.time.Instant;
+import migratedb.core.api.Checksum;
 import migratedb.core.api.ErrorCode;
 import migratedb.core.api.ErrorDetails;
 import migratedb.core.api.MigrationInfo;
@@ -74,7 +75,7 @@ final class MigrationInfoImpl implements MigrationInfo {
     }
 
     @Override
-    public Integer getChecksum() {
+    public Checksum getChecksum() {
         if (appliedMigration != null) {
             return appliedMigration.getChecksum();
         }

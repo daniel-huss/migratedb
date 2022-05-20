@@ -17,15 +17,17 @@
 package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.Version
+import migratedb.core.api.configuration.Configuration
 import migratedb.core.api.migration.Context
 import migratedb.core.api.migration.JavaMigration
 import migratedb.core.internal.resolver.MigrationInfoHelper
+import migratedb.integrationtest.util.base.asChecksum
 import java.sql.Connection
 
 class SimpleJavaMigration(
     name: String,
     private val code: (Connection) -> Unit,
-    private val checksum: Int? = null
+    private val checksumAsInt: Int? = null
 ) : JavaMigration {
     private val version: Version?
     private val description: String
@@ -40,7 +42,9 @@ class SimpleJavaMigration(
 
     override fun getVersion(): Version? = version
     override fun getDescription(): String = description
-    override fun getChecksum(): Int? = checksum
+
+    override fun getChecksum(configuration: Configuration?) = checksumAsInt.asChecksum()
+
     override fun isBaselineMigration(): Boolean = prefix == "B"
     override fun canExecuteInTransaction() = true
     override fun migrate(context: Context) {

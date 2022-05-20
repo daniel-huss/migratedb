@@ -34,8 +34,11 @@ public class SnowflakeDatabase extends BaseDatabase<SnowflakeConnection> {
 
     /**
      * Whether quoted identifiers are treated in a case-insensitive way. Defaults to false. See
-     * https://docs.snowflake.com/en/sql-reference/identifiers-syntax
-     * .html#controlling-case-using-the-quoted-identifiers-ignore-case-parameter
+     *
+     * @formatter:off <a
+     * href="https://docs.snowflake.com/en/sql-reference/identifiers-syntax.html#controlling-case-using-the-quoted-identifiers-ignore-case-parameter">
+     * snowflake docs</a>
+     * @formatter:on
      */
     private final boolean quotedIdentifiersIgnoreCase;
 
@@ -86,7 +89,7 @@ public class SnowflakeDatabase extends BaseDatabase<SnowflakeConnection> {
                quote("description") + " VARCHAR(200),\n" +
                quote("type") + " VARCHAR(20) NOT NULL,\n" +
                quote("script") + " VARCHAR(1000) NOT NULL,\n" +
-               quote("checksum") + " NUMBER(38,0),\n" +
+               quote("checksum") + " VARCHAR(100,0),\n" +
                quote("installed_by") + " VARCHAR(100) NOT NULL,\n" +
                quote("installed_on") + " TIMESTAMP_LTZ(9) NOT NULL DEFAULT CURRENT_TIMESTAMP(),\n" +
                quote("execution_time") + " NUMBER(38,0) NOT NULL,\n" +

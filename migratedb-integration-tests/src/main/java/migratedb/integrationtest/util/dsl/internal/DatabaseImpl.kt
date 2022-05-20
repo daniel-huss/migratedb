@@ -30,6 +30,7 @@ import migratedb.core.internal.schemahistory.SchemaHistoryFactory
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
+import migratedb.integrationtest.util.base.asChecksum
 import migratedb.integrationtest.util.dsl.DatabaseSpec
 import migratedb.integrationtest.util.dsl.SchemaHistorySpec
 
@@ -122,27 +123,27 @@ class DatabaseImpl(
             )
 
             schemaHistory.create(false)
-            entries.forEach {
-                if (it.installedRank != null) {
+            entries.forEach { entry ->
+                if (entry.installedRank != null) {
                     schemaHistory.addAppliedMigration(
-                        it.installedRank,
-                        it.version,
-                        it.description,
-                        it.type,
+                        entry.installedRank,
+                        entry.version,
+                        entry.description,
+                        entry.type,
                         "n/a",
-                        it.checksum,
+                        entry.checksum.asChecksum(),
                         0,
-                        it.success
+                        entry.success
                     )
                 } else {
                     schemaHistory.addAppliedMigration(
-                        it.version,
-                        it.description,
-                        it.type,
+                        entry.version,
+                        entry.description,
+                        entry.type,
                         "n/a",
-                        it.checksum,
+                        entry.checksum.asChecksum(),
                         0,
-                        it.success
+                        entry.success
                     )
                 }
             }

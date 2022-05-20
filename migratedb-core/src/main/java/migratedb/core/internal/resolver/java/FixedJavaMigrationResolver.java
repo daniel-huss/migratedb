@@ -16,6 +16,8 @@
  */
 package migratedb.core.internal.resolver.java;
 
+import static migratedb.core.internal.resolver.java.JavaMigrationResolver.newResolvedJavaMigration;
+
 import java.util.ArrayList;
 import java.util.List;
 import migratedb.core.api.migration.JavaMigration;
@@ -47,7 +49,7 @@ public class FixedJavaMigrationResolver implements MigrationResolver {
         List<ResolvedMigration> migrations = new ArrayList<>();
 
         for (JavaMigration javaMigration : javaMigrations) {
-            migrations.add(new ResolvedJavaMigration(javaMigration));
+            migrations.add(newResolvedJavaMigration(javaMigration, context.getConfiguration()));
         }
 
         migrations.sort(new ResolvedMigrationComparator());

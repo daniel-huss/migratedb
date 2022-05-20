@@ -59,7 +59,7 @@ public class SybaseASEDatabase extends BaseDatabase<SybaseASEConnection> {
                "    description VARCHAR(200) NOT NULL,\n" +
                "    type VARCHAR(20) NOT NULL,\n" +
                "    script VARCHAR(1000) NOT NULL,\n" +
-               "    checksum INT NULL,\n" +
+               "    checksum VARCHAR(100) NULL,\n" +
                "    installed_by VARCHAR(100) NOT NULL,\n" +
                "    installed_on datetime DEFAULT getDate() NOT NULL,\n" +
                "    execution_time INT NOT NULL,\n" +

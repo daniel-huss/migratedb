@@ -19,12 +19,14 @@ package migratedb.core.internal.resolver.java;
 import java.util.ArrayList;
 import java.util.List;
 import migratedb.core.api.ClassProvider;
+import migratedb.core.api.MigrationType;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.resolver.ResolvedMigrationComparator;
+import migratedb.core.internal.resolver.ResolvedMigrationImpl;
 import migratedb.core.internal.util.ClassUtils;
 
 /**
@@ -32,24 +34,33 @@ import migratedb.core.internal.util.ClassUtils;
  */
 public class JavaMigrationResolver implements MigrationResolver {
     /**
+     * Creates a new ResolvedJavaMigration based on a {@link JavaMigration}.
+     */
+    public static ResolvedMigration newResolvedJavaMigration(JavaMigration javaMigration, Configuration configuration) {
+        return new ResolvedMigrationImpl(javaMigration.getVersion(),
+                                         javaMigration.getDescription(),
+                                         javaMigration.getClass().getName(),
+                                         javaMigration.getChecksum(configuration),
+                                         null,
+                                         javaMigration.isBaselineMigration() ? MigrationType.JDBC_BASELINE
+                                                                             : MigrationType.JDBC,
+                                         String.valueOf(ClassUtils.guessLocationOnDisk(javaMigration.getClass())),
+                                         new JavaMigrationExecutor(javaMigration)
+        );
+    }
+
+    /**
      * The Scanner to use.
      */
     private final ClassProvider<JavaMigration> classProvider;
 
     /**
-     * The configuration to inject (if necessary) in the migration classes.
-     */
-    private final Configuration configuration;
-
-    /**
      * Creates a new instance.
      *
      * @param classProvider The class provider.
-     * @param configuration The configuration to inject (if necessary) in the migration classes.
      */
-    public JavaMigrationResolver(ClassProvider<JavaMigration> classProvider, Configuration configuration) {
+    public JavaMigrationResolver(ClassProvider<JavaMigration> classProvider) {
         this.classProvider = classProvider;
-        this.configuration = configuration;
     }
 
     @Override
@@ -57,8 +68,9 @@ public class JavaMigrationResolver implements MigrationResolver {
         List<ResolvedMigration> migrations = new ArrayList<>();
 
         for (Class<?> clazz : classProvider.getClasses()) {
-            JavaMigration javaMigration = ClassUtils.instantiate(clazz.getName(), configuration.getClassLoader());
-            migrations.add(new ResolvedJavaMigration(javaMigration));
+            JavaMigration javaMigration = ClassUtils.instantiate(clazz.getName(),
+                                                                 context.getConfiguration().getClassLoader());
+            migrations.add(newResolvedJavaMigration(javaMigration, context.getConfiguration()));
         }
 
         migrations.sort(new ResolvedMigrationComparator());

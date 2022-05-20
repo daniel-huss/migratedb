@@ -16,6 +16,7 @@
  */
 package migratedb.core.api.resolver;
 
+import migratedb.core.api.Checksum;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.Version;
 import migratedb.core.api.executor.MigrationExecutor;
@@ -23,7 +24,7 @@ import migratedb.core.api.executor.MigrationExecutor;
 /**
  * Migration resolved through a MigrationResolver. Can be applied against a database.
  */
-public interface ResolvedMigration extends ChecksumMatcher {
+public interface ResolvedMigration {
     /**
      * @return The version of the database after applying this migration, {@code null} for repeatable migrations.
      */
@@ -48,9 +49,9 @@ public interface ResolvedMigration extends ChecksumMatcher {
     String getScript();
 
     /**
-     * @return The checksum of the migration. Optional. Can be {@code null} if not unique checksum is computable.
+     * @return The checksum of the migration. Optional. Can be {@code null} if no unique checksum is computable.
      */
-    Integer getChecksum();
+    Checksum getChecksum();
 
     /**
      * @return The type of migration (INIT, SQL, ...)
@@ -67,4 +68,6 @@ public interface ResolvedMigration extends ChecksumMatcher {
      * @return The executor to run this migration.
      */
     MigrationExecutor getExecutor();
+
+    boolean checksumMatches(Checksum checksum);
 }

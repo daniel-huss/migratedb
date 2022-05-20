@@ -97,7 +97,7 @@ public class SynapseDatabase extends SQLServerDatabase {
                "    [description] NVARCHAR(200),\n" +
                "    [type] NVARCHAR(20) NOT NULL,\n" +
                "    [script] NVARCHAR(1000) NOT NULL,\n" +
-               "    [checksum] INT,\n" +
+               "    [checksum] NVARCHAR(100),\n" +
                "    [installed_by] NVARCHAR(100) NOT NULL,\n" +
                "    [installed_on] DATETIME NOT NULL,\n" +
                "    [execution_time] INT NOT NULL,\n" +

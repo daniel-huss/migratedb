@@ -54,7 +54,7 @@ public class PostgreSQLDatabase extends BaseDatabase<PostgreSQLConnection> {
                "    \"description\" VARCHAR(200) NOT NULL,\n" +
                "    \"type\" VARCHAR(20) NOT NULL,\n" +
                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-               "    \"checksum\" INTEGER,\n" +
+               "    \"checksum\" VARCHAR(100),\n" +
                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
                "    \"installed_on\" TIMESTAMP NOT NULL DEFAULT now(),\n" +
                "    \"execution_time\" INTEGER NOT NULL,\n" +

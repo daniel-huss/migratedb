@@ -33,7 +33,7 @@ public class OracleDatabase extends BaseDatabase<OracleConnection> {
 
     /**
      * If the TNS_ADMIN environment variable is set, enable tnsnames.ora support for the Oracle JDBC driver. See
-     * http://www.orafaq.com/wiki/TNS_ADMIN
+     * <a href="http://www.orafaq.com/wiki/TNS_ADMIN">TNS ADMIN</a>
      */
     public static void enableTnsnamesOraSupport() {
         String tnsAdminEnvVar = System.getenv("TNS_ADMIN");
@@ -71,7 +71,7 @@ public class OracleDatabase extends BaseDatabase<OracleConnection> {
                "    \"description\" VARCHAR2(200) NOT NULL,\n" +
                "    \"type\" VARCHAR2(20) NOT NULL,\n" +
                "    \"script\" VARCHAR2(1000) NOT NULL,\n" +
-               "    \"checksum\" INT,\n" +
+               "    \"checksum\" VARCHAR(100),\n" +
                "    \"installed_by\" VARCHAR2(100) NOT NULL,\n" +
                "    \"installed_on\" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
                "    \"execution_time\" INT NOT NULL,\n" +

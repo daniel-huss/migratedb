@@ -49,7 +49,7 @@ public class BigQueryDatabase extends BaseDatabase<BigQueryConnection> {
                "    `description` STRING NOT NULL,\n" +
                "    `type` STRING NOT NULL,\n" +
                "    `script` STRING NOT NULL,\n" +
-               "    `checksum` INT64,\n" +
+               "    `checksum` STRING,\n" +
                "    `installed_by` STRING NOT NULL,\n" +
                "    `installed_on` TIMESTAMP,\n" + // BigQuery does not support default value
                "    `execution_time` INT64 NOT NULL,\n" +

@@ -20,7 +20,7 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 
 /**
- * A textual resource (such as a .sql file) used by MigrateDB .
+ * A textual resource (such as a .sql file) used by MigrateDB.
  */
 public interface Resource {
     /**

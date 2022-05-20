@@ -54,9 +54,9 @@ public interface MigrationInfo {
     MigrationType getType();
 
     /**
-     * @return The target version of this migration.
+     * @return The checksum of this migration.
      */
-    @Nullable Integer getChecksum();
+    @Nullable Checksum getChecksum();
 
     /**
      * @return The schema version after the migration is complete.

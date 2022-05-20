@@ -20,6 +20,7 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import migratedb.core.api.Checksum;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.callback.Event;
@@ -39,6 +40,7 @@ import migratedb.core.internal.resolver.ChecksumCalculator;
 import migratedb.core.internal.resolver.ResolvedMigrationComparator;
 import migratedb.core.internal.resolver.ResolvedMigrationImpl;
 import migratedb.core.internal.resource.ResourceNameParser;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Migration resolver for SQL file resources.
@@ -103,17 +105,17 @@ public class SqlMigrationResolver implements MigrationResolver {
         return list;
     }
 
-    private int getChecksumForResource(boolean repeatable, List<Resource> resources) {
+    private Checksum getChecksumForResource(boolean repeatable, List<Resource> resources) {
         if (repeatable && configuration.isPlaceholderReplacement()) {
-            return ChecksumCalculator.calculate(createPlaceholderReplacingResources(resources));
+            return ChecksumCalculator.calculate(createPlaceholderReplacingResources(resources), configuration);
         }
-        return ChecksumCalculator.calculate(resources);
+        return ChecksumCalculator.calculate(resources, configuration);
     }
 
-    private Integer getEquivalentChecksumForResource(boolean repeatable,
-                                                     List<Resource> resources) {
+    private @Nullable Checksum getEquivalentChecksumForResource(boolean repeatable,
+                                                                List<Resource> resources) {
         if (repeatable) {
-            return ChecksumCalculator.calculate(resources);
+            return ChecksumCalculator.calculate(resources, configuration);
         }
         return null;
     }
@@ -136,8 +138,8 @@ public class SqlMigrationResolver implements MigrationResolver {
             List<Resource> resources = new ArrayList<>();
             resources.add(resource);
 
-            Integer checksum = getChecksumForResource(repeatable, resources);
-            Integer equivalentChecksum = getEquivalentChecksumForResource(repeatable, resources);
+            var checksum = getChecksumForResource(repeatable, resources);
+            var equivalentChecksum = getEquivalentChecksumForResource(repeatable, resources);
 
             var isBaseline = filename.startsWith(configuration.getBaselineMigrationPrefix());
             migrations.add(new ResolvedMigrationImpl(

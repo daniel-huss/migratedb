@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
+import migratedb.core.api.Checksum;
 import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.Version;
@@ -31,6 +32,7 @@ import migratedb.core.api.output.RepairResult;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.util.AbbreviationUtils;
 import migratedb.core.internal.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * The schema history used to track all applied migrations.
@@ -133,8 +135,13 @@ public abstract class SchemaHistory {
      * @param schemas The schemas that were created by MigrateDb.
      */
     public final void addSchemasMarker(Schema[] schemas) {
-        addAppliedMigration(null, "<< MigrateDb Schema Creation >>",
-                            MigrationType.SCHEMA, StringUtils.arrayToCommaDelimitedString(schemas), null, 0, true);
+        addAppliedMigration(null,
+                            "<< MigrateDb Schema Creation >>",
+                            MigrationType.SCHEMA,
+                            StringUtils.arrayToCommaDelimitedString(schemas),
+                            null,
+                            0,
+                            true);
     }
 
     /**
@@ -191,8 +198,13 @@ public abstract class SchemaHistory {
      * @param executionTime The execution time (in millis) of this migration.
      * @param success       Flag indicating whether the migration was successful or not.
      */
-    public final void addAppliedMigration(Version version, String description, MigrationType type,
-                                          String script, Integer checksum, int executionTime, boolean success) {
+    public final void addAppliedMigration(Version version,
+                                          String description,
+                                          MigrationType type,
+                                          String script,
+                                          @Nullable Checksum checksum,
+                                          int executionTime,
+                                          boolean success) {
         int installedRank = type == MigrationType.SCHEMA ? 0 : calculateInstalledRank();
         addAppliedMigration(
             installedRank,
@@ -218,9 +230,14 @@ public abstract class SchemaHistory {
         return appliedMigrations.get(appliedMigrations.size() - 1).getInstalledRank() + 1;
     }
 
-    public abstract void addAppliedMigration(int installedRank, Version version, String description,
-                                             MigrationType type, String script, Integer checksum,
-                                             int executionTime, boolean success);
+    public abstract void addAppliedMigration(int installedRank,
+                                             Version version,
+                                             String description,
+                                             MigrationType type,
+                                             String script,
+                                             @Nullable Checksum checksum,
+                                             int executionTime,
+                                             boolean success);
 
     @Override
     public String toString() {

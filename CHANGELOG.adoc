@@ -28,6 +28,7 @@ Constructive feedback is very welcome!
 * Unit tests for most changed/refactored code, especially configuration-related stuff.
 * A few integration tests for databases where a docker container is publicly available.
 * Instead of re-distributing JDBC drivers, the command line tool can download them from Maven Central via the new download-drivers subcommand.
+* Command that converts an existing schema history table to MigrateDB.
 
 === Changed
 
@@ -60,8 +61,10 @@ Can be changed by application code via Log.setDefaultLogSystem().
 * 🔥 CLI no longer bundles a whole JDK.
 * Un-deprecated ignoreXXXMigrations() configuration options.
 * 🔥 When the repair command marks migrations as deleted it no longer inserts an extra row into the schema history table.
+If the deleted migration re-appears, another repair will un-delete it.
 * 🔥 Future migrations are no longer (?) marked as deleted by the repair command.
 * 🔥 Some additional states of schema history corruption are now detected.
+* 🔥 The checksum is now SHA256-based instead of a single integer.
 * Converted README to Asciidoc.
 * Removed a compile-time dependency on Oracle JDBC driver classes from the core library.
 * Builds should now be reproducible.

@@ -97,7 +97,7 @@ public class SpannerDatabase extends BaseDatabase<SpannerConnection> {
                "    description STRING(200) NOT NULL,\n" +
                "    type STRING(20) NOT NULL,\n" +
                "    script STRING(1000) NOT NULL,\n" +
-               "    checksum INT64,\n" +
+               "    checksum STRING(100),\n" +
                "    installed_by STRING(100) NOT NULL,\n" +
                "    installed_on TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),\n" +
                "    execution_time INT64 NOT NULL,\n" +

@@ -16,7 +16,11 @@
  */
 package migratedb.core.api.migration;
 
+import java.math.BigInteger;
+import migratedb.core.api.Checksum;
 import migratedb.core.api.Version;
+import migratedb.core.api.configuration.Configuration;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Interface to be implemented by Java-based Migrations.
@@ -41,7 +45,7 @@ public interface JavaMigration {
     /**
      * @return The version of the schema after the migration is complete. {@code null} for repeatable migrations.
      */
-    Version getVersion();
+    @Nullable Version getVersion();
 
     /**
      * @return The description of this migration for the migration history. Never {@code null}.
@@ -50,8 +54,23 @@ public interface JavaMigration {
 
     /**
      * @return The checksum of this migration.
+     *
+     * @deprecated Implement {@link #getChecksum(Configuration)} instead.
      */
-    Integer getChecksum();
+    @Deprecated(forRemoval = true)
+    default @Nullable Integer getChecksum() {
+        return null;
+    }
+
+    /**
+     * @return The checksum of this migration.
+     */
+    default @Nullable Checksum getChecksum(Configuration configuration) {
+        var oldChecksum = getChecksum();
+        return Checksum.builder()
+                       .addNumber(oldChecksum == null ? null : BigInteger.valueOf(oldChecksum))
+                       .build();
+    }
 
     /**
      * Whether this is a baseline migration.
@@ -61,9 +80,9 @@ public interface JavaMigration {
     boolean isBaselineMigration();
 
     /**
-     * Whether the execution should take place inside a transaction. Almost all implementations should return {@code
-     * true}. This however makes it possible to execute certain migrations outside a transaction. This is useful for
-     * databases like PostgreSQL and SQL Server where certain statement can only execute outside a transaction.
+     * Whether the execution should take place inside a transaction. Almost all implementations should return
+     * {@code true}. This however makes it possible to execute certain migrations outside a transaction. This is useful
+     * for databases like PostgreSQL and SQL Server where certain statement can only execute outside a transaction.
      *
      * @return {@code true} if a transaction should be used (highly recommended), or {@code false} if not.
      */

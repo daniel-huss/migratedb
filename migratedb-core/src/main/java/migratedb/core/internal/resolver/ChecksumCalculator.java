@@ -16,15 +16,13 @@
  */
 package migratedb.core.internal.resolver;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import migratedb.core.api.Checksum;
 import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.resource.Resource;
 
 public enum ChecksumCalculator {
@@ -35,32 +33,18 @@ public enum ChecksumCalculator {
      *
      * @return A checksum for the given resources.
      */
-    public static int calculate(List<Resource> resources) {
-        var digest = newMessageDigest();
-        for (var resource : resources) {
-            calculateChecksumForResource(resource, digest);
-        }
-        return ByteBuffer.wrap(digest.digest()).getInt(); // what a shame to only use the first 4 bytes...
-    }
-
-    private static MessageDigest newMessageDigest() {
-        try {
-            return MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException ignored) {
-            // Cannot happen, since every JVM supports MD5
-            throw new AssertionError();
-        }
-    }
-
-    private static void calculateChecksumForResource(Resource resource, MessageDigest digest) {
-        // Only ISO_8859_1 provides a mapping for each byte
-        try (var reader = new BufferedReader(resource.read(ISO_8859_1))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                digest.update(line.getBytes(ISO_8859_1));
+    public static Checksum calculate(Collection<Resource> resources, Configuration configuration) {
+        var sortedResources = new ArrayList<>(resources);
+        sortedResources.sort(Comparator.comparing(Resource::getName));
+        var builder = Checksum.builder();
+        for (var resource : sortedResources) {
+            try (var reader = resource.read(configuration.getEncoding())) {
+                builder.addLines(reader);
+            } catch (IOException e) {
+                throw new MigrateDbException(
+                    "Unable to calculate checksum of " + resource.getName() + "\n" + e.getMessage(), e);
             }
-        } catch (IOException e) {
-            throw new MigrateDbException("Unable to calculate checksum of " + resource.getName() + "\n" + e.getMessage(), e);
         }
+        return builder.build();
     }
 }

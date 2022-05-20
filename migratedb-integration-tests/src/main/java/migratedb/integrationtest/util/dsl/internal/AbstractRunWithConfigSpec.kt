@@ -34,7 +34,7 @@ abstract class AbstractRunWithConfigSpec(private val givenInfo: GivenInfo) : Run
             SimpleJavaMigration(
                 name = it,
                 code = givenInfo.databaseHandle.nextMutation(givenInfo.schemaName)::apply,
-                checksum = it.defaultChecksum()
+                checksumAsInt = it.defaultChecksum()
             )
         }.toTypedArray()
     }

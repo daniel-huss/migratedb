@@ -19,8 +19,10 @@ package migratedb.core.api.internal.schemahistory;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Objects;
+import migratedb.core.api.Checksum;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.Version;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A migration applied to the database (maps to a row in the schema history table).
@@ -58,7 +60,7 @@ public final class AppliedMigration implements Comparable<AppliedMigration> {
     /**
      * The checksum of the migration. (Optional)
      */
-    private final Integer checksum;
+    private final Checksum checksum;
 
     /**
      * The timestamp when this migration was installed.
@@ -100,7 +102,7 @@ public final class AppliedMigration implements Comparable<AppliedMigration> {
                             String description,
                             MigrationType type,
                             String script,
-                            Integer checksum,
+                            Checksum checksum,
                             Timestamp installedOn,
                             String installedBy,
                             int executionTime,
@@ -155,7 +157,7 @@ public final class AppliedMigration implements Comparable<AppliedMigration> {
     /**
      * @return The checksum of the migration. (Optional)
      */
-    public Integer getChecksum() {
+    public @Nullable Checksum getChecksum() {
         return checksum;
     }
 

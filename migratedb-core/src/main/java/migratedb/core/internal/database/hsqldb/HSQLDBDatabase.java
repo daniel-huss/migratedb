@@ -56,7 +56,7 @@ public class HSQLDBDatabase extends BaseDatabase<HSQLDBConnection> {
                "    \"description\" VARCHAR(200) NOT NULL,\n" +
                "    \"type\" VARCHAR(20) NOT NULL,\n" +
                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-               "    \"checksum\" INT,\n" +
+               "    \"checksum\" VARCHAR(100),\n" +
                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
                "    \"installed_on\" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
                "    \"execution_time\" INT NOT NULL,\n" +

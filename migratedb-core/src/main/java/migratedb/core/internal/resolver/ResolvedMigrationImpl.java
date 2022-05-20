@@ -17,6 +17,7 @@
 package migratedb.core.internal.resolver;
 
 import java.util.Objects;
+import migratedb.core.api.Checksum;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.Version;
 import migratedb.core.api.executor.MigrationExecutor;
@@ -27,15 +28,15 @@ import migratedb.core.api.resolver.ResolvedMigration;
  */
 public class ResolvedMigrationImpl implements ResolvedMigration {
     /**
-     * The name of the script to execute for this migration, relative to its classpath (?) location.
+     * The name of the script to execute for this migration.
      */
     private final String script;
     /**
      * The equivalent checksum of the migration. For versioned migrations, this is the same as the checksum. For
      * repeatable migrations, it is the checksum calculated prior to placeholder replacement.
      */
-    private final Integer equivalentChecksum;
-    private final Integer checksum;
+    private final Checksum equivalentChecksum;
+    private final Checksum checksum;
     private final Version version;
     private final String description;
     private final MigrationType type;
@@ -45,8 +46,8 @@ public class ResolvedMigrationImpl implements ResolvedMigration {
     public ResolvedMigrationImpl(Version version,
                                  String description,
                                  String script,
-                                 Integer checksum,
-                                 Integer equivalentChecksum,
+                                 Checksum checksum,
+                                 Checksum equivalentChecksum,
                                  MigrationType type,
                                  String locationDescription,
                                  MigrationExecutor executor) {
@@ -76,7 +77,7 @@ public class ResolvedMigrationImpl implements ResolvedMigration {
     }
 
     @Override
-    public Integer getChecksum() {
+    public Checksum getChecksum() {
         return checksum == null ? equivalentChecksum : checksum;
     }
 
@@ -127,15 +128,8 @@ public class ResolvedMigrationImpl implements ResolvedMigration {
     }
 
     @Override
-    public boolean checksumMatches(Integer checksum) {
+    public boolean checksumMatches(Checksum checksum) {
         return Objects.equals(checksum, this.checksum) ||
                (Objects.equals(checksum, equivalentChecksum) && equivalentChecksum != null);
-    }
-
-    @Override
-    public boolean checksumMatchesWithoutBeingIdentical(Integer checksum) {
-        // The checksum in the database matches the one calculated without replacement, but not the one with.
-        // That is, the script has placeholders and the checksum was originally calculated ignoring their values.
-        return Objects.equals(checksum, equivalentChecksum) && !Objects.equals(checksum, this.checksum);
     }
 }

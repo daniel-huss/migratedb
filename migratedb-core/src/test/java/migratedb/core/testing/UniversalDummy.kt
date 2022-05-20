@@ -57,10 +57,6 @@ class UniversalDummy : Callback,
         return "My Java Migration"
     }
 
-    override fun getChecksum(): Int {
-        return 1
-    }
-
     override fun isBaselineMigration(): Boolean {
         return false
     }

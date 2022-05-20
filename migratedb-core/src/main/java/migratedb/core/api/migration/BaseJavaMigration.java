@@ -86,11 +86,6 @@ public abstract class BaseJavaMigration implements JavaMigration {
     }
 
     @Override
-    public Integer getChecksum() {
-        return null;
-    }
-
-    @Override
     public final boolean isBaselineMigration() {
         return isBaseline;
     }

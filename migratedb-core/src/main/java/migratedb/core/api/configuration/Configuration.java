@@ -326,9 +326,9 @@ public interface Configuration {
     String[] getSchemas();
 
     /**
-     * Retrieves the encoding of Sql migrations.
+     * Retrieves the encoding of SQL migrations.
      *
-     * @return The encoding of Sql migrations. (default: UTF-8)
+     * @return The encoding of SQL migrations. (default: UTF-8)
      */
     Charset getEncoding();
 

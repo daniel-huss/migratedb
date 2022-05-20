@@ -38,7 +38,8 @@ public class H2Database extends BaseDatabase<H2Connection> {
     private static final String DUMMY_SCRIPT_NAME = "<< history table creation script >>";
 
     /**
-     * The compatibility modes supported by H2. See http://h2database.com/html/features.html#compatibility
+     * The compatibility modes supported by H2. See
+     * <a href="http://h2database.com/html/features.html#compatibility">H2 features</a>
      */
     private enum CompatibilityMode {
         REGULAR,
@@ -117,7 +118,7 @@ public class H2Database extends BaseDatabase<H2Connection> {
                "    \"description\" VARCHAR(200) NOT NULL,\n" +
                "    \"type\" VARCHAR(20) NOT NULL,\n" +
                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-               "    \"checksum\" INT,\n" +
+               "    \"checksum\" VARCHAR(100),\n" +
                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
                "    \"installed_on\" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n" +
                "    \"execution_time\" INT NOT NULL,\n" +

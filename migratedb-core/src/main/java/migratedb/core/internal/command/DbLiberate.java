@@ -26,7 +26,7 @@ import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.Development;
 
 /**
- * Converts the schema history table of the forked project.
+ * Converts the schema history table into the format used by MigrateDB.
  */
 public class DbLiberate {
     private final SchemaHistory schemaHistory;
@@ -55,5 +55,7 @@ public class DbLiberate {
 
     private void convertToMigrateDb(Table schemaHistoryTable) {
         Development.TODO("Implement :o)");
+        // convertChecksum()
+        // convertDeletionMarkers()
     }
 }

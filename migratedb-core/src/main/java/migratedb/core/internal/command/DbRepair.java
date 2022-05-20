@@ -209,7 +209,7 @@ public class DbRepair {
                 && !applied.getType().isExclusiveToAppliedMigrations()
 
                 && migrationInfo.getState() != MigrationState.IGNORED
-                && resolved.checksumMatchesWithoutBeingIdentical(applied.getChecksum())) {
+                && resolved.checksumMatches(applied.getChecksum())) {
                 schemaHistory.update(applied, resolved);
                 repaired = true;
                 repairResult.migrationsAligned.add(CommandResultFactory.createRepairOutput(migrationInfo));
