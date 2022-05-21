@@ -16,25 +16,26 @@
 
 package migratedb.integrationtest.util.dsl.internal
 
+import migratedb.core.api.Checksum
 import migratedb.core.api.Version
 import migratedb.core.api.configuration.Configuration
 import migratedb.core.api.migration.Context
 import migratedb.core.api.migration.JavaMigration
 import migratedb.core.internal.resolver.MigrationInfoHelper
-import migratedb.integrationtest.util.base.asChecksum
+import migratedb.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 import java.sql.Connection
 
 class SimpleJavaMigration(
     name: String,
     private val code: (Connection) -> Unit,
-    private val checksumAsInt: Int? = null
+    private val checksum: Checksum? = null
 ) : JavaMigration {
     private val version: Version?
     private val description: String
     private val prefix = name[0].uppercase()
 
     init {
-        MigrationInfoHelper.extractVersionAndDescription(name, prefix, "__", prefix == "R").let {
+        MigrationInfoHelper.extractVersionAndDescription(name.toMigrationName(), prefix, "__", prefix == "R").let {
             version = it.version
             description = it.description
         }
@@ -43,7 +44,7 @@ class SimpleJavaMigration(
     override fun getVersion(): Version? = version
     override fun getDescription(): String = description
 
-    override fun getChecksum(configuration: Configuration?) = checksumAsInt.asChecksum()
+    override fun getChecksum(configuration: Configuration?) = checksum
 
     override fun isBaselineMigration(): Boolean = prefix == "B"
     override fun canExecuteInTransaction() = true

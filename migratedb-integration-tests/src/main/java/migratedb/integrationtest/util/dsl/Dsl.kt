@@ -16,8 +16,12 @@
 
 package migratedb.integrationtest.util.dsl
 
+import migratedb.core.api.Checksum
+import migratedb.core.api.MigrationInfo
 import migratedb.core.api.MigrationInfoService
+import migratedb.core.api.Version
 import migratedb.core.api.output.MigrateResult
+import migratedb.core.api.output.RepairResult
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.SafeIdentifier
@@ -29,6 +33,48 @@ import migratedb.integrationtest.util.dsl.internal.WhenStepImpl
 import org.springframework.jdbc.core.JdbcTemplate
 
 class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable {
+    companion object {
+        /**
+         * Auto-completes a shortened migration name like "V1" to a valid migration name like "V1__V1".
+         */
+        fun String.toMigrationName() = when {
+            !contains("__") -> "${this}__V${this.drop(1)}"
+            else -> this
+        }
+
+        /**
+         * Reconstructs the migration name in the default format, e.g., "V1__My_Cool_Migration".
+         */
+        fun MigrationInfo.migrationName() = when {
+            isRepeatable -> "R__" + description.spaceToUnderscore()
+            else -> (if (type.isBaselineMigration) "B" else "V") +
+                    version?.dotToUnderscrore() + "__" + description.spaceToUnderscore()
+        }
+
+        /**
+         * Returns a checksum that depends on the string value and the [delta] value. If, and only if, [delta] is zero, the
+         * checksum will be equal to `Checksum.builder().addString(this).build()`.
+         */
+        fun String.checksum(delta: Int = 0): Checksum = Checksum.builder()
+            .addString(this).apply {
+                delta.takeUnless { it == 0 }?.let {
+                    addNumber(it.toBigInteger())
+                }
+            }
+            .build()
+
+        private fun Version.dotToUnderscrore() = toString().replace('.', '_')
+        private fun String.spaceToUnderscore() = replace(' ', '_')
+
+        fun List<String>.toMigrationNames() = this.map { it.toMigrationName() }
+
+        /**
+         * Applies [toMigrationName] to every element in a list of strings, returning `null` if this list is `null`.
+         */
+        @JvmName("addDescriptionIfMissingOrNull")
+        fun List<String>?.toMigrationNames() = this?.map { it.toMigrationName() }
+    }
+
     private val databaseHandle = dbSystem.get(sharedResources)
     private val givenStep = GivenStepImpl(databaseHandle)
 
@@ -83,6 +129,8 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
     interface WhenStep<G> : AfterGiven<G> {
         fun migrate(block: RunMigrateSpec.() -> Unit): MigrateResult
         fun info(block: RunInfoSpec.() -> Unit): MigrationInfoService
+
+        fun repair(block: RunRepairSpec.() -> Unit): RepairResult
         fun arbitraryMutation(): IndependentDatabaseMutation
     }
 

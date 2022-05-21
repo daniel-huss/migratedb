@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.util.dsl
+package migratedb.integrationtest.util.dsl.internal
 
-import migratedb.core.api.Checksum
-import migratedb.core.api.MigrationType
+import migratedb.core.api.migration.JavaMigration
+import migratedb.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 
-interface SchemaHistorySpec {
-    fun entry(
-        version: Any?,
-        description: String,
-        type: MigrationType,
-        success: Boolean,
-        installedRank: Int? = null,
-        checksum: Checksum? = null
-    )
-
-    /**
-     * Simplified schema entry where shortened migration version/description syntax like "V1" is allowed.
-     */
-    fun entry(name: String, type: MigrationType, success: Boolean, checksumDelta: Int = 0)
+class CodeMigration(name: String, val code: JavaMigration) {
+    val name = name.toMigrationName()
+    override fun toString() = name
 }

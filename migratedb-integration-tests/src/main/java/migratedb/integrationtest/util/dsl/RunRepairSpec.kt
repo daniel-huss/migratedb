@@ -16,21 +16,6 @@
 
 package migratedb.integrationtest.util.dsl
 
-import migratedb.core.api.Checksum
-import migratedb.core.api.MigrationType
-
-interface SchemaHistorySpec {
-    fun entry(
-        version: Any?,
-        description: String,
-        type: MigrationType,
-        success: Boolean,
-        installedRank: Int? = null,
-        checksum: Checksum? = null
-    )
-
-    /**
-     * Simplified schema entry where shortened migration version/description syntax like "V1" is allowed.
-     */
-    fun entry(name: String, type: MigrationType, success: Boolean, checksumDelta: Int = 0)
+interface RunRepairSpec : RunWithConfigSpec {
+    fun availableMigrations(vararg names: String)
 }

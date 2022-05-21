@@ -14,41 +14,30 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.selftest
+package migratedb.integrationtest.repair
 
-import io.kotest.matchers.collections.shouldContainAll
 import migratedb.core.api.MigrationType
 import migratedb.integrationtest.database.DbSystem
+import migratedb.integrationtest.database.SomeInMemoryDb
 import migratedb.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
 
-class SelfTest : IntegrationTest() {
+internal class RepairTest : IntegrationTest() {
+
     @ParameterizedTest
     @ArgumentsSource(DbSystem.All::class)
-    fun `Database system is supported by test DSL`(dbSystem: DbSystem) = withDsl(dbSystem) {
+    fun `Deletes migrations that are no longer available`() = withDsl(SomeInMemoryDb) {
         given {
             database {
-                schemaHistory(table = table("migratedb")) {
-                    entry(name = "V001__Test", type = MigrationType.JDBC, success = true)
+                schemaHistory {
+                    entry("V1", MigrationType.SQL, true)
                 }
             }
         }.`when` {
-            migrate {
-                withConfig { config ->
-                    schemaName?.let { config.schemas(it.toString()) }
-                    config.table(table("migratedb"))
-                    config.ignoreMissingMigrations(true)
-                }
-                script("V002__Foo", "-- This script does nothing")
-                code("V003__Bar", arbitraryMutation()::apply)
-            }
+            repair {}
         }.then {
-            withConnection { sql ->
-                sql.queryForList("select * from ${table("migratedb")}")
-                    .map { it.getValue("description") }
-                    .shouldContainAll("Test", "Foo", "Bar")
-            }
+
         }
     }
 }

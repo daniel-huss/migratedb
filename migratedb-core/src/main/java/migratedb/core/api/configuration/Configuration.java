@@ -16,26 +16,19 @@
  */
 package migratedb.core.api.configuration;
 
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-import javax.sql.DataSource;
-import migratedb.core.api.ClassProvider;
-import migratedb.core.api.DatabaseTypeRegister;
-import migratedb.core.api.ExtensionConfig;
-import migratedb.core.api.Location;
-import migratedb.core.api.MigrateDbExtension;
-import migratedb.core.api.MigrationPattern;
-import migratedb.core.api.ResourceProvider;
-import migratedb.core.api.TargetVersion;
-import migratedb.core.api.Version;
+import migratedb.core.api.*;
 import migratedb.core.api.callback.Callback;
 import migratedb.core.api.logging.LogSystem;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.pattern.ValidatePattern;
 import migratedb.core.api.resolver.MigrationResolver;
+
+import javax.sql.DataSource;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
 
 public interface Configuration {
     /**
@@ -281,7 +274,7 @@ public interface Configuration {
      * <i>migratedb.schemas</i> property is set (multi-schema mode), the schema history table is placed in the first
      * schema of the list.
      *
-     * @return The name of the schema history table that will be used by MigrateDb. (default: migratedb_schema_history)
+     * @return The name of the schema history table that will be used by MigrateDb. (default: migratedb_state)
      */
     String getTable();
 

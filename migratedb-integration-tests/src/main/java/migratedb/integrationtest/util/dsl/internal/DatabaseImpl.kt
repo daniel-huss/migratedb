@@ -16,6 +16,7 @@
 
 package migratedb.integrationtest.util.dsl.internal
 
+import migratedb.core.api.Checksum
 import migratedb.core.api.MigrationType
 import migratedb.core.api.Version
 import migratedb.core.api.configuration.FluentConfiguration
@@ -30,8 +31,9 @@ import migratedb.core.internal.schemahistory.SchemaHistoryFactory
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
-import migratedb.integrationtest.util.base.asChecksum
 import migratedb.integrationtest.util.dsl.DatabaseSpec
+import migratedb.integrationtest.util.dsl.Dsl.Companion.checksum
+import migratedb.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 import migratedb.integrationtest.util.dsl.SchemaHistorySpec
 
 class DatabaseImpl(
@@ -41,7 +43,7 @@ class DatabaseImpl(
     private var schemaHistory: SchemaHistorySpecImpl? = null
     private var database: Database<*>? = null
 
-    override fun existingSchemaHistory(table: String, block: (SchemaHistorySpec).() -> Unit) {
+    override fun schemaHistory(table: String, block: (SchemaHistorySpec).() -> Unit) {
         schemaHistory = SchemaHistorySpecImpl(table).also(block)
     }
 
@@ -76,26 +78,48 @@ class DatabaseImpl(
         val success: Boolean,
         val version: Version?,
         val description: String,
-        val checksum: Int?,
+        val checksum: Checksum?,
         val installedRank: Int?,
     )
 
     inner class SchemaHistorySpecImpl(private val table: String) : SchemaHistorySpec {
         private val entries = mutableListOf<SchemaHistoryEntry>()
 
-        override fun entry(name: String, type: MigrationType, success: Boolean, installedRank: Int?, checksum: Int?) {
-            val repeatable = name.startsWith("R")
-            val prefix = name.take(1)
-            val info = MigrationInfoHelper.extractVersionAndDescription(name, prefix, "__", repeatable)
+        override fun entry(
+            version: Any?,
+            description: String,
+            type: MigrationType,
+            success: Boolean,
+            installedRank: Int?,
+            checksum: Checksum?
+        ) {
             entries.add(
                 SchemaHistoryEntry(
                     type = type,
                     success = success,
-                    version = info.version,
-                    description = info.description,
+                    version = when (version) {
+                        null -> null
+                        is Version -> version
+                        else -> Version.parse(version.toString())
+                    },
+                    description = description,
                     checksum = checksum,
                     installedRank = installedRank,
                 )
+            )
+        }
+
+        override fun entry(name: String, type: MigrationType, success: Boolean, checksumDelta: Int) {
+            val nameWithDescription = name.toMigrationName()
+            val repeatable = nameWithDescription.startsWith("R")
+            val prefix = nameWithDescription.take(1)
+            val info = MigrationInfoHelper.extractVersionAndDescription(nameWithDescription, prefix, "__", repeatable)
+            entry(
+                version = info.version,
+                description = info.description,
+                type = type,
+                success = success,
+                checksum = nameWithDescription.checksum(checksumDelta)
             )
         }
 
@@ -131,7 +155,7 @@ class DatabaseImpl(
                         entry.description,
                         entry.type,
                         "n/a",
-                        entry.checksum.asChecksum(),
+                        entry.checksum,
                         0,
                         entry.success
                     )
@@ -141,7 +165,7 @@ class DatabaseImpl(
                         entry.description,
                         entry.type,
                         "n/a",
-                        entry.checksum.asChecksum(),
+                        entry.checksum,
                         0,
                         entry.success
                     )

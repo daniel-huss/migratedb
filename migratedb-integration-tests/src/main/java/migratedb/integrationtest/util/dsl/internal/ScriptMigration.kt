@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.util.base
+package migratedb.integrationtest.util.dsl.internal
 
-import migratedb.core.api.Checksum
+import migratedb.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 
-fun Int?.asChecksum() = this?.let { Checksum.builder().addNumber(it.toBigInteger()).build() }
+class ScriptMigration(name: String, val sql: String) {
+    val name = name.toMigrationName()
+    override fun toString() = name
+}

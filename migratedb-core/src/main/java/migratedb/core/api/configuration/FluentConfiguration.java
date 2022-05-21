@@ -16,24 +16,8 @@
  */
 package migratedb.core.api.configuration;
 
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.function.Supplier;
-import javax.sql.DataSource;
 import migratedb.core.MigrateDb;
-import migratedb.core.api.ClassProvider;
-import migratedb.core.api.DatabaseTypeRegister;
-import migratedb.core.api.ExtensionConfig;
-import migratedb.core.api.Location;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrateDbExtension;
-import migratedb.core.api.MigrationPattern;
-import migratedb.core.api.ResourceProvider;
-import migratedb.core.api.TargetVersion;
-import migratedb.core.api.Version;
+import migratedb.core.api.*;
 import migratedb.core.api.callback.Callback;
 import migratedb.core.api.logging.LogSystem;
 import migratedb.core.api.logging.LogSystems;
@@ -41,6 +25,14 @@ import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.pattern.ValidatePattern;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.util.ClassUtils;
+
+import javax.sql.DataSource;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Fluent configuration for MigrateDB . This is the preferred means of configuring the MigrateDb API. This configuration
@@ -728,7 +720,7 @@ public class FluentConfiguration implements Configuration {
      * schema of the list.
      *
      * @param table The name of the schema history table that will be used by MigrateDb. (default:
-     *              migratedb_schema_history)
+     *              migratedb_state)
      */
     public FluentConfiguration table(String table) {
         config.setTable(table);
@@ -929,9 +921,9 @@ public class FluentConfiguration implements Configuration {
     }
 
     /**
-     * The manually added Java-based migrations. These are not Java-based migrations discovered through classpath
-     * scanning and instantiated by MigrateDb. Instead these are manually added instances of JavaMigration. This is
-     * particularly useful when working with a dependency injection container, where you may want the DI container to
+     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
+     * scanning and instantiated by MigrateDb. Instead these are application-controlled instances of JavaMigration. This
+     * is particularly useful when working with a dependency injection container, where you may want the DI container to
      * instantiate the class and wire up its dependencies for you.
      *
      * @param javaMigrations The manually added Java-based migrations. An empty array if none. (default: none)

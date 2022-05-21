@@ -18,10 +18,12 @@ package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.MigrationInfoService
 import migratedb.core.api.output.MigrateResult
+import migratedb.core.api.output.RepairResult
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.dsl.Dsl
 import migratedb.integrationtest.util.dsl.RunInfoSpec
 import migratedb.integrationtest.util.dsl.RunMigrateSpec
+import migratedb.integrationtest.util.dsl.RunRepairSpec
 
 class WhenStepImpl<G : Any>(given: G, givenInfo: GivenInfo) : Dsl.WhenStep<G>, AbstractAfterGiven<G>(given, givenInfo) {
 
@@ -35,6 +37,12 @@ class WhenStepImpl<G : Any>(given: G, givenInfo: GivenInfo) : Dsl.WhenStep<G>, A
         val runInfo = RunInfoImpl(givenInfo)
         runInfo.block()
         return runInfo.execute()
+    }
+
+    override fun repair(block: RunRepairSpec.() -> Unit): RepairResult {
+        val runRepair = RunRepairImpl(givenInfo)
+        runRepair.block()
+        return runRepair.execute()
     }
 
     override fun arbitraryMutation(): IndependentDatabaseMutation {

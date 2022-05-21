@@ -26,23 +26,22 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import migratedb.core.api.MigrationInfo
 import migratedb.core.api.MigrationInfoService
 import migratedb.core.api.MigrationState
-import migratedb.core.api.MigrationType
-import migratedb.core.api.Version
 import migratedb.core.api.configuration.FluentConfiguration
+import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.database.SomeInMemoryDb
 import migratedb.integrationtest.util.base.IntegrationTest
-import migratedb.integrationtest.util.base.defaultChecksum
+import migratedb.integrationtest.util.dsl.Dsl.Companion.migrationName
+import migratedb.integrationtest.util.dsl.Dsl.Companion.toMigrationName
+import migratedb.integrationtest.util.dsl.Dsl.Companion.toMigrationNames
+import migratedb.integrationtest.util.dsl.SchemaHistorySpec
 
 abstract class AbstractMigrationInfoTest : IntegrationTest() {
     object DoNotCheck : CharSequence by ""
 
-    interface SimpleSchemaHistorySpec {
-        fun entry(name: String, type: MigrationType, success: Boolean, checksumDelta: Int = 0)
-    }
-
     inner class TestCase(
-        private val schemaHistory: (SimpleSchemaHistorySpec).() -> Unit = {},
+        private val schemaHistory: (SchemaHistorySpec).() -> Unit = {},
         private val configModifier: (FluentConfiguration).() -> Unit = {},
+        dbSystem: DbSystem? = null,
         availableMigrations: List<String>,
         expectedAll: List<String>? = null,
         expectedPending: List<String>? = null,
@@ -57,43 +56,33 @@ abstract class AbstractMigrationInfoTest : IntegrationTest() {
         expectedState: Map<String, MigrationState>? = null,
         expectedStatesInAppliedOrder: Map<String, List<MigrationState>>? = null,
     ) {
-        private val expectedAll = expectedAll.addDescriptionIfMissing()
-        private val expectedPending = expectedPending.addDescriptionIfMissing()
-        private val expectedApplied = expectedApplied.addDescriptionIfMissing()
-        private val expectedResolved = expectedResolved.addDescriptionIfMissing()
-        private val expectedFailed = expectedFailed.addDescriptionIfMissing()
-        private val expectedFuture = expectedFuture.addDescriptionIfMissing()
-        private val expectedOutOfOrder = expectedOutOfOrder.addDescriptionIfMissing()
-        private val expectedOutdated = expectedOutdated.addDescriptionIfMissing()
-        private val expectedCurrent = expectedCurrent?.addDescriptionIfMissing()
-        private val expectedNext = expectedNext?.addDescriptionIfMissing()
-        private val expectedState = expectedState?.mapKeys { (k, _) -> k.addDescriptionIfMissing() }
-        private val expectedStatesInAppliedOrder = expectedStatesInAppliedOrder?.mapKeys { (k, _) -> k.addDescriptionIfMissing() }
+        private val expectedAll = expectedAll.toMigrationNames()
+        private val expectedPending = expectedPending.toMigrationNames()
+        private val expectedApplied = expectedApplied.toMigrationNames()
+        private val expectedResolved = expectedResolved.toMigrationNames()
+        private val expectedFailed = expectedFailed.toMigrationNames()
+        private val expectedFuture = expectedFuture.toMigrationNames()
+        private val expectedOutOfOrder = expectedOutOfOrder.toMigrationNames()
+        private val expectedOutdated = expectedOutdated.toMigrationNames()
+        private val expectedCurrent = expectedCurrent?.toMigrationNameUnlessDoNotCheck()
+        private val expectedNext = expectedNext?.toMigrationNameUnlessDoNotCheck()
+        private val expectedState = expectedState?.mapKeys { (k, _) -> k.toMigrationName() }
+        private val expectedStatesInAppliedOrder =
+            expectedStatesInAppliedOrder?.mapKeys { (k, _) -> k.toMigrationName() }
 
         init {
-            withDsl(SomeInMemoryDb) {
+            withDsl(dbSystem ?: SomeInMemoryDb) {
                 given {
                     database {
-                        existingSchemaHistory {
-                            val history = this
-                            object : SimpleSchemaHistorySpec {
-                                override fun entry(name: String, type: MigrationType, success: Boolean, checksumDelta: Int) {
-                                    val nameWithDescription = name.addDescriptionIfMissing()
-                                    history.entry(
-                                        name = nameWithDescription,
-                                        type = type,
-                                        success = success,
-                                        checksum = nameWithDescription.defaultChecksum() + checksumDelta
-                                    )
-                                }
-                            }.apply(schemaHistory)
+                        schemaHistory {
+                            this.apply(schemaHistory)
                         }
                     }
                 }.`when` {
                     info {
                         withConfig {
                             configModifier.invoke(it)
-                            val migrations = createMigrations(availableMigrations.addDescriptionIfMissing())
+                            val migrations = createMigrations(availableMigrations.toMigrationNames())
                             it.javaMigrations(*migrations)
                         }
                     }
@@ -146,13 +135,13 @@ abstract class AbstractMigrationInfoTest : IntegrationTest() {
             }
             withClue("state") {
                 val grouped = actual.all()
-                    .groupBy { it.describe() }
+                    .groupBy { it.migrationName() }
                     .mapValues { (_, v) -> v.map { it.state }.toList() }
 
                 expectedState?.let { expected ->
                     grouped.entries.firstOrNull { (_, v) -> v.toSet().size > 1 }?.let {
                         fail(
-                            "Cannot use expectedState because at least one migration has multiple ocurrences." +
+                            "Cannot use expectedState because at least one version has multiple ocurrences." +
                                     " Use expectedStatesInAppliedOrder.\n$it"
                         )
                     }
@@ -166,26 +155,16 @@ abstract class AbstractMigrationInfoTest : IntegrationTest() {
             }
         }
 
-        private fun CharSequence.addDescriptionIfMissing() = when (this) {
+        private fun CharSequence.toMigrationNameUnlessDoNotCheck() = when (this) {
             DoNotCheck -> DoNotCheck
-            else -> toString().addDescriptionIfMissing()
+            else -> toString().toMigrationName()
         }
-
-        private fun String.addDescriptionIfMissing() = when {
-            !contains("__") -> "${this}__V${this.drop(1)}"
-            else -> this
-        }
-
-        private fun List<String>.addDescriptionIfMissing() = this.map { it.addDescriptionIfMissing() }
-
-        @JvmName("addDescriptionIfMissingOrNull")
-        private fun List<String>?.addDescriptionIfMissing() = this?.map { it.addDescriptionIfMissing() }
 
         private fun Array<MigrationInfo?>.shouldMatch(names: List<String>) {
             shouldHaveSize(names.size)
             forEachIndexed { index, actual ->
                 actual.shouldNotBeNull()
-                val actualDescription = actual.describe()
+                val actualDescription = actual.migrationName()
                 val expected = names[index]
                 withClue("Expected = $expected | Actual = $actualDescription") {
                     if (!actual.matches(names[index])) {
@@ -196,16 +175,7 @@ abstract class AbstractMigrationInfoTest : IntegrationTest() {
         }
 
         private fun MigrationInfo.matches(name: String): Boolean {
-            return name == describe()
+            return name == migrationName()
         }
-
-        private fun MigrationInfo.describe() = when {
-            isRepeatable -> "R__" + description.spaceToUnderscore()
-            else -> (if (type.isBaselineMigration) "B" else "V") +
-                    version?.dotToUnderscrore() + "__" + description.spaceToUnderscore()
-        }
-
-        private fun Version.dotToUnderscrore() = toString().replace('.', '_')
-        private fun String.spaceToUnderscore() = replace(' ', '_')
     }
 }

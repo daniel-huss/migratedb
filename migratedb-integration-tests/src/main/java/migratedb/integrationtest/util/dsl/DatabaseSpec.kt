@@ -23,5 +23,5 @@ interface DatabaseSpec {
         val defaultSchemaHistoryTable: String = ClassicConfiguration().table
     }
 
-    fun existingSchemaHistory(table: String = defaultSchemaHistoryTable, block: SchemaHistorySpec.() -> Unit)
+    fun schemaHistory(table: String = defaultSchemaHistoryTable, block: SchemaHistorySpec.() -> Unit)
 }

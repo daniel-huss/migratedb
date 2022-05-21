@@ -47,5 +47,3 @@ abstract class IntegrationTest {
 
     fun withDsl(dbSystem: DbSystem, block: (Dsl).() -> (Unit)) = Dsl(dbSystem, Extension.resources()).use(block)
 }
-
-fun String.defaultChecksum(): Int = codePoints().sum()

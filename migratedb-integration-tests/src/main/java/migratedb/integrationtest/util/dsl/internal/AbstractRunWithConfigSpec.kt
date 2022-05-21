@@ -18,32 +18,25 @@ package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.api.migration.JavaMigration
-import migratedb.integrationtest.util.base.defaultChecksum
+import migratedb.core.internal.util.ClassUtils
+import migratedb.integrationtest.util.dsl.Dsl.Companion.checksum
 import migratedb.integrationtest.util.dsl.RunWithConfigSpec
 
 abstract class AbstractRunWithConfigSpec(private val givenInfo: GivenInfo) : RunWithConfigSpec {
-    private var config = FluentConfiguration().also { cfg ->
-        givenInfo.schemaName?.let {
-            cfg.schemas(it.toString())
-        }
-        cfg.skipDefaultResolvers(true)
-    }
+    private var config = newConfig()
 
     override fun createMigrations(names: Collection<String>): Array<JavaMigration> {
         return names.map {
             SimpleJavaMigration(
                 name = it,
                 code = givenInfo.databaseHandle.nextMutation(givenInfo.schemaName)::apply,
-                checksumAsInt = it.defaultChecksum()
+                checksum = it.checksum()
             )
         }.toTypedArray()
     }
 
     final override fun withConfig(classLoader: ClassLoader?, block: (FluentConfiguration) -> Unit) {
-        config = when (classLoader) {
-            null -> FluentConfiguration()
-            else -> FluentConfiguration(classLoader)
-        }.also(block)
+        config = newConfig(classLoader).also(block)
     }
 
     protected fun <T> execute(block: (config: FluentConfiguration) -> T): T {
@@ -53,4 +46,14 @@ abstract class AbstractRunWithConfigSpec(private val givenInfo: GivenInfo) : Run
                 .dataSource(givenInfo.databaseHandle.newAdminConnection(givenInfo.namespace))
         )
     }
+
+
+    private fun newConfig(classLoader: ClassLoader? = null) =
+        FluentConfiguration(classLoader ?: ClassUtils.defaultClassLoader())
+            .also { cfg ->
+                givenInfo.schemaName?.let {
+                    cfg.schemas(it.toString())
+                }
+                cfg.skipDefaultResolvers(true)
+            }
 }

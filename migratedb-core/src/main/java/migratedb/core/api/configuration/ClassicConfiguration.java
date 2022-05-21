@@ -16,36 +16,7 @@
  */
 package migratedb.core.api.configuration;
 
-import static migratedb.core.internal.configuration.ConfigUtils.removeBoolean;
-import static migratedb.core.internal.configuration.ConfigUtils.removeInteger;
-
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.function.Supplier;
-import javax.sql.DataSource;
-import migratedb.core.api.ClassProvider;
-import migratedb.core.api.DatabaseTypeRegister;
-import migratedb.core.api.ErrorCode;
-import migratedb.core.api.ExtensionConfig;
-import migratedb.core.api.Location;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrateDbExtension;
-import migratedb.core.api.MigrationPattern;
-import migratedb.core.api.ResourceProvider;
-import migratedb.core.api.TargetVersion;
-import migratedb.core.api.Version;
+import migratedb.core.api.*;
 import migratedb.core.api.callback.Callback;
 import migratedb.core.api.logging.LogSystem;
 import migratedb.core.api.logging.LogSystems;
@@ -61,6 +32,17 @@ import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.Locations;
 import migratedb.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import javax.sql.DataSource;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.function.Supplier;
+
+import static migratedb.core.internal.configuration.ConfigUtils.removeBoolean;
+import static migratedb.core.internal.configuration.ConfigUtils.removeInteger;
 
 /**
  * JavaBean-style configuration for MigrateDB. This is primarily meant for compatibility with scenarios where the new
@@ -82,7 +64,7 @@ public class ClassicConfiguration implements Configuration {
     private Charset encoding = StandardCharsets.UTF_8;
     private String defaultSchemaName = null;
     private String[] schemaNames = {};
-    private String table = "migratedb_schema_history";
+    private String table = "migratedb_state";
     private String tablespace;
     private TargetVersion target;
     private boolean failOnMissingTarget = true;
@@ -800,7 +782,7 @@ public class ClassicConfiguration implements Configuration {
      * schema of the list.
      *
      * @param table The name of the schema history table that will be used by MigrateDb. (default:
-     *              migratedb_schema_history)
+     *              migratedb_state)
      */
     public void setTable(String table) {
         this.table = table;
