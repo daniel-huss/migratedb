@@ -15,9 +15,6 @@
  */
 package migratedb.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import migratedb.core.api.ClassProvider;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.callback.Callback;
@@ -40,12 +37,16 @@ import migratedb.core.internal.callback.SqlScriptCallbackFactory;
 import migratedb.core.internal.configuration.ConfigurationValidator;
 import migratedb.core.internal.jdbc.JdbcConnectionFactoryImpl;
 import migratedb.core.internal.parser.ParsingContextImpl;
-import migratedb.core.internal.resolver.CompositeMigrationResolver;
+import migratedb.core.internal.resolver.DefaultMigrationResolver;
 import migratedb.core.internal.resource.ResourceNameValidator;
 import migratedb.core.internal.resource.StringResource;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.schemahistory.SchemaHistoryFactory;
 import migratedb.core.internal.util.LocationScanner;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 final class MigrateDbExecutor {
     private static final Log LOG = Log.getLog(MigrateDbExecutor.class);
@@ -300,13 +301,13 @@ final class MigrateDbExecutor {
                                                       SqlScriptExecutorFactory sqlScriptExecutorFactory,
                                                       SqlScriptFactory sqlScriptFactory,
                                                       ParsingContext parsingContext) {
-        return new CompositeMigrationResolver(resourceProvider,
-                                              classProvider,
-                                              configuration,
-                                              sqlScriptExecutorFactory,
-                                              sqlScriptFactory,
-                                              parsingContext,
-                                              configuration.getResolvers());
+        return new DefaultMigrationResolver(resourceProvider,
+                classProvider,
+                configuration,
+                sqlScriptExecutorFactory,
+                sqlScriptFactory,
+                parsingContext,
+                configuration.getResolvers());
     }
 
     private void showMemoryUsage() {

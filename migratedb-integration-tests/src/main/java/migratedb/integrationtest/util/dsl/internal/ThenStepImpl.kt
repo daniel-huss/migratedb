@@ -22,6 +22,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 
 class ThenStepImpl<G : Any>(given: G, givenInfo: GivenInfo) : Dsl.ThenStep<G>, AbstractAfterGiven<G>(given, givenInfo) {
     override fun withConnection(block: (JdbcTemplate) -> Unit) {
+        givenInfo.database.supportsChangingCurrentSchema()
         givenInfo.databaseHandle
             .newAdminConnection(givenInfo.namespace)
             .work(schema = givenInfo.schemaName, action = block)

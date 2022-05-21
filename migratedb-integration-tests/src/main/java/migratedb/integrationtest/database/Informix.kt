@@ -78,7 +78,7 @@ enum class Informix(image: String) : DbSystem {
         private val internalDs = container().dataSource()
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier? {
-            internalDs.work(timeout = Duration.ofMinutes(1)) {
+            internalDs.work(connectTimeout = Duration.ofMinutes(1)) {
                 it.execute("create database if not exists $namespace with buffered log")
             }
             return null

@@ -49,11 +49,11 @@ fun <T> Connection.work(schema: CharSequence? = null, commit: Boolean = true, ac
 }
 
 fun <T> DataSource.work(
-    timeout: Duration = Duration.ofSeconds(10),
+    connectTimeout: Duration = Duration.ofSeconds(10),
     schema: CharSequence? = null,
     action: (JdbcTemplate) -> T
 ): T {
-    return awaitConnectivity(timeout).use { it.work(schema, true, action) }
+    return awaitConnectivity(connectTimeout).use { it.work(schema, true, action) }
 }
 
 fun DataSource.awaitConnectivity(timeout: Duration = Duration.ofSeconds(10)): Connection {

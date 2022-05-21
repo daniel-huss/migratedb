@@ -25,8 +25,8 @@ import migratedb.core.internal.resource.StringResource
  * Makes the given set of migrations resolvable. If this is called more, the effects of the previous invocation are
  * undone.
  *
- * This delegates to [FluentConfiguration.javaMigrations] and [FluentConfiguration.resourceProvider], so changing these
- * properties afterwards will undo some or all of the effects of this function.
+ * This uses the [FluentConfiguration.javaMigrations] and [FluentConfiguration.resourceProvider] configuration property,
+ * so changing that property afterwards will undo the effects of this function.
  */
 fun FluentConfiguration.availableMigrations(
     scriptMigrations: Collection<ScriptMigration>,
@@ -36,10 +36,12 @@ fun FluentConfiguration.availableMigrations(
         val name = "${it.name}.sql"
         name to StringResource(name, it.sql)
     }
-    return javaMigrations(*codeMigrations.map { it.code }.toTypedArray())
-        .resourceProvider(object : NameListResourceProvider(scriptMap.keys) {
-            override fun toResource(name: String): Resource {
-                return scriptMap.getValue(name)
-            }
-        })
+    val scriptResourceProvider = object : NameListResourceProvider(scriptMap.keys) {
+        override fun toResource(name: String): Resource {
+            return scriptMap.getValue(name)
+        }
+    }
+    return this
+        .javaMigrations(*codeMigrations.map { it.code }.toTypedArray())
+        .resourceProvider(scriptResourceProvider)
 }

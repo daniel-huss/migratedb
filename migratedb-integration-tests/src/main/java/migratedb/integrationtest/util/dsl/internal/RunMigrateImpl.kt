@@ -45,7 +45,6 @@ class RunMigrateImpl(private val givenInfo: GivenInfo) : AbstractRunWithConfigSp
         config.availableMigrations(scriptMigrations, codeMigrations)
             .load()
             .migrate()
-
     }
 }
 

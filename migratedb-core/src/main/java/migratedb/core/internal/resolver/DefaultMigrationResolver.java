@@ -16,12 +16,6 @@
  */
 package migratedb.core.internal.resolver;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import migratedb.core.api.ClassProvider;
 import migratedb.core.api.ErrorCode;
 import migratedb.core.api.MigrateDbException;
@@ -38,11 +32,12 @@ import migratedb.core.internal.resolver.java.FixedJavaMigrationResolver;
 import migratedb.core.internal.resolver.java.JavaMigrationResolver;
 import migratedb.core.internal.resolver.sql.SqlMigrationResolver;
 
+import java.util.*;
+
 /**
- * Facility for retrieving and sorting the available migrations from the classpath through the various migration
- * resolvers.
+ * Implements the default MigrateDB behavior, which combines the various migration sources that can be configured.
  */
-public class CompositeMigrationResolver implements MigrationResolver {
+public class DefaultMigrationResolver implements MigrationResolver {
     /**
      * The migration resolvers to use internally.
      */
@@ -53,20 +48,20 @@ public class CompositeMigrationResolver implements MigrationResolver {
      */
     private List<ResolvedMigration> availableMigrations;
 
-    public CompositeMigrationResolver(ResourceProvider resourceProvider,
-                                      ClassProvider<JavaMigration> classProvider,
-                                      Configuration configuration,
-                                      SqlScriptExecutorFactory sqlScriptExecutorFactory,
-                                      SqlScriptFactory sqlScriptFactory,
-                                      ParsingContext parsingContext,
-                                      MigrationResolver... customMigrationResolvers
+    public DefaultMigrationResolver(ResourceProvider resourceProvider,
+                                    ClassProvider<JavaMigration> classProvider,
+                                    Configuration configuration,
+                                    SqlScriptExecutorFactory sqlScriptExecutorFactory,
+                                    SqlScriptFactory sqlScriptFactory,
+                                    ParsingContext parsingContext,
+                                    MigrationResolver... customMigrationResolvers
     ) {
         if (!configuration.isSkipDefaultResolvers()) {
             migrationResolvers.add(new SqlMigrationResolver(resourceProvider,
-                                                            sqlScriptExecutorFactory,
-                                                            sqlScriptFactory,
-                                                            configuration,
-                                                            parsingContext));
+                    sqlScriptExecutorFactory,
+                    sqlScriptFactory,
+                    configuration,
+                    parsingContext));
             migrationResolvers.add(new JavaMigrationResolver(classProvider));
 
         }
@@ -80,7 +75,6 @@ public class CompositeMigrationResolver implements MigrationResolver {
      *
      * @return The available migrations, sorted by version, oldest first. An empty list is returned when no migrations
      * can be found.
-     *
      * @throws MigrateDbException when the available migrations have overlapping versions.
      */
     @Override
@@ -105,7 +99,6 @@ public class CompositeMigrationResolver implements MigrationResolver {
      * Collects all the migrations for all migration resolvers.
      *
      * @param migrationResolvers The migration resolvers to check.
-     *
      * @return All migrations.
      */
     static Collection<ResolvedMigration> collectMigrations(Collection<MigrationResolver> migrationResolvers,
@@ -121,7 +114,6 @@ public class CompositeMigrationResolver implements MigrationResolver {
      * Checks for incompatible migrations.
      *
      * @param migrations The migrations to check.
-     *
      * @throws MigrateDbException when two different migration with the same version number are found.
      */
     static void checkForIncompatibilities(List<ResolvedMigration> migrations) {
@@ -136,16 +128,16 @@ public class CompositeMigrationResolver implements MigrationResolver {
                 }
                 if (current.getVersion() != null) {
                     throw new MigrateDbException(
-                        "Found more than one migration with version " + current.getVersion() + "\nOffenders:\n-> " +
-                        current.getLocationDescription() + " (" + current.getType() + ")\n-> " +
-                        next.getLocationDescription() + " (" + next.getType() + ")",
-                        ErrorCode.DUPLICATE_VERSIONED_MIGRATION);
+                            "Found more than one migration with version " + current.getVersion() + "\nOffenders:\n-> " +
+                                    current.getLocationDescription() + " (" + current.getType() + ")\n-> " +
+                                    next.getLocationDescription() + " (" + next.getType() + ")",
+                            ErrorCode.DUPLICATE_VERSIONED_MIGRATION);
                 }
                 throw new MigrateDbException(
-                    "Found more than one repeatable migration with description " + current.getDescription() +
-                    "\nOffenders:\n-> " + current.getLocationDescription() + " (" + current.getType() + ")\n-> " +
-                    next.getLocationDescription() + " (" + next.getType() + ")",
-                    ErrorCode.DUPLICATE_REPEATABLE_MIGRATION);
+                        "Found more than one repeatable migration with description " + current.getDescription() +
+                                "\nOffenders:\n-> " + current.getLocationDescription() + " (" + current.getType() + ")\n-> " +
+                                next.getLocationDescription() + " (" + next.getType() + ")",
+                        ErrorCode.DUPLICATE_REPEATABLE_MIGRATION);
             }
         }
     }

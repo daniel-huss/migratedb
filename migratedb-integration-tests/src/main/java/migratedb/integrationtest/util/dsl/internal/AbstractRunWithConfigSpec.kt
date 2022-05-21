@@ -54,6 +54,5 @@ abstract class AbstractRunWithConfigSpec(private val givenInfo: GivenInfo) : Run
                 givenInfo.schemaName?.let {
                     cfg.schemas(it.toString())
                 }
-                cfg.skipDefaultResolvers(true)
             }
 }
