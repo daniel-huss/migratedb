@@ -85,17 +85,19 @@ enum class Db2(image: String) : DbSystem {
         }
     }
 
-    private var handle: Handle? = null
+    /**
+     * The container is so slow to start that we only ever start one, holding onto the lease forever.
+     */
+    private var neverClosedContainerLease: Lease<Container>? = null
 
     override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        // Intentionally never closing the obtained handle, because starting new DB2 containers takes so very long.
         synchronized(this) {
-            var h = handle
-            if (h == null) {
-                h = Handle(sharedResources.container(containerAlias) { Container(image) })
-                handle = h
+            var container = neverClosedContainerLease
+            if (container == null) {
+                container = sharedResources.container(containerAlias) { Container(image) }
+                neverClosedContainerLease = container
             }
-            return h
+            return Handle(container)
         }
     }
 
@@ -133,9 +135,8 @@ enum class Db2(image: String) : DbSystem {
         }
 
         override fun close() {
-            container.use {
-                db.use { }
-            }
+            // Do NOT close the container lease!
+            db.use { }
         }
     }
 }

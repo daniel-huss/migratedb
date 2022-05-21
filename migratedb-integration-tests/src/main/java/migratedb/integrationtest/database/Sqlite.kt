@@ -68,7 +68,6 @@ enum class Sqlite : DbSystem {
         private val defaultSchema = "main".asSafeIdentifier()
 
         init {
-            System.setProperty("org.sqlite.tmpdir", newTempDir("sqlite-driver").toString())
             // Check that SQLite is not on the test class path (because our custom class loader delegates to its parent)
             shouldThrow<ClassNotFoundException> {
                 Class.forName(driverClass)
@@ -77,8 +76,18 @@ enum class Sqlite : DbSystem {
     }
 
     private val driverCoordinates = "org.xerial:sqlite-jdbc:${name.drop(1).replace('_', '.')}"
-    private val classLoader: ClassLoader by lazy {
-        DependencyResolver.resolve(driverCoordinates).toClassLoader()
+    private val classLoader: ClassLoader by lazy(Sqlite::class) {
+        DependencyResolver.resolve(driverCoordinates).toClassLoader().also {
+            // This JDBC driver extracts native libraries (ugh!) to the directory specified by the system property
+            // "org.sqlite.tmpdir". Since we want to use multiple versions of the library, each one has to extract its
+            // shit into a different directory. This all assumes that the corresponding system property is read exactly
+            // once, during initialization. This seems to be the case, so this hack may actually work.
+            System.setProperty("org.sqlite.tmpdir", newTempDir("sqlite-driver-$name").toString())
+            val loader = it.loadClass("org.sqlite.SQLiteJDBCLoader")
+            loader.getMethod("initialize").invoke(null)
+            // Initialization should not ever happen outside this code block, so:
+            System.setProperty("org.sqlite.tmpdir", "/dev/null")
+        }
     }
 
     override fun toString() = "SQLite ${name.replace('_', '.')}"

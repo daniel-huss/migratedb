@@ -28,6 +28,7 @@ import migratedb.integrationtest.util.container.Lease
 import migratedb.integrationtest.util.container.SharedResources
 import org.postgresql.ds.PGSimpleDataSource
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
@@ -75,6 +76,7 @@ enum class Postgres(image: String) : DbSystem {
                 it.withCmd("-c", "fsync=off", "-c", "log_destination=stderr", "-c", "log_statement=all")
             }
             withExposedPorts(port)
+            waitingFor(Wait.forListeningPort())
         }
     }
 

@@ -27,6 +27,7 @@ import migratedb.integrationtest.util.container.Lease
 import migratedb.integrationtest.util.container.SharedResources
 import org.mariadb.jdbc.MariaDbDataSource
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
@@ -71,6 +72,7 @@ enum class MariaDb(image: String) : DbSystem {
             withEnv("MARIADB_ROOT_PASSWORD", password)
             withEnv("MARIADB_DATABASE", defaultDatabase.toString())
             withExposedPorts(port)
+            waitingFor(Wait.forListeningPort())
         }
     }
 

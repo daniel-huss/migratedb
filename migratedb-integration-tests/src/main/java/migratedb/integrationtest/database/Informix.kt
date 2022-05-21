@@ -26,6 +26,7 @@ import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.Lease
 import migratedb.integrationtest.util.container.SharedResources
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 import java.time.Duration
 import javax.sql.DataSource
@@ -65,6 +66,7 @@ enum class Informix(image: String) : DbSystem {
         init {
             withEnv("LICENSE", "accept")
             withExposedPorts(port)
+            waitingFor(Wait.forListeningPort())
         }
     }
 

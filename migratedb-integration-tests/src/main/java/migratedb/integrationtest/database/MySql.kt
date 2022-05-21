@@ -27,6 +27,7 @@ import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.Lease
 import migratedb.integrationtest.util.container.SharedResources
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
@@ -69,6 +70,7 @@ enum class MySql(image: String) : DbSystem {
             withEnv("MYSQL_ROOT_PASSWORD", password)
             withEnv("MYSQL_DATABASE", defaultDatabase.toString())
             withExposedPorts(port)
+            waitingFor(Wait.forListeningPort())
         }
     }
 

@@ -27,6 +27,7 @@ import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.Lease
 import migratedb.integrationtest.util.container.SharedResources
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
@@ -64,6 +65,7 @@ enum class SqlServer(image: String) : DbSystem {
             withEnv("ACCEPT_EULA", "Y")
             withEnv("SA_PASSWORD", password)
             withExposedPorts(port)
+            waitingFor(Wait.forListeningPort())
         }
     }
 

@@ -28,6 +28,7 @@ import migratedb.integrationtest.util.container.SharedResources
 import oracle.jdbc.pool.OracleDataSource
 import org.springframework.dao.DataAccessException
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 import java.time.Duration
 import javax.sql.DataSource
@@ -65,6 +66,7 @@ enum class Oracle(image: String) : DbSystem {
         init {
             withEnv("ORACLE_PASSWORD", password)
             withExposedPorts(port)
+            waitingFor(Wait.forListeningPort())
         }
     }
 

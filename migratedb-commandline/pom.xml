@@ -62,7 +62,6 @@
             <artifactId>commons-codec</artifactId>
             <version>1.15</version>
         </dependency>
-
         <!-- Generic JDBC utilities -->
         <dependency>
             <groupId>p6spy</groupId>

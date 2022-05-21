@@ -16,24 +16,7 @@
  */
 package migratedb.core.internal.schemahistory;
 
-import static migratedb.core.internal.jdbc.ExecutionTemplateFactory.createExecutionTemplate;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import migratedb.core.api.Checksum;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrationPattern;
-import migratedb.core.api.MigrationType;
-import migratedb.core.api.Version;
+import migratedb.core.api.*;
 import migratedb.core.api.internal.database.base.Connection;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Table;
@@ -49,6 +32,14 @@ import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.jdbc.JdbcNullTypes;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.Callable;
+
+import static migratedb.core.internal.jdbc.ExecutionTemplateFactory.createExecutionTemplate;
 
 /**
  * Supports reading and writing to the schema history table.
@@ -385,9 +376,9 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         try {
             jdbcTemplate.update("UPDATE " + table
-                                + " SET "
-                                + database.quote("type") + "=? , "
-                                + " WHERE " + database.quote("installed_rank") + "=?",
+                            + " SET "
+                            + database.quote("type") + "=?  "
+                            + " WHERE " + database.quote("installed_rank") + "=?",
                                 "DELETED", appliedMigration.getInstalledRank());
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to repair Schema History table " + table
