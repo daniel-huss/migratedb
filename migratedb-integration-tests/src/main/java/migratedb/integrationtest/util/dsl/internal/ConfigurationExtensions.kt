@@ -17,9 +17,42 @@
 package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.configuration.FluentConfiguration
+import migratedb.core.api.migration.JavaMigration
 import migratedb.core.api.resource.Resource
 import migratedb.core.internal.resource.NameListResourceProvider
 import migratedb.core.internal.resource.StringResource
+import migratedb.integrationtest.util.dsl.Dsl.Companion.checksum
+
+/**
+ * Makes the given set of migrations resolvable. If this is called more, the effects of the previous invocation are
+ * undone.
+ *
+ * This uses the [FluentConfiguration.javaMigrations] configuration property,
+ * so changing that property afterwards will undo the effects of this function.
+ */
+fun FluentConfiguration.availableMigrations(vararg namesOrMigrations: Any) =
+    availableMigrations(namesOrMigrations.toList())
+
+/**
+ * Makes the given set of migrations resolvable. If this is called more, the effects of the previous invocation are
+ * undone.
+ *
+ * This uses the [FluentConfiguration.javaMigrations] configuration property,
+ * so changing that property afterwards will undo the effects of this function.
+ */
+fun FluentConfiguration.availableMigrations(namesOrMigrations: List<Any>) = apply {
+    namesOrMigrations.map { nameOrMigration ->
+        when (nameOrMigration) {
+            is JavaMigration -> nameOrMigration
+            is CharSequence -> nameOrMigration.toString().let {
+                SimpleJavaMigration(it, {}, it.checksum())
+            }
+            else -> throw IllegalArgumentException("Don't know how to convert ${nameOrMigration::class.qualifiedName} to a migration")
+        }
+    }.toTypedArray().let {
+        javaMigrations(*it)
+    }
+}
 
 /**
  * Makes the given set of migrations resolvable. If this is called more, the effects of the previous invocation are
@@ -31,7 +64,7 @@ import migratedb.core.internal.resource.StringResource
 fun FluentConfiguration.availableMigrations(
     scriptMigrations: Collection<ScriptMigration>,
     codeMigrations: Collection<CodeMigration>
-): FluentConfiguration {
+) = apply {
     val scriptMap = scriptMigrations.associate {
         val name = "${it.name}.sql"
         name to StringResource(name, it.sql)
@@ -41,7 +74,6 @@ fun FluentConfiguration.availableMigrations(
             return scriptMap.getValue(name)
         }
     }
-    return this
-        .javaMigrations(*codeMigrations.map { it.code }.toTypedArray())
-        .resourceProvider(scriptResourceProvider)
+    resourceProvider(scriptResourceProvider)
+    javaMigrations(*codeMigrations.map { it.code }.toTypedArray())
 }

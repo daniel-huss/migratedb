@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.util.dsl.internal
+package migratedb.integrationtest.util.dsl
 
-import migratedb.core.api.output.RepairResult
-import migratedb.integrationtest.util.dsl.RunRepairSpec
+import migratedb.core.api.Checksum
+import migratedb.core.api.MigrationType
+import migratedb.core.api.Version
 
-class RunRepairImpl(givenInfo: GivenInfo) : RunRepairSpec, AbstractRunWithConfigSpec(givenInfo) {
-
-    fun execute(): RepairResult = execute { config ->
-        config.load().repair()
-    }
-}
+data class SchemaHistoryEntry(
+    val type: MigrationType,
+    val success: Boolean,
+    val version: Version?,
+    val description: String,
+    val checksum: Checksum?,
+    val installedRank: Int?,
+)

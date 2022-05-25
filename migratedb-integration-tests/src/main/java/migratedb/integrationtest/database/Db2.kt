@@ -30,6 +30,7 @@ import migratedb.integrationtest.util.base.awaitConnectivity
 import migratedb.integrationtest.util.container.Lease
 import migratedb.integrationtest.util.container.SharedResources
 import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 import java.time.Duration
 import javax.sql.DataSource
@@ -81,6 +82,7 @@ enum class Db2(image: String) : DbSystem {
             }
 
             withExposedPorts(port)
+            waitingFor(Wait.forListeningPort())
             withStartupTimeout(Duration.ofMinutes(5)) // DB2 startup is very slow
         }
     }

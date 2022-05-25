@@ -22,6 +22,7 @@ import migratedb.core.api.logging.LogSystem;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.pattern.ValidatePattern;
 import migratedb.core.api.resolver.MigrationResolver;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.sql.DataSource;
 import java.io.OutputStream;
@@ -186,12 +187,12 @@ public interface Configuration {
     String[] getSqlMigrationSuffixes();
 
     /**
-     * The manually added Java-based migrations. These are not Java-based migrations discovered through classpath
+     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
      * scanning and instantiated by MigrateDb. Instead these are manually added instances of JavaMigration. This is
      * particularly useful when working with a dependency injection container, where you may want the DI container to
      * instantiate the class and wire up its dependencies for you.
      *
-     * @return The manually added Java-based migrations. An empty array if none. (default: none)
+     * @return The additional Java-based migrations. An empty array if none. (default: none)
      */
     JavaMigration[] getJavaMigrations();
 
@@ -279,13 +280,18 @@ public interface Configuration {
     String getTable();
 
     /**
+     * The old table to convert into the format used by MigrateDB. Only used for the "liberate" command.
+     */
+    @Nullable String getOldTable();
+
+    /**
      * The tablespace where to create the schema history table that will be used by MigrateDb. If not specified,
      * MigrateDb uses the default tablespace for the database connection. This setting is only relevant for databases
      * that do support the notion of tablespaces. Its value is simply ignored for all others.
      *
      * @return The tablespace where to create the schema history table that will be used by MigrateDb.
      */
-    String getTablespace();
+    @Nullable String getTablespace();
 
     /**
      * The default schema managed by MigrateDb. This schema name is case-sensitive. If not specified, but <i>schemas</i>

@@ -16,6 +16,4 @@
 
 package migratedb.integrationtest.util.dsl
 
-interface RunRepairSpec : RunWithConfigSpec {
-    fun availableMigrations(vararg names: String)
-}
+interface RunRepairSpec : RunWithConfigSpec

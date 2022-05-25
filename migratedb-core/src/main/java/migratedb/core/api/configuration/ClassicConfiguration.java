@@ -65,6 +65,7 @@ public class ClassicConfiguration implements Configuration {
     private String defaultSchemaName = null;
     private String[] schemaNames = {};
     private String table = "migratedb_state";
+    private String oldTable;
     private String tablespace;
     private TargetVersion target;
     private boolean failOnMissingTarget = true;
@@ -81,7 +82,7 @@ public class ClassicConfiguration implements Configuration {
     private ResourceProvider resourceProvider = null;
     private ClassProvider<JavaMigration> javaMigrationClassProvider = null;
     private String sqlMigrationSeparator = "__";
-    private String[] sqlMigrationSuffixes = { ".sql" };
+    private String[] sqlMigrationSuffixes = {".sql"};
     private JavaMigration[] javaMigrations = {};
     private boolean ignoreMissingMigrations;
     private boolean ignoreIgnoredMigrations;
@@ -163,6 +164,11 @@ public class ClassicConfiguration implements Configuration {
     @Override
     public String getTable() {
         return table;
+    }
+
+    @Override
+    public String getOldTable() {
+        return oldTable;
     }
 
     @Override
@@ -642,8 +648,8 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setIgnoreMigrationPatterns(String... ignoreMigrationPatterns) {
         this.ignoreMigrationPatterns = Arrays.stream(ignoreMigrationPatterns)
-                                             .map(ValidatePattern::fromPattern)
-                                             .toArray(ValidatePattern[]::new);
+                .map(ValidatePattern::fromPattern)
+                .toArray(ValidatePattern[]::new);
     }
 
     /**
@@ -789,11 +795,20 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
+     * Sets the name of the old table to convert into the format used by MigrateDB. Only used for the "liberate" command.
+     *
+     * @param oldTable Name of old table to convert.
+     */
+    public void setOldTable(@Nullable String oldTable) {
+        this.oldTable = oldTable;
+    }
+
+    /**
      * Sets the tablespace where to create the schema history table that will be used by MigrateDb. If not specified,
      * MigrateDb uses the default tablespace for the database connection.This setting is only relevant for databases
      * that do support the notion of tablespaces. Its value is simply ignored for all others.
      *
-     * @param tablespace The tablespace where to create the schema history table that will be used by MigrateDb.
+     * @param tablespace The tablespace where to create the schema history table that will be used by MigrateDB.
      */
     public void setTablespace(String tablespace) {
         this.tablespace = tablespace;
@@ -857,8 +872,8 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setCherryPick(String... cherryPickAsString) {
         this.cherryPick = Arrays.stream(cherryPickAsString)
-                                .map(MigrationPattern::new)
-                                .toArray(MigrationPattern[]::new);
+                .map(MigrationPattern::new)
+                .toArray(MigrationPattern[]::new);
     }
 
     /**
@@ -948,19 +963,35 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * The manually added Java-based migrations. These are not Java-based migrations discovered through classpath
-     * scanning and instantiated by MigrateDb. Instead these are manually added instances of JavaMigration. This is
+     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
+     * scanning and instantiated by MigrateDb. Instead these are application-managed instances of JavaMigration. This is
      * particularly useful when working with a dependency injection container, where you may want the DI container to
      * instantiate the class and wire up its dependencies for you.
      *
-     * @param javaMigrations The manually added Java-based migrations. An empty array if none. (default: none)
+     * @param javaMigrations The additional Java-based migrations. An empty array if none. (default: none)
      */
     public void setJavaMigrations(JavaMigration... javaMigrations) {
         if (javaMigrations == null) {
             throw new MigrateDbException("javaMigrations cannot be null", ErrorCode.CONFIGURATION);
         }
-        this.javaMigrations = javaMigrations;
+        this.javaMigrations = javaMigrations.clone();
     }
+
+    /**
+     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
+     * scanning and instantiated by MigrateDb. Instead these are application-managed instances of JavaMigration. This is
+     * particularly useful when working with a dependency injection container, where you may want the DI container to
+     * instantiate the class and wire up its dependencies for you.
+     *
+     * @param javaMigrations The additional Java-based migrations. An empty array if none. (default: none)
+     */
+    public void setJavaMigrations(Collection<JavaMigration> javaMigrations) {
+        if (javaMigrations == null) {
+            throw new MigrateDbException("javaMigrations cannot be null", ErrorCode.CONFIGURATION);
+        }
+        this.javaMigrations = javaMigrations.toArray(JavaMigration[]::new);
+    }
+
 
     /**
      * Whether to batch SQL statements when executing them. Batching can save up to 99 percent of network roundtrips by
@@ -1050,7 +1081,7 @@ public class ClassicConfiguration implements Configuration {
     public void setConnectRetries(int connectRetries) {
         if (connectRetries < 0) {
             throw new MigrateDbException("Invalid number of connectRetries (must be 0 or greater): " + connectRetries,
-                                         ErrorCode.CONFIGURATION);
+                    ErrorCode.CONFIGURATION);
         }
         this.connectRetries = connectRetries;
     }
@@ -1064,8 +1095,8 @@ public class ClassicConfiguration implements Configuration {
     public void setConnectRetriesInterval(int connectRetriesInterval) {
         if (connectRetriesInterval < 0) {
             throw new MigrateDbException(
-                "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
-                ErrorCode.CONFIGURATION);
+                    "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
+                    ErrorCode.CONFIGURATION);
         }
         this.connectRetriesInterval = connectRetriesInterval;
     }
@@ -1340,6 +1371,7 @@ public class ClassicConfiguration implements Configuration {
         setLockRetryCount(configuration.getLockRetryCount());
         setLogger(configuration.getLogger());
         setMixed(configuration.isMixed());
+        setOldTable(configuration.getOldTable());
         setOutOfOrder(configuration.isOutOfOrder());
         setOutputQueryResults(configuration.isOutputQueryResults());
         setPlaceholderPrefix(configuration.getPlaceholderPrefix());
@@ -1377,7 +1409,6 @@ public class ClassicConfiguration implements Configuration {
      * {@code useExtension} prior to calling this method.
      *
      * @param properties Properties used for configuration.
-     *
      * @throws MigrateDbException when the configuration failed.
      */
     public void configure(Properties properties) {
@@ -1391,7 +1422,6 @@ public class ClassicConfiguration implements Configuration {
      * {@code useExtension} prior to calling this method.
      *
      * @param props Properties used for configuration.
-     *
      * @throws MigrateDbException when the configuration failed.
      */
     public void configure(Map<String, String> props) {
@@ -1489,6 +1519,10 @@ public class ClassicConfiguration implements Configuration {
         String tableProp = props.remove(PropertyNames.TABLE);
         if (tableProp != null) {
             setTable(tableProp);
+        }
+        String oldTableProp = props.remove(PropertyNames.OLD_TABLE);
+        if (oldTableProp != null) {
+            setOldTable(oldTableProp);
         }
         String tablespaceProp = props.remove(PropertyNames.TABLESPACE);
         if (tablespaceProp != null) {
@@ -1633,21 +1667,21 @@ public class ClassicConfiguration implements Configuration {
 
         // Must be done last, so that any driver-specific config has been done at this point.
         if (StringUtils.hasText(url) && (StringUtils.hasText(urlProp) ||
-                                         StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
-                                         StringUtils.hasText(passwordProp))) {
+                StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
+                StringUtils.hasText(passwordProp))) {
             putPropertiesUnderNamespace(
-                props,
-                getPlaceholders(),
-                PropertyNames.JDBC_PROPERTIES_PREFIX);
+                    props,
+                    getPlaceholders(),
+                    PropertyNames.JDBC_PROPERTIES_PREFIX);
 
             setDataSource(new DriverDataSource(classLoader,
-                                               driver,
-                                               url,
-                                               user,
-                                               password,
-                                               this,
-                                               jdbcProperties,
-                                               databaseTypeRegister));
+                    driver,
+                    url,
+                    user,
+                    password,
+                    this,
+                    jdbcProperties,
+                    databaseTypeRegister));
         }
 
         ConfigUtils.reportUnrecognisedProperties(props, "migratedb.");

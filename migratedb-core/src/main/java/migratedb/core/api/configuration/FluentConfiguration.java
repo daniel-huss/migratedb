@@ -25,13 +25,12 @@ import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.pattern.ValidatePattern;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.util.ClassUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.sql.DataSource;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -91,6 +90,11 @@ public class FluentConfiguration implements Configuration {
     @Override
     public String getTable() {
         return config.getTable();
+    }
+
+    @Override
+    public @Nullable String getOldTable() {
+        return config.getOldTable();
     }
 
     @Override
@@ -728,6 +732,16 @@ public class FluentConfiguration implements Configuration {
     }
 
     /**
+     * Sets the name of the old table to convert into the format used by MigrateDB. Only used for the "liberate" command.
+     *
+     * @param oldTable Name of old table to convert.
+     */
+    public FluentConfiguration oldTable(@Nullable String oldTable) {
+        config.setOldTable(oldTable);
+        return this;
+    }
+
+    /**
      * Sets the tablespace where to create the schema history table that will be used by MigrateDb. If not specified,
      * MigrateDb uses the default tablespace for the database connection. This setting is only relevant for databases
      * that do support the notion of tablespaces. Its value is simply ignored for all others.
@@ -926,9 +940,22 @@ public class FluentConfiguration implements Configuration {
      * is particularly useful when working with a dependency injection container, where you may want the DI container to
      * instantiate the class and wire up its dependencies for you.
      *
-     * @param javaMigrations The manually added Java-based migrations. An empty array if none. (default: none)
+     * @param javaMigrations The additional Java-based migrations. An empty array if none. (default: none)
      */
     public FluentConfiguration javaMigrations(JavaMigration... javaMigrations) {
+        config.setJavaMigrations(Arrays.asList(javaMigrations));
+        return this;
+    }
+
+    /**
+     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
+     * scanning and instantiated by MigrateDb. Instead these are application-controlled instances of JavaMigration. This
+     * is particularly useful when working with a dependency injection container, where you may want the DI container to
+     * instantiate the class and wire up its dependencies for you.
+     *
+     * @param javaMigrations The additional Java-based migrations. An empty array if none. (default: none)
+     */
+    public FluentConfiguration javaMigrations(Collection<JavaMigration> javaMigrations) {
         config.setJavaMigrations(javaMigrations);
         return this;
     }
@@ -1220,7 +1247,6 @@ public class FluentConfiguration implements Configuration {
      * {@code useExtension} prior to calling this method.
      *
      * @param properties Properties used for configuration.
-     *
      * @throws MigrateDbException when the configuration failed.
      */
     public FluentConfiguration configuration(Properties properties) {
@@ -1235,7 +1261,6 @@ public class FluentConfiguration implements Configuration {
      * {@code useExtension} prior to calling this method.
      *
      * @param props Properties used for configuration.
-     *
      * @throws MigrateDbException when the configuration failed.
      */
     public FluentConfiguration configuration(Map<String, String> props) {

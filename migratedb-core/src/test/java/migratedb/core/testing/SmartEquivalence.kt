@@ -18,6 +18,8 @@ package migratedb.core.testing
 import com.google.common.base.Equivalence
 import java.util.*
 
+// Kotlin does not understand that Equivalence<Any> is valid for Map.diff(), so we have to declare it <Any?> :-/
+@Suppress("WRONG_NULLABILITY_FOR_JAVA_OVERRIDE")
 object SmartEquivalence : Equivalence<Any?>() {
     override fun doEquivalent(a: Any?, b: Any?): Boolean {
         return when {

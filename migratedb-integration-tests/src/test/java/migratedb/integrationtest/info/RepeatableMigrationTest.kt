@@ -16,15 +16,10 @@
 
 package migratedb.integrationtest.info
 
-import migratedb.core.api.MigrationState.FAILED
-import migratedb.core.api.MigrationState.IGNORED
-import migratedb.core.api.MigrationState.MISSING_FAILED
-import migratedb.core.api.MigrationState.MISSING_SUCCESS
-import migratedb.core.api.MigrationState.OUTDATED
-import migratedb.core.api.MigrationState.PENDING
-import migratedb.core.api.MigrationState.SUCCESS
-import migratedb.core.api.MigrationState.SUPERSEDED
+import migratedb.core.api.Checksum
+import migratedb.core.api.MigrationState.*
 import migratedb.core.api.MigrationType
+import migratedb.integrationtest.util.dsl.internal.SimpleJavaMigration
 import org.junit.jupiter.api.Test
 
 class RepeatableMigrationTest : AbstractMigrationInfoTest() {
@@ -42,6 +37,22 @@ class RepeatableMigrationTest : AbstractMigrationInfoTest() {
             ),
             expectedCurrent = "R__A",
             expectedNext = "R__A"
+        )
+    }
+
+    @Test
+    fun `Only the superseded run has the same checksum`() {
+        val oldChecksum = Checksum.parse("oldd")
+        val currentChecksum = Checksum.parse("currentt")
+        TestCase(
+            availableMigrations = listOf(SimpleJavaMigration("R__A", {}, currentChecksum)),
+            schemaHistory = {
+                entry(null, "A", MigrationType.SQL, true, checksum = currentChecksum)
+                entry(null, "A", MigrationType.SQL, true, checksum = oldChecksum)
+            },
+            expectedStatesInAppliedOrder = mapOf(
+                "R__A" to listOf(SUPERSEDED, OUTDATED)
+            )
         )
     }
 

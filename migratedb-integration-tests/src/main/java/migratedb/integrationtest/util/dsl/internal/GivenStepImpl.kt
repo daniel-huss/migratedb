@@ -36,6 +36,7 @@ class GivenStepImpl(private val databaseHandle: DbSystem.Handle) : AutoCloseable
         GivenInfo(
             databaseHandle = databaseHandle,
             database = it.database,
+            adminDataSource = it.adminDataSource,
             schemaName = it.schemaName,
             namespace = it.namespace
         )

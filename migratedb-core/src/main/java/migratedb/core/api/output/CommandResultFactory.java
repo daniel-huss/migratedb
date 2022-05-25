@@ -16,11 +16,6 @@
  */
 package migratedb.core.api.output;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 import migratedb.core.api.ErrorDetails;
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.configuration.Configuration;
@@ -29,15 +24,21 @@ import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.internal.info.BuildInfo;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
 public class CommandResultFactory {
     public static LiberateResult createLiberateResult(Configuration configuration,
                                                       Database database,
                                                       String schemaHistorySchema,
                                                       String schemaHistoryTable) {
         return new LiberateResult(BuildInfo.VERSION,
-                                  getDatabaseName(configuration, database),
-                                  schemaHistorySchema,
-                                  schemaHistoryTable);
+                getDatabaseName(configuration, database),
+                schemaHistorySchema,
+                schemaHistoryTable);
     }
 
     public static InfoResult createInfoResult(Configuration configuration,
@@ -55,15 +56,15 @@ public class CommandResultFactory {
 
         var currentSchemaVersion = current == null ? null : current.getVersion();
         String schemaVersion = convertToString(currentSchemaVersion == null ? SchemaHistory.EMPTY_SCHEMA_DESCRIPTION
-                                                                            : currentSchemaVersion);
+                : currentSchemaVersion);
 
         return new InfoResult(
-            migratedbVersion,
-            databaseName,
-            schemaVersion,
-            String.join(", ", configuration.getSchemas()),
-            infoOutputs,
-            allSchemasEmpty);
+                migratedbVersion,
+                databaseName,
+                schemaVersion,
+                String.join(", ", configuration.getSchemas()),
+                infoOutputs,
+                allSchemasEmpty);
     }
 
     public static MigrateResult createMigrateResult(String databaseName, Configuration configuration) {
@@ -90,60 +91,60 @@ public class CommandResultFactory {
         List<ValidateOutput> invalidMigrationsList = invalidMigrations == null ? new ArrayList<>() : invalidMigrations;
 
         return new ValidateResult(migratedbVersion,
-                                  databaseName,
-                                  validationError,
-                                  validationSuccessful,
-                                  validationCount,
-                                  invalidMigrationsList,
-                                  warnings,
-                                  errorMessage);
+                databaseName,
+                validationError,
+                validationSuccessful,
+                validationCount,
+                invalidMigrationsList,
+                warnings,
+                errorMessage);
     }
 
-    public static RepairResult createRepairResult(String databaseName) {
+    public static RepairResult createRepairResult(Configuration configuration, Database database) {
         String migratedbVersion = BuildInfo.VERSION;
-        return new RepairResult(migratedbVersion, databaseName);
+        return new RepairResult(migratedbVersion, getDatabaseName(configuration, database));
     }
 
     public static InfoOutput createInfoOutput(MigrationInfo migrationInfo) {
         return new InfoOutput(getCategory(migrationInfo),
-                              convertToString(migrationInfo.getVersion()),
-                              migrationInfo.getDescription(),
-                              convertToString(migrationInfo.getType()),
-                              convertToString(migrationInfo.getInstalledOn()),
-                              migrationInfo.getState().getDisplayName(),
-                              convertToString(migrationInfo.getPhysicalLocation()),
-                              convertToString(migrationInfo.getInstalledBy()),
-                              migrationInfo.getExecutionTime() != null ? migrationInfo.getExecutionTime() : 0);
+                convertToString(migrationInfo.getVersion()),
+                migrationInfo.getDescription(),
+                convertToString(migrationInfo.getType()),
+                convertToString(migrationInfo.getInstalledOn()),
+                migrationInfo.getState().getDisplayName(),
+                convertToString(migrationInfo.getPhysicalLocation()),
+                convertToString(migrationInfo.getInstalledBy()),
+                migrationInfo.getExecutionTime() != null ? migrationInfo.getExecutionTime() : 0);
     }
 
     public static MigrateOutput createMigrateOutput(MigrationInfo migrationInfo, int executionTime) {
         return new MigrateOutput(getCategory(migrationInfo),
-                                 convertToString(migrationInfo.getVersion()),
-                                 migrationInfo.getDescription(),
-                                 convertToString(migrationInfo.getType()),
-                                 convertToString(migrationInfo.getPhysicalLocation()),
-                                 executionTime);
+                convertToString(migrationInfo.getVersion()),
+                migrationInfo.getDescription(),
+                convertToString(migrationInfo.getType()),
+                convertToString(migrationInfo.getPhysicalLocation()),
+                executionTime);
     }
 
     public static ValidateOutput createValidateOutput(MigrationInfo migrationInfo, ErrorDetails validateError) {
         return new ValidateOutput(
-            convertToString(migrationInfo.getVersion()),
-            migrationInfo.getDescription(),
-            convertToString(migrationInfo.getPhysicalLocation()),
-            validateError);
+                convertToString(migrationInfo.getVersion()),
+                migrationInfo.getDescription(),
+                convertToString(migrationInfo.getPhysicalLocation()),
+                validateError);
     }
 
     public static RepairOutput createRepairOutput(MigrationInfo migrationInfo) {
         return new RepairOutput(
-            convertToString(migrationInfo.getVersion()),
-            migrationInfo.getDescription(),
-            migrationInfo.getPhysicalLocation() != null ? migrationInfo.getPhysicalLocation() : "");
+                convertToString(migrationInfo.getVersion()),
+                migrationInfo.getDescription(),
+                migrationInfo.getPhysicalLocation() != null ? migrationInfo.getPhysicalLocation() : "");
     }
 
     public static RepairOutput createRepairOutput(AppliedMigration am) {
         return new RepairOutput(convertToString(am.getVersion()),
-                                am.getDescription(),
-                                "");
+                am.getDescription(),
+                "");
     }
 
     private static String getDatabaseName(Configuration configuration, Database database) {

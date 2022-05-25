@@ -34,6 +34,7 @@ import migratedb.integrationtest.util.dsl.Dsl.Companion.migrationName
 import migratedb.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 import migratedb.integrationtest.util.dsl.Dsl.Companion.toMigrationNames
 import migratedb.integrationtest.util.dsl.SchemaHistorySpec
+import migratedb.integrationtest.util.dsl.internal.availableMigrations
 
 abstract class AbstractMigrationInfoTest : IntegrationTest() {
     object DoNotCheck : CharSequence by ""
@@ -42,7 +43,7 @@ abstract class AbstractMigrationInfoTest : IntegrationTest() {
         private val schemaHistory: (SchemaHistorySpec).() -> Unit = {},
         private val configModifier: (FluentConfiguration).() -> Unit = {},
         dbSystem: DbSystem? = null,
-        availableMigrations: List<String>,
+        availableMigrations: List<Any>,
         expectedAll: List<String>? = null,
         expectedPending: List<String>? = null,
         expectedApplied: List<String>? = null,
@@ -81,9 +82,8 @@ abstract class AbstractMigrationInfoTest : IntegrationTest() {
                 }.`when` {
                     info {
                         withConfig {
-                            configModifier.invoke(it)
-                            val migrations = createMigrations(availableMigrations.toMigrationNames())
-                            it.javaMigrations(*migrations)
+                            configModifier()
+                            availableMigrations(availableMigrations)
                         }
                     }
                 }.then { actual ->

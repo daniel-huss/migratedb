@@ -16,16 +16,17 @@
 
 package migratedb.core.api.configuration;
 
+import migratedb.core.api.Location;
+import migratedb.core.api.Version;
+import migratedb.core.api.logging.LogSystems;
+import migratedb.core.api.pattern.ValidatePattern;
+
 import java.io.File;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.nio.charset.Charset;
-import migratedb.core.api.Location;
-import migratedb.core.api.Version;
-import migratedb.core.api.logging.LogSystems;
-import migratedb.core.api.pattern.ValidatePattern;
 
 public class PropertyNames {
     @Info(typeHint = String.class)
@@ -120,6 +121,8 @@ public class PropertyNames {
     public static final String BASELINE_MIGRATION_PREFIX = "migratedb.baselineMigrationPrefix";
     @Info(typeHint = String.class)
     public static final String TABLE = "migratedb.table";
+    @Info(typeHint = String.class)
+    public static final String OLD_TABLE = "migratedb.oldTable";
     @Info(typeHint = String.class)
     public static final String TABLESPACE = "migratedb.tablespace";
     @Info(typeHint = Version.class)

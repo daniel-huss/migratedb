@@ -31,6 +31,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 
 
+@Suppress("unused") // Props are used via reflection
 object ConfigSetters {
     val baselineDescription = Setter("setBaselineDescription", String.any().ofLength(1..100))
     val baselineMigrationPrefix = Setter("setBaselineMigrationPrefix", String.any().alpha().ofLength(1))
@@ -39,8 +40,10 @@ object ConfigSetters {
     val baselineVersionAsString = Setter("setBaselineVersionAsString", anyMigrationVersionString())
     val batch = Setter("setBatch", Boolean.any())
     val callbacks = Setter("setCallbacks", Arbitraries.ofSuppliers(::UniversalDummy).array(Callback::class))
-    val callbacksAsClassNames = Setter("setCallbacksAsClassNames", just(UniversalDummy::class.java.name).array(String::class))
-    val cherryPick1 = Setter("setCherryPick", anyMigrationPattern().array(MigrationPattern::class), Array<MigrationPattern>::class)
+    val callbacksAsClassNames =
+        Setter("setCallbacksAsClassNames", just(UniversalDummy::class.java.name).array(String::class))
+    val cherryPick1 =
+        Setter("setCherryPick", anyMigrationPattern().array(MigrationPattern::class), Array<MigrationPattern>::class)
     val cherryPick2 = Setter("setCherryPick", anyMigrationPattern().map(MigrationPattern::toString).array(String::class), Array<String>::class)
     val cleanDisabled = Setter("setCleanDisabled", Boolean.any())
     val cleanOnValidationError = Setter("setCleanOnValidationError", Boolean.any())
@@ -95,6 +98,7 @@ object ConfigSetters {
     val sqlMigrationSeparator = Setter("setSqlMigrationSeparator", String.any().ofLength(1..10))
     val sqlMigrationSuffixes = Setter("setSqlMigrationSuffixes", String.any().ofLength(1..10).array(String::class))
     val table = Setter("setTable", anySchemaObjectName())
+    val oldTable = Setter("oldTable", anySchemaObjectName())
     val tablespace = Setter("setTablespace", anySchemaObjectName())
     val target = Setter("setTarget", anyTargetVersion())
     val targetAsString = Setter("setTargetAsString", anyTargetVersionString())

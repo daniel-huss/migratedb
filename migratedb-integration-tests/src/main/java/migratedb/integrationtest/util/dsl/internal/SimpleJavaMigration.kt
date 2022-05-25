@@ -35,7 +35,12 @@ class SimpleJavaMigration(
     private val prefix = name[0].uppercase()
 
     init {
-        MigrationInfoHelper.extractVersionAndDescription(name.toMigrationName(), prefix, "__", prefix == "R").let {
+        MigrationInfoHelper.extractVersionAndDescription(
+            name.toMigrationName(),
+            prefix,
+            "__",
+            prefix == "R"
+        ).also {
             version = it.version
             description = it.description
         }

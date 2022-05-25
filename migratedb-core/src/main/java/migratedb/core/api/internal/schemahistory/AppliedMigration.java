@@ -16,22 +16,21 @@
  */
 package migratedb.core.api.internal.schemahistory;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.Objects;
 import migratedb.core.api.Checksum;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.Version;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Objects;
 
 /**
  * A migration applied to the database (maps to a row in the schema history table).
  * <p>
  * Its natural ordering is inconsistent with equals().
  */
-public final class AppliedMigration implements Comparable<AppliedMigration> {
-    // TODO This is not a value type, so it does not need a natural ordering
-
+public final class AppliedMigration {
     /**
      * The order in which this migration was applied amongst all others. (For out of order detection)
      */
@@ -40,7 +39,7 @@ public final class AppliedMigration implements Comparable<AppliedMigration> {
     /**
      * The target version of this migration. {@code null} if it is a repeatable migration.
      */
-    private final Version version;
+    private final @Nullable Version version;
 
     /**
      * The description of the migration.
@@ -60,7 +59,7 @@ public final class AppliedMigration implements Comparable<AppliedMigration> {
     /**
      * The checksum of the migration. (Optional)
      */
-    private final Checksum checksum;
+    private final @Nullable Checksum checksum;
 
     /**
      * The timestamp when this migration was installed.
@@ -98,11 +97,11 @@ public final class AppliedMigration implements Comparable<AppliedMigration> {
      * @param success       Flag indicating whether the migration was successful or not.
      */
     public AppliedMigration(int installedRank,
-                            Version version,
+                            @Nullable Version version,
                             String description,
                             MigrationType type,
                             String script,
-                            Checksum checksum,
+                            @Nullable Checksum checksum,
                             Timestamp installedOn,
                             String installedBy,
                             int executionTime,
@@ -129,7 +128,7 @@ public final class AppliedMigration implements Comparable<AppliedMigration> {
     /**
      * @return The target version of this migration.
      */
-    public Version getVersion() {
+    public @Nullable Version getVersion() {
         return version;
     }
 
@@ -196,39 +195,48 @@ public final class AppliedMigration implements Comparable<AppliedMigration> {
         }
         AppliedMigration other = (AppliedMigration) o;
         return (executionTime == other.executionTime) &&
-               (installedRank == other.installedRank) &&
-               (success == other.success) &&
-               Objects.equals(checksum, other.checksum) &&
-               Objects.equals(description, other.description) &&
-               Objects.equals(installedBy, other.installedBy) &&
-               Objects.equals(installedOn, other.installedOn) &&
-               Objects.equals(script, other.script) &&
-               Objects.equals(type, other.type) &&
-               Objects.equals(version, other.version);
+                (installedRank == other.installedRank) &&
+                (success == other.success) &&
+                Objects.equals(checksum, other.checksum) &&
+                Objects.equals(description, other.description) &&
+                Objects.equals(installedBy, other.installedBy) &&
+                Objects.equals(installedOn, other.installedOn) &&
+                Objects.equals(script, other.script) &&
+                Objects.equals(type, other.type) &&
+                Objects.equals(version, other.version);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(installedRank,
-                            version,
-                            description,
-                            type,
-                            script,
-                            checksum,
-                            installedOn,
-                            installedBy,
-                            executionTime,
-                            success);
+                version,
+                description,
+                type,
+                script,
+                checksum,
+                installedOn,
+                installedBy,
+                executionTime,
+                success);
     }
 
     @Override
-    public int compareTo(AppliedMigration o) {
-        return Integer.compare(installedRank, o.installedRank);
+    public String toString() {
+        return getClass().getSimpleName() + "{" +
+                "installedRank=" + installedRank +
+                ", version=" + version +
+                ", description='" + description + '\'' +
+                ", type=" + type +
+                ", checksum=" + checksum +
+                ", installedOn=" + installedOn +
+                ", installedBy='" + installedBy + '\'' +
+                ", success=" + success +
+                '}';
     }
 
     public boolean isExecutionOfRepeatableMigration() {
         return getVersion() == null &&
-               !getType().equals(MigrationType.BASELINE) &&
-               !getType().equals(MigrationType.SCHEMA);
+                !getType().equals(MigrationType.BASELINE) &&
+                !getType().equals(MigrationType.SCHEMA);
     }
 }

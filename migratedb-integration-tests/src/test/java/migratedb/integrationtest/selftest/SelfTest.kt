@@ -29,23 +29,23 @@ class SelfTest : IntegrationTest() {
     fun `Database system is supported by test DSL`(dbSystem: DbSystem) = withDsl(dbSystem) {
         given {
             database {
-                schemaHistory(table = table("migratedb")) {
+                schemaHistory(table = normalize("migratedb")) {
                     entry(name = "V001__Test", type = MigrationType.JDBC, success = true)
                 }
             }
         }.`when` {
             migrate {
-                withConfig { config ->
-                    schemaName?.let { config.schemas(it.toString()) }
-                    config.table(table("migratedb"))
-                    config.ignoreMissingMigrations(true)
+                withConfig {
+                    schemaName?.let { schemas(it.toString()) }
+                    table(normalize("migratedb"))
+                    ignoreMissingMigrations(true)
                 }
                 script("V002__Foo", "-- This script does nothing")
                 code("V003__Bar", arbitraryMutation()::apply)
             }
         }.then {
             withConnection { sql ->
-                sql.queryForList("select * from ${table("migratedb")}")
+                sql.queryForList("select * from ${normalize("migratedb")}")
                     .map { it.getValue("description") }
                     .shouldContainAll("Test", "Foo", "Bar")
             }

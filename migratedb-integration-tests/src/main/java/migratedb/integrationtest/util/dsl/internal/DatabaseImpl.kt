@@ -19,14 +19,16 @@ package migratedb.integrationtest.util.dsl.internal
 import migratedb.core.api.Checksum
 import migratedb.core.api.MigrationType
 import migratedb.core.api.Version
+import migratedb.core.api.configuration.Configuration
 import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.api.internal.database.base.Database
-import migratedb.core.api.internal.database.base.Schema
-import migratedb.core.api.internal.jdbc.StatementInterceptor
+import migratedb.core.api.internal.jdbc.JdbcConnectionFactory
+import migratedb.core.api.internal.jdbc.StatementInterceptor.doNothing
 import migratedb.core.internal.callback.NoopCallbackExecutor
 import migratedb.core.internal.jdbc.JdbcConnectionFactoryImpl
 import migratedb.core.internal.parser.ParsingContextImpl
 import migratedb.core.internal.resolver.MigrationInfoHelper
+import migratedb.core.internal.schemahistory.SchemaHistory
 import migratedb.core.internal.schemahistory.SchemaHistoryFactory
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.util.base.Names
@@ -34,7 +36,9 @@ import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.dsl.DatabaseSpec
 import migratedb.integrationtest.util.dsl.Dsl.Companion.checksum
 import migratedb.integrationtest.util.dsl.Dsl.Companion.toMigrationName
+import migratedb.integrationtest.util.dsl.SchemaHistoryEntry
 import migratedb.integrationtest.util.dsl.SchemaHistorySpec
+import javax.sql.DataSource
 
 class DatabaseImpl(
     private val databaseHandle: DbSystem.Handle
@@ -42,13 +46,16 @@ class DatabaseImpl(
     private var namespace: SafeIdentifier = Names.nextNamespace()
     private var schemaHistory: SchemaHistorySpecImpl? = null
     private var database: Database<*>? = null
+    private var schemaHistoryTable: String? = null
 
-    override fun schemaHistory(table: String, block: (SchemaHistorySpec).() -> Unit) {
-        schemaHistory = SchemaHistorySpecImpl(table).also(block)
+    override fun schemaHistory(table: String?, block: (SchemaHistorySpec).() -> Unit) {
+        this.schemaHistoryTable = table
+        this.schemaHistory = SchemaHistorySpecImpl().also(block)
     }
 
     data class MaterializeResult(
         val namespace: SafeIdentifier,
+        val adminDataSource: DataSource,
         val database: Database<*>,
         val schemaName: SafeIdentifier?,
     )
@@ -58,31 +65,26 @@ class DatabaseImpl(
         val dataSource = databaseHandle.newAdminConnection(namespace)
         val configuration = FluentConfiguration().also {
             if (schemaName != null) it.schemas(schemaName.toString())
+            if (schemaHistoryTable != null) it.table(schemaHistoryTable)
         }
-        val connectionFactory =
-            JdbcConnectionFactoryImpl(dataSource, configuration, StatementInterceptor.doNothing())
-        val db = databaseHandle.type.createDatabase(configuration, connectionFactory, StatementInterceptor.doNothing())
-        val schema = SchemaHistoryFactory.scanSchemas(configuration, db).defaultSchema
-        schemaHistory?.materializeInto(db, schema, connectionFactory)
+        val connectionFactory = JdbcConnectionFactoryImpl(dataSource, configuration, doNothing())
+        val db = databaseHandle.type.createDatabase(configuration, connectionFactory, doNothing())
+        schemaHistory?.materializeInto(db, configuration)
         database = db
-        return MaterializeResult(namespace = namespace, database = db, schemaName = schemaName)
+        return MaterializeResult(
+            namespace = namespace,
+            adminDataSource = dataSource,
+            database = db,
+            schemaName = schemaName
+        )
     }
 
     override fun close() {
-        database.use { }
+        database.use {}
         databaseHandle.dropNamespaceIfExists(namespace)
     }
 
-    private data class SchemaHistoryEntry(
-        val type: MigrationType,
-        val success: Boolean,
-        val version: Version?,
-        val description: String,
-        val checksum: Checksum?,
-        val installedRank: Int?,
-    )
-
-    inner class SchemaHistorySpecImpl(private val table: String) : SchemaHistorySpec {
+    inner class SchemaHistorySpecImpl : SchemaHistorySpec {
         private val entries = mutableListOf<SchemaHistoryEntry>()
 
         override fun entry(
@@ -123,29 +125,8 @@ class DatabaseImpl(
             )
         }
 
-        fun materializeInto(database: Database<*>, schema: Schema<*, *>, connectionFactory: JdbcConnectionFactoryImpl) {
-            val configuration = FluentConfiguration().also {
-                if (schema.name != null) it.schemas(schema.name)
-                it.table(table)
-            }
-            val sqlScriptExecutorFactory = database.databaseType.createSqlScriptExecutorFactory(
-                connectionFactory,
-                NoopCallbackExecutor.INSTANCE,
-                StatementInterceptor.doNothing()
-            )
-            val sqlScriptFactory = database.databaseType.createSqlScriptFactory(
-                configuration,
-                ParsingContextImpl()
-            )
-            val schemaHistory = SchemaHistoryFactory.getSchemaHistory(
-                configuration,
-                sqlScriptExecutorFactory,
-                sqlScriptFactory,
-                database,
-                schema,
-                StatementInterceptor.doNothing()
-            )
-
+        fun materializeInto(database: Database<*>, configuration: Configuration) {
+            val schemaHistory = getSchemaHistory(configuration, database)
             schemaHistory.create(false)
             entries.forEach { entry ->
                 if (entry.installedRank != null) {
@@ -172,5 +153,55 @@ class DatabaseImpl(
                 }
             }
         }
+    }
+
+
+    companion object {
+        /**
+         * Creates a new schema history accessor.
+         */
+        fun getSchemaHistory(
+            configuration: Configuration,
+            database: Database<*>
+        ): SchemaHistory {
+            val schema = SchemaHistoryFactory.scanSchemas(configuration, database).defaultSchema
+            val sqlScriptExecutorFactory = database.databaseType.createSqlScriptExecutorFactory(
+                DummyConnectionFactory,
+                NoopCallbackExecutor.INSTANCE,
+                doNothing()
+            )
+            val sqlScriptFactory = database.databaseType.createSqlScriptFactory(
+                configuration,
+                ParsingContextImpl()
+            )
+            return SchemaHistoryFactory.getSchemaHistory(
+                configuration,
+                sqlScriptExecutorFactory,
+                sqlScriptFactory,
+                database,
+                schema,
+                doNothing()
+            )
+        }
+    }
+
+    /**
+     * Dummy object for use with SchemaHistoryFactory.getSchemaHistory, which requires a connection factory even though
+     * its connections are never used...
+     */
+    private object DummyConnectionFactory : JdbcConnectionFactory {
+        private fun wontImplement(): Nothing {
+            throw UnsupportedOperationException("This is just a dummy")
+        }
+
+        override fun getDatabaseType() = wontImplement()
+
+        override fun getJdbcUrl() = wontImplement()
+
+        override fun getDriverInfo() = wontImplement()
+
+        override fun getProductName() = wontImplement()
+
+        override fun openConnection() = wontImplement()
     }
 }

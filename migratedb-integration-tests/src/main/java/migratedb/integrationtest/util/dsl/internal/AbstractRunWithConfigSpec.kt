@@ -35,8 +35,8 @@ abstract class AbstractRunWithConfigSpec(private val givenInfo: GivenInfo) : Run
         }.toTypedArray()
     }
 
-    final override fun withConfig(classLoader: ClassLoader?, block: (FluentConfiguration) -> Unit) {
-        config = newConfig(classLoader).also(block)
+    final override fun withConfig(classLoader: ClassLoader?, block: (FluentConfiguration).() -> Unit) {
+        config = newConfig(classLoader).apply(block)
     }
 
     protected fun <T> execute(block: (config: FluentConfiguration) -> T): T {

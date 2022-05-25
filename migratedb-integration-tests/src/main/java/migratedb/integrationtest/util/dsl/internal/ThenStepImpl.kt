@@ -16,6 +16,8 @@
 
 package migratedb.integrationtest.util.dsl.internal
 
+import migratedb.core.api.configuration.FluentConfiguration
+import migratedb.core.api.internal.schemahistory.AppliedMigration
 import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.dsl.Dsl
 import org.springframework.jdbc.core.JdbcTemplate
@@ -26,5 +28,14 @@ class ThenStepImpl<G : Any>(given: G, givenInfo: GivenInfo) : Dsl.ThenStep<G>, A
         givenInfo.databaseHandle
             .newAdminConnection(givenInfo.namespace)
             .work(schema = givenInfo.schemaName, action = block)
+    }
+
+    override fun schemaHistory(table: String?, block: (List<AppliedMigration>) -> Unit) {
+        val configuration = FluentConfiguration().apply {
+            table?.let(::table)
+            givenInfo.schemaName?.let { schemas(it.toString()) }
+        }
+        val schemaHistory = DatabaseImpl.getSchemaHistory(configuration, givenInfo.database)
+        block(schemaHistory.allAppliedMigrations())
     }
 }

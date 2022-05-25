@@ -16,25 +16,17 @@
 
 package migratedb.core.api;
 
-import static java.util.Collections.emptyIterator;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import java.util.*;
+
+import static java.util.Collections.emptyIterator;
 
 /**
  * Digest-based checksum that replaces the old Integer checksum.
@@ -112,6 +104,10 @@ public final class Checksum {
 
         public Builder addNumber(@Nullable BigInteger value) {
             return add(value == null ? null : value.toByteArray());
+        }
+
+        public Builder addNumber(@Nullable Long value) {
+            return addNumber(value == null ? null : BigInteger.valueOf(value));
         }
 
         /**

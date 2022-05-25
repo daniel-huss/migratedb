@@ -20,6 +20,7 @@ import migratedb.core.api.Checksum
 import migratedb.core.api.MigrationInfo
 import migratedb.core.api.MigrationInfoService
 import migratedb.core.api.Version
+import migratedb.core.api.internal.schemahistory.AppliedMigration
 import migratedb.core.api.output.MigrateResult
 import migratedb.core.api.output.RepairResult
 import migratedb.integrationtest.database.DbSystem
@@ -38,8 +39,8 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
          * Auto-completes a shortened migration name like "V1" to a valid migration name like "V1__V1".
          */
         fun String.toMigrationName() = when {
-            !contains("__") -> "${this}__V${this.drop(1)}"
-            else -> this
+            contains("__") -> this
+            else -> "${this}__V${this.drop(1)}"
         }
 
         /**
@@ -87,12 +88,12 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
     /**
      * Normalizes the case of a table name.
      */
-    fun table(s: SafeIdentifier) = table(s.toString()).asSafeIdentifier()
+    fun normalize(s: SafeIdentifier) = normalize(s.toString()).asSafeIdentifier()
 
     /**
      * Normalizes the case of a table name.
      */
-    fun table(s: CharSequence): String = databaseHandle.normalizeCase(s)
+    fun normalize(s: CharSequence): String = databaseHandle.normalizeCase(s)
 
     fun <G : Any> given(block: (GivenStep).() -> G): GivenStepResult<G> {
         val g = givenStep.block()
@@ -140,5 +141,7 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
 
     interface ThenStep<G : Any> : AfterGiven<G> {
         fun withConnection(block: (JdbcTemplate) -> Unit)
+
+        fun schemaHistory(table: String? = null, block: (List<AppliedMigration>).() -> Unit)
     }
 }

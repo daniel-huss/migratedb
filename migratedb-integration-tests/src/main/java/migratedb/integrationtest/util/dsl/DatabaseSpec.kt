@@ -16,12 +16,6 @@
 
 package migratedb.integrationtest.util.dsl
 
-import migratedb.core.api.configuration.ClassicConfiguration
-
 interface DatabaseSpec {
-    companion object {
-        val defaultSchemaHistoryTable: String = ClassicConfiguration().table
-    }
-
-    fun schemaHistory(table: String = defaultSchemaHistoryTable, block: SchemaHistorySpec.() -> Unit)
+    fun schemaHistory(table: String? = null, block: SchemaHistorySpec.() -> Unit)
 }
