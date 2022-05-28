@@ -34,13 +34,13 @@ import java.util.List;
 public class DbLiberate {
     private final SchemaHistory schemaHistory;
     private final Configuration configuration;
-    private final Database database;
-    private final Schema[] schemas;
+    private final Database<?> database;
+    private final Schema<?, ?>[] schemas;
 
     public DbLiberate(SchemaHistory schemaHistory,
                       Configuration configuration,
-                      Database database,
-                      Schema[] schemas) {
+                      Database<?> database,
+                      Schema<?, ?>[] schemas) {
         this.schemaHistory = schemaHistory;
         this.configuration = configuration;
         this.database = database;
@@ -48,21 +48,21 @@ public class DbLiberate {
     }
 
     public LiberateResult liberate() {
-        var schemaHistoryTable = schemaHistory.getTable();
-        var oldTable = Arrays.stream(schemas)
+        var fromTable = Arrays.stream(schemas)
                 .map(it -> it.getTable(configuration.getOldTable()))
                 .filter(Table::exists)
                 .findFirst().orElse(null);
+        var toTable = schemaHistory.getTable();
 
-        var changes = convertToMigrateDb(schemaHistoryTable);
+        var changes = convertToMigrateDb(fromTable, toTable);
         return CommandResultFactory.createLiberateResult(configuration,
                 database,
-                schemaHistoryTable.getSchema().getName(),
-                schemaHistoryTable.getName(),
+                toTable.getSchema().getName(),
+                toTable.getName(),
                 changes);
     }
 
-    private List<LiberateOutput> convertToMigrateDb(Table schemaHistoryTable) {
+    private List<LiberateOutput> convertToMigrateDb(Table<?, ?> fromTable, Table<?, ?> toTable) {
         // Development.TODO("Implement :o)");
         // convertChecksum()
         // convertDeletionMarkers()

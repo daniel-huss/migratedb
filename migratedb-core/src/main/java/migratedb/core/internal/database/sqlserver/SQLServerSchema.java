@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.sqlserver;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseSchema;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SQLServerSchema extends BaseSchema<SQLServerDatabase, SQLServerTable> {
     private static final Log LOG = Log.getLog(SQLServerSchema.class);
@@ -539,7 +540,7 @@ public class SQLServerSchema extends BaseSchema<SQLServerDatabase, SQLServerTabl
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new SQLServerTable(jdbcTemplate, database, databaseName, this, tableName);
     }
 }

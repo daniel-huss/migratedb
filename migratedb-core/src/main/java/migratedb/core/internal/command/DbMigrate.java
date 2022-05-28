@@ -16,22 +16,7 @@
  */
 package migratedb.core.internal.command;
 
-import static migratedb.core.internal.jdbc.ExecutionTemplateFactory.createExecutionTemplate;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrationInfo;
-import migratedb.core.api.MigrationState;
-import migratedb.core.api.TargetVersion;
-import migratedb.core.api.Version;
+import migratedb.core.api.*;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.executor.Context;
@@ -55,22 +40,27 @@ import migratedb.core.internal.util.StopWatch;
 import migratedb.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.sql.SQLException;
+import java.util.*;
+
+import static migratedb.core.internal.jdbc.ExecutionTemplateFactory.createExecutionTemplate;
+
 public class DbMigrate {
     private static final Log LOG = Log.getLog(DbMigrate.class);
 
-    private final Database database;
+    private final Database<?> database;
     private final SchemaHistory schemaHistory;
     /**
      * The schema containing the schema history table.
      */
-    private final Schema schema;
+    private final Schema<?, ?> schema;
     private final MigrationResolver migrationResolver;
     private final Configuration configuration;
     private final CallbackExecutor callbackExecutor;
     /**
      * The connection to use to perform the actual database migrations.
      */
-    private final Connection connectionUserObjects;
+    private final Connection<?> connectionUserObjects;
     private MigrateResult migrateResult;
     /**
      * This is used to remember the type of migration between calls to migrateGroup().
@@ -78,8 +68,8 @@ public class DbMigrate {
     private boolean isPreviousVersioned;
     private final List<ResolvedMigration> appliedResolvedMigrations = new ArrayList<>();
 
-    public DbMigrate(Database database,
-                     SchemaHistory schemaHistory, Schema schema, MigrationResolver migrationResolver,
+    public DbMigrate(Database<?> database,
+                     SchemaHistory schemaHistory, Schema<?, ?> schema, MigrationResolver migrationResolver,
                      Configuration configuration, CallbackExecutor callbackExecutor) {
         this.database = database;
         this.connectionUserObjects = database.getMigrationConnection();

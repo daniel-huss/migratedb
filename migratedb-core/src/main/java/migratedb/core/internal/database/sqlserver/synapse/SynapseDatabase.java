@@ -16,8 +16,6 @@
  */
 package migratedb.core.internal.database.sqlserver.synapse;
 
-import java.sql.Connection;
-import java.util.Date;
 import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
@@ -25,6 +23,9 @@ import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.sqlserver.SQLServerConnection;
 import migratedb.core.internal.database.sqlserver.SQLServerDatabase;
+
+import java.sql.Connection;
+import java.util.Date;
 
 public class SynapseDatabase extends SQLServerDatabase {
 
@@ -89,17 +90,17 @@ public class SynapseDatabase extends SQLServerDatabase {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
 
         return "CREATE TABLE " + table + " (\n" +
-               "    [installed_rank] INT NOT NULL,\n" +
-               "    [" + "version] NVARCHAR(50),\n" +
-               "    [description] NVARCHAR(200),\n" +
-               "    [type] NVARCHAR(20) NOT NULL,\n" +
-               "    [script] NVARCHAR(1000) NOT NULL,\n" +
-               "    [checksum] NVARCHAR(100),\n" +
-               "    [installed_by] NVARCHAR(100) NOT NULL,\n" +
-               "    [installed_on] DATETIME NOT NULL,\n" +
+                "    [installed_rank] INT NOT NULL,\n" +
+                "    [" + "version] NVARCHAR(50),\n" +
+                "    [description] NVARCHAR(200),\n" +
+                "    [type] NVARCHAR(20) NOT NULL,\n" +
+                "    [script] NVARCHAR(1000) NOT NULL,\n" +
+                "    [checksum] NVARCHAR(100),\n" +
+                "    [installed_by] NVARCHAR(100) NOT NULL,\n" +
+                "    [installed_on] DATETIME NOT NULL,\n" +
                "    [execution_time] INT NOT NULL,\n" +
                "    [success] BIT NOT NULL\n" +
                ");\n" +
@@ -111,17 +112,17 @@ public class SynapseDatabase extends SQLServerDatabase {
     }
 
     @Override
-    public String getInsertStatement(Table table) {
+    public String getInsertStatement(Table<?, ?> table) {
         String currentDateTime = new java.sql.Timestamp(new Date().getTime()).toString();
         return "INSERT INTO " + table
-               + " (" + quote("installed_rank")
-               + ", " + quote("version")
-               + ", " + quote("description")
-               + ", " + quote("type")
-               + ", " + quote("script")
-               + ", " + quote("checksum")
-               + ", " + quote("installed_by")
-               + ", " + quote("installed_on")
+                + " (" + quote("installed_rank")
+                + ", " + quote("version")
+                + ", " + quote("description")
+                + ", " + quote("type")
+                + ", " + quote("script")
+                + ", " + quote("checksum")
+                + ", " + quote("installed_by")
+                + ", " + quote("installed_on")
                + ", " + quote("execution_time")
                + ", " + quote("success")
                + ")"

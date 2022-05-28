@@ -16,8 +16,6 @@
  */
 package migratedb.core.internal.database.h2;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
@@ -25,6 +23,9 @@ import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.exception.MigrateDbSqlException;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class H2Database extends BaseDatabase<H2Connection> {
     /**
@@ -106,17 +107,17 @@ public class H2Database extends BaseDatabase<H2Connection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         // In Oracle mode, empty strings in the marker row would be converted to NULLs. As the script column is
         // defined as NOT NULL, we insert a dummy value when required.
         String script = (compatibilityMode == CompatibilityMode.Oracle)
-                        ? DUMMY_SCRIPT_NAME : "";
+                ? DUMMY_SCRIPT_NAME : "";
 
         return "CREATE TABLE IF NOT EXISTS " + table + " (\n" +
-               "    \"installed_rank\" INT NOT NULL,\n" +
-               "    \"version\" VARCHAR(50),\n" +
-               "    \"description\" VARCHAR(200) NOT NULL,\n" +
-               "    \"type\" VARCHAR(20) NOT NULL,\n" +
+                "    \"installed_rank\" INT NOT NULL,\n" +
+                "    \"version\" VARCHAR(50),\n" +
+                "    \"description\" VARCHAR(200) NOT NULL,\n" +
+                "    \"type\" VARCHAR(20) NOT NULL,\n" +
                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
                "    \"checksum\" VARCHAR(100),\n" +
                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
@@ -134,17 +135,17 @@ public class H2Database extends BaseDatabase<H2Connection> {
     }
 
     @Override
-    public String getSelectStatement(Table table) {
+    public String getSelectStatement(Table<?, ?> table) {
         return "SELECT " + quote("installed_rank")
-               + "," + quote("version")
-               + "," + quote("description")
-               + "," + quote("type")
-               + "," + quote("script")
-               + "," + quote("checksum")
-               + "," + quote("installed_on")
-               + "," + quote("installed_by")
-               + "," + quote("execution_time")
-               + "," + quote("success")
+                + "," + quote("version")
+                + "," + quote("description")
+                + "," + quote("type")
+                + "," + quote("script")
+                + "," + quote("checksum")
+                + "," + quote("installed_on")
+                + "," + quote("installed_by")
+                + "," + quote("execution_time")
+                + "," + quote("success")
                + " FROM " + table
                // Ignore special table created marker
                + " WHERE " + quote("type") + " != 'TABLE'"

@@ -16,8 +16,6 @@
  */
 package migratedb.core.internal.database.ignite.thin;
 
-import java.sql.Connection;
-import java.sql.Types;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
@@ -26,6 +24,9 @@ import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.parser.BaseParser;
+
+import java.sql.Connection;
+import java.sql.Types;
 
 /*
  * # Apache Ignite Thin: jdbc:ignite:thin://<hostAndPortRange0>[,<hostAndPortRange1>]...[,
@@ -65,8 +66,8 @@ public class IgniteThinDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         return new IgniteThinDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
     }
 

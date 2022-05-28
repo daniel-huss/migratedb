@@ -16,10 +16,6 @@
  */
 package migratedb.core.internal.database.ignite.thin;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
@@ -28,6 +24,11 @@ import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.exception.MigrateDbSqlException;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Apache Ignite database.
@@ -65,17 +66,17 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         return "CREATE TABLE IF NOT EXISTS " + table + " (\n" +
-               "    \"installed_rank\" INT NOT NULL,\n" +
-               "    \"version\" VARCHAR(50),\n" +
-               "    \"description\" VARCHAR(200) NOT NULL,\n" +
-               "    \"type\" VARCHAR(20) NOT NULL,\n" +
-               "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-               "    \"checksum\" VARCHAR(100),\n" +
-               "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
-               "    \"installed_on\" TIMESTAMP NOT NULL,\n" +
-               "    \"execution_time\" INT NOT NULL,\n" +
+                "    \"installed_rank\" INT NOT NULL,\n" +
+                "    \"version\" VARCHAR(50),\n" +
+                "    \"description\" VARCHAR(200) NOT NULL,\n" +
+                "    \"type\" VARCHAR(20) NOT NULL,\n" +
+                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+                "    \"checksum\" VARCHAR(100),\n" +
+                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
+                "    \"installed_on\" TIMESTAMP NOT NULL,\n" +
+                "    \"execution_time\" INT NOT NULL,\n" +
                "    \"success\" BOOLEAN NOT NULL,\n" +
                "     PRIMARY KEY (\"installed_rank\")\n" +
                ") WITH \"TEMPLATE=REPLICATED, BACKUPS=1,ATOMICITY=ATOMIC\";\n" +
@@ -85,17 +86,17 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
     }
 
     @Override
-    public String getSelectStatement(Table table) {
+    public String getSelectStatement(Table<?, ?> table) {
         return "SELECT " + quote("installed_rank")
-               + "," + quote("version")
-               + "," + quote("description")
-               + "," + quote("type")
-               + "," + quote("script")
-               + "," + quote("checksum")
-               + "," + quote("installed_on")
-               + "," + quote("installed_by")
-               + "," + quote("execution_time")
-               + "," + quote("success")
+                + "," + quote("version")
+                + "," + quote("description")
+                + "," + quote("type")
+                + "," + quote("script")
+                + "," + quote("checksum")
+                + "," + quote("installed_on")
+                + "," + quote("installed_by")
+                + "," + quote("execution_time")
+                + "," + quote("success")
                + " FROM " + table
                // Ignore special table created marker
                + " WHERE " + quote("type") + " != 'TABLE'"
@@ -104,17 +105,17 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
     }
 
     @Override
-    public String getInsertStatement(Table table) {
+    public String getInsertStatement(Table<?, ?> table) {
         return "INSERT INTO " + table
-               + " (" + quote("installed_rank")
-               + ", " + quote("version")
-               + ", " + quote("description")
-               + ", " + quote("type")
-               + ", " + quote("script")
-               + ", " + quote("checksum")
-               + ", " + quote("installed_by")
-               + ", " + quote("installed_on")
-               + ", " + quote("execution_time")
+                + " (" + quote("installed_rank")
+                + ", " + quote("version")
+                + ", " + quote("description")
+                + ", " + quote("type")
+                + ", " + quote("script")
+                + ", " + quote("checksum")
+                + ", " + quote("installed_by")
+                + ", " + quote("installed_on")
+                + ", " + quote("execution_time")
                + ", " + quote("success")
                + ")"
                + " VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?,?)";
@@ -140,16 +141,6 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
     @Override
     public boolean supportsDdlTransactions() {
         return false;
-    }
-
-    @Override
-    public boolean useSingleConnection() {
-        return super.useSingleConnection();
-    }
-
-    @Override
-    public boolean supportsMultiStatementTransactions() {
-        return super.supportsMultiStatementTransactions();
     }
 
     @Override

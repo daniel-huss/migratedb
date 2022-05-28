@@ -33,22 +33,27 @@ public enum Slf4jLogSystem implements LogSystem {
         return logger(logName).isDebugEnabled();
     }
 
+    @Override
     public void debug(String logName, String message) {
         logger(logName).debug(message);
     }
 
+    @Override
     public void info(String logName, String message) {
         logger(logName).info(message);
     }
 
+    @Override
     public void warn(String logName, String message) {
         logger(logName).warn(message);
     }
 
+    @Override
     public void error(String logName, String message) {
         logger(logName).error(message);
     }
 
+    @Override
     public void error(String logName, String message, Exception e) {
         logger(logName).error(message, e);
     }

@@ -27,7 +27,7 @@ public class YugabyteDBConnection extends PostgreSQLConnection {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new YugabyteDBSchema(jdbcTemplate, (YugabyteDBDatabase) database, name);
     }
 }

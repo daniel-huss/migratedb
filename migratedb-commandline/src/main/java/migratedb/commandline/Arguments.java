@@ -116,7 +116,7 @@ public class Arguments {
     private static String parseConfigurationOptionValueFromArg(String arg) {
         int index = arg.indexOf("=");
 
-        if (index < 0 || index == arg.length()) {
+        if (index < 0 || index == arg.length() - 1) {
             return "";
         }
 

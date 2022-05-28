@@ -17,5 +17,5 @@
 
 package migratedb.core.api.internal.database.base;
 
-public interface Function<D extends Database, S extends Schema> extends SchemaObject<D, S> {
+public interface Function<D extends Database<?>, S extends Schema<?, ?>> extends SchemaObject<D, S> {
 }

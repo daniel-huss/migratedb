@@ -16,9 +16,6 @@
  */
 package migratedb.core.internal.database.mysql;
 
-import java.sql.Connection;
-import java.sql.Types;
-import java.util.Properties;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
@@ -30,6 +27,10 @@ import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.Development;
+
+import java.sql.Connection;
+import java.sql.Types;
+import java.util.Properties;
 
 public class MySQLDatabaseType extends BaseDatabaseType {
     private static final String MYSQL_LEGACY_JDBC_DRIVER = "com.mysql.jdbc.Driver";
@@ -86,8 +87,8 @@ public class MySQLDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         return new MySQLDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
     }
 

@@ -16,10 +16,6 @@
  */
 package migratedb.core.internal.database.base;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Function;
 import migratedb.core.api.internal.database.base.Schema;
@@ -29,7 +25,11 @@ import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.jdbc.JdbcUtils;
 
-public abstract class BaseSchema<D extends Database, T extends Table> implements Schema<D, T> {
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+public abstract class BaseSchema<D extends Database<?>, T extends Table<?, ?>> implements Schema<D, T> {
     private static final Log LOG = Log.getLog(BaseSchema.class);
     protected final JdbcTemplate jdbcTemplate;
     protected final D database;
@@ -151,17 +151,17 @@ public abstract class BaseSchema<D extends Database, T extends Table> implements
     /**
      * Retrieves all the types in this schema.
      */
-    protected final Type[] allTypes() {
+    protected final Type<?, ?>[] allTypes() {
         ResultSet resultSet = null;
         try {
             resultSet = database.getJdbcMetaData().getUDTs(null, name, null, null);
 
-            List<Type> types = new ArrayList<>();
+            var types = new ArrayList<Type<?, ?>>();
             while (resultSet.next()) {
                 types.add(getType(resultSet.getString("TYPE_NAME")));
             }
 
-            return types.toArray(new Type[0]);
+            return types.toArray(Type<?, ?>[]::new);
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to retrieve all types in schema " + this, e);
         } finally {
@@ -172,19 +172,19 @@ public abstract class BaseSchema<D extends Database, T extends Table> implements
     /**
      * Retrieves the type with this name in this schema.
      */
-    protected Type getType(String typeName) {
+    protected Type<?, ?> getType(String typeName) {
         return null;
     }
 
     @Override
-    public Function getFunction(String functionName, String... args) {
+    public Function<?, ?> getFunction(String functionName, String... args) {
         throw new UnsupportedOperationException("getFunction()");
     }
 
     /**
      * Retrieves all the functions in this schema.
      */
-    protected final Function[] allFunctions() {
+    protected final Function<?, ?>[] allFunctions() {
         try {
             return doAllFunctions();
         } catch (SQLException e) {
@@ -197,8 +197,8 @@ public abstract class BaseSchema<D extends Database, T extends Table> implements
      *
      * @throws SQLException when the retrieval failed.
      */
-    protected Function[] doAllFunctions() throws SQLException {
-        return new Function[0];
+    protected Function<?, ?>[] doAllFunctions() throws SQLException {
+        return new Function<?, ?>[0];
     }
 
     /**
@@ -218,7 +218,7 @@ public abstract class BaseSchema<D extends Database, T extends Table> implements
             return false;
         }
 
-        BaseSchema schema = (BaseSchema) o;
+        BaseSchema<?, ?> schema = (BaseSchema<?, ?>) o;
         return name.equals(schema.name);
     }
 

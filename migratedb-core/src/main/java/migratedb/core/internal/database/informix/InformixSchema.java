@@ -16,11 +16,12 @@
  */
 package migratedb.core.internal.database.informix;
 
-import java.sql.SQLException;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseSchema;
+
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Informix implementation of Schema.
@@ -71,7 +72,7 @@ public class InformixSchema extends BaseSchema<InformixDatabase, InformixTable> 
             jdbcTemplate.execute("DROP PROCEDURE " + procedure);
         }
 
-        for (Table table : allTables()) {
+        for (var table : allTables()) {
             table.drop();
         }
 
@@ -105,7 +106,7 @@ public class InformixSchema extends BaseSchema<InformixDatabase, InformixTable> 
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new InformixTable(jdbcTemplate, database, this, tableName);
     }
 }

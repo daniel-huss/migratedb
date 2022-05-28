@@ -16,10 +16,11 @@
  */
 package migratedb.core.internal.database.saphana;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.exception.MigrateDbSqlException;
+
+import java.sql.SQLException;
 
 public class SAPHANAConnection extends BaseConnection<SAPHANADatabase> {
     private final boolean isCloud;
@@ -51,7 +52,7 @@ public class SAPHANAConnection extends BaseConnection<SAPHANADatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new SAPHANASchema(jdbcTemplate, database, name);
     }
 }

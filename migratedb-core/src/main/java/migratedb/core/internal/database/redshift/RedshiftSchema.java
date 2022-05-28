@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.redshift;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.database.base.Type;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * PostgreSQL implementation of Schema.
@@ -69,7 +70,7 @@ public class RedshiftSchema extends BaseSchema<RedshiftDatabase, RedshiftTable> 
             jdbcTemplate.execute(statement);
         }
 
-        for (Table table : allTables()) {
+        for (var table : allTables()) {
             table.drop();
         }
 
@@ -162,12 +163,12 @@ public class RedshiftSchema extends BaseSchema<RedshiftDatabase, RedshiftTable> 
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new RedshiftTable(jdbcTemplate, database, this, tableName);
     }
 
     @Override
-    protected Type getType(String typeName) {
+    protected Type<?, ?> getType(String typeName) {
         return new RedshiftType(jdbcTemplate, database, this, typeName);
     }
 }

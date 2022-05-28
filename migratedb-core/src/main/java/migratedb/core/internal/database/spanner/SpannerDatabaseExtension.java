@@ -16,13 +16,15 @@
  */
 package migratedb.core.internal.database.spanner;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrateDbExtension;
 import migratedb.core.internal.util.FileCopyUtils;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 public class SpannerDatabaseExtension implements MigrateDbExtension {
+    @Override
     public String getDescription() {
         return "GCP Spanner database support (beta) " + readVersion() + " by Redgate";
     }

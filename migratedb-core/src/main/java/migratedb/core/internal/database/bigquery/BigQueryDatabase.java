@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.bigquery;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class BigQueryDatabase extends BaseDatabase<BigQueryConnection> {
     public BigQueryDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
@@ -42,34 +43,34 @@ public class BigQueryDatabase extends BaseDatabase<BigQueryConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
-               "    `installed_rank` INT64 NOT NULL,\n" +
-               "    `version` STRING,\n" +
-               "    `description` STRING NOT NULL,\n" +
-               "    `type` STRING NOT NULL,\n" +
-               "    `script` STRING NOT NULL,\n" +
-               "    `checksum` STRING,\n" +
-               "    `installed_by` STRING NOT NULL,\n" +
-               "    `installed_on` TIMESTAMP,\n" + // BigQuery does not support default value
-               "    `execution_time` INT64 NOT NULL,\n" +
+                "    `installed_rank` INT64 NOT NULL,\n" +
+                "    `version` STRING,\n" +
+                "    `description` STRING NOT NULL,\n" +
+                "    `type` STRING NOT NULL,\n" +
+                "    `script` STRING NOT NULL,\n" +
+                "    `checksum` STRING,\n" +
+                "    `installed_by` STRING NOT NULL,\n" +
+                "    `installed_on` TIMESTAMP,\n" + // BigQuery does not support default value
+                "    `execution_time` INT64 NOT NULL,\n" +
                "    `success` BOOL NOT NULL\n" +
                ");\n" +
                (baseline ? getBaselineStatement(table) + ";\n" : "");
     }
 
     @Override
-    public String getInsertStatement(Table table) {
+    public String getInsertStatement(Table<?, ?> table) {
         // Explicitly set installed_on to CURRENT_TIMESTAMP().
         return "INSERT INTO " + table
-               + " (" + quote("installed_rank")
-               + ", " + quote("version")
-               + ", " + quote("description")
-               + ", " + quote("type")
-               + ", " + quote("script")
-               + ", " + quote("checksum")
-               + ", " + quote("installed_by")
-               + ", " + quote("installed_on")
+                + " (" + quote("installed_rank")
+                + ", " + quote("version")
+                + ", " + quote("description")
+                + ", " + quote("type")
+                + ", " + quote("script")
+                + ", " + quote("checksum")
+                + ", " + quote("installed_by")
+                + ", " + quote("installed_on")
                + ", " + quote("execution_time")
                + ", " + quote("success")
                + ")"

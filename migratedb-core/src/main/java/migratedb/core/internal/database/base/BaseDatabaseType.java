@@ -16,16 +16,6 @@
  */
 package migratedb.core.internal.database.base;
 
-import static migratedb.core.internal.sqlscript.SqlScriptMetadataImpl.getMetadataResource;
-
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Pattern;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.callback.CallbackExecutor;
@@ -47,12 +37,19 @@ import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.sqlscript.DefaultSqlScriptExecutor;
 import migratedb.core.internal.sqlscript.ParserSqlScript;
 
+import java.sql.*;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Pattern;
+
+import static migratedb.core.internal.sqlscript.SqlScriptMetadataImpl.getMetadataResource;
+
 public abstract class BaseDatabaseType implements DatabaseType {
     protected static final Log LOG = Log.getLog(BaseDatabaseType.class);
 
     // Don't grab semicolons and ampersands - they have special meaning in URLs
     private static final Pattern defaultJdbcCredentialsPattern = Pattern.compile("password=([^;&]*).*",
-                                                                                 Pattern.CASE_INSENSITIVE);
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * This is useful for databases that allow setting this in order to easily correlate individual application with
@@ -137,16 +134,16 @@ public abstract class BaseDatabaseType implements DatabaseType {
                                                                  String databaseProductVersion, Connection connection);
 
     @Override
-    public Database createDatabase(Configuration configuration, boolean printInfo,
-                                   JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, boolean printInfo,
+                                      JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         String databaseProductName = jdbcConnectionFactory.getProductName();
         if (printInfo) {
             LOG.info("Database: " + jdbcConnectionFactory.getJdbcUrl() + " (" + databaseProductName + ")");
             LOG.debug("Driver  : " + jdbcConnectionFactory.getDriverInfo());
         }
 
-        Database database = createDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
+        var database = createDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
 
         String intendedCurrentSchema = configuration.getDefaultSchema();
         if (!database.supportsChangingCurrentSchema() && intendedCurrentSchema != null) {
@@ -158,8 +155,8 @@ public abstract class BaseDatabaseType implements DatabaseType {
     }
 
     @Override
-    public abstract Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                            StatementInterceptor statementInterceptor);
+    public abstract Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                               StatementInterceptor statementInterceptor);
 
     @Override
     public abstract BaseParser createParser(Configuration configuration, ResourceProvider resourceProvider,

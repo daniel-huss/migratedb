@@ -16,67 +16,17 @@
  */
 package migratedb.core.internal.database.oracle;
 
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.ASSEMBLY;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.CLUSTER;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.CONTEXT;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.CREDENTIAL;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.CUBE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.CUBE_BUILD_PROCESS;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.CUBE_DIMENSION;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.DATABASE_DESTINATION;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.DATABASE_LINK;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.DIMENSION;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.DOMAIN_INDEX;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.DOMAIN_INDEX_TYPE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.EVALUATION_CONTEXT;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.FILE_GROUP;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.FILE_WATCHER;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.FUNCTION;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.INDEX;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.JAVA_CLASS;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.JAVA_DATA;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.JAVA_RESOURCE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.JAVA_SOURCE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.LIBRARY;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.MATERIALIZED_VIEW;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.MATERIALIZED_VIEW_LOG;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.MEASURE_FOLDER;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.MINING_MODEL;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.OPERATOR;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.PACKAGE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.PROCEDURE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.QUEUE_TABLE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.REWRITE_EQUIVALENCE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.RULE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.RULE_SET;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.SCHEDULE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.SCHEDULER_CHAIN;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.SCHEDULER_GROUP;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.SCHEDULER_JOB;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.SCHEDULER_PROGRAM;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.SEQUENCE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.SQL_TRANSLATION_PROFILE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.SYNONYM;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.TABLE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.TRIGGER;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.TYPE;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.VIEW;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.XML_SCHEMA;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.getObjectTypeNames;
-import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.supportedTypesExist;
-
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.SQLException;
+import java.util.*;
+
+import static migratedb.core.internal.database.oracle.OracleSchema.ObjectType.*;
 
 /**
  * Oracle implementation of Schema.
@@ -321,7 +271,7 @@ public class OracleSchema extends BaseSchema<OracleDatabase, OracleTable> {
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new OracleTable(jdbcTemplate, database, this, tableName);
     }
 
@@ -853,7 +803,7 @@ public class OracleSchema extends BaseSchema<OracleDatabase, OracleTable> {
         }
 
         private void warnUnsupported(String schemaName) {
-            warnUnsupported(schemaName, toString().toLowerCase() + "s");
+            warnUnsupported(schemaName, toString().toLowerCase(Locale.ROOT) + "s");
         }
 
         /**

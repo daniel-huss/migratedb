@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,23 +14,4 @@
  * limitations under the License.
  */
 
-package migratedb.core.api.internal.database.base;
-
-public interface SchemaObject<D extends Database<?>, S extends Schema<?, ?>> {
-    /**
-     * @return The schema this object lives in.
-     */
-    S getSchema();
-
-    D getDatabase();
-
-    String getName();
-
-    void drop();
-
-    /**
-     * @return The quoted qualified name of this schema object.
-     */
-    @Override
-    String toString();
-}
+package migratedb.core.internal.authentication.mysql;

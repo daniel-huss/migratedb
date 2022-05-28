@@ -16,10 +16,6 @@
  */
 package migratedb.core.internal.database.mysql;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.Version;
@@ -33,12 +29,17 @@ import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.database.mysql.mariadb.MariaDBDatabaseType;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
     // See https://mariadb.com/kb/en/version/
     private static final Pattern MARIADB_VERSION_PATTERN = Pattern.compile(
-        "(\\d+\\.\\d+)\\.\\d+(-\\d+)*-MariaDB(-\\w+)*");
+            "(\\d+\\.\\d+)\\.\\d+(-\\d+)*-MariaDB(-\\w+)*");
     private static final Pattern MARIADB_WITH_MAXSCALE_VERSION_PATTERN = Pattern.compile(
-        "(\\d+\\.\\d+)\\.\\d+(-\\d+)* (\\d+\\.\\d+)\\.\\d+(-\\d+)*-maxscale(-\\w+)*");
+            "(\\d+\\.\\d+)\\.\\d+(-\\d+)* (\\d+\\.\\d+)\\.\\d+(-\\d+)*-maxscale(-\\w+)*");
     private static final Pattern MYSQL_VERSION_PATTERN = Pattern.compile("(\\d+\\.\\d+)\\.\\d+\\w*");
     private static final Log LOG = Log.getLog(MySQLDatabase.class);
 
@@ -130,12 +131,12 @@ public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         String tablespace =
 
-            configuration.getTablespace() == null
-            ? ""
-            : " TABLESPACE \"" + configuration.getTablespace() + "\"";
+                configuration.getTablespace() == null
+                        ? ""
+                        : " TABLESPACE \"" + configuration.getTablespace() + "\"";
 
         String baselineMarker = "";
         if (baseline) {

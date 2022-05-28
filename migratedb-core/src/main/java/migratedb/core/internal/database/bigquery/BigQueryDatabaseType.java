@@ -16,10 +16,6 @@
  */
 package migratedb.core.internal.database.bigquery;
 
-import java.sql.Connection;
-import java.sql.Types;
-import java.util.Map;
-import java.util.regex.Pattern;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
@@ -30,11 +26,17 @@ import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.util.ClassUtils;
 
+import java.sql.Connection;
+import java.sql.Types;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 public class BigQueryDatabaseType extends BaseDatabaseType {
     private static final String BIGQUERY_JDBC42_DRIVER = "com.simba.googlebigquery.jdbc42.Driver";
     private static final String BIGQUERY_JDBC_DRIVER = "com.simba.googlebigquery.jdbc.Driver";
     private static final Pattern OAUTH_CREDENTIALS_PATTERN = Pattern.compile("OAuth\\w+=([^;]*)",
-                                                                             Pattern.CASE_INSENSITIVE);
+            Pattern.CASE_INSENSITIVE);
 
     @Override
     public String getName() {
@@ -80,7 +82,7 @@ public class BigQueryDatabaseType extends BaseDatabaseType {
                                                         Connection connection) {
         // https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers
         // databaseProductName: Google BigQuery 2.0, databaseProductVersion: 2.0
-        return databaseProductName.toLowerCase().contains("bigquery");
+        return databaseProductName.toLowerCase(Locale.ROOT).contains("bigquery");
     }
 
     @Override
@@ -88,8 +90,8 @@ public class BigQueryDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         return new BigQueryDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
     }
 

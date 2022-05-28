@@ -17,14 +17,15 @@
 
 package migratedb.core.api.internal.database.base;
 
-import java.io.Closeable;
-import java.sql.DatabaseMetaData;
 import migratedb.core.api.Version;
 import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.api.internal.sqlscript.SqlScript;
 import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 
-public interface Database<C extends Connection> extends Closeable {
+import java.io.Closeable;
+import java.sql.DatabaseMetaData;
+
+public interface Database<C extends Connection<?>> extends Closeable {
     /**
      * Ensure MigrateDb supports this version of this database.
      */
@@ -95,15 +96,15 @@ public interface Database<C extends Connection> extends Closeable {
      * @param table            The table to create.
      * @param baseline         Whether to include the creation of a baseline marker.
      */
-    SqlScript getCreateScript(SqlScriptFactory sqlScriptFactory, Table table, boolean baseline);
+    SqlScript getCreateScript(SqlScriptFactory sqlScriptFactory, Table<?, ?> table, boolean baseline);
 
-    String getRawCreateScript(Table table, boolean baseline);
+    String getRawCreateScript(Table<?, ?> table, boolean baseline);
 
-    String getInsertStatement(Table table);
+    String getInsertStatement(Table<?, ?> table);
 
-    String getBaselineStatement(Table table);
+    String getBaselineStatement(Table<?, ?> table);
 
-    String getSelectStatement(Table table);
+    String getSelectStatement(Table<?, ?> table);
 
     String getInstalledBy();
 
@@ -123,9 +124,9 @@ public interface Database<C extends Connection> extends Closeable {
      *
      * @param schemas The list of schemas managed by MigrateDb.
      */
-    void cleanPostSchemas(Schema[] schemas);
+    void cleanPostSchemas(Schema<?, ?>[] schemas);
 
-    Schema[] getAllSchemas();
+    Schema<?, ?>[] getAllSchemas();
 
     @Override
     void close();

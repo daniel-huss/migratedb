@@ -28,7 +28,7 @@ import migratedb.core.internal.jdbc.JdbcUtils;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
-public abstract class BaseConnection<D extends Database> implements Connection<D> {
+public abstract class BaseConnection<D extends Database<?>> implements Connection<D> {
     protected final D database;
     protected JdbcTemplate jdbcTemplate;
     private final java.sql.Connection jdbcConnection;
@@ -62,7 +62,7 @@ public abstract class BaseConnection<D extends Database> implements Connection<D
     protected abstract String getCurrentSchemaNameOrSearchPath() throws SQLException;
 
     @Override
-    public final Schema getCurrentSchema() {
+    public final Schema<?, ?> getCurrentSchema() {
         try {
             return doGetCurrentSchema();
         } catch (SQLException e) {
@@ -70,12 +70,12 @@ public abstract class BaseConnection<D extends Database> implements Connection<D
         }
     }
 
-    protected Schema doGetCurrentSchema() throws SQLException {
+    protected Schema<?, ?> doGetCurrentSchema() throws SQLException {
         return getSchema(getCurrentSchemaNameOrSearchPath());
     }
 
     @Override
-    public void changeCurrentSchemaTo(Schema schema) {
+    public void changeCurrentSchemaTo(Schema<?, ?> schema) {
         try {
             if (!schema.exists()) {
                 return;
@@ -94,7 +94,7 @@ public abstract class BaseConnection<D extends Database> implements Connection<D
     }
 
     @Override
-    public <T> T lock(Table table, Callable<T> callable) {
+    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
         return ExecutionTemplateFactory
                 .createTableExclusiveExecutionTemplate(jdbcTemplate.getConnection(), table, database)
                 .execute(callable);

@@ -16,8 +16,6 @@
  */
 package migratedb.core.internal.database.yugabytedb;
 
-import java.sql.Connection;
-import java.util.regex.Pattern;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
@@ -26,6 +24,9 @@ import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.database.postgresql.PostgreSQLDatabaseType;
 import migratedb.core.internal.parser.BaseParser;
+
+import java.sql.Connection;
+import java.util.regex.Pattern;
 
 public class YugabyteDBDatabaseType extends PostgreSQLDatabaseType {
     @Override
@@ -54,8 +55,8 @@ public class YugabyteDBDatabaseType extends PostgreSQLDatabaseType {
     }
 
     @Override
-    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         return new YugabyteDBDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
     }
 

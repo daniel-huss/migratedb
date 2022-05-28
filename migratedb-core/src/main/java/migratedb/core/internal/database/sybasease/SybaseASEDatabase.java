@@ -16,9 +16,6 @@
  */
 package migratedb.core.internal.database.sybasease;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
@@ -28,6 +25,10 @@ import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseDatabase;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 public class SybaseASEDatabase extends BaseDatabase<SybaseASEConnection> {
     private static final Log LOG = Log.getLog(SybaseASEDatabase.class);
@@ -52,17 +53,17 @@ public class SybaseASEDatabase extends BaseDatabase<SybaseASEConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         return "CREATE TABLE " + table.getName() + " (\n" +
-               "    installed_rank INT NOT NULL,\n" +
-               "    version VARCHAR(50) NULL,\n" +
-               "    description VARCHAR(200) NOT NULL,\n" +
-               "    type VARCHAR(20) NOT NULL,\n" +
-               "    script VARCHAR(1000) NOT NULL,\n" +
-               "    checksum VARCHAR(100) NULL,\n" +
-               "    installed_by VARCHAR(100) NOT NULL,\n" +
-               "    installed_on datetime DEFAULT getDate() NOT NULL,\n" +
-               "    execution_time INT NOT NULL,\n" +
+                "    installed_rank INT NOT NULL,\n" +
+                "    version VARCHAR(50) NULL,\n" +
+                "    description VARCHAR(200) NOT NULL,\n" +
+                "    type VARCHAR(20) NOT NULL,\n" +
+                "    script VARCHAR(1000) NOT NULL,\n" +
+                "    checksum VARCHAR(100) NULL,\n" +
+                "    installed_by VARCHAR(100) NOT NULL,\n" +
+                "    installed_on datetime DEFAULT getDate() NOT NULL,\n" +
+                "    execution_time INT NOT NULL,\n" +
                "    success decimal NOT NULL,\n" +
                "    PRIMARY KEY (installed_rank)\n" +
                ")\n" +

@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.derby;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Derby implementation of Schema.
@@ -77,7 +78,7 @@ public class DerbySchema extends BaseSchema<DerbyDatabase, DerbyTable> {
             jdbcTemplate.execute(statement);
         }
 
-        for (Table table : allTables()) {
+        for (Table<?, ?> table : allTables()) {
             table.drop();
         }
 
@@ -165,7 +166,7 @@ public class DerbySchema extends BaseSchema<DerbyDatabase, DerbyTable> {
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new DerbyTable(jdbcTemplate, database, this, tableName);
     }
 }

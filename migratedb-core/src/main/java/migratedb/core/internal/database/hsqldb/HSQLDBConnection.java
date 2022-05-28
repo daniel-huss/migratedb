@@ -16,11 +16,12 @@
  */
 package migratedb.core.internal.database.hsqldb;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.jdbc.JdbcUtils;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * HSQLDB connection.
@@ -56,7 +57,7 @@ public class HSQLDBConnection extends BaseConnection<HSQLDBDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new HSQLDBSchema(jdbcTemplate, database, name);
     }
 }

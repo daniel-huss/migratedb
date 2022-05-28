@@ -16,14 +16,15 @@
 
 package migratedb.core.api.internal.parser;
 
-import java.util.Map;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.resource.ResourceName;
+
+import java.util.Map;
 
 public interface ParsingContext {
     Map<String, String> getPlaceholders();
 
-    Database getDatabase();
+    Database<?> getDatabase();
 
     void updateFilenamePlaceholder(ResourceName resourceName);
 }

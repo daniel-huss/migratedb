@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database.informix;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
+
+import java.sql.SQLException;
 
 /**
  * Informix connection.
@@ -34,12 +35,12 @@ public class InformixConnection extends BaseConnection<InformixDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new InformixSchema(jdbcTemplate, database, name);
     }
 
     @Override
-    public void changeCurrentSchemaTo(Schema schema) {
+    public void changeCurrentSchemaTo(Schema<?, ?> schema) {
         // Informix doesn't support schemas
     }
 }

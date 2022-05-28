@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.database.hsqldb;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseSchema;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * HSQLDB implementation of Schema.
@@ -62,7 +63,7 @@ public class HSQLDBSchema extends BaseSchema<HSQLDBDatabase, HSQLDBTable> {
 
     @Override
     protected void doClean() throws SQLException {
-        for (Table table : allTables()) {
+        for (var table : allTables()) {
             table.drop();
         }
 
@@ -104,7 +105,7 @@ public class HSQLDBSchema extends BaseSchema<HSQLDBDatabase, HSQLDBTable> {
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new HSQLDBTable(jdbcTemplate, database, this, tableName);
     }
 }

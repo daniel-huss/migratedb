@@ -16,9 +16,10 @@
 
 package migratedb.core.internal.resource.classpath;
 
-import java.util.List;
 import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.resource.NameListResourceProvider;
+
+import java.util.List;
 
 public class ClassPathResourceProvider extends NameListResourceProvider {
     private final ClassLoader classLoader;
@@ -28,6 +29,7 @@ public class ClassPathResourceProvider extends NameListResourceProvider {
         this.classLoader = classLoader;
     }
 
+    @Override
     protected Resource toResource(String resourceName) {
         return new ClassPathResource(resourceName, classLoader);
     }

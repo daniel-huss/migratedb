@@ -16,13 +16,12 @@
  */
 package migratedb.core.internal.database.snowflake;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.api.internal.jdbc.RowMapper;
 import migratedb.core.internal.database.base.BaseSchema;
+
+import java.sql.SQLException;
+import java.util.List;
 
 public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTable> {
     /**
@@ -90,19 +89,15 @@ public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTabl
     @Override
     protected SnowflakeTable[] doAllTables() throws SQLException {
         List<SnowflakeTable> tables = jdbcTemplate.query("SHOW TABLES IN SCHEMA " + database.quote(name),
-                                                         new RowMapper<SnowflakeTable>() {
-                                                             @Override
-                                                             public SnowflakeTable mapRow(ResultSet rs)
-                                                             throws SQLException {
-                                                                 String tableName = rs.getString("name");
-                                                                 return (SnowflakeTable) getTable(tableName);
-                                                             }
-                                                         });
+                rs -> {
+                    String tableName = rs.getString("name");
+                    return (SnowflakeTable) getTable(tableName);
+                });
         return tables.toArray(new SnowflakeTable[0]);
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new SnowflakeTable(jdbcTemplate, database, this, tableName);
     }
 
@@ -116,14 +111,11 @@ public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTabl
     private List<String> generateDropStatementsWithArgs(String showObjectType, String dropObjectType)
     throws SQLException {
         return jdbcTemplate.query("SHOW " + showObjectType + " IN SCHEMA " + database.quote(name),
-                                  new RowMapper<String>() {
-                                      @Override
-                                      public String mapRow(ResultSet rs) throws SQLException {
-                                          String nameAndArgsList = rs.getString("arguments");
-                                          int indexOfEndOfArgs = nameAndArgsList.indexOf(") RETURN ");
-                                          String functionName = nameAndArgsList.substring(0, indexOfEndOfArgs + 1);
-                                          return "DROP " + dropObjectType + " " + name + "." + functionName;
-                                      }
-                                  });
+                rs -> {
+                    String nameAndArgsList = rs.getString("arguments");
+                    int indexOfEndOfArgs = nameAndArgsList.indexOf(") RETURN ");
+                    String functionName = nameAndArgsList.substring(0, indexOfEndOfArgs + 1);
+                    return "DROP " + dropObjectType + " " + name + "." + functionName;
+                });
     }
 }

@@ -16,13 +16,14 @@
  */
 package migratedb.core.internal.database.sqlserver.synapse;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.sqlserver.SQLServerDatabase;
 import migratedb.core.internal.database.sqlserver.SQLServerSchema;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Synapse implementation of Schema.
@@ -56,7 +57,7 @@ public class SynapseSchema extends SQLServerSchema {
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new SynapseTable(jdbcTemplate, database, databaseName, this, tableName);
     }
 }

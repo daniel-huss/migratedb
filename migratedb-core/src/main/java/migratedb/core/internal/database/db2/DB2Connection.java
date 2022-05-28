@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database.db2;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
+
+import java.sql.SQLException;
 
 /**
  * DB2 connection.
@@ -39,7 +40,7 @@ public class DB2Connection extends BaseConnection<DB2Database> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new DB2Schema(jdbcTemplate, database, name);
     }
 }

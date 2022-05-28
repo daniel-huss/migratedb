@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.base;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.SchemaObject;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 
-public abstract class BaseSchemaObject<D extends Database, S extends Schema> implements SchemaObject<D, S> {
+import java.sql.SQLException;
+
+public abstract class BaseSchemaObject<D extends Database<?>, S extends Schema<?, ?>> implements SchemaObject<D, S> {
     protected final JdbcTemplate jdbcTemplate;
     protected final D database;
     protected final S schema;
@@ -42,6 +43,7 @@ public abstract class BaseSchemaObject<D extends Database, S extends Schema> imp
         this.schema = schema;
     }
 
+    @Override
     public final D getDatabase() {
         return database;
     }

@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.jdbc;
 
-import java.sql.Connection;
 import migratedb.core.api.DatabaseTypeRegister;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.ExecutionTemplate;
+
+import java.sql.Connection;
 
 public class ExecutionTemplateFactory {
     /**
@@ -44,7 +45,7 @@ public class ExecutionTemplateFactory {
      * @param connection The connection for execution.
      * @param database   The database
      */
-    public static ExecutionTemplate createExecutionTemplate(Connection connection, Database database) {
+    public static ExecutionTemplate createExecutionTemplate(Connection connection, Database<?> database) {
         if (database.supportsMultiStatementTransactions()) {
             return createTransactionalExecutionTemplate(connection, true, database.getDatabaseType());
         }
@@ -58,13 +59,14 @@ public class ExecutionTemplateFactory {
      * @param connection The connection for execution.
      * @param database   The database
      */
-    public static ExecutionTemplate createTableExclusiveExecutionTemplate(Connection connection, Table table,
-                                                                          Database database) {
+    public static ExecutionTemplate createTableExclusiveExecutionTemplate(Connection connection,
+                                                                          Table<?, ?> table,
+                                                                          Database<?> database) {
         if (database.supportsMultiStatementTransactions()) {
             return new TableLockingExecutionTemplate(table,
-                                                     createTransactionalExecutionTemplate(connection,
-                                                                                          database.supportsDdlTransactions(),
-                                                                                          database.getDatabaseType()));
+                    createTransactionalExecutionTemplate(connection,
+                            database.supportsDdlTransactions(),
+                            database.getDatabaseType()));
         }
 
         return new TableLockingExecutionTemplate(table, new PlainExecutionTemplate());

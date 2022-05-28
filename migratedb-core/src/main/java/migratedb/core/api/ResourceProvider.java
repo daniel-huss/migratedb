@@ -16,9 +16,10 @@
  */
 package migratedb.core.api;
 
+import migratedb.core.api.resource.Resource;
+
 import java.util.Collection;
 import java.util.Collections;
-import migratedb.core.api.resource.Resource;
 
 /**
  * A facility to obtain loadable resources.
@@ -53,6 +54,7 @@ public interface ResourceProvider {
                 return null;
             }
 
+            @Override
             public Collection<Resource> getResources(String prefix, String... suffixes) {
                 return Collections.emptyList();
             }

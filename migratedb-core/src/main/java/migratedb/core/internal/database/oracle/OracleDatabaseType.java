@@ -16,11 +16,6 @@
  */
 package migratedb.core.internal.database.oracle;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Properties;
-import java.util.regex.Pattern;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
@@ -31,17 +26,22 @@ import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.ParsingContext;
-import migratedb.core.api.internal.sqlscript.SqlScriptExecutor;
 import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.util.ClassUtils;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Properties;
+import java.util.regex.Pattern;
+
 public class OracleDatabaseType extends BaseDatabaseType {
     // Oracle usernames/passwords can be 1-30 chars, can only contain alphanumerics and # _ $
     // The first (and only) capture group represents the password
     private static final Pattern usernamePasswordPattern = Pattern.compile(
-        "^jdbc:oracle:thin:[a-zA-Z0-9#_$]+/([a-zA-Z0-9#_$]+)@.*");
+            "^jdbc:oracle:thin:[a-zA-Z\\d#_$]+/([a-zA-Z\\d#_$]+)@.*");
 
     @Override
     public String getName() {
@@ -78,8 +78,8 @@ public class OracleDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         OracleDatabase.enableTnsnamesOraSupport();
 
         return new OracleDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
@@ -103,16 +103,9 @@ public class OracleDatabaseType extends BaseDatabaseType {
 
         DatabaseType thisRef = this;
 
-        return new SqlScriptExecutorFactory() {
-            @Override
-            public SqlScriptExecutor createSqlScriptExecutor(Connection connection, boolean batch,
-                                                             boolean outputQueryResults) {
-
-                return new OracleSqlScriptExecutor(new JdbcTemplate(connection, thisRef)
-                    , callbackExecutor, batch, outputQueryResults, statementInterceptor
-                );
-            }
-        };
+        return (connection, batch, outputQueryResults) -> new OracleSqlScriptExecutor(new JdbcTemplate(connection, thisRef)
+                , callbackExecutor, batch, outputQueryResults, statementInterceptor
+        );
     }
 
     @Override

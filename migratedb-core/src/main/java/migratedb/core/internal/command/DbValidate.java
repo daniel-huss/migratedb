@@ -16,10 +16,6 @@
  */
 package migratedb.core.internal.command;
 
-import static migratedb.core.internal.jdbc.ExecutionTemplateFactory.createExecutionTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.ErrorCode;
 import migratedb.core.api.ErrorDetails;
 import migratedb.core.api.callback.Event;
@@ -32,7 +28,6 @@ import migratedb.core.api.logging.Log;
 import migratedb.core.api.output.CommandResultFactory;
 import migratedb.core.api.output.ValidateOutput;
 import migratedb.core.api.output.ValidateResult;
-import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.info.MigrationInfoServiceImpl;
 import migratedb.core.internal.info.ValidationContext;
@@ -40,6 +35,11 @@ import migratedb.core.internal.info.ValidationMatch;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.DateTimeUtils;
 import migratedb.core.internal.util.StopWatch;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static migratedb.core.internal.jdbc.ExecutionTemplateFactory.createExecutionTemplate;
 
 /**
  * Handles the validate command.
@@ -55,7 +55,7 @@ public class DbValidate {
     /**
      * The schema containing the schema history table.
      */
-    private final Schema schema;
+    private final Schema<?, ?> schema;
 
     /**
      * The migration resolver.
@@ -65,7 +65,7 @@ public class DbValidate {
     /**
      * The connection to use.
      */
-    private final Connection connection;
+    private final Connection<?> connection;
 
     /**
      * The current configuration.
@@ -85,7 +85,7 @@ public class DbValidate {
     /**
      * The database-specific support.
      */
-    private final Database database;
+    private final Database<?> database;
 
     /**
      * Creates a new database validator.
@@ -98,9 +98,9 @@ public class DbValidate {
      * @param allowPending      Whether pending migrations are allowed.
      * @param callbackExecutor  The callback executor.
      */
-    public DbValidate(Database database,
+    public DbValidate(Database<?> database,
                       SchemaHistory schemaHistory,
-                      Schema schema,
+                      Schema<?, ?> schema,
                       MigrationResolver migrationResolver,
                       Configuration configuration,
                       boolean allowPending,
@@ -133,20 +133,15 @@ public class DbValidate {
      */
     public ValidateResult validate() {
         if (!schema.exists()) {
-            if (!migrationResolver.resolveMigrations(new Context() {
-                @Override
-                public Configuration getConfiguration() {
-                    return configuration;
-                }
-            }).isEmpty() && !allowPending) {
+            if (!migrationResolver.resolveMigrations(() -> configuration).isEmpty() && !allowPending) {
                 String validationErrorMessage = "Schema " + schema + " doesn't exist yet";
                 ErrorDetails validationError = new ErrorDetails(ErrorCode.SCHEMA_DOES_NOT_EXIST,
-                                                                validationErrorMessage);
+                        validationErrorMessage);
                 return CommandResultFactory.createValidateResult(database.getCatalog(),
-                                                                 validationError,
-                                                                 0,
-                                                                 null,
-                                                                 new ArrayList<>());
+                        validationError,
+                        0,
+                        null,
+                        new ArrayList<>());
             }
             return CommandResultFactory.createValidateResult(database.getCatalog(), null, 0, null, new ArrayList<>());
         }

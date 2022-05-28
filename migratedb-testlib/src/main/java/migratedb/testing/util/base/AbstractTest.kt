@@ -22,30 +22,11 @@ import io.kotest.assertions.print.printed
 import org.testcontainers.shaded.com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.SerializationFeature
-import java.util.*
 
 abstract class AbstractTest {
     companion object {
         private val jsonMapper = ObjectMapper().setDefaultPrettyPrinter(DefaultPrettyPrinter())
             .enable(SerializationFeature.INDENT_OUTPUT)
-
-        private val unclosed: MutableSet<Any> =
-            Collections.synchronizedSet(Collections.newSetFromMap(IdentityHashMap()))
-
-        // These can be used with conditional breakpoints:
-        //  1. Set a conditional breakpoint at resource constructor: AbstractTest.opened(this) == null
-        //  2. Set a conditional breakpoint at resource close(): AbstractTest.closed(this) == null
-        //  3. Set a conditional breaktpoint where you want to check for unclosed resources:
-        //                      AbstractTest.hasOpen()
-
-        @JvmStatic
-        fun closed(it: Any) = this.also { unclosed.remove(it) }
-
-        @JvmStatic
-        fun opened(it: Any) = this.also { unclosed.add(it) }
-
-        @JvmStatic
-        fun hasOpen() = unclosed.isNotEmpty()
 
         init {
             Printers.add(Any::class, object : Print<Any> {

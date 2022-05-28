@@ -16,9 +16,6 @@
  */
 package migratedb.core.internal.parser;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
@@ -26,6 +23,10 @@ import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.api.internal.resource.ResourceName;
 import migratedb.core.api.logging.Log;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ParsingContextImpl implements ParsingContext {
     private static final Log LOG = Log.getLog(ParsingContextImpl.class);
@@ -39,29 +40,29 @@ public class ParsingContextImpl implements ParsingContext {
     private static final String TABLE_PLACEHOLDER = "migratedb:table";
 
     private final Map<String, String> placeholders = new HashMap<>();
-    private Database database;
+    private Database<?> database;
 
     @Override
     public Map<String, String> getPlaceholders() {
         return placeholders;
     }
 
-    private void setDatabase(Database database) {
+    private void setDatabase(Database<?> database) {
         this.database = database;
     }
 
     @Override
-    public Database getDatabase() {
+    public Database<?> getDatabase() {
         return database;
     }
 
-    public void populate(Database database, Configuration configuration) {
+    public void populate(Database<?> database, Configuration configuration) {
         setDatabase(database);
 
         String defaultSchemaName = configuration.getDefaultSchema();
         String[] schemaNames = configuration.getSchemas();
 
-        Schema currentSchema = getCurrentSchema(database);
+        Schema<?, ?> currentSchema = getCurrentSchema(database);
         String catalog = database.getCatalog();
         String currentUser = getCurrentUser(database);
 
@@ -69,6 +70,7 @@ public class ParsingContextImpl implements ParsingContext {
             if (schemaNames.length > 0) {
                 defaultSchemaName = schemaNames[0];
             } else {
+                assert currentSchema != null;
                 defaultSchemaName = currentSchema.getName();
             }
         }
@@ -96,7 +98,7 @@ public class ParsingContextImpl implements ParsingContext {
         }
     }
 
-    private Schema getCurrentSchema(Database database) {
+    private Schema<?, ?> getCurrentSchema(Database<?> database) {
         try {
             return database.getMainConnection().getCurrentSchema();
         } catch (MigrateDbException e) {
@@ -105,7 +107,7 @@ public class ParsingContextImpl implements ParsingContext {
         }
     }
 
-    private String getCurrentUser(Database database) {
+    private String getCurrentUser(Database<?> database) {
         try {
             return database.getCurrentUser();
         } catch (MigrateDbException e) {

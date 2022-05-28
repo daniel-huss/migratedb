@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.mysql;
 
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import migratedb.core.api.internal.database.base.Table;
-import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.internal.database.base.BaseSchema;
 
 public class MySQLSchema extends BaseSchema<MySQLDatabase, MySQLTable> {
 
@@ -99,7 +100,7 @@ public class MySQLSchema extends BaseSchema<MySQLDatabase, MySQLTable> {
         }
 
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
-        for (Table table : allTables()) {
+        for (var table : allTables()) {
             table.drop();
         }
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
@@ -178,7 +179,7 @@ public class MySQLSchema extends BaseSchema<MySQLDatabase, MySQLTable> {
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new MySQLTable(jdbcTemplate, database, this, tableName);
     }
 }

@@ -16,9 +16,6 @@
  */
 package migratedb.core.internal.database.sybasease;
 
-import java.sql.Connection;
-import java.sql.Types;
-import java.util.Properties;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
@@ -27,6 +24,10 @@ import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.parser.BaseParser;
+
+import java.sql.Connection;
+import java.sql.Types;
+import java.util.Properties;
 
 public class SybaseASEJTDSDatabaseType extends BaseDatabaseType {
     @Override
@@ -59,8 +60,8 @@ public class SybaseASEJTDSDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         return new SybaseASEDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
     }
 

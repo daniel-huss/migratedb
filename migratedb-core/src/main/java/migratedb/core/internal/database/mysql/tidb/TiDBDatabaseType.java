@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.database.mysql.tidb;
 
-import java.sql.Connection;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.mysql.MySQLDatabaseType;
+
+import java.sql.Connection;
 
 public class TiDBDatabaseType extends MySQLDatabaseType {
     @Override
@@ -43,8 +44,8 @@ public class TiDBDatabaseType extends MySQLDatabaseType {
     }
 
     @Override
-    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         return new TiDBDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
     }
 }

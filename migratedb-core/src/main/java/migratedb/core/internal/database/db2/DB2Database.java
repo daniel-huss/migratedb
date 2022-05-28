@@ -16,13 +16,14 @@
  */
 package migratedb.core.internal.database.db2;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class DB2Database extends BaseDatabase<DB2Connection> {
     public DB2Database(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
@@ -42,17 +43,17 @@ public class DB2Database extends BaseDatabase<DB2Connection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         String tablespace = configuration.getTablespace() == null
-                            ? ""
-                            : " IN \"" + configuration.getTablespace() + "\"";
+                ? ""
+                : " IN \"" + configuration.getTablespace() + "\"";
 
         return "CREATE TABLE " + table + " (\n" +
-               "    \"installed_rank\" INT NOT NULL,\n" +
-               "    \"version\" VARCHAR(50),\n" +
-               "    \"description\" VARCHAR(200) NOT NULL,\n" +
-               "    \"type\" VARCHAR(20) NOT NULL,\n" +
-               "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+                "    \"installed_rank\" INT NOT NULL,\n" +
+                "    \"version\" VARCHAR(50),\n" +
+                "    \"description\" VARCHAR(200) NOT NULL,\n" +
+                "    \"type\" VARCHAR(20) NOT NULL,\n" +
+                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
                "    \"checksum\" VARCHAR(100),\n" +
                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
                "    \"installed_on\" TIMESTAMP DEFAULT CURRENT TIMESTAMP NOT NULL,\n" +
@@ -72,10 +73,10 @@ public class DB2Database extends BaseDatabase<DB2Connection> {
     }
 
     @Override
-    public String getSelectStatement(Table table) {
+    public String getSelectStatement(Table<?, ?> table) {
         return super.getSelectStatement(table)
-               // Allow uncommitted reads so info can be invoked while migrate is running
-               + " WITH UR";
+                // Allow uncommitted reads so info can be invoked while migrate is running
+                + " WITH UR";
     }
 
     @Override

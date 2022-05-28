@@ -16,8 +16,6 @@
  */
 package migratedb.core.internal.command;
 
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.internal.callback.CallbackExecutor;
@@ -28,6 +26,9 @@ import migratedb.core.api.logging.Log;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Handles MigrateDB 's automatic schema creation.
  */
@@ -37,12 +38,12 @@ public class DbSchemas {
     /**
      * The database connection to use for accessing the schema history table.
      */
-    private final Connection connection;
+    private final Connection<?> connection;
 
     /**
      * The schemas managed by MigrateDb.
      */
-    private final Schema[] schemas;
+    private final Schema<?, ?>[] schemas;
 
     /**
      * The schema history table.
@@ -52,7 +53,7 @@ public class DbSchemas {
     /**
      * The database.
      */
-    private final Database database;
+    private final Database<?> database;
 
     /**
      * The callback executor.
@@ -66,7 +67,7 @@ public class DbSchemas {
      * @param schemas       The schemas managed by MigrateDb.
      * @param schemaHistory The schema history table.
      */
-    public DbSchemas(Database database, Schema[] schemas, SchemaHistory schemaHistory,
+    public DbSchemas(Database<?> database, Schema<?, ?>[] schemas, SchemaHistory schemaHistory,
                      CallbackExecutor callbackExecutor) {
         this.database = database;
         this.connection = database.getMainConnection();
@@ -86,31 +87,31 @@ public class DbSchemas {
         while (true) {
             try {
                 ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(), database)
-                                        .execute(() -> {
-                                            List<Schema> createdSchemas = new ArrayList<>();
-                                            for (Schema schema : schemas) {
-                                                if (!schema.exists()) {
-                                                    if (schema.getName() == null) {
-                                                        throw new MigrateDbException(
-                                                            "Unable to determine schema for the schema history table." +
-                                                            " Set a default schema for the connection or specify one " +
-                                                            "using the defaultSchema property!");
-                                                    }
-                                                    LOG.debug("Creating schema: " + schema);
-                                                    schema.create();
-                                                    createdSchemas.add(schema);
-                                                } else {
-                                                    LOG.debug("Skipping creation of existing schema: " + schema);
-                                                }
-                                            }
+                        .execute(() -> {
+                            List<Schema<?, ?>> createdSchemas = new ArrayList<>();
+                            for (var schema : schemas) {
+                                if (!schema.exists()) {
+                                    if (schema.getName() == null) {
+                                        throw new MigrateDbException(
+                                                "Unable to determine schema for the schema history table." +
+                                                        " Set a default schema for the connection or specify one " +
+                                                        "using the defaultSchema property!");
+                                    }
+                                    LOG.debug("Creating schema: " + schema);
+                                    schema.create();
+                                    createdSchemas.add(schema);
+                                } else {
+                                    LOG.debug("Skipping creation of existing schema: " + schema);
+                                }
+                            }
 
-                                            if (!createdSchemas.isEmpty()) {
-                                                schemaHistory.create(baseline);
-                                                schemaHistory.addSchemasMarker(createdSchemas.toArray(new Schema[0]));
-                                            }
+                            if (!createdSchemas.isEmpty()) {
+                                schemaHistory.create(baseline);
+                                schemaHistory.addSchemasMarker(createdSchemas.toArray(new Schema[0]));
+                            }
 
-                                            return null;
-                                        });
+                            return null;
+                        });
                 return;
             } catch (RuntimeException e) {
                 if (++retries >= 10) {
@@ -120,7 +121,8 @@ public class DbSchemas {
                     LOG.debug("Schema creation failed. Retrying in 1 sec ...");
                     Thread.sleep(1000);
                 } catch (InterruptedException e1) {
-                    // Ignore
+                    Thread.currentThread().interrupt();
+                    throw new MigrateDbException("Interrupted");
                 }
             }
         }

@@ -16,23 +16,18 @@
  */
 package migratedb.core.internal.database.oracle;
 
+import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.api.internal.sqlscript.Delimiter;
+import migratedb.core.internal.parser.*;
+import migratedb.core.internal.sqlscript.ParsedSqlStatement;
+import migratedb.core.internal.util.StringUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
-import migratedb.core.api.configuration.Configuration;
-import migratedb.core.api.internal.parser.ParsingContext;
-import migratedb.core.api.internal.sqlscript.Delimiter;
-import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.parser.ParserContext;
-import migratedb.core.internal.parser.PeekingReader;
-import migratedb.core.internal.parser.Recorder;
-import migratedb.core.internal.parser.StatementType;
-import migratedb.core.internal.parser.Token;
-import migratedb.core.internal.parser.TokenType;
-import migratedb.core.internal.sqlscript.ParsedSqlStatement;
-import migratedb.core.internal.util.StringUtils;
 
 public class OracleParser extends BaseParser {
 
@@ -43,16 +38,14 @@ public class OracleParser extends BaseParser {
 
     );
 
-    //                                                 accessible   by    (        keyword<space>optionalidentifier
-    //                                                 )
     private static final String ACCESSIBLE_BY_REGEX = "ACCESSIBLE\\sBY\\s\\(?(" +
-                                                      "(FUNCTION|PROCEDURE|PACKAGE|TRIGGER|TYPE)\\s[^\\s]*\\s?+)*\\)?";
+            "(FUNCTION|PROCEDURE|PACKAGE|TRIGGER|TYPE)\\s\\Ss?+)*\\)?";
 
     private static final Pattern PLSQL_TYPE_BODY_REGEX = Pattern.compile(
-        "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\sTYPE\\sBODY\\s([^\\s]*\\s)?(IS|AS)");
+            "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\sTYPE\\sBODY\\s(\\S*\\s)?(IS|AS)");
 
     private static final Pattern PLSQL_PACKAGE_BODY_REGEX = Pattern.compile(
-        "^CREATE(\\s*OR\\s*REPLACE)?(\\s*(NON)?EDITIONABLE)?\\s*PACKAGE\\s*BODY\\s*([^\\s]*\\s)?(IS|AS)");
+            "^CREATE(\\s*OR\\s*REPLACE)?(\\s*(NON)?EDITIONABLE)?\\s*PACKAGE\\s*BODY\\s*(\\S*\\s)?(IS|AS)");
     private static final StatementType PLSQL_PACKAGE_BODY_STATEMENT = new StatementType();
 
     private static final Pattern PLSQL_PACKAGE_DEFINITION_REGEX = Pattern.compile(
@@ -60,7 +53,7 @@ public class OracleParser extends BaseParser {
         ACCESSIBLE_BY_REGEX + ")*(IS|AS)");
 
     private static final Pattern PLSQL_VIEW_REGEX = Pattern.compile(
-        "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\sVIEW\\s([^\\s]*\\s)?AS\\sWITH\\s(PROCEDURE|FUNCTION)");
+            "^CREATE(\\sOR\\sREPLACE)?(\\s(NON)?EDITIONABLE)?\\sVIEW\\s(\\S*\\s)?AS\\sWITH\\s(PROCEDURE|FUNCTION)");
     private static final StatementType PLSQL_VIEW_STATEMENT = new StatementType();
 
     private static final Pattern PLSQL_REGEX = Pattern.compile(
@@ -328,7 +321,7 @@ public class OracleParser extends BaseParser {
         if (delimiter.shouldBeAloneOnLine()) {
             // Only consider alone-on-line delimiters (such as "/" for PL/SQL) if
             // it's the first character on the line
-            if (colIgnoringWhitespace == 1 && peek == delimiter.getDelimiter()) {
+            if (colIgnoringWhitespace == 1 && peek.equals(delimiter.getDelimiter())) {
                 return true;
             }
 

@@ -16,13 +16,14 @@
  */
 package migratedb.core.internal.database.cockroachdb;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.internal.util.SqlCallable;
 import migratedb.core.internal.database.base.BaseSchema;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CockroachDBSchema extends BaseSchema<CockroachDBDatabase, CockroachDBTable> {
     /**
@@ -136,7 +137,7 @@ public class CockroachDBSchema extends BaseSchema<CockroachDBDatabase, Cockroach
             jdbcTemplate.execute(statement);
         }
 
-        for (Table table : allTables()) {
+        for (var table : allTables()) {
             table.drop();
         }
 
@@ -212,7 +213,7 @@ public class CockroachDBSchema extends BaseSchema<CockroachDBDatabase, Cockroach
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new CockroachDBTable(jdbcTemplate, database, this, tableName);
     }
 }

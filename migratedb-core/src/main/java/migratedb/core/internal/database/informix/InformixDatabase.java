@@ -16,13 +16,14 @@
  */
 package migratedb.core.internal.database.informix;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Informix database.
@@ -50,17 +51,17 @@ public class InformixDatabase extends BaseDatabase<InformixConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         String tablespace = configuration.getTablespace() == null
-                            ? ""
-                            : " IN \"" + configuration.getTablespace() + "\"";
+                ? ""
+                : " IN \"" + configuration.getTablespace() + "\"";
 
         return "CREATE TABLE " + table + " (\n" +
-               "    installed_rank INT NOT NULL,\n" +
-               "    version VARCHAR(50),\n" +
-               "    description VARCHAR(200) NOT NULL,\n" +
-               "    type VARCHAR(20) NOT NULL,\n" +
-               "    script LVARCHAR(1000) NOT NULL,\n" +
+                "    installed_rank INT NOT NULL,\n" +
+                "    version VARCHAR(50),\n" +
+                "    description VARCHAR(200) NOT NULL,\n" +
+                "    type VARCHAR(20) NOT NULL,\n" +
+                "    script LVARCHAR(1000) NOT NULL,\n" +
                "    checksum VARCHAR(100),\n" +
                "    installed_by VARCHAR(100) NOT NULL,\n" +
                "    installed_on DATETIME YEAR TO FRACTION(3) DEFAULT CURRENT YEAR TO FRACTION(3) NOT NULL,\n" +

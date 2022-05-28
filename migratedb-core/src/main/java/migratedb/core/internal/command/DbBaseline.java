@@ -68,7 +68,7 @@ public class DbBaseline {
      * @param database            Database-specific functionality.
      */
     public DbBaseline(SchemaHistory schemaHistory, Version baselineVersion, String baselineDescription,
-                      CallbackExecutor callbackExecutor, Database database) {
+                      CallbackExecutor callbackExecutor, Database<?> database) {
         this.schemaHistory = schemaHistory;
         this.baselineVersion = baselineVersion;
         this.baselineDescription = baselineDescription;

@@ -16,12 +16,11 @@
  */
 package migratedb.core.internal.database.snowflake;
 
-import java.sql.ResultSet;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseTable;
+
 import java.sql.SQLException;
 import java.util.List;
-import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.api.internal.jdbc.RowMapper;
-import migratedb.core.internal.database.base.BaseTable;
 
 public class SnowflakeTable extends BaseTable<SnowflakeDatabase, SnowflakeSchema> {
     SnowflakeTable(JdbcTemplate jdbcTemplate, SnowflakeDatabase database, SnowflakeSchema schema, String name) {
@@ -40,12 +39,7 @@ public class SnowflakeTable extends BaseTable<SnowflakeDatabase, SnowflakeSchema
         }
 
         String sql = "SHOW TABLES LIKE '" + name + "' IN SCHEMA " + database.quote(schema.getName());
-        List<Boolean> results = jdbcTemplate.query(sql, new RowMapper<Boolean>() {
-            @Override
-            public Boolean mapRow(ResultSet rs) throws SQLException {
-                return true;
-            }
-        });
+        List<Boolean> results = jdbcTemplate.query(sql, rs -> true);
         return !results.isEmpty();
     }
 

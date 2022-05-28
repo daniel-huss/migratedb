@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.database.sqlite;
 
-import java.sql.Connection;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
+
+import java.sql.Connection;
 
 public class SQLiteDatabase extends BaseDatabase<SQLiteConnection> {
     public SQLiteDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
@@ -43,17 +44,17 @@ public class SQLiteDatabase extends BaseDatabase<SQLiteConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
-               "    \"installed_rank\" INT NOT NULL PRIMARY KEY,\n" +
-               "    \"version\" VARCHAR(50),\n" +
-               "    \"description\" VARCHAR(200) NOT NULL,\n" +
-               "    \"type\" VARCHAR(20) NOT NULL,\n" +
-               "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-               "    \"checksum\" VARCHAR(100),\n" +
-               "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
-               "    \"installed_on\" TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f','now')),\n" +
-               "    \"execution_time\" INT NOT NULL,\n" +
+                "    \"installed_rank\" INT NOT NULL PRIMARY KEY,\n" +
+                "    \"version\" VARCHAR(50),\n" +
+                "    \"description\" VARCHAR(200) NOT NULL,\n" +
+                "    \"type\" VARCHAR(20) NOT NULL,\n" +
+                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+                "    \"checksum\" VARCHAR(100),\n" +
+                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
+                "    \"installed_on\" TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f','now')),\n" +
+                "    \"execution_time\" INT NOT NULL,\n" +
                "    \"success\" BOOLEAN NOT NULL\n" +
                ");\n" +
                (baseline ? getBaselineStatement(table) + ";\n" : "") +

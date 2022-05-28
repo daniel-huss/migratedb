@@ -54,17 +54,17 @@ final class MigrateDbExecutor {
     static final class CommandContext {
         public final MigrationResolver migrationResolver;
         public final SchemaHistory schemaHistory;
-        public final Database database;
-        public final Schema defaultSchema;
-        public final Schema[] schemas;
+        public final Database<?> database;
+        public final Schema<?, ?> defaultSchema;
+        public final Schema<?, ?>[] schemas;
         public final CallbackExecutor callbackExecutor;
         public final StatementInterceptor statementInterceptor;
 
         CommandContext(MigrationResolver migrationResolver,
                        SchemaHistory schemaHistory,
-                       Database database,
-                       Schema defaultSchema,
-                       Schema[] schemas,
+                       Database<?> database,
+                       Schema<?, ?> defaultSchema,
+                       Schema<?, ?>[] schemas,
                        CallbackExecutor callbackExecutor,
                        StatementInterceptor statementInterceptor) {
             this.migrationResolver = migrationResolver;
@@ -106,7 +106,6 @@ final class MigrateDbExecutor {
      *
      * @param command The command to execute.
      * @param <T>     The type of the result.
-     *
      * @return The result of the command.
      */
     public <T> T execute(Command<T> command, boolean scannerRequired) {
@@ -132,17 +131,17 @@ final class MigrateDbExecutor {
         resourceNameValidator.validateSQLMigrationNaming(resourceProvider, configuration);
 
         var jdbcConnectionFactory = new JdbcConnectionFactoryImpl(configuration.getDataSource(),
-                                                                  configuration,
-                                                                  statementInterceptor);
+                configuration,
+                statementInterceptor);
 
         var databaseType = jdbcConnectionFactory.getDatabaseType();
         var parsingContext = new ParsingContextImpl();
         var sqlScriptFactory = databaseType.createSqlScriptFactory(configuration, parsingContext);
 
         var noCallbackSqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
-            jdbcConnectionFactory,
-            NoopCallbackExecutor.INSTANCE,
-            statementInterceptor
+                jdbcConnectionFactory,
+                NoopCallbackExecutor.INSTANCE,
+                statementInterceptor
         );
 
         jdbcConnectionFactory.setConnectionInitializer((jdbcConnectionFactory1, connection) -> {
@@ -153,15 +152,15 @@ final class MigrateDbExecutor {
             SqlScript sqlScript = sqlScriptFactory.createSqlScript(resource, true, resourceProvider);
             boolean outputQueryResults = configuration.isOutputQueryResults();
             noCallbackSqlScriptExecutorFactory.createSqlScriptExecutor(connection,
-                                                                       configuration.isBatch(),
-                                                                       outputQueryResults)
-                                              .execute(sqlScript);
+                            configuration.isBatch(),
+                            outputQueryResults)
+                    .execute(sqlScript);
         });
 
         try (var database = databaseType.createDatabase(configuration,
-                                                        !dbConnectionInfoPrinted,
-                                                        jdbcConnectionFactory,
-                                                        statementInterceptor)) {
+                !dbConnectionInfoPrinted,
+                jdbcConnectionFactory,
+                statementInterceptor)) {
             dbConnectionInfoPrinted = true;
             LOG.debug("DDL Transactions Supported: " + database.supportsDdlTransactions());
 
@@ -172,42 +171,42 @@ final class MigrateDbExecutor {
             database.ensureSupported();
 
             var callbackExecutor = new DefaultCallbackExecutor(configuration,
-                                                               database,
-                                                               schemas.defaultSchema,
-                                                               prepareCallbacks(
-                                                                   database,
-                                                                   resourceProvider,
-                                                                   jdbcConnectionFactory,
-                                                                   sqlScriptFactory,
-                                                                   statementInterceptor,
-                                                                   schemas.defaultSchema,
-                                                                   parsingContext));
+                    database,
+                    schemas.defaultSchema,
+                    prepareCallbacks(
+                            database,
+                            resourceProvider,
+                            jdbcConnectionFactory,
+                            sqlScriptFactory,
+                            statementInterceptor,
+                            schemas.defaultSchema,
+                            parsingContext));
 
             var sqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
-                jdbcConnectionFactory,
-                callbackExecutor,
-                statementInterceptor);
+                    jdbcConnectionFactory,
+                    callbackExecutor,
+                    statementInterceptor);
 
             var schemaHistory = SchemaHistoryFactory.getSchemaHistory(
-                configuration,
-                noCallbackSqlScriptExecutorFactory,
-                sqlScriptFactory,
-                database,
-                schemas.defaultSchema,
-                statementInterceptor);
+                    configuration,
+                    noCallbackSqlScriptExecutorFactory,
+                    sqlScriptFactory,
+                    database,
+                    schemas.defaultSchema,
+                    statementInterceptor);
 
             var commandContext = new CommandContext(
-                createMigrationResolver(resourceProvider,
-                                        classProvider,
-                                        sqlScriptExecutorFactory,
-                                        sqlScriptFactory,
-                                        parsingContext),
-                schemaHistory,
-                database,
-                schemas.defaultSchema,
-                schemas.all.toArray(new Schema[0]),
-                callbackExecutor,
-                statementInterceptor
+                    createMigrationResolver(resourceProvider,
+                            classProvider,
+                            sqlScriptExecutorFactory,
+                            sqlScriptFactory,
+                            parsingContext),
+                    schemaHistory,
+                    database,
+                    schemas.defaultSchema,
+                    schemas.all.toArray(new Schema[0]),
+                    callbackExecutor,
+                    statementInterceptor
             );
 
             result = command.execute(commandContext);
@@ -240,10 +239,10 @@ final class MigrateDbExecutor {
                 classProvider = configuration.getJavaMigrationClassProvider();
             } else {
                 LocationScanner<JavaMigration> scanner = new LocationScanner<>(
-                    JavaMigration.class,
-                    Arrays.asList(configuration.getLocations()),
-                    configuration.getClassLoader(),
-                    configuration.getFailOnMissingLocations()
+                        JavaMigration.class,
+                        Arrays.asList(configuration.getLocations()),
+                        configuration.getClassLoader(),
+                        configuration.getFailOnMissingLocations()
                 );
                 // set the defaults
                 resourceProvider = scanner;
@@ -260,11 +259,12 @@ final class MigrateDbExecutor {
         return new ResourceAndClassProviders(resourceProvider, classProvider);
     }
 
-    private List<Callback> prepareCallbacks(Database database, ResourceProvider resourceProvider,
+    private List<Callback> prepareCallbacks(Database<?> database,
+                                            ResourceProvider resourceProvider,
                                             JdbcConnectionFactory jdbcConnectionFactory,
                                             SqlScriptFactory sqlScriptFactory,
                                             StatementInterceptor statementInterceptor,
-                                            Schema schema,
+                                            Schema<?, ?> schema,
                                             ParsingContext parsingContext) {
         List<Callback> effectiveCallbacks = new ArrayList<>(Arrays.asList(configuration.getCallbacks()));
 
@@ -272,15 +272,15 @@ final class MigrateDbExecutor {
             // The no-op callback executor here is intentional because we're just interested in
             // SqlScriptCallbackFactory.getCallbacks() and somehow have to satisfy the ctor dependencies.
             var sqlScriptExecutorFactory = jdbcConnectionFactory.getDatabaseType()
-                                                                .createSqlScriptExecutorFactory(
-                                                                    jdbcConnectionFactory,
-                                                                    NoopCallbackExecutor.INSTANCE,
-                                                                    statementInterceptor);
+                    .createSqlScriptExecutorFactory(
+                            jdbcConnectionFactory,
+                            NoopCallbackExecutor.INSTANCE,
+                            statementInterceptor);
 
             effectiveCallbacks.addAll(new SqlScriptCallbackFactory(resourceProvider,
-                                                                   sqlScriptExecutorFactory,
-                                                                   sqlScriptFactory,
-                                                                   configuration).getCallbacks());
+                    sqlScriptExecutorFactory,
+                    sqlScriptFactory,
+                    configuration).getCallbacks());
         }
 
         return effectiveCallbacks;
@@ -293,7 +293,6 @@ final class MigrateDbExecutor {
      * @param classProvider    The class provider.
      * @param sqlScriptFactory The SQL statement builder factory.
      * @param parsingContext   The parsing context.
-     *
      * @return A new, fully configured, MigrationResolver instance.
      */
     private MigrationResolver createMigrationResolver(ResourceProvider resourceProvider,

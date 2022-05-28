@@ -21,7 +21,6 @@ import migratedb.core.api.internal.database.base.Connection;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.api.internal.jdbc.RowMapper;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
@@ -53,7 +52,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
     /**
      * The database to use.
      */
-    private final Database database;
+    private final Database<?> database;
 
     /**
      * Connection with access to the database.
@@ -74,7 +73,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
      * @param table    The schema history table used by MigrateDb.
      */
     JdbcTableSchemaHistory(SqlScriptExecutorFactory sqlScriptExecutorFactory, SqlScriptFactory sqlScriptFactory,
-                           Database database, Table table) {
+                           Database<?> database, Table<?, ?> table) {
         this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
         this.sqlScriptFactory = sqlScriptFactory;
         this.table = table;
@@ -208,28 +207,26 @@ class JdbcTableSchemaHistory extends SchemaHistory {
         String query = database.getSelectStatement(table);
 
         try {
-            cache.addAll(jdbcTemplate.query(query, new RowMapper<AppliedMigration>() {
-                @Override
-                public AppliedMigration mapRow(ResultSet rs) throws SQLException {
-                    // Construct a map of lower-cased column names to ordinals. This is useful for databases that
-                    // upper-case them - eg Snowflake with QUOTED-IDENTIFIERS-IGNORE-CASE turned on
-                    HashMap<String, Integer> columnOrdinalMap = constructColumnOrdinalMap(rs);
+            cache.addAll(jdbcTemplate.query(query, rs -> {
+                // Construct a map of lower-cased column names to ordinals. This is useful for databases that
+                // upper-case them - eg Snowflake with QUOTED-IDENTIFIERS-IGNORE-CASE turned on
+                HashMap<String, Integer> columnOrdinalMap = constructColumnOrdinalMap(rs);
 
-                    String checksum = rs.getString(columnOrdinalMap.get("checksum"));
-                    if (rs.wasNull()) {
-                        checksum = null;
-                    }
+                String checksum = rs.getString(columnOrdinalMap.get("checksum"));
+                if (rs.wasNull()) {
+                    checksum = null;
+                }
 
-                    // Convert legacy types to their modern equivalent to avoid validation errors
-                    String type = rs.getString(columnOrdinalMap.get("type"));
-                    if ("SPRING_JDBC".equals(type)) {
-                        type = "JDBC";
-                    }
+                // Convert legacy types to their modern equivalent to avoid validation errors
+                String type = rs.getString(columnOrdinalMap.get("type"));
+                if ("SPRING_JDBC".equals(type)) {
+                    type = "JDBC";
+                }
 
-                    return new AppliedMigration(
+                return new AppliedMigration(
                         rs.getInt(columnOrdinalMap.get("installed_rank")),
                         rs.getString(columnOrdinalMap.get("version")) != null
-                        ? Version.parse(rs.getString(columnOrdinalMap.get("version"))) : null,
+                                ? Version.parse(rs.getString(columnOrdinalMap.get("version"))) : null,
                         rs.getString(columnOrdinalMap.get("description")),
                         MigrationType.fromString(type),
                         rs.getString(columnOrdinalMap.get("script")),
@@ -238,8 +235,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                         rs.getString(columnOrdinalMap.get("installed_by")),
                         rs.getInt(columnOrdinalMap.get("execution_time")),
                         rs.getBoolean(columnOrdinalMap.get("success"))
-                    );
-                }
+                );
             }, maxCachedInstalledRank));
         } catch (SQLException e) {
             throw new MigrateDbSqlException(

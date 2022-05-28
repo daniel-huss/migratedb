@@ -16,11 +16,12 @@
  */
 package migratedb.core.internal.database.sqlserver.synapse;
 
-import java.util.concurrent.Callable;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.internal.database.sqlserver.SQLServerConnection;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
+
+import java.util.concurrent.Callable;
 
 /**
  * Azure Synapse connection.
@@ -32,15 +33,15 @@ public class SynapseConnection extends SQLServerConnection {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new SynapseSchema(jdbcTemplate, database, originalDatabaseName, name);
     }
 
     @Override
-    public <T> T lock(Table table, Callable<T> callable) {
+    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
         return ExecutionTemplateFactory
-            .createTableExclusiveExecutionTemplate(jdbcTemplate.getConnection(), table, database)
-            .execute(callable);
+                .createTableExclusiveExecutionTemplate(jdbcTemplate.getConnection(), table, database)
+                .execute(callable);
     }
 
 }

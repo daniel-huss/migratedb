@@ -31,7 +31,7 @@ public class YugabyteDBSchema extends PostgreSQLSchema {
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new YugabyteDBTable(jdbcTemplate, (YugabyteDBDatabase) database, this, tableName);
     }
 }

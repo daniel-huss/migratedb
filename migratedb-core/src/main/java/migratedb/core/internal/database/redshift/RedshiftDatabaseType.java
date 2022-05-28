@@ -16,9 +16,6 @@
  */
 package migratedb.core.internal.database.redshift;
 
-import java.sql.Connection;
-import java.sql.Types;
-import java.util.Map;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
@@ -28,6 +25,10 @@ import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.util.ClassUtils;
+
+import java.sql.Connection;
+import java.sql.Types;
+import java.util.Map;
 
 public class RedshiftDatabaseType extends BaseDatabaseType {
     private static final String REDSHIFT_JDBC4_DRIVER = "com.amazon.redshift.jdbc4.Driver";
@@ -92,8 +93,8 @@ public class RedshiftDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         return new RedshiftDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
     }
 

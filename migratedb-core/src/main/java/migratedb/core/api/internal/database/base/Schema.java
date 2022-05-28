@@ -17,7 +17,7 @@
 
 package migratedb.core.api.internal.database.base;
 
-public interface Schema<D extends Database, T extends Table> {
+public interface Schema<D extends Database<?>, T extends Table<?, ?>> {
     String getName();
 
     boolean exists();
@@ -47,10 +47,10 @@ public interface Schema<D extends Database, T extends Table> {
     /**
      * Retrieves the table with this name in this schema.
      */
-    Table getTable(String tableName);
+    Table<?, ?> getTable(String tableName);
 
     /**
      * Retrieves the function with this name in this schema.
      */
-    Function getFunction(String functionName, String... args);
+    Function<?, ?> getFunction(String functionName, String... args);
 }

@@ -1329,6 +1329,7 @@ public class ClassicConfiguration implements Configuration {
      * Configure with the same values as this existing configuration.
      * <p>To use a custom ClassLoader, it must be passed to the constructor prior to calling this method.</p>
      */
+    @SuppressWarnings("deprecation")
     public void configure(Configuration configuration) {
         extensionConfig.clear();
         extensionConfig.putAll(configuration.getExtensionConfig());

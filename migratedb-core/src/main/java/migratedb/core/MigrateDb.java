@@ -16,8 +16,6 @@
  */
 package migratedb.core;
 
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfoService;
 import migratedb.core.api.callback.Event;
@@ -29,24 +27,15 @@ import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.logging.Log;
-import migratedb.core.api.output.BaselineResult;
-import migratedb.core.api.output.CleanResult;
-import migratedb.core.api.output.LiberateResult;
-import migratedb.core.api.output.MigrateResult;
-import migratedb.core.api.output.RepairResult;
-import migratedb.core.api.output.ValidateResult;
+import migratedb.core.api.output.*;
 import migratedb.core.api.resolver.MigrationResolver;
-import migratedb.core.internal.command.DbBaseline;
-import migratedb.core.internal.command.DbClean;
-import migratedb.core.internal.command.DbInfo;
-import migratedb.core.internal.command.DbLiberate;
-import migratedb.core.internal.command.DbMigrate;
-import migratedb.core.internal.command.DbRepair;
-import migratedb.core.internal.command.DbSchemas;
-import migratedb.core.internal.command.DbValidate;
+import migratedb.core.internal.command.*;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.StringUtils;
 import migratedb.core.internal.util.WebsiteLinks;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the centre point of MigrateDB, and for most users, the only class they will ever have to deal with.
@@ -149,8 +138,8 @@ public class MigrateDb {
             }
 
             if (!context.schemaHistory.exists()) {
-                List<Schema> nonEmptySchemas = new ArrayList<>();
-                for (Schema schema : context.schemas) {
+                List<Schema<?, ?>> nonEmptySchemas = new ArrayList<>();
+                for (var schema : context.schemas) {
                     if (schema.exists() && !schema.empty()) {
                         nonEmptySchemas.add(schema);
                     }
@@ -366,9 +355,9 @@ public class MigrateDb {
         return executor.execute(context -> {
             RepairResult repairResult = new DbRepair(context.database,
                                                      context.migrationResolver,
-                                                     context.schemaHistory,
-                                                     context.callbackExecutor,
-                                                     configuration).repair();
+                    context.schemaHistory,
+                    context.callbackExecutor,
+                    configuration).repair();
 
             context.callbackExecutor.onOperationFinishEvent(Event.AFTER_REPAIR_OPERATION_FINISH, repairResult);
 
@@ -376,7 +365,10 @@ public class MigrateDb {
         }, true);
     }
 
-    private CleanResult doClean(Database database, SchemaHistory schemaHistory, Schema defaultSchema, Schema[] schemas,
+    private CleanResult doClean(Database<?> database,
+                                SchemaHistory schemaHistory,
+                                Schema<?, ?> defaultSchema,
+                                Schema<?, ?>[] schemas,
                                 CallbackExecutor callbackExecutor) {
         return new DbClean(database, schemaHistory, defaultSchema, schemas, callbackExecutor, configuration).clean();
     }
@@ -391,17 +383,20 @@ public class MigrateDb {
      * @param callbackExecutor  The callback executor.
      * @param ignorePending     Whether to ignore pending migrations.
      */
-    private ValidateResult doValidate(Database database, MigrationResolver migrationResolver,
+    private ValidateResult doValidate(Database<?> database,
+                                      MigrationResolver migrationResolver,
                                       SchemaHistory schemaHistory,
-                                      Schema defaultSchema, Schema[] schemas, CallbackExecutor callbackExecutor,
+                                      Schema<?, ?> defaultSchema,
+                                      Schema<?, ?>[] schemas,
+                                      CallbackExecutor callbackExecutor,
                                       boolean ignorePending) {
         ValidateResult validateResult = new DbValidate(database,
-                                                       schemaHistory,
-                                                       defaultSchema,
-                                                       migrationResolver,
-                                                       configuration,
-                                                       ignorePending,
-                                                       callbackExecutor).validate();
+                schemaHistory,
+                defaultSchema,
+                migrationResolver,
+                configuration,
+                ignorePending,
+                callbackExecutor).validate();
 
         if (!validateResult.validationSuccessful && configuration.isCleanOnValidationError()) {
             doClean(database, schemaHistory, defaultSchema, schemas, callbackExecutor);
@@ -410,12 +405,13 @@ public class MigrateDb {
         return validateResult;
     }
 
-    private BaselineResult doBaseline(SchemaHistory schemaHistory, CallbackExecutor callbackExecutor,
-                                      Database database) {
+    private BaselineResult doBaseline(SchemaHistory schemaHistory,
+                                      CallbackExecutor callbackExecutor,
+                                      Database<?> database) {
         return new DbBaseline(schemaHistory,
-                              configuration.getBaselineVersion(),
-                              configuration.getBaselineDescription(),
-                              callbackExecutor,
-                              database).baseline();
+                configuration.getBaselineVersion(),
+                configuration.getBaselineDescription(),
+                callbackExecutor,
+                database).baseline();
     }
 }

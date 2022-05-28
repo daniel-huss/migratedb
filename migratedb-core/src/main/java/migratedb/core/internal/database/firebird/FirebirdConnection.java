@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database.firebird;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
+
+import java.sql.SQLException;
 
 public class FirebirdConnection extends BaseConnection<FirebirdDatabase> {
 
@@ -34,7 +35,7 @@ public class FirebirdConnection extends BaseConnection<FirebirdDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         // database == schema, always return the same dummy schema
         return new FirebirdSchema(jdbcTemplate, database, DUMMY_SCHEMA_NAME);
     }

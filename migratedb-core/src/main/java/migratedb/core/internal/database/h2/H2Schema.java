@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.h2;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class H2Schema extends BaseSchema<H2Database, H2Table> {
     private static final Log LOG = Log.getLog(H2Schema.class);
@@ -58,7 +59,7 @@ public class H2Schema extends BaseSchema<H2Database, H2Table> {
 
     @Override
     protected void doClean() throws SQLException {
-        for (Table table : allTables()) {
+        for (var table : allTables()) {
             table.drop();
         }
 
@@ -164,7 +165,7 @@ public class H2Schema extends BaseSchema<H2Database, H2Table> {
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new H2Table(jdbcTemplate, database, this, tableName);
     }
 }

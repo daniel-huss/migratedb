@@ -28,6 +28,7 @@ import javax.sql.DataSource
 
 val leakedConnections: MutableMap<Any, String> = Collections.synchronizedMap(IdentityHashMap())
 
+@Suppress("unused")
 fun trackConnectionLeaks(ds: DataSource): DataSource {
     return object : DataSource by ds {
         fun stack(): String {

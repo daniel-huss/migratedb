@@ -16,18 +16,19 @@
  */
 package migratedb.core.internal.database.spanner;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.internal.jdbc.Result;
 import migratedb.core.api.internal.jdbc.Results;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseSchema;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpannerSchema extends BaseSchema<SpannerDatabase, SpannerTable> {
     private static final Log LOG = Log.getLog(SpannerSchema.class);
@@ -79,7 +80,7 @@ public class SpannerSchema extends BaseSchema<SpannerDatabase, SpannerTable> {
 
         statements.clear();
 
-        for (Table table : doAllTables()) {
+        for (var table : doAllTables()) {
             for (String index : doAllIndexes(table)) {
                 if (!index.equalsIgnoreCase("PRIMARY_KEY")) {
                     jdbcTemplate.execute("DROP INDEX " + index);
@@ -127,7 +128,7 @@ public class SpannerSchema extends BaseSchema<SpannerDatabase, SpannerTable> {
         return foreignKeyAndTableList;
     }
 
-    private List<String> doAllIndexes(Table table) throws SQLException {
+    private List<String> doAllIndexes(Table<?, ?> table) throws SQLException {
         List<String> indexList = new ArrayList<>();
         Connection c = jdbcTemplate.getConnection();
 
@@ -141,7 +142,7 @@ public class SpannerSchema extends BaseSchema<SpannerDatabase, SpannerTable> {
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new SpannerTable(jdbcTemplate, database, this, tableName);
     }
 }

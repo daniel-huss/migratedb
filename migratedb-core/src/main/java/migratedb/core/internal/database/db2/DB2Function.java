@@ -16,16 +16,17 @@
  */
 package migratedb.core.internal.database.db2;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseFunction;
 
+import java.sql.SQLException;
+
 /**
  * DB2-specific function.
  */
-public class DB2Function extends BaseFunction {
+public class DB2Function extends BaseFunction<Database<?>, Schema<?, ?>> {
     /**
      * Creates a new Db2 function.
      *
@@ -35,7 +36,7 @@ public class DB2Function extends BaseFunction {
      * @param name         The name of the function.
      * @param args         The arguments of the function.
      */
-    DB2Function(JdbcTemplate jdbcTemplate, Database database, Schema schema, String name, String... args) {
+    DB2Function(JdbcTemplate jdbcTemplate, Database<?> database, Schema<?, ?> schema, String name, String... args) {
         super(jdbcTemplate, database, schema, name, args);
     }
 

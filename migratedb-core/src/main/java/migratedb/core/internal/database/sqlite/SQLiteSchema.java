@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.sqlite;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseSchema;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * SQLite implementation of Schema.
@@ -32,7 +33,7 @@ public class SQLiteSchema extends BaseSchema<SQLiteDatabase, SQLiteTable> {
     private static final Log LOG = Log.getLog(SQLiteSchema.class);
 
     private static final List<String> IGNORED_SYSTEM_TABLE_NAMES =
-        Arrays.asList("android_metadata", SQLiteTable.SQLITE_SEQUENCE);
+            Arrays.asList("android_metadata", SQLiteTable.SQLITE_SEQUENCE);
 
     private boolean foreignKeysEnabled;
 
@@ -59,9 +60,9 @@ public class SQLiteSchema extends BaseSchema<SQLiteDatabase, SQLiteTable> {
 
     @Override
     protected boolean doEmpty() {
-        Table[] tables = allTables();
+        var tables = allTables();
         List<String> tableNames = new ArrayList<>();
-        for (Table table : tables) {
+        for (var table : tables) {
             String tableName = table.getName();
             if (!IGNORED_SYSTEM_TABLE_NAMES.contains(tableName)) {
                 tableNames.add(tableName);
@@ -85,13 +86,13 @@ public class SQLiteSchema extends BaseSchema<SQLiteDatabase, SQLiteTable> {
         foreignKeysEnabled = jdbcTemplate.queryForBoolean("PRAGMA foreign_keys");
 
         List<String> viewNames = jdbcTemplate.queryForStringList(
-            "SELECT tbl_name FROM " + database.quote(name) + ".sqlite_master WHERE type='view'");
+                "SELECT tbl_name FROM " + database.quote(name) + ".sqlite_master WHERE type='view'");
 
         for (String viewName : viewNames) {
             jdbcTemplate.execute("DROP VIEW " + database.quote(name, viewName));
         }
 
-        for (Table table : allTables()) {
+        for (var table : allTables()) {
             table.drop();
         }
 
@@ -103,7 +104,7 @@ public class SQLiteSchema extends BaseSchema<SQLiteDatabase, SQLiteTable> {
     @Override
     protected SQLiteTable[] doAllTables() throws SQLException {
         List<String> tableNames = jdbcTemplate.queryForStringList(
-            "SELECT tbl_name FROM " + database.quote(name) + ".sqlite_master WHERE type='table'");
+                "SELECT tbl_name FROM " + database.quote(name) + ".sqlite_master WHERE type='table'");
 
         SQLiteTable[] tables = new SQLiteTable[tableNames.size()];
         for (int i = 0; i < tableNames.size(); i++) {
@@ -113,7 +114,7 @@ public class SQLiteSchema extends BaseSchema<SQLiteDatabase, SQLiteTable> {
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new SQLiteTable(jdbcTemplate, database, this, tableName);
     }
 

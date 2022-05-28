@@ -16,10 +16,11 @@
  */
 package migratedb.core.internal.database.snowflake;
 
-import java.sql.SQLException;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
+
+import java.sql.SQLException;
 
 public class SnowflakeConnection extends BaseConnection<SnowflakeDatabase> {
 
@@ -52,7 +53,7 @@ public class SnowflakeConnection extends BaseConnection<SnowflakeDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new SnowflakeSchema(jdbcTemplate, database, name);
     }
 }

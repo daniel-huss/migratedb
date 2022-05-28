@@ -16,55 +16,35 @@
  */
 package migratedb.core.api.output;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import migratedb.core.api.ErrorDetails;
 
-public class ValidateResult extends OperationResult {
-    /**
-     * @deprecated Will be removed in MigrateDb V8. Use {@link #errorDetails} instead
-     */
-    @Deprecated
-    public String validationError;
+import java.util.List;
+import java.util.stream.Collectors;
 
+public class ValidateResult extends OperationResult {
     public final ErrorDetails errorDetails;
     public final List<ValidateOutput> invalidMigrations;
     public final boolean validationSuccessful;
     public final int validateCount;
 
     public ValidateResult(
-        String migratedbVersion,
-        String database,
-        ErrorDetails errorDetails,
-        boolean validationSuccessful,
-        int validateCount,
-        List<ValidateOutput> invalidMigrations,
-        List<String> warnings,
-        String validationError) {
+            String migratedbVersion,
+            String database,
+            ErrorDetails errorDetails,
+            boolean validationSuccessful,
+            int validateCount,
+            List<ValidateOutput> invalidMigrations,
+            List<String> warnings) {
         this.migratedbVersion = migratedbVersion;
         this.database = database;
         this.errorDetails = errorDetails;
         this.validationSuccessful = validationSuccessful;
         this.validateCount = validateCount;
         this.invalidMigrations = invalidMigrations;
-        this.validationError = validationError;
         this.operation = "validate";
         warnings.forEach(this::addWarning);
     }
 
-    /**
-     * @deprecated Will be removed in MigrateDb V8. Use {@link #ValidateResult(String, String, ErrorDetails, boolean,
-     * int, List, List, String)} instead
-     */
-    public ValidateResult(
-        String migratedbVersion,
-        String database,
-        String validationError,
-        boolean validationSuccessful,
-        int validateCount,
-        List<String> warnings) {
-        this(migratedbVersion, database, null, validationSuccessful, validateCount, null, warnings, validationError);
-    }
 
     public String getAllErrorMessages() {
         return invalidMigrations.stream().map(m -> m.errorDetails.errorMessage).collect(Collectors.joining("\n"));

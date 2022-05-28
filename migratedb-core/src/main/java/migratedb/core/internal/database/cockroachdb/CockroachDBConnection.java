@@ -16,15 +16,16 @@
  */
 package migratedb.core.internal.database.cockroachdb;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
     private static final Log LOG = Log.getLog(CockroachDBConnection.class);
@@ -34,12 +35,12 @@ public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new CockroachDBSchema(jdbcTemplate, database, name);
     }
 
     @Override
-    public Schema doGetCurrentSchema() throws SQLException {
+    public Schema<?, ?> doGetCurrentSchema() throws SQLException {
         if (database.supportsSchemas()) {
             String currentSchema = jdbcTemplate.queryForString("SELECT current_schema");
             if (StringUtils.hasText(currentSchema)) {
@@ -49,7 +50,7 @@ public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
             String searchPath = getCurrentSchemaNameOrSearchPath();
             if (!StringUtils.hasText(searchPath)) {
                 throw new MigrateDbException(
-                    "Unable to determine current schema as search_path is empty. Set the current schema in " +
+                        "Unable to determine current schema as search_path is empty. Set the current schema in " +
                     "currentSchema parameter of the JDBC URL or in MigrateDb's schemas property.");
             }
         }
@@ -76,7 +77,7 @@ public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
     }
 
     @Override
-    public void changeCurrentSchemaTo(Schema schema) {
+    public void changeCurrentSchemaTo(Schema<?, ?> schema) {
         try {
             // Avoid unnecessary schema changes as this trips up CockroachDB
             if (schema.getName().equals(originalSchemaNameOrSearchPath) || !schema.exists()) {

@@ -16,7 +16,6 @@
  */
 package migratedb.core.internal.database.base;
 
-import java.sql.Connection;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
@@ -24,6 +23,8 @@ import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.parser.BaseParser;
+
+import java.sql.Connection;
 
 public class TestContainersDatabaseType extends BaseDatabaseType {
     @Override
@@ -66,8 +67,8 @@ public class TestContainersDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         throw new IllegalStateException();
     }
 

@@ -28,7 +28,7 @@ import kotlin.io.path.createFile
 import kotlin.io.path.exists
 import kotlin.io.path.outputStream
 
-class Dsl(val fs: FileSystem) {
+class Dsl(private val fs: FileSystem) {
     fun jar(path: Path, block: (JarBuilder).() -> Unit): Path {
         return path.also {
             JarBuilder(it).use(block)

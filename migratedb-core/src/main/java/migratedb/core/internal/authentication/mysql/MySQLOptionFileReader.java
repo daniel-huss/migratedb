@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.authentication.mysql;
 
+import migratedb.core.api.logging.Log;
+import migratedb.core.internal.authentication.ExternalAuthFileReader;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import migratedb.core.api.logging.Log;
-import migratedb.core.internal.authentication.ExternalAuthFileReader;
 
 public class MySQLOptionFileReader implements ExternalAuthFileReader {
     private static final Log LOG = Log.getLog(MySQLOptionFileReader.class);
@@ -36,9 +37,10 @@ public class MySQLOptionFileReader implements ExternalAuthFileReader {
 
     @Override
     public List<String> getAllContents() {
-        List<String> fileContents = new ArrayList<>();
-
-        return fileContents;
+        var result = new ArrayList<String>();
+        result.addAll(optionFiles);
+        result.addAll(encryptedOptionFiles);
+        return result;
     }
 
     public void populateOptionFiles() {

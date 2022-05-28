@@ -16,8 +16,6 @@
  */
 package migratedb.core.internal.database.base;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
@@ -25,8 +23,11 @@ import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.jdbc.JdbcUtils;
 
-public abstract class BaseTable<D extends Database, S extends Schema> extends BaseSchemaObject<D, S> implements
-                                                                                                     Table<D, S> {
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public abstract class BaseTable<D extends Database<?>, S extends Schema<?, ?>>
+        extends BaseSchemaObject<D, S> implements Table<D, S> {
     /**
      * Keeps track of the locks on a table since calls to lock the table can be nested.
      */
@@ -65,10 +66,9 @@ public abstract class BaseTable<D extends Database, S extends Schema> extends Ba
      * @param schema     The schema where the table resides. (optional)
      * @param table      The name of the table. (optional)
      * @param tableTypes The types of table to look for (e.g. TABLE). (optional)
-     *
      * @throws SQLException when the check failed.
      */
-    protected boolean exists(Schema catalog, Schema schema, String table, String... tableTypes) throws SQLException {
+    protected boolean exists(Schema<?, ?> catalog, Schema<?, ?> schema, String table, String... tableTypes) throws SQLException {
         String[] types = tableTypes;
         if (types.length == 0) {
             types = null;
@@ -78,10 +78,10 @@ public abstract class BaseTable<D extends Database, S extends Schema> extends Ba
         boolean found;
         try {
             resultSet = database.getJdbcMetaData().getTables(
-                catalog == null ? null : catalog.getName(),
-                schema == null ? null : schema.getName(),
-                table,
-                types);
+                    catalog == null ? null : catalog.getName(),
+                    schema == null ? null : schema.getName(),
+                    table,
+                    types);
             found = resultSet.next();
         } finally {
             JdbcUtils.closeResultSet(resultSet);

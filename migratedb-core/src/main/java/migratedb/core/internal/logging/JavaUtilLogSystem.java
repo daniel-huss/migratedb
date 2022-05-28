@@ -16,11 +16,12 @@
  */
 package migratedb.core.internal.logging;
 
+import migratedb.core.api.logging.LogSystem;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import migratedb.core.api.logging.LogSystem;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public enum JavaUtilLogSystem implements LogSystem {
     INSTANCE;
@@ -35,22 +36,27 @@ public enum JavaUtilLogSystem implements LogSystem {
         return logger(logName).isLoggable(Level.FINE);
     }
 
+    @Override
     public void debug(String logName, String message) {
         log(logger(logName), Level.FINE, message, null);
     }
 
+    @Override
     public void info(String logName, String message) {
         log(logger(logName), Level.INFO, message, null);
     }
 
+    @Override
     public void warn(String logName, String message) {
         log(logger(logName), Level.WARNING, message, null);
     }
 
+    @Override
     public void error(String logName, String message) {
         log(logger(logName), Level.SEVERE, message, null);
     }
 
+    @Override
     public void error(String logName, String message, Exception e) {
         log(logger(logName), Level.SEVERE, message, e);
     }

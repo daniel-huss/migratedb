@@ -16,19 +16,20 @@
  */
 package migratedb.core.internal.database.bigquery;
 
-import java.sql.SQLException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BigQueryConnection extends BaseConnection<BigQueryDatabase> {
     /*
      *   BigQuery has no concept of a default dataset, but the JDBC driver does (albeit not advertised through the
      *   normal metadata means) - so we can parse it out of the URL
      */
-    private static final Pattern DEFAULT_DATASET_PATTERN = Pattern.compile("DefaultDataset=([a-zA-Z0-9]*);");
+    private static final Pattern DEFAULT_DATASET_PATTERN = Pattern.compile("DefaultDataset=([a-zA-Z\\d]*);");
 
     BigQueryConnection(BigQueryDatabase database, java.sql.Connection connection) {
         super(database, connection);
@@ -43,7 +44,7 @@ public class BigQueryConnection extends BaseConnection<BigQueryDatabase> {
     }
 
     @Override
-    public void changeCurrentSchemaTo(Schema schema) {
+    public void changeCurrentSchemaTo(Schema<?, ?> schema) {
         // BigQuery has no concept of current schema, do nothing.
     }
 
@@ -53,7 +54,7 @@ public class BigQueryConnection extends BaseConnection<BigQueryDatabase> {
     }
 
     @Override
-    public Schema doGetCurrentSchema() throws SQLException {
+    public Schema<?, ?> doGetCurrentSchema() throws SQLException {
         // BigQuery has no concept of current schema, return DefaultDataset if it is set in JDBC, otherwise null.
         // We would expect to be able to call this: getJdbcClientOption("DefaultDataset"); but we always get
         // null for any ClientInfo() with driver google-cloud-bigquery-1.126.6.jar
@@ -75,7 +76,7 @@ public class BigQueryConnection extends BaseConnection<BigQueryDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new BigQuerySchema(jdbcTemplate, database, name);
     }
 }

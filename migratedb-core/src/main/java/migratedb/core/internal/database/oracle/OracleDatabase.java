@@ -16,17 +16,18 @@
  */
 package migratedb.core.internal.database.oracle;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class OracleDatabase extends BaseDatabase<OracleConnection> {
     private static final String ORACLE_NET_TNS_ADMIN = "oracle.net.tns_admin";
@@ -60,17 +61,17 @@ public class OracleDatabase extends BaseDatabase<OracleConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         String tablespace = configuration.getTablespace() == null
-                            ? ""
-                            : " TABLESPACE \"" + configuration.getTablespace() + "\"";
+                ? ""
+                : " TABLESPACE \"" + configuration.getTablespace() + "\"";
 
         return "CREATE TABLE " + table + " (\n" +
-               "    \"installed_rank\" INT NOT NULL,\n" +
-               "    \"version\" VARCHAR2(50),\n" +
-               "    \"description\" VARCHAR2(200) NOT NULL,\n" +
-               "    \"type\" VARCHAR2(20) NOT NULL,\n" +
-               "    \"script\" VARCHAR2(1000) NOT NULL,\n" +
+                "    \"installed_rank\" INT NOT NULL,\n" +
+                "    \"version\" VARCHAR2(50),\n" +
+                "    \"description\" VARCHAR2(200) NOT NULL,\n" +
+                "    \"type\" VARCHAR2(20) NOT NULL,\n" +
+                "    \"script\" VARCHAR2(1000) NOT NULL,\n" +
                "    \"checksum\" VARCHAR(100),\n" +
                "    \"installed_by\" VARCHAR2(100) NOT NULL,\n" +
                "    \"installed_on\" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +

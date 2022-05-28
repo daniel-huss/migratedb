@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.db2;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Function;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.database.base.Type;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DB2 implementation of Schema.
@@ -108,7 +109,7 @@ public class DB2Schema extends BaseSchema<DB2Database, DB2Table> {
             jdbcTemplate.execute(dropStatement);
         }
 
-        for (Table table : allTables()) {
+        for (Table<?, ?> table : allTables()) {
             table.drop();
         }
 
@@ -132,11 +133,11 @@ public class DB2Schema extends BaseSchema<DB2Database, DB2Table> {
             jdbcTemplate.execute(dropStatement);
         }
 
-        for (Function function : allFunctions()) {
+        for (Function<?, ?> function : allFunctions()) {
             function.drop();
         }
 
-        for (Type type : allTypes()) {
+        for (Type<?, ?> type : allTypes()) {
             type.drop();
         }
     }
@@ -246,10 +247,10 @@ public class DB2Schema extends BaseSchema<DB2Database, DB2Table> {
      */
     private List<String> generateDropVersioningStatement() throws SQLException {
         List<String> dropVersioningStatements = new ArrayList<>();
-        Table[] versioningTables = findTables(
-            "select TABNAME from SYSCAT.TABLES where TEMPORALTYPE <> 'N' and TABSCHEMA = ?",
-            name);
-        for (Table table : versioningTables) {
+        Table<?, ?>[] versioningTables = findTables(
+                "select TABNAME from SYSCAT.TABLES where TEMPORALTYPE <> 'N' and TABSCHEMA = ?",
+                name);
+        for (Table<?, ?> table : versioningTables) {
             dropVersioningStatements.add("ALTER TABLE " + table.toString() + " DROP VERSIONING");
         }
 
@@ -271,20 +272,20 @@ public class DB2Schema extends BaseSchema<DB2Database, DB2Table> {
     }
 
     @Override
-    protected Function[] doAllFunctions() throws SQLException {
+    protected Function<?, ?>[] doAllFunctions() throws SQLException {
         List<String> functionNames = jdbcTemplate.queryForStringList(
-            "select SPECIFICNAME from SYSCAT.ROUTINES where"
-            // Functions only
-            + " ROUTINETYPE='F'"
-            // That aren't system-generated or built-in
-            + " AND ORIGIN IN ("
-            + "'E', " // User-defined, external
-            + "'M', " // Template function
-            + "'Q', " // SQL-bodied
-            + "'U')"  // User-defined, based on a source
+                "select SPECIFICNAME from SYSCAT.ROUTINES where"
+                        // Functions only
+                        + " ROUTINETYPE='F'"
+                        // That aren't system-generated or built-in
+                        + " AND ORIGIN IN ("
+                        + "'E', " // User-defined, external
+                        + "'M', " // Template function
+                        + "'Q', " // SQL-bodied
+                        + "'U')"  // User-defined, based on a source
             + " and ROUTINESCHEMA = ?", name);
 
-        List<Function> functions = new ArrayList<>();
+        List<Function<?, ?>> functions = new ArrayList<>();
         for (String functionName : functionNames) {
             functions.add(getFunction(functionName));
         }
@@ -293,17 +294,17 @@ public class DB2Schema extends BaseSchema<DB2Database, DB2Table> {
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new DB2Table(jdbcTemplate, database, this, tableName);
     }
 
     @Override
-    protected Type getType(String typeName) {
+    protected Type<?, ?> getType(String typeName) {
         return new DB2Type(jdbcTemplate, database, this, typeName);
     }
 
     @Override
-    public Function getFunction(String functionName, String... args) {
+    public Function<?, ?> getFunction(String functionName, String... args) {
         return new DB2Function(jdbcTemplate, database, this, functionName, args);
     }
 }

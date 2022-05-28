@@ -15,6 +15,8 @@
  */
 package migratedb.core.api.internal.sqlscript;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Represents a sql statement delimiter.
  */
@@ -67,10 +69,9 @@ public class Delimiter {
     /**
      * @return The escape string for the delimiter, if any.
      */
-    public String getEscape() {
-        String returnValue = null;
+    public @Nullable String getEscape() {
 
-        return returnValue;
+        return null;
     }
 
     @Override

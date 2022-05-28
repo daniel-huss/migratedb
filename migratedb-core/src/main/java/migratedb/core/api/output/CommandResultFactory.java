@@ -32,7 +32,7 @@ import java.util.function.Function;
 
 public class CommandResultFactory {
     public static LiberateResult createLiberateResult(Configuration configuration,
-                                                      Database database,
+                                                      Database<?> database,
                                                       String schemaHistorySchema,
                                                       String schemaHistoryTable,
                                                       List<LiberateOutput> changes) {
@@ -45,7 +45,7 @@ public class CommandResultFactory {
     }
 
     public static InfoResult createInfoResult(Configuration configuration,
-                                              Database database,
+                                              Database<?> database,
                                               MigrationInfo[] migrationInfos,
                                               MigrationInfo current,
                                               boolean allSchemasEmpty) {
@@ -85,25 +85,25 @@ public class CommandResultFactory {
         return new BaselineResult(migratedbVersion, databaseName);
     }
 
-    public static ValidateResult createValidateResult(String databaseName, ErrorDetails validationError,
-                                                      int validationCount, List<ValidateOutput> invalidMigrations,
+    public static ValidateResult createValidateResult(String databaseName,
+                                                      ErrorDetails errorDetails,
+                                                      int validationCount,
+                                                      List<ValidateOutput> invalidMigrations,
                                                       List<String> warnings) {
         String migratedbVersion = BuildInfo.VERSION;
-        boolean validationSuccessful = validationError == null;
-        String errorMessage = validationError == null ? null : validationError.errorMessage;
-        List<ValidateOutput> invalidMigrationsList = invalidMigrations == null ? new ArrayList<>() : invalidMigrations;
+        boolean validationSuccessful = errorDetails == null;
+        String errorMessage = errorDetails == null ? null : errorDetails.errorMessage;
 
         return new ValidateResult(migratedbVersion,
                 databaseName,
-                validationError,
+                errorDetails,
                 validationSuccessful,
                 validationCount,
-                invalidMigrationsList,
-                warnings,
-                errorMessage);
+                invalidMigrations,
+                warnings);
     }
 
-    public static RepairResult createRepairResult(Configuration configuration, Database database) {
+    public static RepairResult createRepairResult(Configuration configuration, Database<?> database) {
         String migratedbVersion = BuildInfo.VERSION;
         return new RepairResult(migratedbVersion, getDatabaseName(configuration, database));
     }
@@ -150,7 +150,7 @@ public class CommandResultFactory {
                 "");
     }
 
-    private static String getDatabaseName(Configuration configuration, Database database) {
+    private static String getDatabaseName(Configuration configuration, Database<?> database) {
         try {
             return database.getCatalog();
         } catch (RuntimeException e) {

@@ -16,11 +16,12 @@
  */
 package migratedb.core.internal.database.spanner;
 
-import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.internal.database.base.BaseConnection;
+
+import java.util.concurrent.Callable;
 
 public class SpannerConnection extends BaseConnection<SpannerDatabase> {
     protected SpannerConnection(SpannerDatabase database, java.sql.Connection connection) {
@@ -34,12 +35,12 @@ public class SpannerConnection extends BaseConnection<SpannerDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new SpannerSchema(jdbcTemplate, database, name);
     }
 
     @Override
-    public <T> T lock(Table table, Callable<T> callable) {
+    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
         try {
             return callable.call();
         } catch (Exception e) {

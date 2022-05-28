@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database.ignite.thin;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
+
+import java.sql.SQLException;
 
 /**
  * Apache Ignite Thin connection.
@@ -35,7 +36,7 @@ public class IgniteThinConnection extends BaseConnection<IgniteThinDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new IgniteThinSchema(jdbcTemplate, database, name);
     }
 

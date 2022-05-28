@@ -16,15 +16,17 @@
  */
 package migratedb.core.internal.authentication.postgres;
 
+import migratedb.core.api.logging.Log;
+import migratedb.core.internal.authentication.ExternalAuthFileReader;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import migratedb.core.api.logging.Log;
-import migratedb.core.internal.authentication.ExternalAuthFileReader;
 
 public class PgpassFileReader implements ExternalAuthFileReader {
     private static final Log LOG = Log.getLog(PgpassFileReader.class);
@@ -40,7 +42,7 @@ public class PgpassFileReader implements ExternalAuthFileReader {
 
         LOG.debug("Found pgpass file '" + pgpassFilePath + "'.");
         try {
-            fileContents.add(new String(Files.readAllBytes(Paths.get(pgpassFilePath))));
+            fileContents.add(Files.readString(Paths.get(pgpassFilePath), Charset.defaultCharset()));
         } catch (IOException e) {
             LOG.debug("Unable to read from pgpass file '" + pgpassFilePath + "'.");
         }

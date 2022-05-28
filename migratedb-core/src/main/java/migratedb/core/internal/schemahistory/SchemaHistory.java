@@ -16,11 +16,6 @@
  */
 package migratedb.core.internal.schemahistory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 import migratedb.core.api.Checksum;
 import migratedb.core.api.MigrationPattern;
 import migratedb.core.api.MigrationType;
@@ -34,6 +29,12 @@ import migratedb.core.internal.util.AbbreviationUtils;
 import migratedb.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+
 /**
  * The schema history used to track all applied migrations.
  */
@@ -44,12 +45,12 @@ public abstract class SchemaHistory {
     /**
      * The schema history table used by MigrateDb. Non-final due to the table name fallback mechanism.
      */
-    protected Table table;
+    protected Table<?, ?> table;
 
     /**
      * @return The schema history table.
      */
-    public Table getTable() {
+    public Table<?, ?> getTable() {
         return table;
     }
 
@@ -134,14 +135,14 @@ public abstract class SchemaHistory {
      *
      * @param schemas The schemas that were created by MigrateDb.
      */
-    public final void addSchemasMarker(Schema[] schemas) {
+    public final void addSchemasMarker(Schema<?, ?>[] schemas) {
         addAppliedMigration(null,
-                            "<< MigrateDb Schema Creation >>",
-                            MigrationType.SCHEMA,
-                            StringUtils.arrayToCommaDelimitedString(schemas),
-                            null,
-                            0,
-                            true);
+                "<< MigrateDb Schema Creation >>",
+                MigrationType.SCHEMA,
+                StringUtils.arrayToCommaDelimitedString(schemas),
+                null,
+                0,
+                true);
     }
 
     /**

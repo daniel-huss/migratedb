@@ -16,11 +16,6 @@
  */
 package migratedb.core.internal.callback;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.callback.Callback;
@@ -35,6 +30,12 @@ import migratedb.core.api.logging.Log;
 import migratedb.core.api.output.OperationResult;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 /**
  * Executes the callbacks for a specific event.
  */
@@ -42,8 +43,8 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
     private static final Log LOG = Log.getLog(DefaultCallbackExecutor.class);
 
     private final Configuration configuration;
-    private final Database database;
-    private final Schema schema;
+    private final Database<?> database;
+    private final Schema<?, ?> schema;
     private final List<Callback> callbacks;
     private MigrationInfo migrationInfo;
 
@@ -55,7 +56,7 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
      * @param schema        The current schema to use for the connection.
      * @param callbacks     The callbacks to execute.
      */
-    public DefaultCallbackExecutor(Configuration configuration, Database database, Schema schema,
+    public DefaultCallbackExecutor(Configuration configuration, Database<?> database, Schema<?, ?> schema,
                                    Collection<Callback> callbacks) {
         this.configuration = configuration;
         this.database = database;
@@ -103,16 +104,16 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
         }
     }
 
-    private void execute(Event event, Connection connection) {
+    private void execute(Event event, Connection<?> connection) {
         Context context = new SimpleContext(configuration, connection, null, null);
         for (Callback callback : callbacks) {
             if (callback.supports(event, context)) {
                 if (callback.canHandleInTransaction(event, context)) {
                     ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(), database).execute(
-                        (Callable<Void>) () -> {
-                            execute(connection, callback, event, context);
-                            return null;
-                        });
+                            (Callable<Void>) () -> {
+                                execute(connection, callback, event, context);
+                                return null;
+                            });
                 } else {
                     execute(connection, callback, event, context);
                 }
@@ -120,7 +121,7 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
         }
     }
 
-    private void execute(Connection connection, Callback callback, Event event, Context context) {
+    private void execute(Connection<?> connection, Callback callback, Event event, Context context) {
         connection.restoreOriginalState();
         connection.changeCurrentSchemaTo(schema);
         handleEvent(callback, event, context);

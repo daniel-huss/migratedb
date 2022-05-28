@@ -16,7 +16,6 @@
  */
 package migratedb.core.internal.command;
 
-import java.util.EnumSet;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationInfoService;
 import migratedb.core.api.callback.Event;
@@ -30,20 +29,22 @@ import migratedb.core.internal.info.ValidationContext;
 import migratedb.core.internal.info.ValidationMatch;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 
+import java.util.EnumSet;
+
 public class DbInfo {
     private final MigrationResolver migrationResolver;
     private final SchemaHistory schemaHistory;
     private final Configuration configuration;
-    private final Database database;
+    private final Database<?> database;
     private final CallbackExecutor callbackExecutor;
-    private final Schema[] schemas;
+    private final Schema<?, ?>[] schemas;
 
     public DbInfo(MigrationResolver migrationResolver,
                   SchemaHistory schemaHistory,
                   Configuration configuration,
-                  Database database,
+                  Database<?> database,
                   CallbackExecutor callbackExecutor,
-                  Schema[] schemas) {
+                  Schema<?, ?>[] schemas) {
 
         this.migrationResolver = migrationResolver;
         this.schemaHistory = schemaHistory;

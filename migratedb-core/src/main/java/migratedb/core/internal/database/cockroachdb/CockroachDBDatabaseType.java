@@ -16,9 +16,6 @@
  */
 package migratedb.core.internal.database.cockroachdb;
 
-import java.sql.Connection;
-import java.sql.Types;
-import java.util.Properties;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
@@ -32,6 +29,10 @@ import migratedb.core.internal.database.DefaultExecutionStrategy;
 import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.util.Development;
+
+import java.sql.Connection;
+import java.sql.Types;
+import java.util.Properties;
 
 public class CockroachDBDatabaseType extends BaseDatabaseType {
 
@@ -76,8 +77,8 @@ public class CockroachDBDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         return new CockroachDBDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
     }
 

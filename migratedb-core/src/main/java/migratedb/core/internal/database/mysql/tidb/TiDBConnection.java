@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.database.mysql.tidb;
 
-import java.sql.SQLException;
-import java.util.concurrent.Callable;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.internal.database.mysql.MySQLConnection;
 import migratedb.core.internal.database.mysql.MySQLDatabase;
 import migratedb.core.internal.exception.MigrateDbSqlException;
+
+import java.sql.SQLException;
+import java.util.concurrent.Callable;
 
 public class TiDBConnection extends MySQLConnection {
 
@@ -41,7 +42,7 @@ public class TiDBConnection extends MySQLConnection {
     }
 
     @Override
-    public <T> T lock(Table table, Callable<T> callable) {
+    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
         setTidbTxnMode();
         return super.lock(table, callable);
     }

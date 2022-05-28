@@ -28,7 +28,7 @@ public class SQLiteConnection extends BaseConnection<SQLiteDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new SQLiteSchema(jdbcTemplate, database, name);
     }
 

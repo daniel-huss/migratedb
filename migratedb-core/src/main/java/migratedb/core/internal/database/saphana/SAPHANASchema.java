@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.database.saphana;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseSchema;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SAP HANA implementation of Schema.
@@ -130,7 +131,7 @@ public class SAPHANASchema extends BaseSchema<SAPHANADatabase, SAPHANATable> {
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new SAPHANATable(jdbcTemplate, database, this, tableName);
     }
 }

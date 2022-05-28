@@ -16,14 +16,13 @@
  */
 package migratedb.core.internal.database.firebird;
 
-import java.sql.ResultSet;
+import migratedb.core.api.internal.database.base.Table;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.internal.database.base.BaseSchema;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import migratedb.core.api.internal.database.base.Table;
-import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.api.internal.jdbc.RowMapper;
-import migratedb.core.internal.database.base.BaseSchema;
 
 public class FirebirdSchema extends BaseSchema<FirebirdDatabase, FirebirdTable> {
     /**
@@ -120,7 +119,7 @@ public class FirebirdSchema extends BaseSchema<FirebirdDatabase, FirebirdTable> 
             jdbcTemplate.execute(dropConstraintStmt);
         }
 
-        for (Table table : allTables()) {
+        for (Table<?, ?> table : allTables()) {
             table.drop();
         }
         for (String dropTriggerStmt : generateDropTriggerStatements()) {
@@ -142,18 +141,15 @@ public class FirebirdSchema extends BaseSchema<FirebirdDatabase, FirebirdTable> 
 
     private List<String> generateDropConstraintStatements() throws SQLException {
         return jdbcTemplate.query(
-            "select RDB$RELATION_NAME, RDB$CONSTRAINT_NAME\n" +
-            "from RDB$RELATION_CONSTRAINTS\n" +
-            "where RDB$RELATION_NAME NOT LIKE 'RDB$%'\n" +
-            "and RDB$CONSTRAINT_TYPE='FOREIGN KEY'",
-            new RowMapper<String>() {
-                @Override
-                public String mapRow(ResultSet rs) throws SQLException {
+                "select RDB$RELATION_NAME, RDB$CONSTRAINT_NAME\n" +
+                        "from RDB$RELATION_CONSTRAINTS\n" +
+                        "where RDB$RELATION_NAME NOT LIKE 'RDB$%'\n" +
+                        "and RDB$CONSTRAINT_TYPE='FOREIGN KEY'",
+                rs -> {
                     String tableName = rs.getString(1);
                     String constraintName = rs.getString(2);
                     return "ALTER TABLE " + tableName + " DROP CONSTRAINT " + constraintName;
-                }
-            });
+                });
     }
 
     private List<String> generateDropPackageStatements() throws SQLException {

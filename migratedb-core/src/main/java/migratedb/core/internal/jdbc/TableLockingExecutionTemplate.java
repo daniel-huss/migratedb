@@ -16,30 +16,28 @@
  */
 package migratedb.core.internal.jdbc;
 
-import java.util.concurrent.Callable;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.ExecutionTemplate;
 
+import java.util.concurrent.Callable;
+
 public class TableLockingExecutionTemplate implements ExecutionTemplate {
-    private final Table table;
+    private final Table<?, ?> table;
     private final ExecutionTemplate executionTemplate;
 
-    TableLockingExecutionTemplate(Table table, ExecutionTemplate executionTemplate) {
+    TableLockingExecutionTemplate(Table<?, ?> table, ExecutionTemplate executionTemplate) {
         this.table = table;
         this.executionTemplate = executionTemplate;
     }
 
     @Override
     public <T> T execute(Callable<T> callback) {
-        return executionTemplate.execute(new Callable<T>() {
-            @Override
-            public T call() throws Exception {
-                try {
-                    table.lock();
-                    return callback.call();
-                } finally {
-                    table.unlock();
-                }
+        return executionTemplate.execute(() -> {
+            try {
+                table.lock();
+                return callback.call();
+            } finally {
+                table.unlock();
             }
         });
     }

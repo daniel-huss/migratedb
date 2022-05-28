@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.postgresql;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class PostgreSQLDatabase extends BaseDatabase<PostgreSQLConnection> {
     public PostgreSQLDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
@@ -43,17 +44,17 @@ public class PostgreSQLDatabase extends BaseDatabase<PostgreSQLConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         String tablespace = configuration.getTablespace() == null
-                            ? ""
-                            : " TABLESPACE \"" + configuration.getTablespace() + "\"";
+                ? ""
+                : " TABLESPACE \"" + configuration.getTablespace() + "\"";
 
         return "CREATE TABLE " + table + " (\n" +
-               "    \"installed_rank\" INT NOT NULL,\n" +
-               "    \"version\" VARCHAR(50),\n" +
-               "    \"description\" VARCHAR(200) NOT NULL,\n" +
-               "    \"type\" VARCHAR(20) NOT NULL,\n" +
-               "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+                "    \"installed_rank\" INT NOT NULL,\n" +
+                "    \"version\" VARCHAR(50),\n" +
+                "    \"description\" VARCHAR(200) NOT NULL,\n" +
+                "    \"type\" VARCHAR(20) NOT NULL,\n" +
+                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
                "    \"checksum\" VARCHAR(100),\n" +
                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
                "    \"installed_on\" TIMESTAMP NOT NULL DEFAULT now(),\n" +
@@ -113,20 +114,20 @@ public class PostgreSQLDatabase extends BaseDatabase<PostgreSQLConnection> {
     }
 
     /**
-     * See https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html
+     * See <a href="https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html">...</a>
      */
     @Override
-    public String getSelectStatement(Table table) {
+    public String getSelectStatement(Table<?, ?> table) {
         return "/*NO LOAD BALANCE*/\n"
-               + "SELECT " + quote("installed_rank")
-               + "," + quote("version")
-               + "," + quote("description")
-               + "," + quote("type")
-               + "," + quote("script")
-               + "," + quote("checksum")
-               + "," + quote("installed_on")
-               + "," + quote("installed_by")
-               + "," + quote("execution_time")
+                + "SELECT " + quote("installed_rank")
+                + "," + quote("version")
+                + "," + quote("description")
+                + "," + quote("type")
+                + "," + quote("script")
+                + "," + quote("checksum")
+                + "," + quote("installed_on")
+                + "," + quote("installed_by")
+                + "," + quote("execution_time")
                + "," + quote("success")
                + " FROM " + table
                + " WHERE " + quote("installed_rank") + " > ?"

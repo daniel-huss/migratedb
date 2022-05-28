@@ -16,11 +16,6 @@
  */
 package migratedb.core.api.internal.database.base;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Pattern;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.callback.CallbackExecutor;
@@ -32,6 +27,12 @@ import migratedb.core.api.internal.parser.Parser;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
+
+import java.sql.Connection;
+import java.sql.Driver;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * Extension point for supported database types. Instances are unmodifiable.
@@ -112,13 +113,12 @@ public interface DatabaseType {
      * @param configuration         The MigrateDb configuration.
      * @param jdbcConnectionFactory The current connection factory.
      * @param printInfo             Where the DB info should be printed in the logs.
-     *
      * @return The appropriate Database class.
      */
-    Database createDatabase(Configuration configuration,
-                            boolean printInfo,
-                            JdbcConnectionFactory jdbcConnectionFactory,
-                            StatementInterceptor statementInterceptor
+    Database<?> createDatabase(Configuration configuration,
+                               boolean printInfo,
+                               JdbcConnectionFactory jdbcConnectionFactory,
+                               StatementInterceptor statementInterceptor
     );
 
     /**
@@ -129,9 +129,9 @@ public interface DatabaseType {
      *
      * @return The Database.
      */
-    Database createDatabase(Configuration configuration,
-                            JdbcConnectionFactory jdbcConnectionFactory,
-                            StatementInterceptor statementInterceptor
+    Database<?> createDatabase(Configuration configuration,
+                               JdbcConnectionFactory jdbcConnectionFactory,
+                               StatementInterceptor statementInterceptor
     );
 
     /**

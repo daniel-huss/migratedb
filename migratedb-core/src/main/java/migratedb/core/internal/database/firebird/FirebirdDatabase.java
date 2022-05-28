@@ -16,13 +16,14 @@
  */
 package migratedb.core.internal.database.firebird;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class FirebirdDatabase extends BaseDatabase<FirebirdConnection> {
     /**
@@ -86,17 +87,17 @@ public class FirebirdDatabase extends BaseDatabase<FirebirdConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         String createScript = "CREATE TABLE " + table + " (\n" +
-                              "    \"installed_rank\" INTEGER CONSTRAINT \"" + table.getName() +
-                              "_pk\" PRIMARY KEY,\n" +
-                              "    \"version\" VARCHAR(50),\n" +
-                              "    \"description\" VARCHAR(200) NOT NULL,\n" +
-                              "    \"type\" VARCHAR(20) NOT NULL,\n" +
-                              "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-                              "    \"checksum\" VARCHAR(100),\n" +
-                              "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
-                              "    \"installed_on\" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
+                "    \"installed_rank\" INTEGER CONSTRAINT \"" + table.getName() +
+                "_pk\" PRIMARY KEY,\n" +
+                "    \"version\" VARCHAR(50),\n" +
+                "    \"description\" VARCHAR(200) NOT NULL,\n" +
+                "    \"type\" VARCHAR(20) NOT NULL,\n" +
+                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+                "    \"checksum\" VARCHAR(100),\n" +
+                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
+                "    \"installed_on\" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
                               "    \"execution_time\" INTEGER NOT NULL,\n" +
                               "    \"success\" SMALLINT NOT NULL\n" +
                               ");\n" +

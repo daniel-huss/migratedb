@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database.oracle;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
+
+import java.sql.SQLException;
 
 /**
  * Oracle connection.
@@ -39,7 +40,7 @@ public class OracleConnection extends BaseConnection<OracleDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new OracleSchema(jdbcTemplate, database, name);
     }
 }

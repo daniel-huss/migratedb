@@ -16,15 +16,6 @@
  */
 package migratedb.core.internal.jdbc;
 
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Logger;
-import javax.sql.DataSource;
 import migratedb.core.api.DatabaseTypeRegister;
 import migratedb.core.api.ErrorCode;
 import migratedb.core.api.MigrateDbException;
@@ -32,6 +23,17 @@ import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.StringUtils;
+
+import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * YAGNI: The simplest DataSource implementation that works for MigrateDB .
@@ -137,11 +139,7 @@ public class DriverDataSource implements DataSource {
             driverClass = type.getDriverClass(url, classLoader);
         }
 
-        if (additionalProperties != null) {
-            this.additionalProperties = additionalProperties;
-        } else {
-            this.additionalProperties = new HashMap<>();
-        }
+        this.additionalProperties = Objects.requireNonNullElseGet(additionalProperties, HashMap::new);
         this.defaultProperties = new Properties(defaultProperties);
         type.setDefaultConnectionProps(url, defaultProperties, classLoader);
         type.setConfigConnectionProps(configuration, defaultProperties, classLoader);

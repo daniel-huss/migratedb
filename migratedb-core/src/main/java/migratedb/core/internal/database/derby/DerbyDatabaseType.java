@@ -16,11 +16,6 @@
  */
 package migratedb.core.internal.database.derby;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Properties;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
@@ -29,6 +24,12 @@ import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.parser.BaseParser;
+
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Properties;
 
 public class DerbyDatabaseType extends BaseDatabaseType {
     @Override
@@ -64,8 +65,8 @@ public class DerbyDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                   StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
+                                      StatementInterceptor statementInterceptor) {
         return new DerbyDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
     }
 
@@ -84,7 +85,7 @@ public class DerbyDatabaseType extends BaseDatabaseType {
                 int i = url.indexOf(";");
                 String shutdownUrl = (i < 0 ? url : url.substring(0, i)) + ";shutdown=true";
 
-                driver.connect(shutdownUrl, new Properties());
+                driver.connect(shutdownUrl, new Properties()).close();
             } catch (SQLException e) {
                 LOG.debug("Unexpected error on Derby Embedded Database shutdown: " + e.getMessage());
             }

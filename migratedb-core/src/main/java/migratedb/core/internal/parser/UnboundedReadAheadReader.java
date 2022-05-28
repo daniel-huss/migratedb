@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 public class UnboundedReadAheadReader extends FilterReader {
 
-    protected ArrayList<int[]> buffers = new ArrayList<>();
+    protected final ArrayList<int[]> buffers = new ArrayList<>();
 
     private int readIndex = 0;
     private int markIndex = -1;

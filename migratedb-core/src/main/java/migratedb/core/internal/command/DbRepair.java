@@ -53,7 +53,7 @@ public class DbRepair {
     /**
      * The database connection to use for accessing the schema history table.
      */
-    private final Connection connection;
+    private final Connection<?> connection;
 
     /**
      * The migration infos.
@@ -73,7 +73,7 @@ public class DbRepair {
     /**
      * The database-specific support.
      */
-    private final Database database;
+    private final Database<?> database;
 
     /**
      * The POJO containing the repair result.
@@ -93,7 +93,7 @@ public class DbRepair {
      * @param schemaHistory     The schema history table.
      * @param callbackExecutor  The callback executor.
      */
-    public DbRepair(Database database, MigrationResolver migrationResolver, SchemaHistory schemaHistory,
+    public DbRepair(Database<?> database, MigrationResolver migrationResolver, SchemaHistory schemaHistory,
                     CallbackExecutor callbackExecutor, Configuration configuration) {
         this.database = database;
         this.connection = database.getMainConnection();

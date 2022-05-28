@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database.derby;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
+
+import java.sql.SQLException;
 
 /**
  * Derby connection.
@@ -39,7 +40,7 @@ public class DerbyConnection extends BaseConnection<DerbyDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new DerbySchema(jdbcTemplate, database, name);
     }
 }

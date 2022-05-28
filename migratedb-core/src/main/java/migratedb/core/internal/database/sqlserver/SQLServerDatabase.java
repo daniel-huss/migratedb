@@ -16,13 +16,6 @@
  */
 package migratedb.core.internal.database.sqlserver;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Schema;
@@ -32,6 +25,14 @@ import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
     public SQLServerDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
@@ -164,17 +165,17 @@ public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         String filegroup = isAzure() || configuration.getTablespace() == null ?
-                           "" : " ON \"" + configuration.getTablespace() + "\"";
+                "" : " ON \"" + configuration.getTablespace() + "\"";
 
         return "CREATE TABLE " + table + " (\n" +
-               "    [installed_rank] INT NOT NULL,\n" +
-               "    [" + "version] NVARCHAR(50),\n" +
-               "    [description] NVARCHAR(200),\n" +
-               "    [type] NVARCHAR(20) NOT NULL,\n" +
-               "    [script] NVARCHAR(1000) NOT NULL,\n" +
-               "    [checksum] NVARCHAR(100),\n" +
+                "    [installed_rank] INT NOT NULL,\n" +
+                "    [" + "version] NVARCHAR(50),\n" +
+                "    [description] NVARCHAR(200),\n" +
+                "    [type] NVARCHAR(20) NOT NULL,\n" +
+                "    [script] NVARCHAR(1000) NOT NULL,\n" +
+                "    [checksum] NVARCHAR(100),\n" +
                "    [installed_by] NVARCHAR(100) NOT NULL,\n" +
                "    [installed_on] DATETIME NOT NULL DEFAULT GETDATE(),\n" +
                "    [execution_time] INT NOT NULL,\n" +
@@ -233,11 +234,10 @@ public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
      * Cleans all the objects in this database that need to be cleaned after cleaning schemas.
      *
      * @param schemas The list of schemas managed by MigrateDb
-     *
      * @throws SQLException when the clean failed.
      */
     @Override
-    protected void doCleanPostSchemas(Schema[] schemas) throws SQLException {
+    protected void doCleanPostSchemas(Schema<?, ?>[] schemas) throws SQLException {
         if (supportsPartitions()) {
             for (String statement : cleanPartitionSchemes()) {
                 jdbcTemplate.execute(statement);
@@ -265,16 +265,16 @@ public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
      * @return The drop statements.
      * @throws SQLException when the clean statements could not be generated.
      */
-    private List<String> cleanTypes(Schema[] schemas) throws SQLException {
+    private List<String> cleanTypes(Schema<?, ?>[] schemas) throws SQLException {
         List<String> statements = new ArrayList<>();
         String schemaList = Arrays.stream(schemas).map(s -> "'" + s.getName() + "'").collect(Collectors.joining(","));
         if (schemaList.isEmpty()) {
             schemaList = "''";
         }
         List<Map<String, String>> typesAndSchemas = jdbcTemplate.queryForList(
-            "SELECT t.name as type_name, s.name as schema_name " +
-            "FROM sys.types t INNER JOIN sys.schemas s ON t.schema_id = s.schema_id " +
-            "WHERE t.is_user_defined = 1 AND s.name IN (" + schemaList + ")");
+                "SELECT t.name as type_name, s.name as schema_name " +
+                        "FROM sys.types t INNER JOIN sys.schemas s ON t.schema_id = s.schema_id " +
+                        "WHERE t.is_user_defined = 1 AND s.name IN (" + schemaList + ")");
 
         for (Map<String, String> typeAndSchema : typesAndSchemas) {
             statements.add("DROP TYPE " + quote(typeAndSchema.get("schema_name"), typeAndSchema.get("type_name")));

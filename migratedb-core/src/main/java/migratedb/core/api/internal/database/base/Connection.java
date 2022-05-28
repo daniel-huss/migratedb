@@ -17,25 +17,26 @@
 
 package migratedb.core.api.internal.database.base;
 
-import java.util.concurrent.Callable;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 
-public interface Connection<D extends Database> extends AutoCloseable {
-    Schema getCurrentSchema();
+import java.util.concurrent.Callable;
+
+public interface Connection<D extends Database<?>> extends AutoCloseable {
+    Schema<?, ?> getCurrentSchema();
 
     /**
      * Retrieves the schema with this name in the database.
      */
-    Schema getSchema(String name);
+    Schema<?, ?> getSchema(String name);
 
-    void changeCurrentSchemaTo(Schema schema);
+    void changeCurrentSchemaTo(Schema<?, ?> schema);
 
     /**
      * Locks this table and executes this callable.
      *
      * @return The result of the callable.
      */
-    <T> T lock(Table table, Callable<T> callable);
+    <T> T lock(Table<?, ?> table, Callable<T> callable);
 
     JdbcTemplate getJdbcTemplate();
 

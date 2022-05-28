@@ -40,7 +40,7 @@ import java.sql.SQLException;
 /**
  * Abstraction for database-specific functionality.
  */
-public abstract class BaseDatabase<C extends Connection> implements Database<C> {
+public abstract class BaseDatabase<C extends Connection<?>> implements Database<C> {
     private static final Log LOG = Log.getLog(BaseDatabase.class);
 
     protected final DatabaseType databaseType;
@@ -259,14 +259,14 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
     }
 
     @Override
-    public final SqlScript getCreateScript(SqlScriptFactory sqlScriptFactory, Table table, boolean baseline) {
+    public final SqlScript getCreateScript(SqlScriptFactory sqlScriptFactory, Table<?, ?> table, boolean baseline) {
         return sqlScriptFactory.createSqlScript(new StringResource("", getRawCreateScript(table, baseline)),
                 false,
                 null);
     }
 
     @Override
-    public String getInsertStatement(Table table) {
+    public String getInsertStatement(Table<?, ?> table) {
         return "INSERT INTO " + table
                 + " (" + quote("installed_rank")
                 + ", " + quote("version")
@@ -282,7 +282,7 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
     }
 
     @Override
-    public final String getBaselineStatement(Table table) {
+    public final String getBaselineStatement(Table<?, ?> table) {
         return String.format(getInsertStatement(table).replace("?", "%s"),
                 1,
                 "'" + configuration.getBaselineVersion() + "'",
@@ -298,7 +298,7 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
     }
 
     @Override
-    public String getSelectStatement(Table table) {
+    public String getSelectStatement(Table<?, ?> table) {
         return "SELECT " + quote("installed_rank")
                 + "," + quote("version")
                 + "," + quote("description")
@@ -370,7 +370,7 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
     }
 
     @Override
-    public void cleanPostSchemas(Schema[] schemas) {
+    public void cleanPostSchemas(Schema<?, ?>[] schemas) {
         try {
             doCleanPostSchemas(schemas);
         } catch (SQLException e) {
@@ -384,11 +384,11 @@ public abstract class BaseDatabase<C extends Connection> implements Database<C> 
      * @param schemas The list of schemas managed by MigrateDb.
      * @throws SQLException when the clean failed.
      */
-    protected void doCleanPostSchemas(Schema[] schemas) throws SQLException {
+    protected void doCleanPostSchemas(Schema<?, ?>[] schemas) throws SQLException {
     }
 
     @Override
-    public Schema[] getAllSchemas() {
+    public Schema<?, ?>[] getAllSchemas() {
         throw new UnsupportedOperationException("Getting all schemas not supported for " + getDatabaseType().getName());
     }
 }

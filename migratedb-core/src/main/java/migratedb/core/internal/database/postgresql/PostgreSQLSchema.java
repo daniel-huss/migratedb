@@ -16,16 +16,13 @@
  */
 package migratedb.core.internal.database.postgresql;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.database.base.Type;
+
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * PostgreSQL implementation of Schema.
@@ -93,7 +90,7 @@ public class PostgreSQLSchema extends BaseSchema<PostgreSQLDatabase, PostgreSQLT
             jdbcTemplate.execute(statement);
         }
 
-        for (Table table : allTables()) {
+        for (var table : allTables()) {
             table.drop();
         }
 
@@ -390,12 +387,12 @@ public class PostgreSQLSchema extends BaseSchema<PostgreSQLDatabase, PostgreSQLT
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new PostgreSQLTable(jdbcTemplate, database, this, tableName);
     }
 
     @Override
-    protected Type getType(String typeName) {
+    protected Type<?, ?> getType(String typeName) {
         return new PostgreSQLType(jdbcTemplate, database, this, typeName);
     }
 }

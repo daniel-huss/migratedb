@@ -16,11 +16,12 @@
  */
 package migratedb.core.internal.parser;
 
+import migratedb.core.api.internal.sqlscript.Delimiter;
+
 import java.io.FilterReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
-import migratedb.core.api.internal.sqlscript.Delimiter;
 
 public class PeekingReader extends FilterReader {
     private int[] peekBuffer = new int[256];
@@ -362,6 +363,7 @@ public class PeekingReader extends FilterReader {
                 if (selfEscape && peek(delimiter)) {
                     result.append(delimiter);
                     result.append(delimiter);
+                    //noinspection ResultOfMethodCallIgnored
                     read();
                     continue;
                 }

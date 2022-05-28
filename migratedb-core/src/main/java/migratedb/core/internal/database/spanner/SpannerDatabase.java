@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.database.spanner;
 
-import java.sql.Connection;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
+
+import java.sql.Connection;
 
 public class SpannerDatabase extends BaseDatabase<SpannerConnection> {
     public SpannerDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
@@ -89,17 +90,17 @@ public class SpannerDatabase extends BaseDatabase<SpannerConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table table, boolean baseline) {
+    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
         return "" +
-               "CREATE TABLE " + table.getName() + " (\n" +
-               "    installed_rank INT64 NOT NULL,\n" +
-               "    version STRING(50),\n" +
-               "    description STRING(200) NOT NULL,\n" +
-               "    type STRING(20) NOT NULL,\n" +
-               "    script STRING(1000) NOT NULL,\n" +
-               "    checksum STRING(100),\n" +
-               "    installed_by STRING(100) NOT NULL,\n" +
-               "    installed_on TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),\n" +
+                "CREATE TABLE " + table.getName() + " (\n" +
+                "    installed_rank INT64 NOT NULL,\n" +
+                "    version STRING(50),\n" +
+                "    description STRING(200) NOT NULL,\n" +
+                "    type STRING(20) NOT NULL,\n" +
+                "    script STRING(1000) NOT NULL,\n" +
+                "    checksum STRING(100),\n" +
+                "    installed_by STRING(100) NOT NULL,\n" +
+                "    installed_on TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),\n" +
                "    execution_time INT64 NOT NULL,\n" +
                "    success BOOL NOT NULL\n" +
                ") PRIMARY KEY (installed_rank DESC);\n" +
@@ -108,17 +109,17 @@ public class SpannerDatabase extends BaseDatabase<SpannerConnection> {
     }
 
     @Override
-    public String getInsertStatement(Table table) {
+    public String getInsertStatement(Table<?, ?> table) {
         return "INSERT INTO " + table
-               + " (" + quote("installed_rank")
-               + ", " + quote("version")
-               + ", " + quote("description")
-               + ", " + quote("type")
-               + ", " + quote("script")
-               + ", " + quote("checksum")
-               + ", " + quote("installed_by")
-               + ", " + quote("installed_on")
-               + ", " + quote("execution_time")
+                + " (" + quote("installed_rank")
+                + ", " + quote("version")
+                + ", " + quote("description")
+                + ", " + quote("type")
+                + ", " + quote("script")
+                + ", " + quote("checksum")
+                + ", " + quote("installed_by")
+                + ", " + quote("installed_on")
+                + ", " + quote("execution_time")
                + ", " + quote("success")
                + ")"
                + " VALUES (?, ?, ?, ?, ?, ?, ?, PENDING_COMMIT_TIMESTAMP(), ?, ?)";

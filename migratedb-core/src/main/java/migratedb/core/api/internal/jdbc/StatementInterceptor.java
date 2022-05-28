@@ -15,15 +15,16 @@
  */
 package migratedb.core.api.internal.jdbc;
 
-import java.util.Map;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.internal.sqlscript.SqlStatement;
 import migratedb.core.api.resource.Resource;
 
+import java.util.Map;
+
 public interface StatementInterceptor {
-    void init(Database database, Table table);
+    void init(Database<?> database, Table<?, ?> table);
 
     void schemaHistoryTableCreate(boolean baseline);
 
@@ -43,12 +44,12 @@ public interface StatementInterceptor {
 
     void interceptCallableStatement(String sql);
 
-    void schemaHistoryTableDeleteFailed(Table table, AppliedMigration appliedMigration);
+    void schemaHistoryTableDeleteFailed(Table<?, ?> table, AppliedMigration appliedMigration);
 
     static StatementInterceptor doNothing() {
         return new StatementInterceptor() {
             @Override
-            public void init(Database database, Table table) {
+            public void init(Database<?> database, Table<?, ?> table) {
 
             }
 
@@ -98,7 +99,7 @@ public interface StatementInterceptor {
             }
 
             @Override
-            public void schemaHistoryTableDeleteFailed(Table table, AppliedMigration appliedMigration) {
+            public void schemaHistoryTableDeleteFailed(Table<?, ?> table, AppliedMigration appliedMigration) {
 
             }
         };

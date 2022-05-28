@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database.h2;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
+
+import java.sql.SQLException;
 
 public class H2Connection extends BaseConnection<H2Database> {
     private final boolean requiresV2Metadata;
@@ -34,7 +35,7 @@ public class H2Connection extends BaseConnection<H2Database> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new H2Schema(jdbcTemplate, database, name, requiresV2Metadata);
     }
 

@@ -19,6 +19,7 @@ package migratedb.core.internal.database.bigquery;
 import migratedb.core.api.MigrateDbExtension;
 
 public class BigQueryDatabaseExtension implements MigrateDbExtension {
+    @Override
     public String getDescription() {
         return "GCP BigQuery database support (beta)";
     }

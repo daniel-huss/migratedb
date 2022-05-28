@@ -16,20 +16,8 @@
  */
 package migratedb.core.internal.info;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-import migratedb.core.api.ErrorDetails;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrationInfo;
-import migratedb.core.api.MigrationInfoService;
-import migratedb.core.api.MigrationPattern;
-import migratedb.core.api.MigrationState;
+import migratedb.core.api.*;
 import migratedb.core.api.MigrationState.Category;
-import migratedb.core.api.TargetVersion;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
@@ -41,10 +29,13 @@ import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 
+import java.util.*;
+import java.util.function.Predicate;
+
 public class MigrationInfoServiceImpl extends OperationResult implements MigrationInfoService {
     private final MigrationResolver migrationResolver;
     private final Configuration configuration;
-    private final Database database;
+    private final Database<?> database;
     private final Context context;
     private final SchemaHistory schemaHistory;
     private final TargetVersion target;
@@ -68,7 +59,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
      */
     public MigrationInfoServiceImpl(MigrationResolver migrationResolver,
                                     SchemaHistory schemaHistory,
-                                    Database database,
+                                    Database<?> database,
                                     Configuration configuration,
                                     TargetVersion target,
                                     MigrationPattern[] cherryPick,
@@ -210,7 +201,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
         return invalidMigrations;
     }
 
-    public void setAllSchemasEmpty(Schema[] schemas) {
+    public void setAllSchemasEmpty(Schema<?, ?>[] schemas) {
         allSchemasEmpty = Arrays.stream(schemas).filter(Schema::exists).allMatch(Schema::empty);
     }
 

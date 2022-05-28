@@ -16,11 +16,6 @@
  */
 package migratedb.core.internal.command;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
@@ -37,17 +32,19 @@ import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.DateTimeUtils;
 import migratedb.core.internal.util.StopWatch;
 
+import java.util.*;
+
 public class DbClean {
     private static final Log LOG = Log.getLog(DbClean.class);
     private final SchemaHistory schemaHistory;
-    protected final Schema defaultSchema;
-    protected final Schema[] schemas;
-    protected final Connection connection;
-    protected final Database database;
+    protected final Schema<?, ?> defaultSchema;
+    protected final Schema<?, ?>[] schemas;
+    protected final Connection<?> connection;
+    protected final Database<?> database;
     protected final CallbackExecutor callbackExecutor;
     protected final Configuration configuration;
 
-    public DbClean(Database database, SchemaHistory schemaHistory, Schema defaultSchema, Schema[] schemas,
+    public DbClean(Database<?> database, SchemaHistory schemaHistory, Schema<?, ?> defaultSchema, Schema<?, ?>[] schemas,
                    CallbackExecutor callbackExecutor, Configuration configuration) {
         this.schemaHistory = schemaHistory;
         this.defaultSchema = defaultSchema;
@@ -79,7 +76,7 @@ public class DbClean {
         clean(defaultSchema, schemas, cleanResult);
     }
 
-    protected void clean(Schema defaultSchema, Schema[] schemas, CleanResult cleanResult) {
+    protected void clean(Schema<?, ?> defaultSchema, Schema<?, ?>[] schemas, CleanResult cleanResult) {
         try {
             connection.changeCurrentSchemaTo(defaultSchema);
 
@@ -97,12 +94,12 @@ public class DbClean {
         }
     }
 
-    protected void clean(Schema[] schemas, CleanResult cleanResult, List<String> dropSchemas) {
+    protected void clean(Schema<?, ?>[] schemas, CleanResult cleanResult, List<String> dropSchemas) {
         dropDatabaseObjectsPreSchemas();
 
-        List<Schema> schemaList = new LinkedList<>(Arrays.asList(schemas));
+        List<Schema<?, ?>> schemaList = new LinkedList<>(Arrays.asList(schemas));
         for (int i = 0; i < schemaList.size(); ) {
-            Schema schema = schemaList.get(i);
+            Schema<?, ?> schema = schemaList.get(i);
             if (!schema.exists()) {
                 String unknownSchemaWarning = "Unable to clean unknown schema: " + schema;
                 cleanResult.addWarning(unknownSchemaWarning);
@@ -118,7 +115,7 @@ public class DbClean {
 
         dropDatabaseObjectsPostSchemas(schemas);
 
-        for (Schema schema : schemas) {
+        for (Schema<?, ?> schema : schemas) {
             if (dropSchemas.contains(schema.getName())) {
                 dropSchema(schema, cleanResult);
             }
@@ -149,7 +146,7 @@ public class DbClean {
     /**
      * Drops database-level objects that need to be cleaned after all schema-level objects.
      */
-    private void dropDatabaseObjectsPostSchemas(Schema[] schemas) {
+    private void dropDatabaseObjectsPostSchemas(Schema<?, ?>[] schemas) {
         LOG.debug("Dropping post-schema database level objects...");
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -167,7 +164,7 @@ public class DbClean {
         }
     }
 
-    private void dropSchema(Schema schema, CleanResult cleanResult) {
+    private void dropSchema(Schema<?, ?> schema, CleanResult cleanResult) {
         LOG.debug("Dropping schema " + schema + "...");
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -181,7 +178,7 @@ public class DbClean {
 
             stopWatch.stop();
             LOG.info(String.format("Successfully dropped schema %s (execution time %s)",
-                                   schema, DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis())));
+                    schema, DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis())));
         } catch (MigrateDbSqlException e) {
             LOG.debug(e.getMessage());
             LOG.warn("Unable to drop schema " + schema + ". It was cleaned instead.");
@@ -189,8 +186,8 @@ public class DbClean {
         }
     }
 
-    private void cleanSchemas(Schema[] schemas, List<String> dropSchemas, CleanResult cleanResult) {
-        for (Schema schema : schemas) {
+    private void cleanSchemas(Schema<?, ?>[] schemas, List<String> dropSchemas, CleanResult cleanResult) {
+        for (Schema<?, ?> schema : schemas) {
             if (dropSchemas.contains(schema.getName())) {
                 try {
                     cleanSchema(schema);
@@ -205,17 +202,17 @@ public class DbClean {
         }
     }
 
-    private void cleanSchema(Schema schema) {
+    private void cleanSchema(Schema<?, ?> schema) {
         LOG.debug("Cleaning schema " + schema + "...");
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         doCleanSchema(schema);
         stopWatch.stop();
         LOG.info(String.format("Successfully cleaned schema %s (execution time %s)",
-                               schema, DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis())));
+                schema, DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis())));
     }
 
-    protected void doCleanSchema(Schema schema) {
+    protected void doCleanSchema(Schema<?, ?> schema) {
         ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(), database).execute(() -> {
             schema.clean();
             return null;

@@ -22,9 +22,9 @@ import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.util.StringUtils;
 
-public abstract class BaseFunction<D extends Database, S extends Schema> extends BaseSchemaObject<D, S>
-    implements Function<D, S> {
-    protected String[] args;
+public abstract class BaseFunction<D extends Database<?>, S extends Schema<?, ?>> extends BaseSchemaObject<D, S>
+        implements Function<D, S> {
+    protected final String[] args;
 
     public BaseFunction(JdbcTemplate jdbcTemplate, D database, S schema, String name, String... args) {
         super(jdbcTemplate, database, schema, name);

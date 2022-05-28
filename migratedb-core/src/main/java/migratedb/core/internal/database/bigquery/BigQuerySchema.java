@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.database.bigquery;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseSchema;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BigQuerySchema extends BaseSchema<BigQueryDatabase, BigQueryTable> {
     BigQuerySchema(JdbcTemplate jdbcTemplate, BigQueryDatabase database, String name) {
@@ -156,7 +157,7 @@ public class BigQuerySchema extends BaseSchema<BigQueryDatabase, BigQueryTable> 
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new BigQueryTable(jdbcTemplate, database, this, tableName);
     }
 }

@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.database.sqlserver;
 
-import java.sql.SQLException;
-import java.util.concurrent.Callable;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.exception.MigrateDbSqlException;
+
+import java.sql.SQLException;
+import java.util.concurrent.Callable;
 
 /**
  * SQL Server connection.
@@ -84,16 +85,16 @@ public class SQLServerConnection extends BaseConnection<SQLServerDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new SQLServerSchema(jdbcTemplate, database, originalDatabaseName, name);
     }
 
     @Override
-    public <T> T lock(Table table, Callable<T> callable) {
+    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
         return new SQLServerApplicationLockTemplate(this,
-                                                    jdbcTemplate,
-                                                    originalDatabaseName,
-                                                    table.toString().hashCode()).execute(callable);
+                jdbcTemplate,
+                originalDatabaseName,
+                table.toString().hashCode()).execute(callable);
     }
 
     public Boolean isAzureConnection() {

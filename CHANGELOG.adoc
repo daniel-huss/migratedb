@@ -62,7 +62,7 @@ Can be changed by application code via Log.setDefaultLogSystem().
 If the deleted migration re-appears, another repair will un-delete it.
 * 🔥 Future migrations are no longer (?) marked as deleted by the repair command.
 * 🔥 Some additional states of schema history corruption are now detected.
-* 🔥 The checksum is now SHA256-based instead of a single integer.
+* 🔥 The checksum is now 20 bytes SHA-256 instead of 4 bytes CRC32.
 * Converted README to Asciidoc.
 * Removed a compile-time dependency on Oracle JDBC driver classes from the core library.
 * Builds should now be reproducible.
@@ -87,6 +87,7 @@ Extensions must be activated in configuration via useExtension().
 * 🔥 The "empty" migration version.
 * 🔥 Support for wildcards in `filesystem:` locations.
 * 🔥 InsertRowLock because of the deadlocks it caused.
+* Raw type usage.
 
 === Fixed
 

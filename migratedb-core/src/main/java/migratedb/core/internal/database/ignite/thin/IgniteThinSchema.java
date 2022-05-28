@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.ignite.thin;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseSchema;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Apache Ignite implementation of Schema.
@@ -65,7 +66,7 @@ public class IgniteThinSchema extends BaseSchema<IgniteThinDatabase, IgniteThinT
 
     @Override
     protected void doClean() throws SQLException {
-        for (Table table : allTables()) {
+        for (var table : allTables()) {
             table.drop();
         }
 
@@ -167,7 +168,7 @@ public class IgniteThinSchema extends BaseSchema<IgniteThinDatabase, IgniteThinT
     }
 
     @Override
-    public Table getTable(String tableName) {
+    public Table<?, ?> getTable(String tableName) {
         return new IgniteThinTable(jdbcTemplate, database, this, tableName);
     }
 }

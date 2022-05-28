@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.database.redshift;
 
-import java.sql.SQLException;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.internal.database.base.BaseConnection;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.SQLException;
 
 /**
  * Redshift connection.
@@ -37,15 +38,15 @@ public class RedshiftConnection extends BaseConnection<RedshiftDatabase> {
     }
 
     @Override
-    public void changeCurrentSchemaTo(Schema schema) {
+    public void changeCurrentSchemaTo(Schema<?, ?> schema) {
         try {
             if (schema.getName().equals(originalSchemaNameOrSearchPath) || originalSchemaNameOrSearchPath.startsWith(
-                schema.getName() + ",") || !schema.exists()) {
+                    schema.getName() + ",") || !schema.exists()) {
                 return;
             }
 
             if (StringUtils.hasText(originalSchemaNameOrSearchPath) &&
-                !"unset".equals(originalSchemaNameOrSearchPath)) {
+                    !"unset".equals(originalSchemaNameOrSearchPath)) {
                 doChangeCurrentSchemaOrSearchPathTo(schema.toString() + "," + originalSchemaNameOrSearchPath);
             } else {
                 doChangeCurrentSchemaOrSearchPathTo(schema.toString());
@@ -64,14 +65,14 @@ public class RedshiftConnection extends BaseConnection<RedshiftDatabase> {
     }
 
     @Override
-    public Schema doGetCurrentSchema() throws SQLException {
+    public Schema<?, ?> doGetCurrentSchema() throws SQLException {
         String currentSchema = jdbcTemplate.queryForString("SELECT current_schema()");
         String searchPath = getCurrentSchemaNameOrSearchPath();
 
         if (!StringUtils.hasText(currentSchema) && !StringUtils.hasText(searchPath)) {
             throw new MigrateDbException("Unable to determine current schema as search_path is empty. " +
-                                         "Set the current schema in currentSchema parameter of the JDBC URL or in " +
-                                         "MigrateDb's schemas property.");
+                    "Set the current schema in currentSchema parameter of the JDBC URL or in " +
+                    "MigrateDb's schemas property.");
         }
 
         String schema = StringUtils.hasText(currentSchema) ? currentSchema : searchPath;
@@ -80,7 +81,7 @@ public class RedshiftConnection extends BaseConnection<RedshiftDatabase> {
     }
 
     @Override
-    public Schema getSchema(String name) {
+    public Schema<?, ?> getSchema(String name) {
         return new RedshiftSchema(jdbcTemplate, database, name);
     }
 }

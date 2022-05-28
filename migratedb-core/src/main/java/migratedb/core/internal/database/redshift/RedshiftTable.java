@@ -16,9 +16,11 @@
  */
 package migratedb.core.internal.database.redshift;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseTable;
+
+import java.sql.SQLException;
+import java.util.Locale;
 
 /**
  * Redshift-specific table.
@@ -52,7 +54,7 @@ public class RedshiftTable extends BaseTable<RedshiftDatabase, RedshiftSchema> {
                                             "  AND    c.relkind = 'r'\n" + // only tables
                                             ")",
                                             schema.getName(),
-                                            name.toLowerCase()
+                name.toLowerCase(Locale.ROOT)
                                             // Redshift table names are case-insensitive and always in lowercase in pg_class.
         );
     }

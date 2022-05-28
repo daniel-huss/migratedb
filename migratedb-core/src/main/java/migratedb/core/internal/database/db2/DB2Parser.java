@@ -16,17 +16,14 @@
  */
 package migratedb.core.internal.database.db2;
 
+import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.internal.parser.*;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
-import migratedb.core.api.configuration.Configuration;
-import migratedb.core.api.internal.parser.ParsingContext;
-import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.parser.ParserContext;
-import migratedb.core.internal.parser.PeekingReader;
-import migratedb.core.internal.parser.Token;
-import migratedb.core.internal.parser.TokenType;
 
 public class DB2Parser extends BaseParser {
     private static final String COMMENT_DIRECTIVE = "--#";
@@ -41,9 +38,9 @@ public class DB2Parser extends BaseParser {
     private static final List<String> CONTROL_FLOW_KEYWORDS = Arrays.asList("LOOP", "CASE", "DO", "REPEAT", "IF");
 
     private static final Pattern CREATE_IF_NOT_EXISTS = Pattern.compile(
-        ".*CREATE\\s([^\\s]+\\s){0,2}IF\\sNOT\\sEXISTS");
+            ".*CREATE\\s(\\S+\\s){0,2}IF\\sNOT\\sEXISTS");
     private static final Pattern DROP_IF_EXISTS = Pattern.compile(
-        ".*DROP\\s([^\\s]+\\s){0,2}IF\\sEXISTS");
+            ".*DROP\\s(\\S+\\s){0,2}IF\\sEXISTS");
 
     @Override
     protected void adjustBlockDepth(ParserContext context, List<Token> tokens, Token keyword, PeekingReader reader)
