@@ -162,7 +162,7 @@ public interface Configuration {
 
     /**
      * Retrieves the file name prefix for repeatable SQL migrations. Repeatable SQL migrations have the following file
-     * name structure: prefixSeparatorDESCRIPTIONsuffix, which using the defaults translates to R__My_description.sql<
+     * name structure: prefixSeparatorDESCRIPTIONsuffix, which using the defaults translates to R__My_description.sql
      *
      * @return The file name prefix for repeatable sql migrations. (default: R)
      */
@@ -588,7 +588,7 @@ public interface Configuration {
     /**
      * Whether MigrateDb should attempt to create the schemas specified in the schemas property.
      *
-     * @return @{code true} to attempt to create the schemas (default: {@code true})
+     * @return {@code true} to attempt to create the schemas (default: {@code true})
      */
     boolean getCreateSchemas();
 
@@ -609,7 +609,7 @@ public interface Configuration {
     /**
      * Whether to fail if a location specified in the migratedb.locations option doesn't exist
      *
-     * @return @{code true} to fail (default: {@code false})
+     * @return {@code true} to fail (default: {@code false})
      */
     boolean getFailOnMissingLocations();
 

@@ -128,8 +128,7 @@ public class SybaseASEDatabase extends BaseDatabase<SybaseASEConnection> {
 
     /**
      * Multi statement transaction support is dependent on the 'ddl in tran' option being set. However, setting 'ddl in
-     * tran' doesn't necessarily mean that multi-statement transactions are supported. i.e. - multi statement
-     * transaction support => ddl in tran - ddl in tran =/> multi statement transaction support Also, ddl in tran can
+     * tran' doesn't necessarily mean that multi-statement transactions are supported. Also, ddl in tran can
      * change during execution for unknown reasons. Therefore, as a best guess: - When this method is called, check ddl
      * in tran - If ddl in tran is true, assume support for multi statement transactions forever more - Never check ddl
      * in tran again - If ddl in tran is false, return false - Check ddl in tran again on the next call

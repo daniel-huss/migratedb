@@ -285,7 +285,7 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-validate.png" alt="validate">
      *
      * @throws MigrateDbException when the validation failed.
-     * @returns An object summarising the validation results
+     * @return An object summarising the validation results
      */
     public ValidateResult validateWithResult() throws MigrateDbException {
         return executor.execute(context -> {

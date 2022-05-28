@@ -1271,7 +1271,7 @@ public class FluentConfiguration implements Configuration {
     /**
      * Whether MigrateDb should attempt to create the schemas specified in the schemas property
      *
-     * @param createSchemas @{code true} to attempt to create the schemas (default: {@code true})
+     * @param createSchemas {@code true} to attempt to create the schemas (default: {@code true})
      */
     public FluentConfiguration createSchemas(boolean createSchemas) {
         config.setShouldCreateSchemas(createSchemas);
@@ -1281,7 +1281,7 @@ public class FluentConfiguration implements Configuration {
     /**
      * Whether to fail if a location specified in the migratedb.locations option doesn't exist
      *
-     * @return @{code true} to fail (default: {@code false})
+     * @return {@code true} to fail (default: {@code false})
      */
     public FluentConfiguration failOnMissingLocations(boolean failOnMissingLocations) {
         config.setFailOnMissingLocations(failOnMissingLocations);

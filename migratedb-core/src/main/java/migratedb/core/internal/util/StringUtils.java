@@ -107,10 +107,9 @@ public enum StringUtils {
     }
 
     /**
-     * Replaces all sequences of whitespace by a single blank. Ex.: "&nbsp;&nbsp;&nbsp;&nbsp;" -> " "
+     * Replaces all sequences of whitespace by a single blank. Ex.: "&nbsp;&nbsp;&nbsp;&nbsp;" {@code ->} " "
      *
      * @param str The string to analyse.
-     *
      * @return The input string, with all whitespace collapsed.
      */
     public static String collapseWhitespace(String str) {

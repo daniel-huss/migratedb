@@ -151,7 +151,7 @@
                 <executions>
                     <execution>
                         <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>manifest</goal>
                         </goals>
@@ -160,12 +160,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <sourceFileIncludes>
-                        <sourceFileInclude>**/core/*.java</sourceFileInclude>
-                        <sourceFileInclude>**/core/api/**/*.java</sourceFileInclude>
-                    </sourceFileIncludes>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

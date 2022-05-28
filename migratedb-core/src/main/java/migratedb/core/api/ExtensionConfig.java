@@ -22,7 +22,7 @@ import migratedb.core.api.configuration.Configuration;
  * Marker interface for the configuration data structures of extensions. These can be read from {@link Configuration}
  * via {@link Configuration#getExtensionConfig()}.
  *
- * @implSpec Subclasses must implement equals (and hashCode) based on the configuration data.
+ * <p>Subclasses must implement equals (and hashCode) based on the configuration data.</p>
  */
 public interface ExtensionConfig {
 

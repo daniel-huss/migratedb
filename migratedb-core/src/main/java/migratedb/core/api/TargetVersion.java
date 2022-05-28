@@ -16,12 +16,13 @@
 
 package migratedb.core.api;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class TargetVersion {
     /**
@@ -29,11 +30,11 @@ public final class TargetVersion {
      */
     public static final TargetVersion LATEST = new TargetVersion("<< Latest Version >>");
     /**
-     * Represents {@¢ode MigrateDb.info().current()}.
+     * Represents {@code MigrateDb.info().current()}.
      */
     public static final TargetVersion CURRENT = new TargetVersion("<< Current Version >>");
     /**
-     * Represents {@¢ode MigrateDb.info().next()}.
+     * Represents {@code MigrateDb.info().next()}.
      */
     public static final TargetVersion NEXT = new TargetVersion("<< Next Version >>");
 

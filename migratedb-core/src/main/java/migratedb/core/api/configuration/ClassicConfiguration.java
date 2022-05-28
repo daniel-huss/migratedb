@@ -1261,7 +1261,7 @@ public class ClassicConfiguration implements Configuration {
     /**
      * Whether MigrateDb should attempt to create the schemas specified in the schemas property.
      *
-     * @param createSchemas @{code true} to attempt to create the schemas (default: {@code true})
+     * @param createSchemas {@code true} to attempt to create the schemas (default: {@code true})
      */
     public void setShouldCreateSchemas(boolean createSchemas) {
         this.createSchemas = createSchemas;
@@ -1282,8 +1282,6 @@ public class ClassicConfiguration implements Configuration {
     /**
      * Whether MigrateDb should output a table with the results of queries when executing migrations.
      * <i>MigrateDb Teams only</i>
-     *
-     * @return {@code true} to output the results table (default: {@code true})
      */
     public void setOutputQueryResults(boolean outputQueryResults) {
         this.outputQueryResults = outputQueryResults;
@@ -1311,8 +1309,6 @@ public class ClassicConfiguration implements Configuration {
 
     /**
      * Whether to fail if a location specified in the migratedb.locations option doesn't exist
-     *
-     * @return @{code true} to fail (default: {@code false})
      */
     public void setFailOnMissingLocations(boolean failOnMissingLocations) {
         this.failOnMissingLocations = failOnMissingLocations;

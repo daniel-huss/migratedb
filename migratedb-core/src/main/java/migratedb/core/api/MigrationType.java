@@ -81,7 +81,7 @@ public enum MigrationType {
     }
 
     /**
-     * @return Whether this is a baseline migration, which represents all migrations with version <= current baseline
+     * @return Whether this is a baseline migration, which represents all migrations with version {@code <=} current baseline
      * migration version. Note that the special baseline marker {@link #BASELINE} is not a real migration, and therefore
      * not a baseline migration.
      */
