@@ -98,18 +98,19 @@ enum class Oracle(image: String) : DbSystem {
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
             internalDs.work { jdbc ->
                 try {
+                    jdbc.update("alter user $namespace account lock")
                     jdbc.queryForList(
-                        "select s.sid, s.serial#" +
-                                "  from v\$session s, v\$process p \n" +
+                        "select s.sid as sid, s.serial# as ser" +
+                                " from v\$session s, v\$process p \n" +
                                 " where UPPER(s.username) = UPPER('$namespace')"
                     ).forEach { row ->
                         try {
-                            jdbc.update("alter system kill session '${row["sid"]},${row["serial#"]}' immediate")
+                            jdbc.update("alter system kill session '${row["sid"]},${row["ser"]}' immediate")
                         } catch (e: DataAccessException) {
                             e.rethrowUnless {
-                                // ORA-0030 = No such session, can happen because the query result is of course
-                                // immediately outdated.
-                                it.errorCode == 30
+                                // 26 = No such session, 30 = No such user ; can happen because the query result is of
+                                // course immediately outdated.
+                                it.errorCode in setOf(26, 30)
                             }
                         }
                     }

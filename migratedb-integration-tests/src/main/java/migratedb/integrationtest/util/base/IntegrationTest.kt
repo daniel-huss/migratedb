@@ -16,66 +16,21 @@
 
 package migratedb.integrationtest.util.base
 
-import io.kotest.assertions.print.Print
-import io.kotest.assertions.print.Printers
-import io.kotest.assertions.print.printed
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.util.container.SharedResources
 import migratedb.integrationtest.util.container.SharedResources.Companion.resources
 import migratedb.integrationtest.util.dsl.Dsl
+import migratedb.testing.util.base.AbstractTest
 import org.junit.jupiter.api.Timeout
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace
-import org.testcontainers.shaded.com.fasterxml.jackson.core.util.DefaultPrettyPrinter
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.SerializationFeature
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 @ExtendWith(IntegrationTest.Extension::class)
 @Timeout(15, unit = TimeUnit.MINUTES)
-abstract class IntegrationTest {
-    companion object {
-        private val jsonMapper = ObjectMapper().setDefaultPrettyPrinter(DefaultPrettyPrinter())
-            .enable(SerializationFeature.INDENT_OUTPUT)
-
-        private val unclosed: MutableSet<Any> =
-            Collections.synchronizedSet(Collections.newSetFromMap(IdentityHashMap()))
-
-        @JvmStatic
-        fun closed(it: Any) = this.also { unclosed.remove(it) }
-
-        @JvmStatic
-        fun opened(it: Any) = this.also { unclosed.add(it) }
-
-        @JvmStatic
-        fun toClose() = unclosed
-
-        init {
-            Printers.add(Any::class, object : Print<Any> {
-                @Deprecated(
-                    "Use print(a, level) to respect level hints. Deprecated in 5.0.3",
-                    ReplaceWith("print(a, 0)")
-                )
-                override fun print(a: Any) = print(a, 0)
-                override fun print(a: Any, level: Int) = when {
-                    a.classOverridesObjectToString() -> a.toString().printed()
-                    else -> jsonMapper.writeValueAsString(a).printed()
-                }
-            })
-        }
-
-        private fun Any.classOverridesObjectToString(): Boolean {
-            return generateSequence(this::class.java) {
-                when (it.superclass) {
-                    Object::class.java -> null
-                    else -> it.superclass
-                }
-            }.any { runCatching { it.getDeclaredMethod("toString") }.isSuccess }
-        }
-    }
+abstract class IntegrationTest : AbstractTest() {
 
     class Extension : BeforeAllCallback {
         companion object {

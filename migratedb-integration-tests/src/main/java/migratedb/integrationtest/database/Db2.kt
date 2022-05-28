@@ -110,6 +110,8 @@ enum class Db2(image: String) : DbSystem {
             val ds = container().dataSource()
             ds.awaitConnectivity(Duration.ofMinutes(5)).use { }
             val connectionFactory = JdbcConnectionFactoryImpl(ds, it, StatementInterceptor.doNothing())
+            // JdbcConnectionFactoryImpl always opens a connection, creating a leak if not closed...
+            connectionFactory.openConnection().use { }
             type.createDatabase(it, connectionFactory, StatementInterceptor.doNothing())
         }
 

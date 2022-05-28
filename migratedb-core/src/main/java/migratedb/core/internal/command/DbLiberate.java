@@ -21,9 +21,12 @@ import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.output.CommandResultFactory;
+import migratedb.core.api.output.LiberateOutput;
 import migratedb.core.api.output.LiberateResult;
 import migratedb.core.internal.schemahistory.SchemaHistory;
-import migratedb.core.internal.util.Development;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Converts the schema history table into the format used by MigrateDB.
@@ -46,16 +49,23 @@ public class DbLiberate {
 
     public LiberateResult liberate() {
         var schemaHistoryTable = schemaHistory.getTable();
-        convertToMigrateDb(schemaHistoryTable);
+        var oldTable = Arrays.stream(schemas)
+                .map(it -> it.getTable(configuration.getOldTable()))
+                .filter(Table::exists)
+                .findFirst().orElse(null);
+
+        var changes = convertToMigrateDb(schemaHistoryTable);
         return CommandResultFactory.createLiberateResult(configuration,
-                                                         database,
-                                                         schemaHistoryTable.getSchema().getName(),
-                                                         schemaHistoryTable.getName());
+                database,
+                schemaHistoryTable.getSchema().getName(),
+                schemaHistoryTable.getName(),
+                changes);
     }
 
-    private void convertToMigrateDb(Table schemaHistoryTable) {
-        Development.TODO("Implement :o)");
+    private List<LiberateOutput> convertToMigrateDb(Table schemaHistoryTable) {
+        // Development.TODO("Implement :o)");
         // convertChecksum()
         // convertDeletionMarkers()
+        return List.of();
     }
 }

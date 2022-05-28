@@ -37,7 +37,7 @@ enum class Informix(image: String) : DbSystem {
     ;
 
     // Relevant idiosyncracies:
-    //  - ???
+    //  - Does not support schemas as namespaces (CREATE SCHEMA just assigns the same owner to multiple DB objects)
 
     private val containerAlias = "informix_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
@@ -93,7 +93,7 @@ enum class Informix(image: String) : DbSystem {
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
             internalDs.work {
-                it.execute("set lock mode to wait 300")
+                it.execute("set lock mode to wait 5")
                 it.execute("drop database if exists $namespace")
             }
         }

@@ -38,11 +38,15 @@ class ThenStepImpl<G : Any>(given: G, databaseContext: DatabaseContext) : Dsl.Th
             table?.let(::table)
             databaseContext.schemaName?.let { schemas(it.toString()) }
         }
+        // JdbcConnectionFactoryImpl always opens a connection, creating a leak if not closed...
+        val connectionFactory = JdbcConnectionFactoryImpl(databaseContext.adminDataSource, configuration, doNothing())
+        connectionFactory.openConnection().use { }
+
         // Do not re-use database from givenInfo because its connection might not observe the effects of previously
         // committed transactions.
         databaseContext.database.databaseType.createDatabase(
             configuration,
-            JdbcConnectionFactoryImpl(databaseContext.adminDataSource, configuration, doNothing()),
+            connectionFactory,
             doNothing()
         ).use {
             val schemaHistory = DatabaseImpl.getSchemaHistory(configuration, databaseContext.database)

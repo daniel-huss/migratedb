@@ -15,10 +15,6 @@
  */
 package migratedb.core.internal.jdbc;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import javax.sql.DataSource;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.DatabaseType;
@@ -26,6 +22,11 @@ import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
 /**
  * Utility class for dealing with jdbc connections.
@@ -47,7 +48,7 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
 
     /**
      * Creates a new JDBC connection factory. This automatically opens a first connection which can be obtained via a
-     * call to getConnection and which must be closed again to avoid leaking it.
+     * call to openConnection and which must be closed again to avoid leaking it.
      *
      * @param dataSource           The DataSource to obtain the connection from.
      * @param configuration        The MigrateDb configuration.
@@ -61,9 +62,9 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
         this.configuration = configuration;
 
         firstConnection = JdbcUtils.openConnection(dataSource,
-                                                   connectRetries,
-                                                   connectRetriesInterval,
-                                                   configuration.getDatabaseTypeRegister());
+                connectRetries,
+                connectRetriesInterval,
+                configuration.getDatabaseTypeRegister());
         this.databaseType = configuration.getDatabaseTypeRegister().getDatabaseTypeForConnection(firstConnection);
 
         DatabaseMetaData databaseMetaData = JdbcUtils.getDatabaseMetaData(firstConnection);
@@ -100,18 +101,25 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
 
     @Override
     public Connection openConnection() throws MigrateDbException {
-        Connection connection = firstConnection == null ? JdbcUtils.openConnection(dataSource,
-                                                                                   connectRetries,
-                                                                                   connectRetriesInterval,
-                                                                                   configuration.getDatabaseTypeRegister())
-                                                        : firstConnection;
+        var connection = firstConnection == null ? JdbcUtils.openConnection(dataSource,
+                connectRetries,
+                connectRetriesInterval,
+                configuration.getDatabaseTypeRegister())
+                : firstConnection;
         firstConnection = null;
-
-        if (connectionInitializer != null) {
-            connectionInitializer.initialize(this, connection);
+        try {
+            if (connectionInitializer != null) {
+                connectionInitializer.initialize(this, connection);
+            }
+            connection = databaseType.alterConnectionAsNeeded(connection, configuration);
+        } catch (RuntimeException | Error e) {
+            try {
+                connection.close();
+            } catch (RuntimeException | SQLException | Error suppressed) {
+                if (!e.equals(suppressed)) e.addSuppressed(suppressed);
+            }
+            throw e;
         }
-
-        connection = databaseType.alterConnectionAsNeeded(connection, configuration);
         return connection;
     }
 

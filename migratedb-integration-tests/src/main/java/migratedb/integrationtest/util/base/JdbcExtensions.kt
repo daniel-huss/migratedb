@@ -22,8 +22,39 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource
 import java.sql.Connection
 import java.sql.SQLException
 import java.time.Duration
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
+
+val leakedConnections: MutableMap<Any, String> = Collections.synchronizedMap(IdentityHashMap())
+
+fun trackConnectionLeaks(ds: DataSource): DataSource {
+    return object : DataSource by ds {
+        fun stack(): String {
+            val stack = mutableListOf<String>()
+            StackWalker.getInstance().forEach {
+                if (it.className.startsWith("migratedb")) {
+                    stack.add(it.className + "::" + it.methodName + "::" + it.lineNumber)
+                }
+            }
+            return stack.drop(2).joinToString("\n  ")
+        }
+
+        override fun getConnection(): Connection {
+            val delegate = ds.connection
+            leakedConnections[delegate] = stack()
+            return object : Connection by delegate {
+                override fun close() {
+                    try {
+                        delegate.close()
+                    } finally {
+                        leakedConnections.remove(delegate)
+                    }
+                }
+            }
+        }
+    }
+}
 
 fun DataAccessException.rethrowUnless(matcher: (SQLException) -> Boolean) {
     if (!matcher((cause as? SQLException) ?: throw this)) {

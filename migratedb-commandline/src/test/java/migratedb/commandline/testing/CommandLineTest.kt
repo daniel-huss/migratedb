@@ -15,11 +15,12 @@
  */
 package migratedb.commandline.testing
 
+import migratedb.testing.util.base.AbstractTest
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.SingleConnectionDataSource
 import java.sql.DriverManager
 
-abstract class CommandLineTest {
+abstract class CommandLineTest : AbstractTest() {
     fun withCommandLine(block: (Dsl).() -> Unit) {
         Dsl().use {
             block(it)

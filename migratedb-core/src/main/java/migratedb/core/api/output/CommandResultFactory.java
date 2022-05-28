@@ -34,11 +34,14 @@ public class CommandResultFactory {
     public static LiberateResult createLiberateResult(Configuration configuration,
                                                       Database database,
                                                       String schemaHistorySchema,
-                                                      String schemaHistoryTable) {
+                                                      String schemaHistoryTable,
+                                                      List<LiberateOutput> changes) {
         return new LiberateResult(BuildInfo.VERSION,
                 getDatabaseName(configuration, database),
                 schemaHistorySchema,
-                schemaHistoryTable);
+                configuration.getOldTable(),
+                schemaHistoryTable,
+                changes);
     }
 
     public static InfoResult createInfoResult(Configuration configuration,

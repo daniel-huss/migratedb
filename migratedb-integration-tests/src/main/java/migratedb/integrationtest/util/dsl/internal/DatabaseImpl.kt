@@ -38,6 +38,7 @@ import migratedb.integrationtest.util.dsl.Dsl.Companion.checksum
 import migratedb.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 import migratedb.integrationtest.util.dsl.SchemaHistoryEntry
 import migratedb.integrationtest.util.dsl.SchemaHistorySpec
+import migratedb.testing.util.base.Exec.tryAll
 import java.sql.Connection
 import javax.sql.DataSource
 
@@ -75,10 +76,14 @@ class DatabaseImpl(
             if (schemaHistoryTable != null) it.table(schemaHistoryTable)
         }
         val connectionFactory = JdbcConnectionFactoryImpl(dataSource, configuration, doNothing())
-        val db = databaseHandle.type.createDatabase(configuration, connectionFactory, doNothing())
+        // JdbcConnectionFactoryImpl always opens a connection, creating a leak if not closed...
+        connectionFactory.openConnection().use { }
+
+        val db = databaseHandle.type.createDatabase(configuration, connectionFactory, doNothing()).also {
+            database = it
+        }
 
         schemaHistory?.materializeInto(db, configuration)
-        database = db
         return MaterializeResult(
             namespace = namespace,
             adminDataSource = dataSource,
@@ -89,8 +94,10 @@ class DatabaseImpl(
     }
 
     override fun close() {
-        database.use {}
-        databaseHandle.dropNamespaceIfExists(namespace)
+        tryAll(
+            { database?.close() },
+            { databaseHandle.dropNamespaceIfExists(namespace) }
+        )
     }
 
     inner class SchemaHistorySpecImpl : SchemaHistorySpec {

@@ -16,16 +16,24 @@
  */
 package migratedb.core.api.output;
 
+import java.util.List;
+
 public class LiberateResult extends OperationResult {
     public String schemaHistorySchema;
+    public String oldSchemaHistoryTable;
     public String schemaHistoryTable;
+    public List<LiberateOutput> changes;
 
     public LiberateResult(String migratedbVersion,
                           String database,
                           String schemaHistorySchema,
-                          String schemaHistoryTable) {
+                          String oldSchemaHistoryTable,
+                          String schemaHistoryTable,
+                          List<LiberateOutput> changes) {
         this.schemaHistorySchema = schemaHistorySchema;
+        this.oldSchemaHistoryTable = oldSchemaHistoryTable;
         this.schemaHistoryTable = schemaHistoryTable;
+        this.changes = changes;
         this.migratedbVersion = migratedbVersion;
         this.database = database;
         this.operation = "liberate";

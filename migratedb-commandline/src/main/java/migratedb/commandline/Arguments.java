@@ -16,29 +16,21 @@
  */
 package migratedb.commandline;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
-
-import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationState;
 import migratedb.core.api.Version;
 import migratedb.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
+
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 public class Arguments {
     // Flags
@@ -64,23 +56,24 @@ public class Arguments {
     private static final String INFO_OF_STATE = "infoOfState";
 
     private static final DateTimeFormatter OLD_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm",
-                                                                                         Locale.ROOT);
+            Locale.ROOT);
 
     private static final List<String> VALID_OPERATIONS_AND_FLAGS = getValidOperationsAndFlags();
 
     private static List<String> getValidOperationsAndFlags() {
         List<String> operationsAndFlags = new ArrayList<>(Arrays.asList(
-            DEBUG_FLAG,
-            QUIET_FLAG,
-            SUPPRESS_PROMPT_FLAG,
-            "help",
-            "migrate",
-            "clean",
-            "info",
-            "validate",
-            "baseline",
-            "repair",
-            "download-drivers"
+                DEBUG_FLAG,
+                QUIET_FLAG,
+                SUPPRESS_PROMPT_FLAG,
+                "help",
+                "migrate",
+                "clean",
+                "info",
+                "validate",
+                "baseline",
+                "repair",
+                "download-drivers",
+                "liberate"
         ));
         operationsAndFlags.addAll(PRINT_VERSION_AND_EXIT_FLAGS);
         operationsAndFlags.addAll(PRINT_USAGE_FLAGS);
@@ -156,7 +149,7 @@ public class Arguments {
 
                 if (!isConfigurationOptionCommandlineOnly(configurationOptionName)) {
                     configuration.put("migratedb." + configurationOptionName,
-                                      parseConfigurationOptionValueFromArg(arg));
+                            parseConfigurationOptionValueFromArg(arg));
                 }
             }
         }
@@ -166,16 +159,16 @@ public class Arguments {
 
     private static boolean isConfigurationOptionCommandlineOnly(String configurationOptionName) {
         return OUTPUT_FILE.equals(configurationOptionName) ||
-               OUTPUT_TYPE.equals(configurationOptionName) ||
-               WORKING_DIRECTORY.equals(configurationOptionName) ||
-               INFO_SINCE_DATE.equals(configurationOptionName) ||
-               INFO_UNTIL_DATE.equals(configurationOptionName) ||
-               INFO_SINCE_VERSION.equals(configurationOptionName) ||
-               INFO_UNTIL_VERSION.equals(configurationOptionName) ||
-               INFO_OF_STATE.equals(configurationOptionName) ||
-               INSTALLATION_DIR.equals(configurationOptionName) ||
-               DRIVER_NAMES.equals(configurationOptionName) ||
-               FILE_SYSTEM_URI.equalsIgnoreCase(configurationOptionName);
+                OUTPUT_TYPE.equals(configurationOptionName) ||
+                WORKING_DIRECTORY.equals(configurationOptionName) ||
+                INFO_SINCE_DATE.equals(configurationOptionName) ||
+                INFO_UNTIL_DATE.equals(configurationOptionName) ||
+                INFO_SINCE_VERSION.equals(configurationOptionName) ||
+                INFO_UNTIL_VERSION.equals(configurationOptionName) ||
+                INFO_OF_STATE.equals(configurationOptionName) ||
+                INSTALLATION_DIR.equals(configurationOptionName) ||
+                DRIVER_NAMES.equals(configurationOptionName) ||
+                FILE_SYSTEM_URI.equalsIgnoreCase(configurationOptionName);
     }
 
     private static String getConfigurationOptionNameFromArg(String arg) {
@@ -198,7 +191,7 @@ public class Arguments {
         String outputTypeValue = getArgumentValue(OUTPUT_TYPE, args).toLowerCase(Locale.ENGLISH);
         if (!("json".equals(outputTypeValue) || "".equals(outputTypeValue))) {
             throw new MigrateDbException(
-                "'" + outputTypeValue + "' is an invalid value for the -outputType option. Use 'json'.");
+                    "'" + outputTypeValue + "' is an invalid value for the -outputType option. Use 'json'.");
         }
     }
 
@@ -307,9 +300,9 @@ public class Arguments {
         for (var format : List.of(ISO_DATE_TIME, OLD_DATE_FORMAT)) {
             try {
                 var parsed = format.parseBest(dateStr,
-                                              ZonedDateTime::from,
-                                              OffsetDateTime::from,
-                                              LocalDateTime::from);
+                        ZonedDateTime::from,
+                        OffsetDateTime::from,
+                        LocalDateTime::from);
                 if (parsed instanceof ZonedDateTime) {
                     result = ((ZonedDateTime) parsed).toInstant();
                 } else if (parsed instanceof OffsetDateTime) {
@@ -322,8 +315,8 @@ public class Arguments {
         }
         if (result == null) {
             throw new MigrateDbException("'" + dateStr + "' is an invalid value for the " + argument + " option. " +
-                                         "The expected format is either ISO-8601 date/time or '" +
-                                         OLD_DATE_FORMAT + "', like '13/10/2020 16:30'.");
+                    "The expected format is either ISO-8601 date/time or '" +
+                    OLD_DATE_FORMAT + "', like '13/10/2020 16:30'.");
         }
         return result;
     }

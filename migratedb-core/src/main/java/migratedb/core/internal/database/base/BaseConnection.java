@@ -16,8 +16,6 @@
  */
 package migratedb.core.internal.database.base;
 
-import java.sql.SQLException;
-import java.util.concurrent.Callable;
 import migratedb.core.api.internal.database.base.Connection;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
@@ -26,6 +24,9 @@ import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.core.internal.jdbc.JdbcUtils;
+
+import java.sql.SQLException;
+import java.util.concurrent.Callable;
 
 public abstract class BaseConnection<D extends Database> implements Connection<D> {
     protected final D database;
@@ -87,7 +88,6 @@ public abstract class BaseConnection<D extends Database> implements Connection<D
 
     /**
      * @param schemaNameOrSearchPath The new current schema for this connection.
-     *
      * @throws SQLException when the current schema could not be set.
      */
     protected void doChangeCurrentSchemaOrSearchPathTo(String schemaNameOrSearchPath) throws SQLException {
@@ -96,8 +96,8 @@ public abstract class BaseConnection<D extends Database> implements Connection<D
     @Override
     public <T> T lock(Table table, Callable<T> callable) {
         return ExecutionTemplateFactory
-            .createTableExclusiveExecutionTemplate(jdbcTemplate.getConnection(), table, database)
-            .execute(callable);
+                .createTableExclusiveExecutionTemplate(jdbcTemplate.getConnection(), table, database)
+                .execute(callable);
     }
 
     @Override
@@ -107,10 +107,13 @@ public abstract class BaseConnection<D extends Database> implements Connection<D
 
     @Override
     public final void close() {
-        restoreOriginalState();
-        restoreOriginalSchema();
-        restoreOriginalAutoCommit();
-        JdbcUtils.closeConnection(jdbcConnection);
+        try {
+            restoreOriginalState();
+            restoreOriginalSchema();
+            restoreOriginalAutoCommit();
+        } finally {
+            JdbcUtils.closeConnection(jdbcConnection);
+        }
     }
 
     private void restoreOriginalSchema() {

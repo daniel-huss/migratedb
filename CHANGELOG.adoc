@@ -2,8 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on https://keepachangelog.com/en/1.0.0/[Keep a Changelog], and this
-project adheres to https://semver.org/spec/v2.0.0.html[Semantic Versioning].
+The format is based on https://keepachangelog.com/en/1.0.0/[Keep a Changelog], and this project adheres to https://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 NOTE: 🔥 = Breaking Change
 
@@ -43,8 +42,7 @@ Constructive feedback is very welcome!
 (Well, some of them)
 * 🔥 Simplified configuration of extensions via setExtensionConfig() or text-based properties.
 * 🔥 Renamed LoadableResource to Resource and changed the resource API.
-* 🔥 The "symbolic" migration versions (current, latest, next) are no longer instances of
-MigrationVersion, they have been moved to the new TargetVersion.
+* 🔥 The "symbolic" migration versions (current, latest, next) are no longer instances of MigrationVersion, they have been moved to the new TargetVersion.
 * 🔥 You can no longer pass Long.MAX_VALUE to MigrationVersion.fromString() to receive LATEST.
 * 🔥 MigrationInfo and AppliedMigration no longer implement Comparable.
 * 🔥 MigrationInfoImpl no longer overrides Object.equals.
@@ -93,6 +91,7 @@ Extensions must be activated in configuration via useExtension().
 === Fixed
 
 * No longer swallows InterruptedException without re-interrupting the current thread.
+* JDBC connection leak in BaseDatabase.
 
 === Security
 

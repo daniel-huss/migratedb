@@ -40,20 +40,29 @@ object ConfigSetters {
     val baselineVersionAsString = Setter("setBaselineVersionAsString", anyMigrationVersionString())
     val batch = Setter("setBatch", Boolean.any())
     val callbacks = Setter("setCallbacks", Arbitraries.ofSuppliers(::UniversalDummy).array(Callback::class))
-    val callbacksAsClassNames =
-        Setter("setCallbacksAsClassNames", just(UniversalDummy::class.java.name).array(String::class))
-    val cherryPick1 =
-        Setter("setCherryPick", anyMigrationPattern().array(MigrationPattern::class), Array<MigrationPattern>::class)
-    val cherryPick2 = Setter("setCherryPick", anyMigrationPattern().map(MigrationPattern::toString).array(String::class), Array<String>::class)
+    val callbacksAsClassNames = Setter(
+        "setCallbacksAsClassNames", just(UniversalDummy::class.java.name).array(String::class)
+    )
+    val cherryPick1 = Setter(
+        "setCherryPick", anyMigrationPattern().array(MigrationPattern::class), Array<MigrationPattern>::class
+    )
+    val cherryPick2 = Setter(
+        "setCherryPick",
+        anyMigrationPattern().map(MigrationPattern::toString).array(String::class),
+        Array<String>::class
+    )
     val cleanDisabled = Setter("setCleanDisabled", Boolean.any())
     val cleanOnValidationError = Setter("setCleanOnValidationError", Boolean.any())
     val connectRetries = Setter("setConnectRetries", Int.any(0..Int.MAX_VALUE))
     val connectRetriesInterval = Setter("setConnectRetriesInterval", Int.any(0..Int.MAX_VALUE))
-    val dataSource1 = Setter("setDataSource", just(JdbcDataSource().apply { setUrl("jdbc:h2:mem:") }), DataSource::class)
+    val dataSource1 =
+        Setter("setDataSource", just(JdbcDataSource().apply { setUrl("jdbc:h2:mem:") }), DataSource::class)
     val dataSource2 = Setter("setDataSource", dataSourceParamsArbitrary(), String::class, String::class, String::class)
     val defaultSchema = Setter("setDefaultSchema", anySchemaObjectName())
     val dryRunOutput = Setter("setDryRunOutput", just(UniversalDummy()))
-    val dryRunOutputAsFileName = Setter("setDryRunOutputAsFileName", Arbitraries.of("target/dryRunOutput1", "target/dryRunOutput2"))
+    val dryRunOutputAsFileName = Setter(
+        "setDryRunOutputAsFileName", Arbitraries.of("target/dryRunOutput1", "target/dryRunOutput2")
+    )
     val encoding = Setter("setEncoding", Arbitraries.of(Charset.availableCharsets().values))
     val encodingAsString = Setter("setEncodingAsString", Arbitraries.of(Charset.availableCharsets().keys))
     val errorOverrides = Setter("setErrorOverrides", anyErrorOverride().array(String::class))
@@ -61,14 +70,29 @@ object ConfigSetters {
     val group = Setter("setGroup", Boolean.any())
     val ignoreFutureMigrations = Setter("setIgnoreFutureMigrations", Boolean.any())
     val ignoreIgnoredMigrations = Setter("setIgnoreIgnoredMigrations", Boolean.any())
-    val ignoreMigrationPatterns1 = Setter("setIgnoreMigrationPatterns", anyValidatePattern().array(ValidatePattern::class), Array<ValidatePattern>::class)
-    val ignoreMigrationPatterns2 = Setter("setIgnoreMigrationPatterns", anyValidatePattern().map { it.pattern() }.array(String::class), Array<String>::class)
+    val ignoreMigrationPatterns1 = Setter(
+        "setIgnoreMigrationPatterns",
+        anyValidatePattern().array(ValidatePattern::class),
+        Array<ValidatePattern>::class
+    )
+    val ignoreMigrationPatterns2 = Setter(
+        "setIgnoreMigrationPatterns",
+        anyValidatePattern().map { it.pattern() }.array(String::class),
+        Array<String>::class
+    )
     val ignoreMissingMigrations = Setter("setIgnoreMissingMigrations", Boolean.any())
     val ignorePendingMigrations = Setter("setIgnorePendingMigrations", Boolean.any())
     val initSql = Setter("setInitSql", String.any().ofMaxLength(100))
     val installedBy = Setter("setInstalledBy", String.any().ofMaxLength(100))
-    val javaMigrationClassProvider = Setter("setJavaMigrationClassProvider", just(ClassProvider.noClasses<JavaMigration>()))
-    val javaMigrations = Setter("setJavaMigrations", Arbitraries.of(UniversalDummy()).array(JavaMigration::class))
+    val javaMigrationClassProvider = Setter(
+        "setJavaMigrationClassProvider", just(ClassProvider.noClasses<JavaMigration>())
+    )
+    val javaMigrations1 = Setter(
+        "setJavaMigrations",
+        Arbitraries.of(UniversalDummy()).array(JavaMigration::class),
+        Array<JavaMigration>::class
+    )
+    val javaMigrations2 = Setter("setJavaMigrations", Arbitraries.of(UniversalDummy()).list(), Collection::class)
     val jdbcProperties = Setter("setJdbcProperties", anyProperties())
     val licenseKey = Setter("setLicenseKey", String.any().ofLength(0..100))
     val locations = Setter("setLocations", anyLocation().array(Location::class))
@@ -81,11 +105,15 @@ object ConfigSetters {
     val outputQueryResults = Setter("setOutputQueryResults", Boolean.any())
     val placeholderPrefix = Setter("setPlaceholderPrefix", String.any().ofLength(1..100))
     val placeholderReplacement = Setter("setPlaceholderReplacement", Boolean.any())
-    val placeholders = Setter("setPlaceholders", Arbitraries.maps(String.any().ofLength(0..100), String.any().ofLength(1..100)))
+    val placeholders = Setter(
+        "setPlaceholders", Arbitraries.maps(String.any().ofLength(0..100), String.any().ofLength(1..100))
+    )
     val placeholderSuffix = Setter("setPlaceholderSuffix", String.any().ofLength(1..100))
     val repeatableSqlMigrationPrefix = Setter("setRepeatableSqlMigrationPrefix", String.any().ofLength(1))
     val resolvers = Setter("setResolvers", just(UniversalDummy()).array(MigrationResolver::class))
-    val resolversAsClassNames = Setter("setResolversAsClassNames", just(UniversalDummy::class.java.name).array(String::class))
+    val resolversAsClassNames = Setter(
+        "setResolversAsClassNames", just(UniversalDummy::class.java.name).array(String::class)
+    )
     val resourceProvider = Setter("setResourceProvider", just(ResourceProvider.noResources()))
     val schemas = Setter("setSchemas", anySchemaObjectName().array(String::class).ofMaxSize(10))
     val scriptPlaceholderPrefix = Setter("setScriptPlaceholderPrefix", String.any().ofLength(1..10))
@@ -98,7 +126,7 @@ object ConfigSetters {
     val sqlMigrationSeparator = Setter("setSqlMigrationSeparator", String.any().ofLength(1..10))
     val sqlMigrationSuffixes = Setter("setSqlMigrationSuffixes", String.any().ofLength(1..10).array(String::class))
     val table = Setter("setTable", anySchemaObjectName())
-    val oldTable = Setter("oldTable", anySchemaObjectName())
+    val oldTable = Setter("setOldTable", anySchemaObjectName())
     val tablespace = Setter("setTablespace", anySchemaObjectName())
     val target = Setter("setTarget", anyTargetVersion())
     val targetAsString = Setter("setTargetAsString", anyTargetVersionString())
@@ -122,13 +150,14 @@ object ConfigSetters {
         val files = String.any().ofLength(1..100).map { "target/$it" }
         val booleans = Boolean.any()
         val freshConfigs = Arbitraries.ofSuppliers(::OracleConfig)
-        return Combinators.combine(freshConfigs, booleans, booleans, files, files).`as` { config, isA, isB, fileA, fileB ->
-            config.isOracleSqlplus = isA
-            config.isOracleSqlplusWarn = isB
-            config.oracleKerberosCacheFile = fileA
-            config.oracleKerberosConfigFile = fileB
-            Params(arrayOf(config::class.java, config))
-        }
+        return Combinators.combine(freshConfigs, booleans, booleans, files, files)
+            .`as` { config, isA, isB, fileA, fileB ->
+                config.isOracleSqlplus = isA
+                config.isOracleSqlplusWarn = isB
+                config.oracleKerberosCacheFile = fileA
+                config.oracleKerberosConfigFile = fileB
+                Params(arrayOf(config::class.java, config))
+            }
     }
 
     private fun dataSourceParamsArbitrary(): Arbitrary<*> {
