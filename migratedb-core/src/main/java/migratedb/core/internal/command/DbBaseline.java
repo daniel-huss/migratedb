@@ -93,40 +93,40 @@ public class DbBaseline {
                 AppliedMigration baselineMarker = schemaHistory.getBaselineMarker();
                 if (baselineMarker != null) {
                     if (baselineVersion.equals(baselineMarker.getVersion())
-                        && baselineDescription.equals(baselineMarker.getDescription())) {
+                            && baselineDescription.equals(baselineMarker.getDescription())) {
                         LOG.info("Schema history table " + schemaHistory + " already initialized with ("
-                                 + baselineVersion + "," + baselineDescription + "). Skipping.");
+                                + baselineVersion + "," + baselineDescription + "). Skipping.");
                         baselineResult.successfullyBaselined = true;
                         baselineResult.baselineVersion = baselineVersion.toString();
                     } else {
                         throw new MigrateDbException(
-                            "Unable to baseline schema history table " + schemaHistory + " with ("
-                            + baselineVersion + "," + baselineDescription
-                            + ") as it has already been baselined with ("
-                            + baselineMarker.getVersion() + "," + baselineMarker.getDescription() + ")");
+                                "Unable to baseline schema history table " + schemaHistory + " with ("
+                                        + baselineVersion + "," + baselineDescription
+                                        + ") as it has already been baselined with ("
+                                        + baselineMarker.getVersion() + "," + baselineMarker.getDescription() + ")");
                     }
                 } else {
-                    if (schemaHistory.hasSchemasMarker() && baselineVersion.equals(Version.fromVersion("0"))) {
+                    if (schemaHistory.hasSchemasMarker() && baselineVersion.equals(Version.parse("0"))) {
                         throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
-                                                     " with version 0 as this version was used for schema creation");
+                                " with version 0 as this version was used for schema creation");
                     }
 
                     if (schemaHistory.hasAppliedMigrations()) {
                         throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
-                                                     " as it already contains migrations");
+                                " as it already contains migrations");
                     }
 
                     if (schemaHistory.allAppliedMigrations().isEmpty()) {
                         throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
-                                                     " as it already exists, and is empty.\n" +
-                                                     "Delete the schema history table with the clean command, and run" +
-                                                     " baseline again.");
+                                " as it already exists, and is empty.\n" +
+                                "Delete the schema history table with the clean command, and run" +
+                                " baseline again.");
                     }
 
                     throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
-                                                 " as it already contains migrations.\n" +
-                                                 "Delete the schema history table with the clean command, and run " +
-                                                 "baseline again.");
+                            " as it already contains migrations.\n" +
+                            "Delete the schema history table with the clean command, and run " +
+                            "baseline again.");
                 }
             }
         } catch (MigrateDbException e) {

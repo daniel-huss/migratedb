@@ -18,8 +18,8 @@ package migratedb.integrationtest.database
 
 import com.informix.jdbcx.IfxDataSource
 import migratedb.core.internal.database.informix.InformixDatabaseType
-import migratedb.integrationtest.database.mutation.BasicCreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
+import migratedb.integrationtest.database.mutation.InformixCreateTableMutation
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.work
@@ -65,6 +65,7 @@ enum class Informix(image: String) : DbSystem {
 
         init {
             withEnv("LICENSE", "accept")
+            withEnv("STORAGE", "local")
             withExposedPorts(port)
             waitingFor(Wait.forListeningPort())
         }
@@ -92,12 +93,14 @@ enum class Informix(image: String) : DbSystem {
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
             internalDs.work {
+                it.execute("set lock mode to wait 300")
                 it.execute("drop database if exists $namespace")
             }
         }
 
         override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
-            return BasicCreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
+            check(schema == null) { "Informix does not support schemas" }
+            return InformixCreateTableMutation(normalizeCase(Names.nextTable()))
         }
 
         override fun close() = container.close()

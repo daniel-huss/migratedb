@@ -38,6 +38,7 @@ import migratedb.integrationtest.util.dsl.Dsl.Companion.checksum
 import migratedb.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 import migratedb.integrationtest.util.dsl.SchemaHistoryEntry
 import migratedb.integrationtest.util.dsl.SchemaHistorySpec
+import java.sql.Connection
 import javax.sql.DataSource
 
 class DatabaseImpl(
@@ -47,10 +48,15 @@ class DatabaseImpl(
     private var schemaHistory: SchemaHistorySpecImpl? = null
     private var database: Database<*>? = null
     private var schemaHistoryTable: String? = null
+    private var initializer: ((Connection) -> Unit)? = null
 
     override fun schemaHistory(table: String?, block: (SchemaHistorySpec).() -> Unit) {
         this.schemaHistoryTable = table
         this.schemaHistory = SchemaHistorySpecImpl().also(block)
+    }
+
+    override fun initializedBy(block: (Connection) -> Unit) {
+        initializer = block
     }
 
     data class MaterializeResult(
@@ -58,6 +64,7 @@ class DatabaseImpl(
         val adminDataSource: DataSource,
         val database: Database<*>,
         val schemaName: SafeIdentifier?,
+        val initializer: ((Connection) -> Unit)?
     )
 
     fun materialize(): MaterializeResult {
@@ -69,13 +76,15 @@ class DatabaseImpl(
         }
         val connectionFactory = JdbcConnectionFactoryImpl(dataSource, configuration, doNothing())
         val db = databaseHandle.type.createDatabase(configuration, connectionFactory, doNothing())
+
         schemaHistory?.materializeInto(db, configuration)
         database = db
         return MaterializeResult(
             namespace = namespace,
             adminDataSource = dataSource,
             database = db,
-            schemaName = schemaName
+            schemaName = schemaName,
+            initializer = initializer
         )
     }
 

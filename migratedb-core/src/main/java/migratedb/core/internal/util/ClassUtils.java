@@ -16,6 +16,9 @@
  */
 package migratedb.core.internal.util;
 
+import migratedb.core.api.MigrateDbException;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
@@ -28,8 +31,6 @@ import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.function.Function;
-import migratedb.core.api.MigrateDbException;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public enum ClassUtils {
     ;
@@ -40,12 +41,10 @@ public enum ClassUtils {
      * @param className   The fully qualified name of the class to instantiate.
      * @param classLoader The ClassLoader to use.
      * @param <T>         The type of the new instance.
-     *
      * @return The new instance.
-     *
      * @throws MigrateDbException Thrown when the instantiation failed.
      */
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     public static <T> T instantiate(String className, ClassLoader classLoader) {
         try {
             return (T) Class.forName(className, true, classLoader).getConstructor().newInstance();
@@ -64,9 +63,7 @@ public enum ClassUtils {
      * Creates a new instance of {@code clazz}.
      *
      * @param <T> The type of the new instance.
-     *
      * @return The new instance.
-     *
      * @throws MigrateDbException Thrown when the instantiation failed.
      */
     public static <T> T instantiate(Class<T> clazz) {
@@ -83,7 +80,6 @@ public enum ClassUtils {
      * @param classes     Fully qualified class names to instantiate.
      * @param classLoader The ClassLoader to use.
      * @param <T>         The common type for all classes.
-     *
      * @return The list of instances.
      */
     public static <T> List<T> instantiateAll(String[] classes, ClassLoader classLoader) {
@@ -102,7 +98,6 @@ public enum ClassUtils {
      *
      * @param className   The name of the class to check.
      * @param classLoader The ClassLoader to use.
-     *
      * @return whether the specified class is present
      */
     public static boolean isPresent(String className, ClassLoader classLoader) {
@@ -122,7 +117,6 @@ public enum ClassUtils {
      *
      * @param serviceName The name of the service to check.
      * @param classLoader The ClassLoader to use.
-     *
      * @return whether an implementation of the specified service is present
      */
     public static boolean isImplementationPresent(String serviceName, ClassLoader classLoader) {
@@ -140,7 +134,6 @@ public enum ClassUtils {
      *
      * @param className   The name of the class to load.
      * @param classLoader The ClassLoader to use.
-     *
      * @return the newly loaded class
      */
     public static Class<?> loadClass(String className,
@@ -156,7 +149,6 @@ public enum ClassUtils {
      * Tries to get the physical location on disk of {@code aClass}.
      *
      * @param aClass The class to get the location for.
-     *
      * @return The absolute path of the .class file (or null).
      */
     public static Path guessLocationOnDisk(Class<?> aClass) {
@@ -178,7 +170,7 @@ public enum ClassUtils {
             for (var packagePart : packagePath) {
                 path = path.resolve(packagePart);
             }
-            return path.resolve(".class");
+            return path.resolveSibling(path.getFileName() + ".class");
         } catch (URISyntaxException e) {
             return null;
         }
@@ -190,9 +182,7 @@ public enum ClassUtils {
      * @param className   The fully qualified name of the class to instantiate.
      * @param classLoader The ClassLoader to use.
      * @param fieldName   The field name
-     *
      * @return The value of the field.
-     *
      * @throws MigrateDbException If the field value cannot be read.
      */
     public static String getStaticFieldValue(String className, String fieldName, ClassLoader classLoader) {
@@ -200,7 +190,7 @@ public enum ClassUtils {
             return getStaticFieldValue(Class.forName(className, true, classLoader), fieldName);
         } catch (ReflectiveOperationException | RuntimeException e) {
             throw new MigrateDbException(
-                "Unable to obtain field value " + className + "." + fieldName + " : " + e.getMessage(), e);
+                    "Unable to obtain field value " + className + "." + fieldName + " : " + e.getMessage(), e);
         }
     }
 
@@ -215,7 +205,7 @@ public enum ClassUtils {
             return (String) field.get(null);
         } catch (ReflectiveOperationException | RuntimeException e) {
             throw new MigrateDbException(
-                "Unable to obtain field value " + clazz.getName() + "." + fieldName + " : " + e.getMessage(), e);
+                    "Unable to obtain field value " + clazz.getName() + "." + fieldName + " : " + e.getMessage(), e);
         }
     }
 
@@ -244,7 +234,7 @@ public enum ClassUtils {
                                                       Class<?>[] paramTypes,
                                                       Object[] params,
                                                       Function<? super Throwable, @Nullable E> exceptionMapper)
-    throws E {
+            throws E {
         try {
             var method = clazz.getMethod(methodName, paramTypes);
             return method.invoke(receiver, params);

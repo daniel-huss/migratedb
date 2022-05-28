@@ -30,8 +30,8 @@ import migratedb.integrationtest.util.dsl.Dsl.Companion.checksum
  * This uses the [FluentConfiguration.javaMigrations] configuration property,
  * so changing that property afterwards will undo the effects of this function.
  */
-fun FluentConfiguration.availableMigrations(vararg namesOrMigrations: Any) =
-    availableMigrations(namesOrMigrations.toList())
+fun FluentConfiguration.availableMigrations(vararg migrations: Any) =
+    availableMigrations(migrations.toList())
 
 /**
  * Makes the given set of migrations resolvable. If this is called more, the effects of the previous invocation are
@@ -40,8 +40,8 @@ fun FluentConfiguration.availableMigrations(vararg namesOrMigrations: Any) =
  * This uses the [FluentConfiguration.javaMigrations] configuration property,
  * so changing that property afterwards will undo the effects of this function.
  */
-fun FluentConfiguration.availableMigrations(namesOrMigrations: List<Any>) = apply {
-    namesOrMigrations.map { nameOrMigration ->
+fun FluentConfiguration.availableMigrations(migrations: List<Any>) = apply {
+    migrations.map { nameOrMigration ->
         when (nameOrMigration) {
             is JavaMigration -> nameOrMigration
             is CharSequence -> nameOrMigration.toString().let {

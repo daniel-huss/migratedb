@@ -17,28 +17,51 @@
 package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.integrationtest.database.DbSystem
+import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.dsl.DatabaseSpec
 import migratedb.integrationtest.util.dsl.Dsl
+import java.sql.Connection
 
 class GivenStepImpl(private val databaseHandle: DbSystem.Handle) : AutoCloseable, Dsl.GivenStep {
     private var database: DatabaseImpl? = null
+    private var databaseContext: DatabaseContext? = null
 
     override fun database(block: (DatabaseSpec).() -> Unit) {
         check(database == null) { "Only one database spec, please" }
         database = DatabaseImpl(databaseHandle).also(block)
     }
 
+    override fun independentDbMutation(): IndependentDatabaseMutation {
+        val delegate = lazy {
+            databaseHandle.nextMutation(databaseContext!!.schemaName)
+        }
+        return object : IndependentDatabaseMutation {
+            override fun isApplied(connection: Connection) = delegate.value.isApplied(connection)
+
+            override fun apply(connection: Connection) = delegate.value.apply(connection)
+
+            override fun undo(connection: Connection) = delegate.value.undo(connection)
+        }
+    }
+
     override fun close() {
         database.use {}
     }
 
-    fun executeActions() = database!!.materialize().let {
-        GivenInfo(
+    fun executeActions() = requireNotNull(database) {
+        "Forgot to call database { } within given { }!"
+    }.materialize().let { materializeResult ->
+        DatabaseContext(
             databaseHandle = databaseHandle,
-            database = it.database,
-            adminDataSource = it.adminDataSource,
-            schemaName = it.schemaName,
-            namespace = it.namespace
-        )
+            database = materializeResult.database,
+            adminDataSource = materializeResult.adminDataSource,
+            schemaName = materializeResult.schemaName,
+            namespace = materializeResult.namespace
+        ).also {
+            databaseContext = it
+            materializeResult.initializer?.let { initializer ->
+                it.adminDataSource.connection.use(initializer)
+            }
+        }
     }
 }

@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.resource;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import migratedb.core.api.Version;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.resource.ResourceName;
 import migratedb.core.internal.util.Pair;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class ResourceNameParser {
     private final Configuration configuration;
@@ -50,6 +51,7 @@ public class ResourceNameParser {
 
             // Strip off prefix
             Pair<String, String> prefixResult = stripPrefix(suffixResult.getLeft(), prefix.getLeft());
+            assert prefixResult != null;
             String name = prefixResult.getRight();
             Pair<String, String> splitName = splitAtSeparator(name, configuration.getSqlMigrationSeparator());
             boolean isValid = true;
@@ -77,7 +79,7 @@ public class ResourceNameParser {
                 } else {
                     // ... and that must be a legitimate version
                     try {
-                        Version.fromVersion(splitName.getLeft());
+                        Version.parse(splitName.getLeft());
                     } catch (RuntimeException e) {
                         isValid = false;
                         validationMessage = "Invalid versioned migration name format: " + resourceName

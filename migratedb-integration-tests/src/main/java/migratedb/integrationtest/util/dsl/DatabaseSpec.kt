@@ -16,6 +16,10 @@
 
 package migratedb.integrationtest.util.dsl
 
+import java.sql.Connection
+
 interface DatabaseSpec {
     fun schemaHistory(table: String? = null, block: SchemaHistorySpec.() -> Unit)
+
+    fun initializedBy(block: (Connection) -> Unit)
 }

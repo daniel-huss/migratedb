@@ -17,25 +17,36 @@
 package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.configuration.FluentConfiguration
+import migratedb.core.api.internal.jdbc.StatementInterceptor.doNothing
 import migratedb.core.api.internal.schemahistory.AppliedMigration
+import migratedb.core.internal.jdbc.JdbcConnectionFactoryImpl
 import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.dsl.Dsl
 import org.springframework.jdbc.core.JdbcTemplate
 
-class ThenStepImpl<G : Any>(given: G, givenInfo: GivenInfo) : Dsl.ThenStep<G>, AbstractAfterGiven<G>(given, givenInfo) {
+class ThenStepImpl<G : Any>(given: G, databaseContext: DatabaseContext) : Dsl.ThenStep<G>,
+    AbstractAfterGiven<G>(given, databaseContext) {
     override fun withConnection(block: (JdbcTemplate) -> Unit) {
-        givenInfo.database.supportsChangingCurrentSchema()
-        givenInfo.databaseHandle
-            .newAdminConnection(givenInfo.namespace)
-            .work(schema = givenInfo.schemaName, action = block)
+        databaseContext.database.supportsChangingCurrentSchema()
+        databaseContext.databaseHandle
+            .newAdminConnection(databaseContext.namespace)
+            .work(schema = databaseContext.schemaName, action = block)
     }
 
     override fun schemaHistory(table: String?, block: (List<AppliedMigration>) -> Unit) {
         val configuration = FluentConfiguration().apply {
             table?.let(::table)
-            givenInfo.schemaName?.let { schemas(it.toString()) }
+            databaseContext.schemaName?.let { schemas(it.toString()) }
         }
-        val schemaHistory = DatabaseImpl.getSchemaHistory(configuration, givenInfo.database)
-        block(schemaHistory.allAppliedMigrations())
+        // Do not re-use database from givenInfo because its connection might not observe the effects of previously
+        // committed transactions.
+        databaseContext.database.databaseType.createDatabase(
+            configuration,
+            JdbcConnectionFactoryImpl(databaseContext.adminDataSource, configuration, doNothing()),
+            doNothing()
+        ).use {
+            val schemaHistory = DatabaseImpl.getSchemaHistory(configuration, databaseContext.database)
+            block(schemaHistory.allAppliedMigrations())
+        }
     }
 }

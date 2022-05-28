@@ -33,13 +33,13 @@ class FirebirdCreateTableMutation(private val normalizedTable: SafeIdentifier) :
     }
 
     override fun apply(connection: Connection) {
-        connection.work(commit = false) {
+        connection.work {
             it.execute("create table $normalizedTable(id int not null primary key)")
         }
     }
 
     override fun undo(connection: Connection) {
-        connection.work(commit = false) {
+        connection.work {
             it.execute("drop table $normalizedTable")
         }
     }

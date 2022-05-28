@@ -22,14 +22,14 @@ import migratedb.core.internal.util.ClassUtils
 import migratedb.integrationtest.util.dsl.Dsl.Companion.checksum
 import migratedb.integrationtest.util.dsl.RunWithConfigSpec
 
-abstract class AbstractRunWithConfigSpec(private val givenInfo: GivenInfo) : RunWithConfigSpec {
+abstract class AbstractRunWithConfigSpec(private val databaseContext: DatabaseContext) : RunWithConfigSpec {
     private var config = newConfig()
 
     override fun createMigrations(names: Collection<String>): Array<JavaMigration> {
         return names.map {
             SimpleJavaMigration(
                 name = it,
-                code = givenInfo.databaseHandle.nextMutation(givenInfo.schemaName)::apply,
+                code = databaseContext.databaseHandle.nextMutation(databaseContext.schemaName)::apply,
                 checksum = it.checksum()
             )
         }.toTypedArray()
@@ -43,7 +43,7 @@ abstract class AbstractRunWithConfigSpec(private val givenInfo: GivenInfo) : Run
         return block(
             FluentConfiguration(config.classLoader)
                 .configuration(config)
-                .dataSource(givenInfo.databaseHandle.newAdminConnection(givenInfo.namespace))
+                .dataSource(databaseContext.databaseHandle.newAdminConnection(databaseContext.namespace))
         )
     }
 
@@ -51,7 +51,7 @@ abstract class AbstractRunWithConfigSpec(private val givenInfo: GivenInfo) : Run
     private fun newConfig(classLoader: ClassLoader? = null) =
         FluentConfiguration(classLoader ?: ClassUtils.defaultClassLoader())
             .also { cfg ->
-                givenInfo.schemaName?.let {
+                databaseContext.schemaName?.let {
                     cfg.schemas(it.toString())
                 }
             }

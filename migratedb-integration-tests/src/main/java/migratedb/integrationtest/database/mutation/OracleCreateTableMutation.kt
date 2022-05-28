@@ -21,26 +21,31 @@ import migratedb.integrationtest.util.base.work
 import java.sql.Connection
 
 /**
- * (SQLite only) Creates / drops a table.
+ * (Oracle only) Creates / drops a table.
  */
-class SqliteCreateTableMutation(private val normalizedTable: SafeIdentifier) : IndependentDatabaseMutation {
+class OracleCreateTableMutation(
+    private val normalizedSchema: SafeIdentifier?,
+    private val normalizedTable: SafeIdentifier
+) : IndependentDatabaseMutation {
 
     override fun isApplied(connection: Connection): Boolean {
-        return connection.work(commit = false) {
-            it.query("select name from sqlite_master where type='table' and name='$normalizedTable'") { _, _ ->
-                true
-            }.isNotEmpty()
+        return connection.work(normalizedSchema) { jdbc ->
+            var query = "select table_name from sys.all_tables where table_name = '$normalizedTable'"
+            if (normalizedSchema != null) {
+                query += " and owner = '$normalizedSchema'"
+            }
+            jdbc.query(query) { _, _ -> true }.isNotEmpty()
         }
     }
 
     override fun apply(connection: Connection) {
-        connection.work {
+        connection.work(normalizedSchema) {
             it.execute("create table $normalizedTable(id int not null primary key)")
         }
     }
 
     override fun undo(connection: Connection) {
-        connection.work {
+        connection.work(normalizedSchema) {
             it.execute("drop table $normalizedTable")
         }
     }

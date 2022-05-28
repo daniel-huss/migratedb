@@ -17,35 +17,39 @@
 package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.MigrationInfoService
+import migratedb.core.api.output.BaselineResult
 import migratedb.core.api.output.MigrateResult
 import migratedb.core.api.output.RepairResult
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
-import migratedb.integrationtest.util.dsl.Dsl
-import migratedb.integrationtest.util.dsl.RunInfoSpec
-import migratedb.integrationtest.util.dsl.RunMigrateSpec
-import migratedb.integrationtest.util.dsl.RunRepairSpec
+import migratedb.integrationtest.util.dsl.*
 
-class WhenStepImpl<G : Any>(given: G, givenInfo: GivenInfo) : Dsl.WhenStep<G>, AbstractAfterGiven<G>(given, givenInfo) {
+class WhenStepImpl<G : Any>(given: G, databaseContext: DatabaseContext) : Dsl.WhenStep<G>,
+    AbstractAfterGiven<G>(given, databaseContext) {
+    override fun baseline(block: RunBaselineSpec.() -> Unit): BaselineResult {
+        val runBaseline = RunBaselineImpl(databaseContext)
+        runBaseline.block()
+        return runBaseline.execute()
+    }
 
     override fun migrate(block: (RunMigrateSpec).() -> Unit): MigrateResult {
-        val runMigrate = RunMigrateImpl(givenInfo)
+        val runMigrate = RunMigrateImpl(databaseContext)
         runMigrate.block()
         return runMigrate.execute()
     }
 
     override fun info(block: (RunInfoSpec).() -> Unit): MigrationInfoService {
-        val runInfo = RunInfoImpl(givenInfo)
+        val runInfo = RunInfoImpl(databaseContext)
         runInfo.block()
         return runInfo.execute()
     }
 
     override fun repair(block: RunRepairSpec.() -> Unit): RepairResult {
-        val runRepair = RunRepairImpl(givenInfo)
+        val runRepair = RunRepairImpl(databaseContext)
         runRepair.block()
         return runRepair.execute()
     }
 
     override fun arbitraryMutation(): IndependentDatabaseMutation {
-        return givenInfo.databaseHandle.nextMutation(givenInfo.schemaName)
+        return databaseContext.databaseHandle.nextMutation(databaseContext.schemaName)
     }
 }

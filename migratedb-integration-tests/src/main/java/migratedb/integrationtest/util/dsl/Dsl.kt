@@ -16,11 +16,13 @@
 
 package migratedb.integrationtest.util.dsl
 
+import io.kotest.matchers.booleans.shouldBeTrue
 import migratedb.core.api.Checksum
 import migratedb.core.api.MigrationInfo
 import migratedb.core.api.MigrationInfoService
 import migratedb.core.api.Version
 import migratedb.core.api.internal.schemahistory.AppliedMigration
+import migratedb.core.api.output.BaselineResult
 import migratedb.core.api.output.MigrateResult
 import migratedb.core.api.output.RepairResult
 import migratedb.integrationtest.database.DbSystem
@@ -116,22 +118,27 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
 
     interface GivenStep {
         fun database(block: DatabaseSpec.() -> Unit)
+        fun independentDbMutation(): IndependentDatabaseMutation
     }
 
     interface GivenStepResult<G : Any> {
         fun <W : Any> `when`(block: (WhenStep<G>).() -> W): WhenStepResult<G, W>
     }
 
-    interface AfterGiven<G> : QualifiedTableNameProvider {
+    interface AfterGiven<G> {
         val given: G
         val schemaName: SafeIdentifier?
     }
 
     interface WhenStep<G> : AfterGiven<G> {
+        fun baseline(block: RunBaselineSpec.() -> Unit): BaselineResult
+
         fun migrate(block: RunMigrateSpec.() -> Unit): MigrateResult
+
         fun info(block: RunInfoSpec.() -> Unit): MigrationInfoService
 
         fun repair(block: RunRepairSpec.() -> Unit): RepairResult
+
         fun arbitraryMutation(): IndependentDatabaseMutation
     }
 
@@ -143,5 +150,13 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
         fun withConnection(block: (JdbcTemplate) -> Unit)
 
         fun schemaHistory(table: String? = null, block: (List<AppliedMigration>).() -> Unit)
+
+        fun IndependentDatabaseMutation.shouldBeApplied() {
+            withConnection {
+                it.dataSource.connection.apply {
+                    isApplied(this).shouldBeTrue()
+                }
+            }
+        }
     }
 }

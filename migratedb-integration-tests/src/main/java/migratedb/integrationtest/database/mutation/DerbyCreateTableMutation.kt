@@ -29,14 +29,16 @@ class DerbyCreateTableMutation(
 ) : IndependentDatabaseMutation {
 
     override fun isApplied(connection: Connection): Boolean {
-        return connection.work(normalizedSchema) { jdbc ->
-            var query = "show tables"
+        return connection.work(normalizedSchema, commit = false) { jdbc ->
+            var query = "select * from sys.systables t"
             if (normalizedSchema != null) {
-                query += " in schema $normalizedSchema"
+                query += " left join sys.sysschemas s on (s.schemaid = t.schemaid)"
             }
-            jdbc.queryForList(query).find {
-                it["TABLE_NAME"] == normalizedTable
-            } != null
+            query += " where t.tablename = '$normalizedTable'"
+            if (normalizedSchema != null) {
+                query += " and s.schemaname ='$normalizedSchema'"
+            }
+            jdbc.query(query) { _, _ -> true }.isNotEmpty()
         }
     }
 

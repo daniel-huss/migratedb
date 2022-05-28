@@ -42,11 +42,10 @@ public class Pair<L, R> implements Comparable<Pair<L, R>> {
      *
      * @param left  The left side of the pair.
      * @param right The right side of the pair.
-     *
      * @return The pair.
      */
     public static <L, R> Pair<L, R> of(L left, R right) {
-        return new Pair<L, R>(left, right);
+        return new Pair<>(left, right);
     }
 
     /**
@@ -85,7 +84,7 @@ public class Pair<L, R> implements Comparable<Pair<L, R>> {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(new Object[] { left, right });
+        return Arrays.hashCode(new Object[]{left, right});
     }
 
     @SuppressWarnings("unchecked")
@@ -98,8 +97,7 @@ public class Pair<L, R> implements Comparable<Pair<L, R>> {
             }
         }
         if (right instanceof Comparable<?>) {
-            int r = ((Comparable<R>) right).compareTo(o.right);
-            return r;
+            return ((Comparable<R>) right).compareTo(o.right);
         }
         return 0;
     }

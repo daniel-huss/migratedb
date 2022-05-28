@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.util.dsl
+package migratedb.integrationtest.util.dsl.internal
 
-interface QualifiedTableNameProvider {
+import migratedb.core.api.output.BaselineResult
+import migratedb.integrationtest.util.dsl.RunBaselineSpec
 
-    /**
-     * Normalizes the case of a table name and qualifies it with a schema name if needed.
-     */
-    fun qualTable(s: CharSequence): String
+class RunBaselineImpl(databaseContext: DatabaseContext) : RunBaselineSpec, AbstractRunWithConfigSpec(databaseContext) {
+
+    fun execute(): BaselineResult = execute { config ->
+        config.load().baseline()
+    }
 }

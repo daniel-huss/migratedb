@@ -29,8 +29,8 @@ class Db2CreateTableMutation(
 ) : IndependentDatabaseMutation {
 
     override fun isApplied(connection: Connection): Boolean {
-        return connection.work(normalizedSchema) {
-            var query = "select tabname from syscat.tables where tabname = '$normalizedTable"
+        return connection.work(normalizedSchema, commit = false) {
+            var query = "select tabname from syscat.tables where tabname = '$normalizedTable'"
             if (normalizedSchema != null) {
                 query += " and tabschema = '$normalizedSchema'"
             }

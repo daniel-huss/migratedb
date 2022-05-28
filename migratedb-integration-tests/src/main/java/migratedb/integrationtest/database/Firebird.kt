@@ -24,7 +24,9 @@ import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.container.Lease
 import migratedb.integrationtest.util.container.SharedResources
 import org.firebirdsql.ds.FBSimpleDataSource
+import org.firebirdsql.management.FBMaintenanceManager
 import org.firebirdsql.management.FBManager
+import org.firebirdsql.management.MaintenanceManager
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
@@ -80,6 +82,17 @@ enum class Firebird(image: String) : DbSystem {
             }
         }
 
+        fun withFbMaintenanceManager(database: String, block: (FBMaintenanceManager) -> Unit) {
+            return FBMaintenanceManager().let {
+                it.host = host
+                it.port = getMappedPort(port)
+                it.database = database
+                it.user = adminUser
+                it.password = password
+                block(it)
+            }
+        }
+
         init {
             withEnv("FIREBIRD_DATABASE", defaultDatabase)
             withEnv("FIREBIRD_USER", defaultUser)
@@ -108,15 +121,19 @@ enum class Firebird(image: String) : DbSystem {
         }
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
-            container().withFbManager {
-                if (it.isDatabaseExists(namespace.toString(), adminUser, password)) {
-                    it.dropDatabase(namespace.toString(), adminUser, password)
+            val database = namespace.toString()
+            container().withFbMaintenanceManager(database) { maintenanceManager ->
+                maintenanceManager.shutdownDatabase(MaintenanceManager.SHUTDOWN_FORCE, 5)
+                container().withFbManager { manager ->
+                    if (manager.isDatabaseExists(namespace.toString(), adminUser, password)) {
+                        manager.dropDatabase(namespace.toString(), adminUser, password)
+                    }
                 }
             }
         }
 
         override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
-            return FirebirdCreateTableMutation(Names.nextTable())
+            return FirebirdCreateTableMutation(normalizeCase(Names.nextTable()))
         }
 
         override fun close() = container.close()

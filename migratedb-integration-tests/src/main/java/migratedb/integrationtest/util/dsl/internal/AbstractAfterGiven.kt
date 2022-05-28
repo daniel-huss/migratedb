@@ -21,15 +21,7 @@ import migratedb.integrationtest.util.dsl.Dsl
 
 abstract class AbstractAfterGiven<G>(
     override val given: G,
-    protected val givenInfo: GivenInfo
+    protected val databaseContext: DatabaseContext
 ) : Dsl.AfterGiven<G> {
-    final override val schemaName: SafeIdentifier? get() = givenInfo.schemaName
-
-    override fun qualTable(s: CharSequence): String {
-        val table = givenInfo.databaseHandle.normalizeCase(s)
-        return when (val schema = schemaName) {
-            null -> table
-            else -> "${givenInfo.databaseHandle.normalizeCase(schema)}.$table"
-        }
-    }
+    final override val schemaName: SafeIdentifier? get() = databaseContext.schemaName
 }

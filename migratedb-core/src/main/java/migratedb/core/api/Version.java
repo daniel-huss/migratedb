@@ -47,22 +47,6 @@ public final class Version implements Comparable<Version> {
     }
 
     /**
-     * Creates a {@code TargetVersion} from a version String.
-     *
-     * @param version The version String. The value {@code current} will be interpreted as {@link
-     *                TargetVersion#CURRENT}, {@code next} is mapped to {@link TargetVersion#NEXT}, and {@code latest}
-     *                corresponds to {@link TargetVersion#LATEST}.
-     *
-     * @return The version or marker.
-     *
-     * @deprecated This is just here for compatibility. Use {@link TargetVersion#parse} instead.
-     */
-    @Deprecated
-    public static TargetVersion fromVersion(String version) {
-        return TargetVersion.parse(version);
-    }
-
-    /**
      * Creates a Version using this version string.
      *
      * @param version The version in one of the following formats: 6, 6.0, 005, 1.2.3.4, 201004200021. <br>{@code null}

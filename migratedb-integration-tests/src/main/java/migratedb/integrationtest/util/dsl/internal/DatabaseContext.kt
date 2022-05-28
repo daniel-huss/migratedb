@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.util.dsl
+package migratedb.integrationtest.util.dsl.internal
 
-import migratedb.core.api.migration.JavaMigration
-import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
-import java.sql.Connection
+import migratedb.core.api.internal.database.base.Database
+import migratedb.integrationtest.database.DbSystem
+import migratedb.integrationtest.util.base.SafeIdentifier
+import javax.sql.DataSource
 
-interface RunMigrateSpec : RunWithConfigSpec {
-    fun fromScript(name: String, sql: String)
-    fun fromCode(name: String, code: (Connection) -> Unit)
-    fun fromCode(name: String, code: JavaMigration)
-    fun fromCode(name: String, code: IndependentDatabaseMutation) = fromCode(name, code::apply)
-    fun fromCode(name: String)
-}
+data class DatabaseContext(
+    val databaseHandle: DbSystem.Handle,
+    val adminDataSource: DataSource,
+    val database: Database<*>,
+    val namespace: SafeIdentifier,
+    val schemaName: SafeIdentifier?,
+)

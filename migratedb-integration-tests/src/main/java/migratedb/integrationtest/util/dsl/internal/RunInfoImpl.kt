@@ -19,7 +19,7 @@ package migratedb.integrationtest.util.dsl.internal
 import migratedb.core.api.MigrationInfoService
 import migratedb.integrationtest.util.dsl.RunInfoSpec
 
-class RunInfoImpl(givenInfo: GivenInfo) : RunInfoSpec, AbstractRunWithConfigSpec(givenInfo) {
+class RunInfoImpl(databaseContext: DatabaseContext) : RunInfoSpec, AbstractRunWithConfigSpec(databaseContext) {
     fun execute(): MigrationInfoService = execute { config ->
         config.load().info()
     }

@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.util.dsl
-
-import migratedb.core.api.migration.JavaMigration
-import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
-import java.sql.Connection
-
-interface RunMigrateSpec : RunWithConfigSpec {
-    fun fromScript(name: String, sql: String)
-    fun fromCode(name: String, code: (Connection) -> Unit)
-    fun fromCode(name: String, code: JavaMigration)
-    fun fromCode(name: String, code: IndependentDatabaseMutation) = fromCode(name, code::apply)
-    fun fromCode(name: String)
-}
+package migratedb.core.api.internal.callback;

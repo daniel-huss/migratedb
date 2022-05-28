@@ -16,8 +16,6 @@
  */
 package migratedb.core.internal.schemahistory;
 
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
@@ -29,6 +27,9 @@ import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SchemaHistoryFactory {
     private static final Log LOG = Log.getLog(SchemaHistoryFactory.class);
 
@@ -39,13 +40,14 @@ public class SchemaHistoryFactory {
     public static SchemaHistory getSchemaHistory(Configuration configuration,
                                                  SqlScriptExecutorFactory sqlScriptExecutorFactory,
                                                  SqlScriptFactory sqlScriptFactory,
-                                                 Database database, Schema schema,
+                                                 Database database,
+                                                 Schema schema,
                                                  StatementInterceptor statementInterceptor) {
         Table table = schema.getTable(configuration.getTable());
         JdbcTableSchemaHistory jdbcTableSchemaHistory = new JdbcTableSchemaHistory(sqlScriptExecutorFactory,
-                                                                                   sqlScriptFactory,
-                                                                                   database,
-                                                                                   table);
+                sqlScriptFactory,
+                database,
+                table);
 
         return jdbcTableSchemaHistory;
     }
@@ -78,8 +80,8 @@ public class SchemaHistoryFactory {
                 Schema currentSchema = database.getMainConnection().getCurrentSchema();
                 if (currentSchema == null || currentSchema.getName() == null) {
                     throw new MigrateDbException(
-                        "Unable to determine schema for the schema history table. Set a default schema for the " +
-                        "connection or specify one using the 'defaultSchema' property");
+                            "Unable to determine schema for the schema history table. Set a default schema for the " +
+                                    "connection or specify one using the 'defaultSchema' property");
                 }
                 defaultSchemaName = currentSchema.getName();
             } else {

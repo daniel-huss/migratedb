@@ -21,15 +21,16 @@ import migratedb.integrationtest.util.base.work
 import java.sql.Connection
 
 /**
- * (SQLite only) Creates / drops a table.
+ * (DB2 only) Creates / drops a table.
  */
-class SqliteCreateTableMutation(private val normalizedTable: SafeIdentifier) : IndependentDatabaseMutation {
+class InformixCreateTableMutation(
+    private val normalizedTable: SafeIdentifier
+) : IndependentDatabaseMutation {
 
     override fun isApplied(connection: Connection): Boolean {
         return connection.work(commit = false) {
-            it.query("select name from sqlite_master where type='table' and name='$normalizedTable'") { _, _ ->
-                true
-            }.isNotEmpty()
+            val query = "select tabname from systables where UPPER(tabname) = UPPER('$normalizedTable')"
+            it.query(query) { _, _ -> true }.isNotEmpty()
         }
     }
 

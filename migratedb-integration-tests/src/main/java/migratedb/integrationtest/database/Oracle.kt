@@ -17,8 +17,8 @@
 package migratedb.integrationtest.database
 
 import migratedb.core.internal.database.oracle.OracleDatabaseType
-import migratedb.integrationtest.database.mutation.BasicCreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
+import migratedb.integrationtest.database.mutation.OracleCreateTableMutation
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.rethrowUnless
@@ -80,7 +80,7 @@ enum class Oracle(image: String) : DbSystem {
         private val internalDs = container().dataSource()
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
-            internalDs.work(connectTimeout = Duration.ofMinutes(1)) {
+            internalDs.work(connectTimeout = Duration.ofMinutes(2)) {// startup can be slow
                 try {
                     it.execute("create user $namespace identified by $password")
                     it.execute("grant all privileges to $namespace")
@@ -96,9 +96,24 @@ enum class Oracle(image: String) : DbSystem {
         }
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
-            internalDs.work {
+            internalDs.work { jdbc ->
                 try {
-                    it.update("drop user $namespace cascade")
+                    jdbc.queryForList(
+                        "select s.sid, s.serial#" +
+                                "  from v\$session s, v\$process p \n" +
+                                " where UPPER(s.username) = UPPER('$namespace')"
+                    ).forEach { row ->
+                        try {
+                            jdbc.update("alter system kill session '${row["sid"]},${row["serial#"]}' immediate")
+                        } catch (e: DataAccessException) {
+                            e.rethrowUnless {
+                                // ORA-0030 = No such session, can happen because the query result is of course
+                                // immediately outdated.
+                                it.errorCode == 30
+                            }
+                        }
+                    }
+                    jdbc.update("drop user $namespace cascade")
                 } catch (e: DataAccessException) {
                     e.rethrowUnless { sqlException -> sqlException.errorCode == 1918 }
                 }
@@ -106,7 +121,7 @@ enum class Oracle(image: String) : DbSystem {
         }
 
         override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
-            return BasicCreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
+            return OracleCreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
         }
 
         override fun close() = container.close()

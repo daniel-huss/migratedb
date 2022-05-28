@@ -21,24 +21,25 @@ import migratedb.core.api.output.MigrateResult
 import migratedb.integrationtest.util.dsl.RunMigrateSpec
 import java.sql.Connection
 
-class RunMigrateImpl(private val givenInfo: GivenInfo) : AbstractRunWithConfigSpec(givenInfo), RunMigrateSpec {
+class RunMigrateImpl(private val databaseContext: DatabaseContext) : AbstractRunWithConfigSpec(databaseContext),
+    RunMigrateSpec {
     private val scriptMigrations = mutableListOf<ScriptMigration>()
     private val codeMigrations = mutableListOf<CodeMigration>()
 
-    override fun script(name: String, sql: String) {
+    override fun fromScript(name: String, sql: String) {
         scriptMigrations.add(ScriptMigration(name, sql))
     }
 
-    override fun code(name: String, code: (Connection) -> Unit) {
+    override fun fromCode(name: String, code: (Connection) -> Unit) {
         codeMigrations.add(CodeMigration(name, SimpleJavaMigration(name, code)))
     }
 
-    override fun code(name: String, code: JavaMigration) {
+    override fun fromCode(name: String, code: JavaMigration) {
         codeMigrations.add(CodeMigration(name, code))
     }
 
-    override fun code(name: String) = code(name) {
-        givenInfo.databaseHandle.nextMutation(givenInfo.schemaName).apply(it)
+    override fun fromCode(name: String) = fromCode(name) {
+        databaseContext.databaseHandle.nextMutation(databaseContext.schemaName).apply(it)
     }
 
     fun execute(): MigrateResult = execute { config ->

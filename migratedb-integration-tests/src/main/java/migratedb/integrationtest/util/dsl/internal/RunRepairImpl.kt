@@ -19,7 +19,7 @@ package migratedb.integrationtest.util.dsl.internal
 import migratedb.core.api.output.RepairResult
 import migratedb.integrationtest.util.dsl.RunRepairSpec
 
-class RunRepairImpl(givenInfo: GivenInfo) : RunRepairSpec, AbstractRunWithConfigSpec(givenInfo) {
+class RunRepairImpl(databaseContext: DatabaseContext) : RunRepairSpec, AbstractRunWithConfigSpec(databaseContext) {
 
     fun execute(): RepairResult = execute { config ->
         config.load().repair()
