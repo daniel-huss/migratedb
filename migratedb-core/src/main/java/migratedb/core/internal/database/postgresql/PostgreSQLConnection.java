@@ -60,7 +60,7 @@ public class PostgreSQLConnection extends BaseConnection<PostgreSQLDatabase> {
         if (!StringUtils.hasText(currentSchema) && !StringUtils.hasText(searchPath)) {
             throw new MigrateDbException("Unable to determine current schema as search_path is empty. " +
                     "Set the current schema in currentSchema parameter of the JDBC URL or in " +
-                    "MigrateDb's schemas property.");
+                    "MigrateDB's schemas property.");
         }
 
         String schema = StringUtils.hasText(currentSchema) ? currentSchema : searchPath;

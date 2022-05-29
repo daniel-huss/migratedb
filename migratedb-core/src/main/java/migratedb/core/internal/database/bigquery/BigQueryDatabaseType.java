@@ -85,7 +85,7 @@ public class BigQueryDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public void setOverridingConnectionProps(Map<String, String> props) {
+    public void modifyOverridingConnectionProps(Map<String, String> props) {
     }
 
     @Override

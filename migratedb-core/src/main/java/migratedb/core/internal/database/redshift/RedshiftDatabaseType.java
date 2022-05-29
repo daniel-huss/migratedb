@@ -84,7 +84,7 @@ public class RedshiftDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public void setOverridingConnectionProps(Map<String, String> props) {
+    public void modifyOverridingConnectionProps(Map<String, String> props) {
         // Necessary because the Amazon v2 driver does not appear to respect the way Properties.get() handles defaults.
         // If not forced to false, the driver allows resultsets to be read on different threads and will throw if
         // connections are closed before all results are read.

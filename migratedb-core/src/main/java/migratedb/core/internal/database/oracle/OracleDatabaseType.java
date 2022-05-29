@@ -106,7 +106,7 @@ public class OracleDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public void setDefaultConnectionProps(String url, Properties props, ClassLoader classLoader) {
+    public void modifyDefaultConnectionProps(String url, Properties props, ClassLoader classLoader) {
         String osUser = System.getProperty("user.name");
         props.put("v$session.osuser", osUser.substring(0, Math.min(osUser.length(), 30)));
         props.put("v$session.program", APPLICATION_NAME);
@@ -119,8 +119,7 @@ public class OracleDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public void setConfigConnectionProps(Configuration config, Properties props, ClassLoader classLoader) {
-
+    public void modifyConfigConnectionProps(Configuration config, Properties props, ClassLoader classLoader) {
     }
 
     @Override
@@ -135,7 +134,7 @@ public class OracleDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Connection alterConnectionAsNeeded(Connection connection, Configuration configuration) {
+    public void alterConnectionAsNeeded(Connection connection, Configuration configuration) {
         var accessor = new ReflectiveOracleAccessor(connection, configuration);
         if (accessor.isProxyUserNameConfigured()) {
             try {
@@ -146,7 +145,7 @@ public class OracleDatabaseType extends BaseDatabaseType {
                 throw new MigrateDbException("Unable to open proxy session: " + e.getMessage(), e);
             }
         }
-        return super.alterConnectionAsNeeded(connection, configuration);
+        super.alterConnectionAsNeeded(connection, configuration);
     }
 
     /**

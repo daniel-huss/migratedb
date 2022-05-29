@@ -16,10 +16,11 @@
  */
 package migratedb.core.internal.database.sybasease;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseSchemaObject;
 import migratedb.core.internal.database.base.BaseTable;
+
+import java.sql.SQLException;
 
 /**
  * Sybase ASE table.
@@ -44,7 +45,7 @@ public class SybaseASETable extends BaseTable<SybaseASEDatabase, SybaseASESchema
 
     @Override
     protected void doLock() throws SQLException {
-        // MigrateDb's locking assumes transactions are being used to release locks on commit at some later point
+        // MigrateDB's locking assumes transactions are being used to release locks on commit at some later point
         // (hence the lack of an 'unlock' method)
         // If multi statement transactions aren't supported, then locking a table makes no sense,
         // since that's the only operation we can do

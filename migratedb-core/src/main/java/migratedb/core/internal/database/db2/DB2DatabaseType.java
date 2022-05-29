@@ -70,7 +70,7 @@ public class DB2DatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public void setDefaultConnectionProps(String url, Properties props, ClassLoader classLoader) {
+    public void modifyDefaultConnectionProps(String url, Properties props, ClassLoader classLoader) {
         props.put("clientProgramName", APPLICATION_NAME);
         props.put("retrieveMessagesFromServerOnGetMessage", "true");
     }

@@ -101,7 +101,7 @@ public class CockroachDBDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public void setDefaultConnectionProps(String url, Properties props, ClassLoader classLoader) {
+    public void modifyDefaultConnectionProps(String url, Properties props, ClassLoader classLoader) {
         props.put("applicationName", APPLICATION_NAME);
     }
 

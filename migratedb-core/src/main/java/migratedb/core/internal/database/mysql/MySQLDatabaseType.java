@@ -97,7 +97,7 @@ public class MySQLDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public void setDefaultConnectionProps(String url, Properties props, ClassLoader classLoader) {
+    public void modifyDefaultConnectionProps(String url, Properties props, ClassLoader classLoader) {
         props.put("connectionAttributes", "program_name:" + APPLICATION_NAME);
     }
 

@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
 
 /**
  * Extension point for supported database types. Instances are unmodifiable.
- * FIXME oh what the shit, why are there mutator methods like setConfigConnectionProps?!
  */
 public interface DatabaseType {
     /**
@@ -166,32 +165,32 @@ public interface DatabaseType {
     ExecutionTemplate createTransactionalExecutionTemplate(Connection connection, boolean rollbackOnException);
 
     /**
-     * Set the default connection properties for this database. These can be overridden by {@code
-     * setConfigConnectionProps} and {@code setOverridingConnectionProps}
+     * Changes the default connection properties for this database. These can be overridden by {@code
+     * modifyConfigConnectionProps} and {@code modifyOverridingConnectionProps}
      *
      * @param url         The JDBC url.
      * @param props       The properties to write to.
      * @param classLoader The classLoader to use.
      */
-    void setDefaultConnectionProps(String url, Properties props, ClassLoader classLoader);
+    void modifyDefaultConnectionProps(String url, Properties props, ClassLoader classLoader);
 
     /**
-     * Set any necessary connection properties based on MigrateDb's configuration. These can be overridden by {@code
-     * setOverridingConnectionProps}
+     * Changes any necessary connection properties based on MigrateDB's configuration. These can be overridden by {@code
+     * modifyOverridingConnectionProps}
      *
      * @param config      The MigrateDB configuration to read properties from
      * @param props       The properties to write to.
      * @param classLoader The classLoader to use.
      */
-    void setConfigConnectionProps(Configuration config, Properties props, ClassLoader classLoader);
+    void modifyConfigConnectionProps(Configuration config, Properties props, ClassLoader classLoader);
 
     /**
-     * Set any overriding connection properties. These will override anything set by {@code setDefaultConnectionProps}
-     * and {@code setConfigConnectionProps} and should only be used if neither of those can satisfy your requirement.
+     * Changes any overriding connection properties. These will override anything set by {@code setDefaultConnectionProps}
+     * and {@code modifyConfigConnectionProps} and should only be used if neither of those can satisfy your requirement.
      *
      * @param props The properties to write to.
      */
-    void setOverridingConnectionProps(Map<String, String> props);
+    void modifyOverridingConnectionProps(Map<String, String> props);
 
     /**
      * Shutdown the database that was opened (only applicable to embedded databases that require this).
@@ -234,12 +233,12 @@ public interface DatabaseType {
     Properties getExternalAuthProperties(String url, String username);
 
     /**
-     * Carries out any manipulation on the Connection that is required by MigrateDb's config
+     * Carries out any manipulation on the Connection that is required by MigrateDB's config
      *
      * @param connection    The JDBC connection.
      * @param configuration The MigrateDB configuration.
      */
-    Connection alterConnectionAsNeeded(Connection connection, Configuration configuration);
+    void alterConnectionAsNeeded(Connection connection, Configuration configuration);
 
     /**
      * @return A hint on the requirements for creating database instances (libs on class path, etc.)

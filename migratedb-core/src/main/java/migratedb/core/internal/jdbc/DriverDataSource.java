@@ -158,9 +158,9 @@ public class DriverDataSource implements DataSource {
 
         this.additionalProperties = Objects.requireNonNullElseGet(additionalProperties, HashMap::new);
         this.defaultProperties = new Properties(defaultProperties);
-        type.setDefaultConnectionProps(url, defaultProperties, classLoader);
-        type.setConfigConnectionProps(configuration, defaultProperties, classLoader);
-        type.setOverridingConnectionProps(this.additionalProperties);
+        type.modifyDefaultConnectionProps(url, defaultProperties, classLoader);
+        type.modifyConfigConnectionProps(configuration, defaultProperties, classLoader);
+        type.modifyOverridingConnectionProps(this.additionalProperties);
 
         try {
             this.driver = ClassUtils.instantiate(driverClass, classLoader);

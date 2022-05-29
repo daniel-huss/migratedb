@@ -58,18 +58,23 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
         this.connectRetriesInterval = configuration.getConnectRetriesInterval();
         this.configuration = configuration;
 
-        firstConnection = JdbcUtils.openConnection(dataSource,
+        this.firstConnection = JdbcUtils.openConnection(dataSource,
                 connectRetries,
                 connectRetriesInterval,
                 configuration.getDatabaseTypeRegister());
-        this.databaseType = configuration.getDatabaseTypeRegister().getDatabaseTypeForConnection(firstConnection);
+        try {
+            this.databaseType = configuration.getDatabaseTypeRegister().getDatabaseTypeForConnection(firstConnection);
 
-        DatabaseMetaData databaseMetaData = JdbcUtils.getDatabaseMetaData(firstConnection);
-        this.jdbcUrl = getJdbcUrl(databaseMetaData);
-        this.driverInfo = getDriverInfo(databaseMetaData);
-        this.productName = JdbcUtils.getDatabaseProductName(databaseMetaData);
+            DatabaseMetaData databaseMetaData = JdbcUtils.getDatabaseMetaData(firstConnection);
+            this.jdbcUrl = getJdbcUrl(databaseMetaData);
+            this.driverInfo = getDriverInfo(databaseMetaData);
+            this.productName = JdbcUtils.getDatabaseProductName(databaseMetaData);
 
-        firstConnection = databaseType.alterConnectionAsNeeded(firstConnection, configuration);
+            databaseType.alterConnectionAsNeeded(firstConnection, configuration);
+        } catch (RuntimeException | Error e) {
+            JdbcUtils.closeConnection(firstConnection);
+            throw e;
+        }
     }
 
     public void setConnectionInitializer(ConnectionInitializer connectionInitializer) {
@@ -108,7 +113,7 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
             if (connectionInitializer != null) {
                 connectionInitializer.initialize(this, connection);
             }
-            connection = databaseType.alterConnectionAsNeeded(connection, configuration);
+            databaseType.alterConnectionAsNeeded(connection, configuration);
         } catch (RuntimeException | Error e) {
             try {
                 connection.close();

@@ -51,7 +51,7 @@ public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
             if (!StringUtils.hasText(searchPath)) {
                 throw new MigrateDbException(
                         "Unable to determine current schema as search_path is empty. Set the current schema in " +
-                    "currentSchema parameter of the JDBC URL or in MigrateDb's schemas property.");
+                                "currentSchema parameter of the JDBC URL or in MigrateDB's schemas property.");
             }
         }
         return super.doGetCurrentSchema();

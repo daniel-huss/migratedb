@@ -226,7 +226,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
      * @param classLoader The classLoader to use.
      */
     @Override
-    public void setDefaultConnectionProps(String url, Properties props, ClassLoader classLoader) {
+    public void modifyDefaultConnectionProps(String url, Properties props, ClassLoader classLoader) {
     }
 
     /**
@@ -238,7 +238,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
      * @param classLoader The classLoader to use.
      */
     @Override
-    public void setConfigConnectionProps(Configuration config, Properties props, ClassLoader classLoader) {
+    public void modifyConfigConnectionProps(Configuration config, Properties props, ClassLoader classLoader) {
     }
 
     /**
@@ -248,7 +248,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
      * @param props The properties to write to.
      */
     @Override
-    public void setOverridingConnectionProps(Map<String, String> props) {
+    public void modifyOverridingConnectionProps(Map<String, String> props) {
     }
 
     /**
@@ -287,8 +287,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
     }
 
     @Override
-    public Connection alterConnectionAsNeeded(Connection connection, Configuration configuration) {
-        return connection;
+    public void alterConnectionAsNeeded(Connection connection, Configuration configuration) {
     }
 
     @Override

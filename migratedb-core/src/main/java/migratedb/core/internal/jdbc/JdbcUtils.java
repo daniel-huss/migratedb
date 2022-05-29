@@ -16,18 +16,15 @@
  */
 package migratedb.core.internal.jdbc;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import javax.sql.DataSource;
 import migratedb.core.api.DatabaseTypeRegister;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.strategy.BackoffStrategy;
 import migratedb.core.internal.util.ExceptionUtils;
+
+import javax.sql.DataSource;
+import java.sql.*;
 
 /**
  * Utility class for dealing with jdbc connections.
@@ -105,7 +102,7 @@ public class JdbcUtils {
     }
 
     /**
-     * Safely closes this connection. This method never fails.
+     * Quietly closes this connection. This method never throws an exception even if closing the connection fails.
      */
     public static void closeConnection(Connection connection) {
         if (connection == null) {
@@ -120,7 +117,7 @@ public class JdbcUtils {
     }
 
     /**
-     * Safely closes this statement. This method never fails.
+     * Quietly closes this statement. This method never throws an exception even if closing the connection fails.
      */
     public static void closeStatement(Statement statement) {
         if (statement == null) {
@@ -129,13 +126,13 @@ public class JdbcUtils {
 
         try {
             statement.close();
-        } catch (SQLException e) {
+        } catch (SQLException | RuntimeException e) {
             LOG.error("Error while closing JDBC statement", e);
         }
     }
 
     /**
-     * Safely closes this resultSet. This method never fails.
+     * Quietly closes this resultSet. This method never throws an exception even if closing the connection fails.
      */
     public static void closeResultSet(ResultSet resultSet) {
         if (resultSet == null) {
@@ -144,7 +141,7 @@ public class JdbcUtils {
 
         try {
             resultSet.close();
-        } catch (SQLException e) {
+        } catch (SQLException | RuntimeException e) {
             LOG.error("Error while closing JDBC resultSet", e);
         }
     }

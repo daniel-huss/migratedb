@@ -74,7 +74,7 @@ If the deleted migration re-appears, another repair will un-delete it.
 === Removed
 
 * Notion of "community/enterprise/trial/teams/pro" versions.
-* 🔥 Options and checks related to "teams-only" features.
+* 🔥 Options and checks related to some "teams-only" features that haven't been implemented (notably undo migrations).
 * Advertisements and nag messages.
 * 🔥 Brittle runtime class path scanning heuristics.
 * 🔥 Side-effects caused by SPI jars on class path.
@@ -94,7 +94,7 @@ Extensions must be activated in configuration via useExtension().
 === Fixed
 
 * No longer swallows InterruptedException without re-interrupting the current thread.
-* JDBC connection leak in BaseDatabase.
+* JDBC connection leaks in certain situations.
 
 === Security
 
