@@ -393,7 +393,7 @@ public class DbMigrate {
 
                 try {
                     callbackExecutor.setMigrationInfo(migrationInfo);
-                    callbackExecutor.onEachMigrateOrUndoEvent(Event.BEFORE_EACH_MIGRATE);
+                    callbackExecutor.onEachMigrateEvent(Event.BEFORE_EACH_MIGRATE);
                     try {
                         LOG.info("Migrating " + migrationText);
 
@@ -410,15 +410,15 @@ public class DbMigrate {
 
                         appliedResolvedMigrations.add(resolvedMigration);
                     } catch (MigrateDbException e) {
-                        callbackExecutor.onEachMigrateOrUndoEvent(Event.AFTER_EACH_MIGRATE_ERROR);
+                        callbackExecutor.onEachMigrateEvent(Event.AFTER_EACH_MIGRATE_ERROR);
                         throw new MigrateDbMigrateException(migrationInfo, isOutOfOrder, e);
                     } catch (SQLException e) {
-                        callbackExecutor.onEachMigrateOrUndoEvent(Event.AFTER_EACH_MIGRATE_ERROR);
+                        callbackExecutor.onEachMigrateEvent(Event.AFTER_EACH_MIGRATE_ERROR);
                         throw new MigrateDbMigrateException(migrationInfo, isOutOfOrder, e);
                     }
 
                     LOG.debug("Successfully completed migration of " + migrationText);
-                    callbackExecutor.onEachMigrateOrUndoEvent(Event.AFTER_EACH_MIGRATE);
+                    callbackExecutor.onEachMigrateEvent(Event.AFTER_EACH_MIGRATE);
                 } finally {
                     callbackExecutor.setMigrationInfo(null);
                 }

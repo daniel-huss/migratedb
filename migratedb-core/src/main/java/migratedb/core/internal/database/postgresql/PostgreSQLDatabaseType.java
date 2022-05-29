@@ -20,7 +20,6 @@ import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.authentication.postgres.PgpassFileReader;
 import migratedb.core.internal.database.base.BaseDatabaseType;
@@ -64,9 +63,8 @@ public class PostgreSQLDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                      StatementInterceptor statementInterceptor) {
-        return new PostgreSQLDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        return new PostgreSQLDatabase(configuration, jdbcConnectionFactory);
     }
 
     @Override

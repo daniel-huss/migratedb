@@ -51,7 +51,7 @@ public interface SqlStatement {
      * Executes this statement against the database.
      *
      * @param jdbcTemplate The jdbcTemplate to use to execute this script.
-     *
      * @return the result of the execution.
      */
-    Results execute(JdbcTemplate jdbcTemplate);}
+    Results execute(JdbcTemplate jdbcTemplate);
+}

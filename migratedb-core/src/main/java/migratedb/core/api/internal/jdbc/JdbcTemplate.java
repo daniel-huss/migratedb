@@ -16,22 +16,17 @@
  */
 package migratedb.core.api.internal.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.internal.jdbc.JdbcNullTypes;
 import migratedb.core.internal.jdbc.JdbcUtils;
 import migratedb.core.internal.jdbc.WarningImpl;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Collection of utility methods for querying the DB. Inspired by Spring's JdbcTemplate.
@@ -69,9 +64,7 @@ public class JdbcTemplate {
      *
      * @param query  The query to execute.
      * @param params The query parameters.
-     *
      * @return The query results.
-     *
      * @throws SQLException when the query execution failed.
      */
     public List<Map<String, String>> queryForList(String query, Object... params) throws SQLException {
@@ -104,9 +97,7 @@ public class JdbcTemplate {
      *
      * @param query  The query to execute.
      * @param params The query parameters.
-     *
      * @return The query results as a list of strings.
-     *
      * @throws SQLException when the query execution failed.
      */
     public List<String> queryForStringList(String query, String... params) throws SQLException {
@@ -135,9 +126,7 @@ public class JdbcTemplate {
      *
      * @param query  The query to execute.
      * @param params The query parameters.
-     *
      * @return The query result.
-     *
      * @throws SQLException when the query execution failed.
      */
     public int queryForInt(String query, String... params) throws SQLException {
@@ -163,9 +152,7 @@ public class JdbcTemplate {
      *
      * @param query  The query to execute.
      * @param params The query parameters.
-     *
      * @return The query result.
-     *
      * @throws SQLException when the query execution failed.
      */
     public boolean queryForBoolean(String query, String... params) throws SQLException {
@@ -191,9 +178,7 @@ public class JdbcTemplate {
      *
      * @param query  The query to execute.
      * @param params The query parameters.
-     *
      * @return The query result.
-     *
      * @throws SQLException when the query execution failed.
      */
     public String queryForString(String query, String... params) throws SQLException {
@@ -221,7 +206,6 @@ public class JdbcTemplate {
      *
      * @param sql    The statement to execute.
      * @param params The statement parameters.
-     *
      * @throws SQLException when the execution failed.
      */
 
@@ -239,7 +223,6 @@ public class JdbcTemplate {
      * Executes this sql statement using an ordinary Statement.
      *
      * @param sql The statement to execute.
-     *
      * @return the results of the execution.
      */
     public Results executeStatement(String sql) {
@@ -281,12 +264,11 @@ public class JdbcTemplate {
     }
 
     public void extractErrors(Results results, SQLException e) {
-
         results.setException(e);
     }
 
     private void extractResults(Results results, Statement statement, String sql, boolean hasResults)
-    throws SQLException {
+            throws SQLException {
         // retrieve all results to ensure all errors are detected
         int updateCount = -1;
         while (hasResults || (updateCount = statement.getUpdateCount()) != -1) {
@@ -322,7 +304,6 @@ public class JdbcTemplate {
      *
      * @param sql    The statement to execute.
      * @param params The statement parameters.
-     *
      * @throws SQLException when the execution failed.
      */
 
@@ -341,9 +322,7 @@ public class JdbcTemplate {
      *
      * @param sql    The sql to execute.
      * @param params The params.
-     *
      * @return The new prepared statement.
-     *
      * @throws SQLException when the statement could not be prepared.
      */
 
@@ -366,7 +345,7 @@ public class JdbcTemplate {
                 statement.setNull(i + 1, nullType);
             } else {
                 throw new MigrateDbException("Unhandled object of type '" + params[i].getClass().getName() + "'. " +
-                                             "Please contact support or leave an issue on GitHub.");
+                        "Please contact support or leave an issue on GitHub.");
             }
         }
         return statement;
@@ -378,9 +357,7 @@ public class JdbcTemplate {
      * @param sql       The query to execute.
      * @param rowMapper The row mapper to use.
      * @param <T>       The type of the result objects.
-     *
      * @return The list of results.
-     *
      * @throws SQLException when the query failed to execute.
      */
 

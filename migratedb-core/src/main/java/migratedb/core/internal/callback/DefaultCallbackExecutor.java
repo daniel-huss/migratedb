@@ -82,7 +82,7 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
     }
 
     @Override
-    public void onEachMigrateOrUndoEvent(Event event) {
+    public void onEachMigrateEvent(Event event) {
         Context context = new SimpleContext(configuration, database.getMigrationConnection(), migrationInfo, null);
         for (Callback callback : callbacks) {
             if (callback.supports(event, context)) {

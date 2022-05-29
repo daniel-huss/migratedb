@@ -20,7 +20,6 @@ import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 
@@ -58,9 +57,8 @@ public class H2Database extends BaseDatabase<H2Connection> {
     private final boolean requiresV2MetadataColumnNames;
     CompatibilityMode compatibilityMode;
 
-    public H2Database(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                      StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public H2Database(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
 
         requiresV2MetadataColumnNames = super.determineVersion().isAtLeast("2.0.0");
         compatibilityMode = determineCompatibilityMode();

@@ -23,7 +23,6 @@ import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.database.base.BaseDatabaseType;
@@ -56,9 +55,8 @@ public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
      */
     final boolean eventSchedulerQueryable;
 
-    public MySQLDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                         StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public MySQLDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
 
         JdbcTemplate jdbcTemplate = new JdbcTemplate(rawMainJdbcConnection, databaseType);
         pxcStrict = isMySQL() && isRunningInPerconaXtraDBClusterWithStrictMode(jdbcTemplate);

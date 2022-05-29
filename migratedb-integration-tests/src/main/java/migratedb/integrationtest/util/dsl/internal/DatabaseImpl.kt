@@ -23,7 +23,6 @@ import migratedb.core.api.configuration.Configuration
 import migratedb.core.api.configuration.FluentConfiguration
 import migratedb.core.api.internal.database.base.Database
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory
-import migratedb.core.api.internal.jdbc.StatementInterceptor.doNothing
 import migratedb.core.internal.callback.NoopCallbackExecutor
 import migratedb.core.internal.jdbc.JdbcConnectionFactoryImpl
 import migratedb.core.internal.parser.ParsingContextImpl
@@ -75,11 +74,11 @@ class DatabaseImpl(
             if (schemaName != null) it.schemas(schemaName.toString())
             if (schemaHistoryTable != null) it.table(schemaHistoryTable)
         }
-        val connectionFactory = JdbcConnectionFactoryImpl(dataSource, configuration, doNothing())
+        val connectionFactory = JdbcConnectionFactoryImpl(dataSource, configuration)
         // JdbcConnectionFactoryImpl always opens a connection, creating a leak if not closed...
         connectionFactory.openConnection().use { }
 
-        val db = databaseHandle.type.createDatabase(configuration, connectionFactory, doNothing()).also {
+        val db = databaseHandle.type.createDatabase(configuration, connectionFactory).also {
             database = it
         }
 
@@ -183,8 +182,7 @@ class DatabaseImpl(
             val schema = SchemaHistoryFactory.scanSchemas(configuration, database).defaultSchema
             val sqlScriptExecutorFactory = database.databaseType.createSqlScriptExecutorFactory(
                 DummyConnectionFactory,
-                NoopCallbackExecutor.INSTANCE,
-                doNothing()
+                NoopCallbackExecutor.INSTANCE
             )
             val sqlScriptFactory = database.databaseType.createSqlScriptFactory(
                 configuration,
@@ -195,8 +193,7 @@ class DatabaseImpl(
                 sqlScriptExecutorFactory,
                 sqlScriptFactory,
                 database,
-                schema,
-                doNothing()
+                schema
             )
         }
     }

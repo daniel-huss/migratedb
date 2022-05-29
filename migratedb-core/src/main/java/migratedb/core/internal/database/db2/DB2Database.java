@@ -19,16 +19,14 @@ package migratedb.core.internal.database.db2;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DB2Database extends BaseDatabase<DB2Connection> {
-    public DB2Database(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                       StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public DB2Database(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
     }
 
     @Override

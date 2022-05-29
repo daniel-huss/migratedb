@@ -51,7 +51,7 @@ public interface CallbackExecutor {
      *
      * @param event The event to handle.
      */
-    void onEachMigrateOrUndoEvent(Event event);
+    void onEachMigrateEvent(Event event);
 
     /**
      * Executes the callbacks for an operation finish event.

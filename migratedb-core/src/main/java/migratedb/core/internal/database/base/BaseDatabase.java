@@ -22,7 +22,6 @@ import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.*;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.api.internal.sqlscript.SqlScript;
 import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
@@ -45,7 +44,6 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
 
     protected final DatabaseType databaseType;
     protected final Configuration configuration;
-    protected final StatementInterceptor statementInterceptor;
     protected final JdbcConnectionFactory jdbcConnectionFactory;
     protected final DatabaseMetaData jdbcMetaData;
     protected JdbcTemplate jdbcTemplate;
@@ -64,8 +62,7 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
      */
     private String installedBy;
 
-    public BaseDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                        StatementInterceptor statementInterceptor) {
+    public BaseDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         this.databaseType = jdbcConnectionFactory.getDatabaseType();
         this.configuration = configuration;
         this.rawMainJdbcConnection = jdbcConnectionFactory.openConnection();
@@ -76,7 +73,6 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
         }
         this.jdbcTemplate = new JdbcTemplate(rawMainJdbcConnection, databaseType);
         this.jdbcConnectionFactory = jdbcConnectionFactory;
-        this.statementInterceptor = statementInterceptor;
     }
 
     /**
@@ -122,8 +118,8 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
 
     private void recommendMigrateDbUpgrade(String newestSupportedVersion) {
         String message =
-                "MigrateDb upgrade recommended: " + databaseType + " " + computeVersionDisplayName(getVersion())
-                        + " is newer than this version of MigrateDb and support has not been tested."
+                "MigrateDB upgrade recommended: " + databaseType + " " + computeVersionDisplayName(getVersion())
+                        + " is newer than this version of MigrateDB and support has not been tested."
                         + " The latest supported version of " + databaseType + " is " + newestSupportedVersion + ".";
         LOG.warn(message);
     }

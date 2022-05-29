@@ -994,6 +994,8 @@ public class ClassicConfiguration implements Configuration {
 
 
     /**
+     * <b>Note: This is currently not implemented by the default SQL script executor.</b>
+     * <p>
      * Whether to batch SQL statements when executing them. Batching can save up to 99 percent of network roundtrips by
      * sending up to 100 statements at once over the network to the database, instead of sending each statement
      * individually. This is particularly useful for very large SQL migrations composed of multiple MB or even GB of
@@ -1281,7 +1283,6 @@ public class ClassicConfiguration implements Configuration {
 
     /**
      * Whether MigrateDb should output a table with the results of queries when executing migrations.
-     * <i>MigrateDb Teams only</i>
      */
     public void setOutputQueryResults(boolean outputQueryResults) {
         this.outputQueryResults = outputQueryResults;
@@ -1289,7 +1290,6 @@ public class ClassicConfiguration implements Configuration {
 
     /**
      * Properties to pass to the JDBC driver object.
-     * <i>MigrateDb Teams only</i>
      */
     public void setJdbcProperties(Map<String, String> jdbcProperties) {
         this.jdbcProperties = jdbcProperties;

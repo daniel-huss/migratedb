@@ -20,7 +20,6 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.logging.Log;
@@ -40,8 +39,7 @@ public class SchemaHistoryFactory {
                                                  SqlScriptExecutorFactory sqlScriptExecutorFactory,
                                                  SqlScriptFactory sqlScriptFactory,
                                                  Database<?> database,
-                                                 Schema<?, ?> schema,
-                                                 StatementInterceptor statementInterceptor) {
+                                                 Schema<?, ?> schema) {
         var table = schema.getTable(configuration.getTable());
 
         return new JdbcTableSchemaHistory(sqlScriptExecutorFactory,

@@ -19,7 +19,6 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 
@@ -50,12 +49,10 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
      * Creates a new JDBC connection factory. This automatically opens a first connection which can be obtained via a
      * call to openConnection and which must be closed again to avoid leaking it.
      *
-     * @param dataSource           The DataSource to obtain the connection from.
-     * @param configuration        The MigrateDb configuration.
-     * @param statementInterceptor The statement interceptor. {@code null} if none.
+     * @param dataSource    The DataSource to obtain the connection from.
+     * @param configuration The MigrateDb configuration.
      */
-    public JdbcConnectionFactoryImpl(DataSource dataSource, Configuration configuration,
-                                     StatementInterceptor statementInterceptor) {
+    public JdbcConnectionFactoryImpl(DataSource dataSource, Configuration configuration) {
         this.dataSource = dataSource;
         this.connectRetries = configuration.getConnectRetries();
         this.connectRetriesInterval = configuration.getConnectRetriesInterval();

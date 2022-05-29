@@ -21,7 +21,6 @@ import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.util.StringUtils;
@@ -35,9 +34,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
-    public SQLServerDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                             StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public SQLServerDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
     }
 
     @Override

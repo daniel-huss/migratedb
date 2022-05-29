@@ -18,15 +18,12 @@ package migratedb.core.internal.database.oracle;
 
 import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.sqlscript.DefaultSqlScriptExecutor;
 
-@SuppressWarnings("SqlResolve")
 public class OracleSqlScriptExecutor extends DefaultSqlScriptExecutor {
 
     public OracleSqlScriptExecutor(JdbcTemplate jdbcTemplate, CallbackExecutor callbackExecutor,
-                                   boolean batch, boolean outputQueryResults,
-                                   StatementInterceptor statementInterceptor) {
-        super(jdbcTemplate, callbackExecutor,  batch, outputQueryResults, statementInterceptor);
+                                   boolean batch, boolean outputQueryResults) {
+        super(jdbcTemplate, callbackExecutor, batch, outputQueryResults);
     }
 }

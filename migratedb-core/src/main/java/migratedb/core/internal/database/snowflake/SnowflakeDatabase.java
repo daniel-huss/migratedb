@@ -20,7 +20,6 @@ import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseDatabase;
 
@@ -46,9 +45,8 @@ public class SnowflakeDatabase extends BaseDatabase<SnowflakeConnection> {
     /**
      * Creates a new instance.
      */
-    public SnowflakeDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                             StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public SnowflakeDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
 
         // There will be issues if the MigrateDb schema history table was created while this option was set false
         // (it is set either at the account level, or the individual session level) and it is subsequently set true.

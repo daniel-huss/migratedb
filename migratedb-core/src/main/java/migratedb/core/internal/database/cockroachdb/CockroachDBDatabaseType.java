@@ -22,7 +22,6 @@ import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.jdbc.ExecutionTemplate;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.authentication.postgres.PgpassFileReader;
 import migratedb.core.internal.database.DefaultExecutionStrategy;
@@ -77,9 +76,8 @@ public class CockroachDBDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                      StatementInterceptor statementInterceptor) {
-        return new CockroachDBDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        return new CockroachDBDatabase(configuration, jdbcConnectionFactory);
     }
 
     @Override

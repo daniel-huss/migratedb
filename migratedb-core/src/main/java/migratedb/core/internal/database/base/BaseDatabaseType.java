@@ -25,7 +25,6 @@ import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.internal.jdbc.ExecutionTemplate;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
@@ -135,28 +134,27 @@ public abstract class BaseDatabaseType implements DatabaseType {
 
     @Override
     public Database<?> createDatabase(Configuration configuration, boolean printInfo,
-                                      JdbcConnectionFactory jdbcConnectionFactory,
-                                      StatementInterceptor statementInterceptor) {
+                                      JdbcConnectionFactory jdbcConnectionFactory) {
         String databaseProductName = jdbcConnectionFactory.getProductName();
         if (printInfo) {
             LOG.info("Database: " + jdbcConnectionFactory.getJdbcUrl() + " (" + databaseProductName + ")");
             LOG.debug("Driver  : " + jdbcConnectionFactory.getDriverInfo());
         }
 
-        var database = createDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
+        var database = createDatabase(configuration, jdbcConnectionFactory);
 
         String intendedCurrentSchema = configuration.getDefaultSchema();
         if (!database.supportsChangingCurrentSchema() && intendedCurrentSchema != null) {
             LOG.warn(databaseProductName + " does not support setting the schema for the current session. " +
-                     "Default schema will NOT be changed to " + intendedCurrentSchema + " !");
+                    "Default schema will NOT be changed to " + intendedCurrentSchema + " !");
         }
 
         return database;
     }
 
     @Override
-    public abstract Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                               StatementInterceptor statementInterceptor);
+    public abstract Database<?> createDatabase(Configuration configuration,
+                                               JdbcConnectionFactory jdbcConnectionFactory);
 
     @Override
     public abstract BaseParser createParser(Configuration configuration, ResourceProvider resourceProvider,
@@ -165,25 +163,23 @@ public abstract class BaseDatabaseType implements DatabaseType {
     @Override
     public SqlScriptFactory createSqlScriptFactory(Configuration configuration, ParsingContext parsingContext) {
         return (resource, mixed, resourceProvider) ->
-            new ParserSqlScript(createParser(configuration,
-                                             resourceProvider,
-                                             parsingContext),
-                                resource,
-                                getMetadataResource(resourceProvider, resource),
-                                mixed);
+                new ParserSqlScript(createParser(configuration,
+                        resourceProvider,
+                        parsingContext),
+                        resource,
+                        getMetadataResource(resourceProvider, resource),
+                        mixed);
     }
 
     @Override
     public SqlScriptExecutorFactory createSqlScriptExecutorFactory(JdbcConnectionFactory jdbcConnectionFactory,
-                                                                   CallbackExecutor callbackExecutor,
-                                                                   StatementInterceptor statementInterceptor) {
+                                                                   CallbackExecutor callbackExecutor) {
         DatabaseType thisRef = this;
         return (connection, batch, outputQueryResults) ->
-            new DefaultSqlScriptExecutor(new JdbcTemplate(connection, thisRef),
-                                         callbackExecutor,
-                                         batch,
-                                         outputQueryResults,
-                                         statementInterceptor);
+                new DefaultSqlScriptExecutor(new JdbcTemplate(connection, thisRef),
+                        callbackExecutor,
+                        batch,
+                        outputQueryResults);
     }
 
     @Override

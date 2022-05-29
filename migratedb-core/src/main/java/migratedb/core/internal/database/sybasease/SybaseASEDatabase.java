@@ -21,7 +21,6 @@ import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.Results;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseDatabase;
@@ -36,9 +35,8 @@ public class SybaseASEDatabase extends BaseDatabase<SybaseASEConnection> {
     private String databaseName = null;
     private boolean supportsMultiStatementTransactions = false;
 
-    public SybaseASEDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                             StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public SybaseASEDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
     }
 
     @Override

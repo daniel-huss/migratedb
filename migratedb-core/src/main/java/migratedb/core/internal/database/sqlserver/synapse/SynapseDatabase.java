@@ -20,7 +20,6 @@ import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.sqlserver.SQLServerConnection;
 import migratedb.core.internal.database.sqlserver.SQLServerDatabase;
 
@@ -29,9 +28,8 @@ import java.util.Date;
 
 public class SynapseDatabase extends SQLServerDatabase {
 
-    public SynapseDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                           StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public SynapseDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
     }
 
     @Override

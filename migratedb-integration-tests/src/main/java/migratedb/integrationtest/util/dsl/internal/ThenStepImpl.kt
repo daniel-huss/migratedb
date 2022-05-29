@@ -17,7 +17,6 @@
 package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.configuration.FluentConfiguration
-import migratedb.core.api.internal.jdbc.StatementInterceptor.doNothing
 import migratedb.core.api.internal.schemahistory.AppliedMigration
 import migratedb.core.internal.jdbc.JdbcConnectionFactoryImpl
 import migratedb.integrationtest.util.base.work
@@ -39,15 +38,14 @@ class ThenStepImpl<G : Any>(given: G, databaseContext: DatabaseContext) : Dsl.Th
             databaseContext.schemaName?.let { schemas(it.toString()) }
         }
         // JdbcConnectionFactoryImpl always opens a connection, creating a leak if not closed...
-        val connectionFactory = JdbcConnectionFactoryImpl(databaseContext.adminDataSource, configuration, doNothing())
+        val connectionFactory = JdbcConnectionFactoryImpl(databaseContext.adminDataSource, configuration)
         connectionFactory.openConnection().use { }
 
         // Do not re-use database from givenInfo because its connection might not observe the effects of previously
         // committed transactions.
         databaseContext.database.databaseType.createDatabase(
             configuration,
-            connectionFactory,
-            doNothing()
+            connectionFactory
         ).use {
             val schemaHistory = DatabaseImpl.getSchemaHistory(configuration, databaseContext.database)
             block(schemaHistory.allAppliedMigrations())

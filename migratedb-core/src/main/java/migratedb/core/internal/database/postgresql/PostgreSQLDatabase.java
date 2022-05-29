@@ -19,7 +19,6 @@ package migratedb.core.internal.database.postgresql;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.util.StringUtils;
 
@@ -27,9 +26,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class PostgreSQLDatabase extends BaseDatabase<PostgreSQLConnection> {
-    public PostgreSQLDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                              StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public PostgreSQLDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
     }
 
     @Override

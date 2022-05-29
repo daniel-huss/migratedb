@@ -40,7 +40,7 @@ public enum NoopCallbackExecutor implements CallbackExecutor {
     }
 
     @Override
-    public void onEachMigrateOrUndoEvent(Event event) {
+    public void onEachMigrateEvent(Event event) {
     }
 
     @Override

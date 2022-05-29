@@ -18,13 +18,11 @@ package migratedb.core.internal.database.mysql.mariadb;
 
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.mysql.MySQLDatabase;
 
 public class MariaDBDatabase extends MySQLDatabase {
-    public MariaDBDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                           StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public MariaDBDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
     }
 
     @Override

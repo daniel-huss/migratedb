@@ -19,7 +19,6 @@ package migratedb.core.internal.database.redshift;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.util.StringUtils;
 
@@ -35,9 +34,8 @@ public class RedshiftDatabase extends BaseDatabase<RedshiftConnection> {
      *
      * @param configuration The MigrateDb configuration.
      */
-    public RedshiftDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                            StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public RedshiftDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
     }
 
     @Override

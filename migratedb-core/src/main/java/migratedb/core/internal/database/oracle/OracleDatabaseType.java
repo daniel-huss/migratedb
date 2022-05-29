@@ -24,7 +24,6 @@ import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.internal.database.base.BaseDatabaseType;
@@ -78,11 +77,10 @@ public class OracleDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                                      StatementInterceptor statementInterceptor) {
+    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         OracleDatabase.enableTnsnamesOraSupport();
 
-        return new OracleDatabase(configuration, jdbcConnectionFactory, statementInterceptor);
+        return new OracleDatabase(configuration, jdbcConnectionFactory);
     }
 
     @Override
@@ -91,21 +89,20 @@ public class OracleDatabaseType extends BaseDatabaseType {
 
         return new OracleParser(configuration
 
-            , parsingContext
+                , parsingContext
         );
     }
 
     @Override
     public SqlScriptExecutorFactory createSqlScriptExecutorFactory(JdbcConnectionFactory jdbcConnectionFactory,
-                                                                   CallbackExecutor callbackExecutor,
-                                                                   StatementInterceptor statementInterceptor
-    ) {
-
+                                                                   CallbackExecutor callbackExecutor) {
         DatabaseType thisRef = this;
-
-        return (connection, batch, outputQueryResults) -> new OracleSqlScriptExecutor(new JdbcTemplate(connection, thisRef)
-                , callbackExecutor, batch, outputQueryResults, statementInterceptor
-        );
+        return (connection, batch, outputQueryResults) ->
+                new OracleSqlScriptExecutor(
+                        new JdbcTemplate(connection, thisRef),
+                        callbackExecutor,
+                        batch,
+                        outputQueryResults);
     }
 
     @Override
@@ -116,8 +113,8 @@ public class OracleDatabaseType extends BaseDatabaseType {
         props.put("oracle.net.keepAlive", "true");
 
         String oobb = ClassUtils.getStaticFieldValue("oracle.jdbc.OracleConnection",
-                                                     "CONNECTION_PROPERTY_THIN_NET_DISABLE_OUT_OF_BAND_BREAK",
-                                                     classLoader);
+                "CONNECTION_PROPERTY_THIN_NET_DISABLE_OUT_OF_BAND_BREAK",
+                classLoader);
         props.put(oobb, "true");
     }
 
@@ -170,11 +167,11 @@ public class OracleDatabaseType extends BaseDatabaseType {
 
         private boolean isProxySession(Object oracleConnection) throws SQLException {
             var result = ClassUtils.invoke(oracleConnectionClass,
-                                           "isProxySession",
-                                           oracleConnection,
-                                           new Class[0],
-                                           new Object[0],
-                                           e -> e instanceof SQLException ? (SQLException) e : null
+                    "isProxySession",
+                    oracleConnection,
+                    new Class[0],
+                    new Object[0],
+                    e -> e instanceof SQLException ? (SQLException) e : null
             );
             if (result instanceof Boolean) {
                 return (Boolean) result;
@@ -190,7 +187,7 @@ public class OracleDatabaseType extends BaseDatabaseType {
                 oracleConnection = connection.unwrap(oracleConnectionClass);
             } else {
                 throw new MigrateDbException(
-                    "Unable to extract Oracle connection type from '" + connection.getClass().getName() + "'");
+                        "Unable to extract Oracle connection type from '" + connection.getClass().getName() + "'");
             }
 
             if (!isProxySession(oracleConnection)) {
@@ -201,7 +198,7 @@ public class OracleDatabaseType extends BaseDatabaseType {
         boolean isProxyUserNameConfigured() {
             var jdbcProperties = configuration.getJdbcProperties();
             return jdbcProperties != null &&
-                   jdbcProperties.containsKey(ClassUtils.getStaticFieldValue(oracleConnectionClass, "PROXY_USER_NAME"));
+                    jdbcProperties.containsKey(ClassUtils.getStaticFieldValue(oracleConnectionClass, "PROXY_USER_NAME"));
         }
 
         private void openProxySession(Object oracleConnection) throws SQLException {
@@ -209,11 +206,11 @@ public class OracleDatabaseType extends BaseDatabaseType {
             props.putAll(configuration.getJdbcProperties());
             var proxytypeUserName = ClassUtils.getStaticFieldValue(oracleConnectionClass, "PROXYTYPE_USER_NAME");
             ClassUtils.invoke(oracleConnectionClass,
-                              "openProxySession",
-                              oracleConnection,
-                              new Class[] { String.class, Properties.class },
-                              new Object[] { proxytypeUserName, props },
-                              e -> e instanceof SQLException ? (SQLException) e : null);
+                    "openProxySession",
+                    oracleConnection,
+                    new Class[]{String.class, Properties.class},
+                    new Object[]{proxytypeUserName, props},
+                    e -> e instanceof SQLException ? (SQLException) e : null);
         }
     }
 }

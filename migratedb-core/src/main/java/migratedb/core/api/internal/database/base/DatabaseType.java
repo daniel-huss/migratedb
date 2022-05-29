@@ -22,7 +22,6 @@ import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.api.internal.jdbc.ExecutionTemplate;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.api.internal.parser.Parser;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
@@ -36,6 +35,7 @@ import java.util.regex.Pattern;
 
 /**
  * Extension point for supported database types. Instances are unmodifiable.
+ * FIXME oh what the shit, why are there mutator methods like setConfigConnectionProps?!
  */
 public interface DatabaseType {
     /**
@@ -52,7 +52,6 @@ public interface DatabaseType {
      * Check if this database type should handle the given JDBC url
      *
      * @param url The JDBC url.
-     *
      * @return {@code true} if this handles the JDBC url, {@code false} if not.
      */
     boolean handlesJDBCUrl(String url);
@@ -77,7 +76,6 @@ public interface DatabaseType {
      *
      * @param url         The JDBC url.
      * @param classLoader The classLoader to check for driver classes.
-     *
      * @return The full driver class name to be instantiated to handle this url.
      */
     String getDriverClass(String url, ClassLoader classLoader);
@@ -88,7 +86,6 @@ public interface DatabaseType {
      *
      * @param url         The JDBC url.
      * @param classLoader The classLoader to check for driver classes.
-     *
      * @return The JDBC driver. {@code null} if none.
      */
     String getBackupDriverClass(String url, ClassLoader classLoader);
@@ -101,7 +98,6 @@ public interface DatabaseType {
      * @param databaseProductName    The product name returned by the database.
      * @param databaseProductVersion The product version returned by the database.
      * @param connection             The connection used to connect to the database.
-     *
      * @return {@code true} if this handles the product name and version, {@code false} if not.
      */
     boolean handlesDatabaseProductNameAndVersion(String databaseProductName, String databaseProductVersion,
@@ -117,28 +113,22 @@ public interface DatabaseType {
      */
     Database<?> createDatabase(Configuration configuration,
                                boolean printInfo,
-                               JdbcConnectionFactory jdbcConnectionFactory,
-                               StatementInterceptor statementInterceptor
-    );
+                               JdbcConnectionFactory jdbcConnectionFactory);
 
     /**
      * Initializes the Database used by this Database Type.
      *
      * @param configuration         The MigrateDb configuration.
      * @param jdbcConnectionFactory The current connection factory.
-     *
      * @return The Database.
      */
     Database<?> createDatabase(Configuration configuration,
-                               JdbcConnectionFactory jdbcConnectionFactory,
-                               StatementInterceptor statementInterceptor
-    );
+                               JdbcConnectionFactory jdbcConnectionFactory);
 
     /**
      * Initializes the Parser used by this Database Type.
      *
      * @param configuration The MigrateDb configuration.
-     *
      * @return The Parser.
      */
     Parser createParser(Configuration configuration, ResourceProvider resourceProvider, ParsingContext parsingContext);
@@ -147,7 +137,6 @@ public interface DatabaseType {
      * Initializes the SqlScriptFactory used by this Database Type.
      *
      * @param configuration The MigrateDb configuration.
-     *
      * @return The SqlScriptFactory.
      */
     SqlScriptFactory createSqlScriptFactory(Configuration configuration,
@@ -157,13 +146,10 @@ public interface DatabaseType {
      * Initializes the SqlScriptExecutorFactory used by this Database Type.
      *
      * @param jdbcConnectionFactory The current connection factory.
-     *
      * @return The SqlScriptExecutorFactory.
      */
     SqlScriptExecutorFactory createSqlScriptExecutorFactory(JdbcConnectionFactory jdbcConnectionFactory,
-                                                            CallbackExecutor callbackExecutor,
-                                                            StatementInterceptor statementInterceptor
-    );
+                                                            CallbackExecutor callbackExecutor);
 
     /**
      * Initializes the DatabaseExecutionStrategy used by this Database Type.
@@ -220,7 +206,6 @@ public interface DatabaseType {
      * authentication mechanisms, or supports the user being encoded in the URL
      *
      * @param url The url to check
-     *
      * @return true if a username needs to be provided
      */
     boolean detectUserRequiredByUrl(String url);
@@ -230,7 +215,6 @@ public interface DatabaseType {
      * authentication mechanisms, or supports the password being encoded in the URL
      *
      * @param url The url to check
-     *
      * @return true if a password needs to be provided
      */
     boolean detectPasswordRequiredByUrl(String url);
@@ -245,7 +229,6 @@ public interface DatabaseType {
     /**
      * @param url      The JDBC url.
      * @param username The username for the connection.
-     *
      * @return Authentication properties from database specific locations (e.g. pgpass)
      */
     Properties getExternalAuthProperties(String url, String username);

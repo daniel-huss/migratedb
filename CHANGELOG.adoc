@@ -87,7 +87,9 @@ Extensions must be activated in configuration via useExtension().
 * 🔥 The "empty" migration version.
 * 🔥 Support for wildcards in `filesystem:` locations.
 * 🔥 InsertRowLock because of the deadlocks it caused.
-* Raw type usage.
+* 🔥 Raw type usage.
+* 🔥 InsertRowLock because of the deadlocks it caused.
+* 🔥 StatementInterceptor.
 
 === Fixed
 

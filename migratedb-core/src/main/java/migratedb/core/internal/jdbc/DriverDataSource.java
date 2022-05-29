@@ -49,61 +49,79 @@ public class DriverDataSource implements DataSource {
     private final DatabaseTypeRegister databaseTypeRegister;
     private boolean autoCommit = true;
 
-    public DriverDataSource(ClassLoader classLoader, String driverClass, String url, String user, String password,
+    public DriverDataSource(ClassLoader classLoader,
+                            String driverClass,
+                            String url,
+                            String user,
+                            String password,
                             DatabaseTypeRegister databaseTypeRegister)
-    throws MigrateDbException {
+            throws MigrateDbException {
         this(classLoader,
-             driverClass,
-             url,
-             user,
-             password,
-             null,
-             new Properties(),
-             new HashMap<>(),
-             databaseTypeRegister);
+                driverClass,
+                url,
+                user,
+                password,
+                null,
+                new Properties(),
+                new HashMap<>(),
+                databaseTypeRegister);
     }
 
-    public DriverDataSource(ClassLoader classLoader, String driverClass, String url, String user, String password,
-                            Configuration configuration, DatabaseTypeRegister databaseTypeRegister)
-    throws MigrateDbException {
+    public DriverDataSource(ClassLoader classLoader,
+                            String driverClass,
+                            String url,
+                            String user,
+                            String password,
+                            Configuration configuration,
+                            DatabaseTypeRegister databaseTypeRegister)
+            throws MigrateDbException {
         this(classLoader,
-             driverClass,
-             url,
-             user,
-             password,
-             configuration,
-             new Properties(),
-             new HashMap<>(),
-             databaseTypeRegister);
+                driverClass,
+                url,
+                user,
+                password,
+                configuration,
+                new Properties(),
+                configuration.getJdbcProperties(),
+                databaseTypeRegister);
     }
 
-    public DriverDataSource(ClassLoader classLoader, String driverClass, String url, String user, String password,
-                            Map<String, String> additionalProperties, DatabaseTypeRegister databaseTypeRegister)
-    throws MigrateDbException {
+    public DriverDataSource(ClassLoader classLoader,
+                            String driverClass,
+                            String url,
+                            String user,
+                            String password,
+                            Map<String, String> additionalProperties,
+                            DatabaseTypeRegister databaseTypeRegister)
+            throws MigrateDbException {
         this(classLoader,
-             driverClass,
-             url,
-             user,
-             password,
-             null,
-             new Properties(),
-             additionalProperties,
-             databaseTypeRegister);
+                driverClass,
+                url,
+                user,
+                password,
+                null,
+                new Properties(),
+                additionalProperties,
+                databaseTypeRegister);
     }
 
-    public DriverDataSource(ClassLoader classLoader, String driverClass, String url, String user, String password,
+    public DriverDataSource(ClassLoader classLoader,
+                            String driverClass,
+                            String url,
+                            String user,
+                            String password,
                             Configuration configuration,
                             Map<String, String> additionalProperties,
                             DatabaseTypeRegister databaseTypeRegister) throws MigrateDbException {
         this(classLoader,
-             driverClass,
-             url,
-             user,
-             password,
-             configuration,
-             new Properties(),
-             additionalProperties,
-             databaseTypeRegister);
+                driverClass,
+                url,
+                user,
+                password,
+                configuration,
+                new Properties(),
+                additionalProperties,
+                databaseTypeRegister);
     }
 
     /**
@@ -118,7 +136,6 @@ public class DriverDataSource implements DataSource {
      * @param defaultProperties    Default values of properties to pass to the connection (can be overridden by {@code
      *                             additionalProperties})
      * @param additionalProperties The properties to pass to the connection.
-     *
      * @throws MigrateDbException when the datasource could not be created.
      */
     public DriverDataSource(ClassLoader classLoader, String driverClass, String url, String user, String password,
@@ -133,7 +150,7 @@ public class DriverDataSource implements DataSource {
         if (!StringUtils.hasLength(driverClass)) {
             if (type == null) {
                 throw new MigrateDbException(
-                    "Unable to autodetect JDBC driver for url: " + databaseTypeRegister.redactJdbcUrl(url));
+                        "Unable to autodetect JDBC driver for url: " + databaseTypeRegister.redactJdbcUrl(url));
             }
 
             driverClass = type.getDriverClass(url, classLoader);
@@ -155,18 +172,18 @@ public class DriverDataSource implements DataSource {
                     extendedError = "\n" + extendedError;
                 }
                 throw new MigrateDbException("Unable to instantiate JDBC driver: " + driverClass
-                                             + " => Check whether the jar file is present"
-                                             + extendedError, e,
-                                             ErrorCode.JDBC_DRIVER);
+                        + " => Check whether the jar file is present"
+                        + extendedError, e,
+                        ErrorCode.JDBC_DRIVER);
             }
             try {
                 this.driver = ClassUtils.instantiate(backupDriverClass, classLoader);
             } catch (RuntimeException e1) {
                 // Only report original exception about primary driver
                 throw new MigrateDbException(
-                    "Unable to instantiate JDBC driver: " + driverClass + " or backup driver: " + backupDriverClass +
-                    " => Check whether the jar file is present", e,
-                    ErrorCode.JDBC_DRIVER);
+                        "Unable to instantiate JDBC driver: " + driverClass + " or backup driver: " + backupDriverClass +
+                                " => Check whether the jar file is present", e,
+                        ErrorCode.JDBC_DRIVER);
             }
         }
 
@@ -182,7 +199,6 @@ public class DriverDataSource implements DataSource {
      * Detects a fallback url in case this one is missing.
      *
      * @param url The url to check.
-     *
      * @return The url to use.
      */
     private String detectFallbackUrl(String url) {
@@ -203,7 +219,6 @@ public class DriverDataSource implements DataSource {
      * Detects a fallback user in case this one is missing.
      *
      * @param user The user to check.
-     *
      * @return The user to use.
      */
     private String detectFallbackUser(String user) {
@@ -221,7 +236,6 @@ public class DriverDataSource implements DataSource {
      * Detects a fallback password in case this one is missing.
      *
      * @param password The password to check.
-     *
      * @return The password to use.
      */
     private String detectFallbackPassword(String password) {
@@ -297,9 +311,7 @@ public class DriverDataSource implements DataSource {
      *
      * @param username the name of the user
      * @param password the password to use
-     *
      * @return the obtained Connection
-     *
      * @throws SQLException in case of failure
      * @see java.sql.Driver#connect(String, java.util.Properties)
      */

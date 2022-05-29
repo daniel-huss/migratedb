@@ -21,7 +21,6 @@ import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 
@@ -40,9 +39,8 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
      *
      * @param configuration The MigrateDb configuration.
      */
-    public IgniteThinDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                              StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public IgniteThinDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
     }
 
     @Override

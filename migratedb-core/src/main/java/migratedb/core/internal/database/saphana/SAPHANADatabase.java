@@ -19,7 +19,6 @@ package migratedb.core.internal.database.saphana;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.core.api.internal.jdbc.StatementInterceptor;
 import migratedb.core.internal.database.base.BaseDatabase;
 
 import java.sql.Connection;
@@ -31,9 +30,8 @@ public class SAPHANADatabase extends BaseDatabase<SAPHANAConnection> {
     /**
      * Creates a new instance.
      */
-    public SAPHANADatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory,
-                           StatementInterceptor statementInterceptor) {
-        super(configuration, jdbcConnectionFactory, statementInterceptor);
+    public SAPHANADatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+        super(configuration, jdbcConnectionFactory);
     }
 
     @Override

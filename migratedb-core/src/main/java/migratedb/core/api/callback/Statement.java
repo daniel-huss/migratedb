@@ -20,7 +20,6 @@ import java.util.List;
 
 /**
  * The statement relevant to an event.
- * <p><i> MigrateDB Teams only</i></p>
  */
 public interface Statement {
     /**
