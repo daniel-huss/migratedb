@@ -32,7 +32,7 @@ public class RedshiftDatabase extends BaseDatabase<RedshiftConnection> {
     /**
      * Creates a new instance.
      *
-     * @param configuration The MigrateDb configuration.
+     * @param configuration The MigrateDB configuration.
      */
     public RedshiftDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);

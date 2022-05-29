@@ -70,7 +70,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
      * Creates a new instance of the schema history table support.
      *
      * @param database The database to use.
-     * @param table    The schema history table used by MigrateDb.
+     * @param table    The schema history table used by MigrateDB.
      */
     JdbcTableSchemaHistory(SqlScriptExecutorFactory sqlScriptExecutorFactory, SqlScriptFactory sqlScriptFactory,
                            Database<?> database, Table<?, ?> table) {

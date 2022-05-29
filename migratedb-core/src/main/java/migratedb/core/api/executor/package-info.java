@@ -14,8 +14,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Interface part of internals which must exist to use these types from extensions. Unless you are an extension author
- * you probably won't be using this package.
- */
+
 package migratedb.core.api.executor;

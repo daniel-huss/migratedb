@@ -473,7 +473,7 @@ public class ClassicConfiguration implements Configuration {
 
     /**
      * Sets the stream where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
-     * statements directly against the database. The stream will be closed when MigrateDb finishes writing the output.
+     * statements directly against the database. The stream will be closed when MigrateDB finishes writing the output.
      *
      * @param dryRunOutput The output file or {@code null} to execute the SQL statements directly against the database.
      */
@@ -483,7 +483,7 @@ public class ClassicConfiguration implements Configuration {
 
     /**
      * Sets the file where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
-     * statements directly against the database. If the file specified is in a non-existent directory, MigrateDb will
+     * statements directly against the database. If the file specified is in a non-existent directory, MigrateDB will
      * create all directories and parent directories as needed.
      *
      * @param dryRunOutputFileName The name of the output file or {@code null} to execute the SQL statements directly
@@ -548,14 +548,14 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * The log system MigrateDb should use.
+     * The log system MigrateDB should use.
      */
     public void setLogger(LogSystem logger) {
         this.logger = logger;
     }
 
     /**
-     * The log system(s) MigrateDb should use.
+     * The log system(s) MigrateDB should use.
      */
     public void setLogger(String... logger) {
         this.logger = LogSystems.fromStrings(new LinkedHashSet<>(Arrays.asList(logger)), getClassLoader(), null);
@@ -582,9 +582,9 @@ public class ClassicConfiguration implements Configuration {
      * older deployment of the application that are no longer available in this version. For example: we have migrations
      * available on the classpath with versions 1.0 and 3.0. The schema history table indicates that a migration with
      * version 2.0 (unknown to us) has also been applied. Instead of bombing out (fail fast) with an exception, a
-     * warning is logged and MigrateDb continues normally. This is useful for situations where one must be able to
+     * warning is logged and MigrateDB continues normally. This is useful for situations where one must be able to
      * deploy a newer version of the application even though it doesn't contain migrations included with an older one
-     * anymore. Note that if the most recently applied migration is removed, MigrateDb has no way to know it is missing
+     * anymore. Note that if the most recently applied migration is removed, MigrateDB has no way to know it is missing
      * and will mark it as future instead.
      *
      * @param ignoreMissingMigrations {@code true} to continue normally and log a warning, {@code false} to fail fast
@@ -629,7 +629,7 @@ public class ClassicConfiguration implements Configuration {
      * performed by a newer deployment of the application that are not yet available in this version. For example: we
      * have migrations available on the classpath up to version 3.0. The schema history table indicates that a migration
      * to version 4.0 (unknown to us) has already been applied. Instead of bombing out (fail fast) with an exception, a
-     * warning is logged and MigrateDb continues normally. This is useful for situations where one must be able to
+     * warning is logged and MigrateDB continues normally. This is useful for situations where one must be able to
      * redeploy an older version of the application after the database has been migrated by a newer one.
      *
      * @param ignoreFutureMigrations {@code true} to continue normally and log a warning, {@code false} to fail fast
@@ -748,8 +748,8 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Sets the default schema managed by MigrateDb. This schema name is case-sensitive. If not specified, but
-     * <i>Schemas</i> is, MigrateDb uses the first schema in that list. If that is also not specified, MigrateDb uses
+     * Sets the default schema managed by MigrateDB. This schema name is case-sensitive. If not specified, but
+     * <i>Schemas</i> is, MigrateDB uses the first schema in that list. If that is also not specified, MigrateDb uses
      * the default schema for the database connection.
      * <p>Consequences:</p>
      * <ul>
@@ -765,29 +765,29 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Sets the schemas managed by MigrateDb. These schema names are case-sensitive. If not specified, MigrateDb uses
+     * Sets the schemas managed by MigrateDB. These schema names are case-sensitive. If not specified, MigrateDB uses
      * the default schema for the database connection. If <i>defaultSchema</i> is not specified, then the first of this
      * list also acts as default schema.
      * <p>Consequences:</p>
      * <ul>
-     * <li>MigrateDb will automatically attempt to create all these schemas, unless they already exist.</li>
+     * <li>MigrateDB will automatically attempt to create all these schemas, unless they already exist.</li>
      * <li>The schemas will be cleaned in the order of this list.</li>
-     * <li>If MigrateDb created them, the schemas themselves will be dropped when cleaning.</li>
+     * <li>If MigrateDB created them, the schemas themselves will be dropped when cleaning.</li>
      * </ul>
      *
-     * @param schemas The schemas managed by MigrateDb. May not be {@code null}. Must contain at least one element.
+     * @param schemas The schemas managed by MigrateDB. May not be {@code null}. Must contain at least one element.
      */
     public void setSchemas(String... schemas) {
         this.schemaNames = schemas;
     }
 
     /**
-     * Sets the name of the schema history table that will be used by MigrateDb. By default (single-schema mode) the
+     * Sets the name of the schema history table that will be used by MigrateDB. By default (single-schema mode) the
      * schema history table is placed in the default schema for the connection provided by the datasource. When the
      * <i>migratedb.schemas</i> property is set (multi-schema mode), the schema history table is placed in the first
      * schema of the list.
      *
-     * @param table The name of the schema history table that will be used by MigrateDb. (default:
+     * @param table The name of the schema history table that will be used by MigrateDB. (default:
      *              migratedb_state)
      */
     public void setTable(String table) {
@@ -804,7 +804,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Sets the tablespace where to create the schema history table that will be used by MigrateDb. If not specified,
+     * Sets the tablespace where to create the schema history table that will be used by MigrateDB. If not specified,
      * MigrateDb uses the default tablespace for the database connection.This setting is only relevant for databases
      * that do support the notion of tablespaces. Its value is simply ignored for all others.
      *
@@ -815,7 +815,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Sets the target version up to which MigrateDb should consider migrations. Migrations with a higher version number
+     * Sets the target version up to which MigrateDB should consider migrations. Migrations with a higher version number
      * will be ignored. Special values:
      * <ul>
      * <li>{@code current}: Designates the current version of the schema</li>
@@ -829,14 +829,14 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Sets the target version up to which MigrateDb should consider migrations. Migrations with a higher version number
+     * Sets the target version up to which MigrateDB should consider migrations. Migrations with a higher version number
      * will be ignored. Special values:
      * <ul>
      * <li>{@code current}: Designates the current version of the schema</li>
      * <li>{@code latest}: The latest version of the schema, as defined by the migration with the highest version</li>
      * <li>{@code next}: The next version of the schema, as defined by the first pending migration</li>
      * <li>
-     *     &lt;version&gt;? (end with a '?'): Instructs MigrateDb not to fail if the target version doesn't exist.
+     *     &lt;version&gt;? (end with a '?'): Instructs MigrateDB not to fail if the target version doesn't exist.
      *     In this case, MigrateDb will go up to but not beyond the specified target
      *     (default: fail if the target version doesn't exist)
      * </li>
@@ -858,7 +858,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Gets the migrations that MigrateDb should consider when migrating. Leave empty to consider all available
+     * Gets the migrations that MigrateDB should consider when migrating. Leave empty to consider all available
      * migrations. Migrations not in this list will be ignored.
      */
     public void setCherryPick(MigrationPattern... cherryPick) {
@@ -866,7 +866,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Gets the migrations that MigrateDb should consider when migrating. Leave empty to consider all available
+     * Gets the migrations that MigrateDB should consider when migrating. Leave empty to consider all available
      * migrations. Migrations not in this list will be ignored. Values should be the version for versioned migrations
      * (e.g. 1, 2.4, 6.5.3) or the description for repeatable migrations (e.g. Insert_Data, Create_Table)
      */
@@ -964,7 +964,7 @@ public class ClassicConfiguration implements Configuration {
 
     /**
      * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
-     * scanning and instantiated by MigrateDb. Instead these are application-managed instances of JavaMigration. This is
+     * scanning and instantiated by MigrateDB. Instead these are application-managed instances of JavaMigration. This is
      * particularly useful when working with a dependency injection container, where you may want the DI container to
      * instantiate the class and wire up its dependencies for you.
      *
@@ -979,7 +979,7 @@ public class ClassicConfiguration implements Configuration {
 
     /**
      * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
-     * scanning and instantiated by MigrateDb. Instead these are application-managed instances of JavaMigration. This is
+     * scanning and instantiated by MigrateDB. Instead these are application-managed instances of JavaMigration. This is
      * particularly useful when working with a dependency injection container, where you may want the DI container to
      * instantiate the class and wire up its dependencies for you.
      *
@@ -1074,7 +1074,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * The maximum number of retries when attempting to connect to the database. After each failed attempt, MigrateDb
+     * The maximum number of retries when attempting to connect to the database. After each failed attempt, MigrateDB
      * will wait 1 second before attempting to connect again, up to the maximum number of times specified by
      * connectRetries. The interval between retries doubles with each subsequent attempt.
      *
@@ -1134,7 +1134,7 @@ public class ClassicConfiguration implements Configuration {
      * Sets the description to tag an existing schema with when executing baseline.
      *
      * @param baselineDescription The description to tag an existing schema with when executing baseline. (default:
-     *                            &lt;&lt; MigrateDb Baseline &gt;&gt;)
+     *                            &lt;&lt; MigrateDB Baseline &gt;&gt;)
      */
     public void setBaselineDescription(String baselineDescription) {
         this.baselineDescription = baselineDescription;
@@ -1145,9 +1145,9 @@ public class ClassicConfiguration implements Configuration {
      * table. This schema will then be baselined with the {@code baselineVersion} before executing the migrations. Only
      * migrations above {@code baselineVersion} will then be applied.
      * <p>
-     * This is useful for initial MigrateDb production deployments on projects with an existing DB.
+     * This is useful for initial MigrateDB production deployments on projects with an existing DB.
      * <p>
-     * Be careful when enabling this as it removes the safety net that ensures MigrateDb does not migrate the wrong
+     * Be careful when enabling this as it removes the safety net that ensures MigrateDB does not migrate the wrong
      * database in case of a configuration mistake!
      *
      * @param baselineOnMigrate {@code true} if baseline should be called on migrate for non-empty schemas,
@@ -1169,7 +1169,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Whether MigrateDb should skip actually executing the contents of the migrations and only update the schema
+     * Whether MigrateDB should skip actually executing the contents of the migrations and only update the schema
      * history table. This should be used when you have applied a migration manually (via executing the sql yourself, or
      * via an IDE), and just want the schema history table to reflect this.
      * <p>
@@ -1222,7 +1222,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Whether MigrateDb should skip the default callbacks. If true, only custom callbacks are used.
+     * Whether MigrateDB should skip the default callbacks. If true, only custom callbacks are used.
      *
      * @param skipDefaultCallbacks Whether default built-in callbacks should be skipped. <p>(default: false)</p>
      */
@@ -1252,7 +1252,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Whether MigrateDb should skip the default resolvers. If true, only custom resolvers are used.
+     * Whether MigrateDB should skip the default resolvers. If true, only custom resolvers are used.
      *
      * @param skipDefaultResolvers Whether default built-in resolvers should be skipped. (default: false)
      */
@@ -1261,7 +1261,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Whether MigrateDb should attempt to create the schemas specified in the schemas property.
+     * Whether MigrateDB should attempt to create the schemas specified in the schemas property.
      *
      * @param createSchemas {@code true} to attempt to create the schemas (default: {@code true})
      */
@@ -1282,7 +1282,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Whether MigrateDb should output a table with the results of queries when executing migrations.
+     * Whether MigrateDB should output a table with the results of queries when executing migrations.
      */
     public void setOutputQueryResults(boolean outputQueryResults) {
         this.outputQueryResults = outputQueryResults;
@@ -1400,8 +1400,8 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Configures MigrateDb with these properties. This overwrites any existing configuration. Property names are
-     * documented in {@link PropertyNames}. To use a custom ClassLoader, it must be passed to the MigrateDb constructor
+     * Configures MigrateDB with these properties. This overwrites any existing configuration. Property names are
+     * documented in {@link PropertyNames}. To use a custom ClassLoader, it must be passed to the MigrateDB constructor
      * prior to calling this method. To support the configuration of extensions, those extensions must be activated via
      * {@code useExtension} prior to calling this method.
      *
@@ -1413,8 +1413,8 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Configures MigrateDb with these properties. This overwrites any existing configuration. Property names are
-     * documented in {@link PropertyNames}. To use a custom ClassLoader, it must be passed to the MigrateDb constructor
+     * Configures MigrateDB with these properties. This overwrites any existing configuration. Property names are
+     * documented in {@link PropertyNames}. To use a custom ClassLoader, it must be passed to the MigrateDB constructor
      * prior to calling this method. To support the configuration of extensions, those extensions must be activated via
      * {@code useExtension} prior to calling this method.
      *

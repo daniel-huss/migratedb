@@ -16,8 +16,9 @@
  */
 package migratedb.core.api.migration;
 
-import java.sql.Connection;
 import migratedb.core.api.configuration.Configuration;
+
+import java.sql.Connection;
 
 /**
  * The context relevant to a Java-based migration.
@@ -29,7 +30,7 @@ public interface Context {
     Configuration getConfiguration();
 
     /**
-     * @return The JDBC connection being used. Transactions are managed by MigrateDb. When the context is passed to the
+     * @return The JDBC connection being used. Transactions are managed by MigrateDB. When the context is passed to the
      * migrate method, a transaction will already have been started if required and will be automatically committed or
      * rolled back afterwards, unless the canExecuteInTransaction method has been implemented to return false.
      */

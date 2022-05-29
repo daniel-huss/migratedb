@@ -30,7 +30,7 @@ public class HSQLDBDatabase extends BaseDatabase<HSQLDBConnection> {
     /**
      * Creates a new instance.
      *
-     * @param configuration The MigrateDb configuration.
+     * @param configuration The MigrateDB configuration.
      */
     public HSQLDBDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);

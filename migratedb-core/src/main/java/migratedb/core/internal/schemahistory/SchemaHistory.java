@@ -43,7 +43,7 @@ public abstract class SchemaHistory {
     public static final String NO_DESCRIPTION_MARKER = "<< no description >>";
 
     /**
-     * The schema history table used by MigrateDb. Non-final due to the table name fallback mechanism.
+     * The schema history table used by MigrateDB. Non-final due to the table name fallback mechanism.
      */
     protected Table<?, ?> table;
 
@@ -133,7 +133,7 @@ public abstract class SchemaHistory {
     /**
      * Indicates in the schema history table that MigrateDb created these schemas.
      *
-     * @param schemas The schemas that were created by MigrateDb.
+     * @param schemas The schemas that were created by MigrateDB.
      */
     public final void addSchemasMarker(Schema<?, ?>[] schemas) {
         addAppliedMigration(null,

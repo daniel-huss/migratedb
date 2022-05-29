@@ -73,7 +73,7 @@ public interface Configuration {
     DataSource getDataSource();
 
     /**
-     * The maximum number of retries when attempting to connect to the database. After each failed attempt, MigrateDb
+     * The maximum number of retries when attempting to connect to the database. After each failed attempt, MigrateDB
      * will wait 1 second before attempting to connect again, up to the maximum number of times specified by
      * connectRetries. The interval between retries doubles with each subsequent attempt.
      *
@@ -106,7 +106,7 @@ public interface Configuration {
     /**
      * Retrieves the description to tag an existing schema with when executing baseline.
      *
-     * @return The description to tag an existing schema with when executing baseline. (default: &lt;&lt; MigrateDb
+     * @return The description to tag an existing schema with when executing baseline. (default: &lt;&lt; MigrateDB
      * Baseline &gt;&gt;)
      */
     String getBaselineDescription();
@@ -121,7 +121,7 @@ public interface Configuration {
     MigrationResolver[] getResolvers();
 
     /**
-     * Whether MigrateDb should skip the default resolvers. If true, only custom resolvers are used.
+     * Whether MigrateDB should skip the default resolvers. If true, only custom resolvers are used.
      *
      * @return Whether default built-in resolvers should be skipped. (default: false)
      */
@@ -135,7 +135,7 @@ public interface Configuration {
     Callback[] getCallbacks();
 
     /**
-     * Whether MigrateDb should skip the default callbacks. If true, only custom callbacks are used.
+     * Whether MigrateDB should skip the default callbacks. If true, only custom callbacks are used.
      *
      * @return Whether default built-in callbacks should be skipped. (default: false)
      */
@@ -188,7 +188,7 @@ public interface Configuration {
 
     /**
      * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
-     * scanning and instantiated by MigrateDb. Instead these are manually added instances of JavaMigration. This is
+     * scanning and instantiated by MigrateDB. Instead these are manually added instances of JavaMigration. This is
      * particularly useful when working with a dependency injection container, where you may want the DI container to
      * instantiate the class and wire up its dependencies for you.
      *
@@ -239,19 +239,19 @@ public interface Configuration {
     Map<String, String> getPlaceholders();
 
     /**
-     * Gets the target version up to which MigrateDb should consider migrations. Migrations with a higher version number
+     * Gets the target version up to which MigrateDB should consider migrations. Migrations with a higher version number
      * will be ignored. Special values:
      * <ul>
      * <li>{@code current}: Designates the current version of the schema</li>
      * <li>{@code latest}: The latest version of the schema, as defined by the migration with the highest version</li>
      * <li>
-     *     &lt;version&gt;? (end with a '?'): Instructs MigrateDb not to fail if the target version doesn't exist.
-     *     In this case, MigrateDb will go up to but not beyond the specified target
-     *     (default: fail if the target version doesn't exist) <i>MigrateDb Teams only</i>
+     *     &lt;version&gt;? (end with a '?'): Instructs MigrateDB not to fail if the target version doesn't exist.
+     *     In this case, MigrateDB will go up to but not beyond the specified target
+     *     (default: fail if the target version doesn't exist)
      * </li>
      * </ul>
      *
-     * @return The target version up to which MigrateDb should consider migrations. Defaults to {@code latest}
+     * @return The target version up to which MigrateDB should consider migrations. Defaults to {@code latest}
      */
     TargetVersion getTarget();
 
@@ -261,16 +261,15 @@ public interface Configuration {
     boolean getFailOnMissingTarget();
 
     /**
-     * Gets the migrations that MigrateDb should consider when migrating. Leave empty to consider all available
+     * Gets the migrations that MigrateDB should consider when migrating. Leave empty to consider all available
      * migrations. Migrations not in this list will be ignored.
-     * <i>MigrateDb Teams only</i>
      *
      * @return The migrations that MigrateDb should consider when migrating.
      */
     MigrationPattern[] getCherryPick();
 
     /**
-     * Retrieves the name of the schema history table that will be used by MigrateDb. By default (single-schema mode)
+     * Retrieves the name of the schema history table that will be used by MigrateDB. By default (single-schema mode)
      * the schema history table is placed in the default schema for the connection provided by the datasource. When the
      * <i>migratedb.schemas</i> property is set (multi-schema mode), the schema history table is placed in the first
      * schema of the list.
@@ -285,8 +284,8 @@ public interface Configuration {
     @Nullable String getOldTable();
 
     /**
-     * The tablespace where to create the schema history table that will be used by MigrateDb. If not specified,
-     * MigrateDb uses the default tablespace for the database connection. This setting is only relevant for databases
+     * The tablespace where to create the schema history table that will be used by MigrateDB. If not specified,
+     * MigrateDB uses the default tablespace for the database connection. This setting is only relevant for databases
      * that do support the notion of tablespaces. Its value is simply ignored for all others.
      *
      * @return The tablespace where to create the schema history table that will be used by MigrateDb.
@@ -294,8 +293,8 @@ public interface Configuration {
     @Nullable String getTablespace();
 
     /**
-     * The default schema managed by MigrateDb. This schema name is case-sensitive. If not specified, but <i>schemas</i>
-     * is, MigrateDb uses the first schema in that list. If that is also not specified, MigrateDb uses the default
+     * The default schema managed by MigrateDB. This schema name is case-sensitive. If not specified, but <i>schemas</i>
+     * is, MigrateDB uses the first schema in that list. If that is also not specified, MigrateDb uses the default
      * schema for the database connection.
      * <p>Consequences:</p>
      * <ul>
@@ -304,23 +303,23 @@ public interface Configuration {
      * .</li>
      * </ul>
      *
-     * @return The schemas managed by MigrateDb. (default: The first schema specified in getSchemas(), and failing that
+     * @return The schemas managed by MigrateDB. (default: The first schema specified in getSchemas(), and failing that
      * the default schema for the database connection)
      */
     String getDefaultSchema();
 
     /**
-     * The schemas managed by MigrateDb. These schema names are case-sensitive. If not specified, MigrateDb uses the
+     * The schemas managed by MigrateDB. These schema names are case-sensitive. If not specified, MigrateDB uses the
      * default schema for the database connection. If <i>defaultSchemaName</i> is not specified, then the first of this
      * list also acts as default schema.
      * <p>Consequences:</p>
      * <ul>
-     * <li>MigrateDb will automatically attempt to create all these schemas, unless they already exist.</li>
+     * <li>MigrateDB will automatically attempt to create all these schemas, unless they already exist.</li>
      * <li>The schemas will be cleaned in the order of this list.</li>
-     * <li>If MigrateDb created them, the schemas themselves will be dropped when cleaning.</li>
+     * <li>If MigrateDB created them, the schemas themselves will be dropped when cleaning.</li>
      * </ul>
      *
-     * @return The schemas managed by MigrateDb. (default: The default schema for the database connection)
+     * @return The schemas managed by MigrateDB. (default: The default schema for the database connection)
      */
     String[] getSchemas();
 
@@ -346,9 +345,9 @@ public interface Configuration {
      * table. This schema will then be initialized with the {@code baselineVersion} before executing the migrations.
      * Only migrations above {@code baselineVersion} will then be applied.
      * <p>
-     * This is useful for initial MigrateDb production deployments on projects with an existing DB.
+     * This is useful for initial MigrateDB production deployments on projects with an existing DB.
      * <p>
-     * Be careful when enabling this as it removes the safety net that ensures MigrateDb does not migrate the wrong
+     * Be careful when enabling this as it removes the safety net that ensures MigrateDB does not migrate the wrong
      * database in case of a configuration mistake!
      *
      * @return {@code true} if baseline should be called on migrate for non-empty schemas, {@code false} if not.
@@ -357,7 +356,7 @@ public interface Configuration {
     boolean isBaselineOnMigrate();
 
     /**
-     * Whether MigrateDb should skip actually executing the contents of the migrations and only update the schema
+     * Whether MigrateDB should skip actually executing the contents of the migrations and only update the schema
      * history table. This should be used when you have applied a migration manually (via executing the sql yourself, or
      * via an ide), and just want the schema history table to reflect this.
      * <p>
@@ -381,7 +380,7 @@ public interface Configuration {
      * older deployment of the application that are no longer available in this version. For example: we have migrations
      * available on the classpath with versions 1.0 and 3.0. The schema history table indicates that a migration with
      * version 2.0 (unknown to us) has also been applied. Instead of bombing out (fail fast) with an exception, a
-     * warning is logged and MigrateDb continues normally. This is useful for situations where one must be able to
+     * warning is logged and MigrateDB continues normally. This is useful for situations where one must be able to
      * deploy a newer version of the application even though it doesn't contain migrations included with an older one
      * anymore. Note that if the most recently applied migration is removed, MigrateDb has no way to know it is missing
      * and will mark it as future instead.
@@ -420,7 +419,7 @@ public interface Configuration {
      * newer deployment of the application that are not yet available in this version. For example: we have migrations
      * available on the classpath up to version 3.0. The schema history table indicates that a migration to version 4.0
      * (unknown to us) has already been applied. Instead of bombing out (fail fast) with an exception, a warning is
-     * logged and MigrateDb continues normally. This is useful for situations where one must be able to redeploy an
+     * logged and MigrateDB continues normally. This is useful for situations where one must be able to redeploy an
      * older version of the application after the database has been migrated by a newer one.
      *
      * @return {@code true} to continue normally and log a warning, {@code false} to fail fast with an exception.
@@ -525,7 +524,6 @@ public interface Configuration {
      * code details) instead of warnings, the following errorOverride can be used: {@code S0001:0:I-}</p>
      * <p>Example 3: to force all errors with SQL error code 123 to be treated as warnings instead,
      * the following errorOverride can be used: {@code *:123:W}</p>
-     * <i>MigrateDb Teams only</i>
      *
      * @return The ErrorOverrides or an empty array if none are defined. (default: none)
      */
@@ -561,9 +559,7 @@ public interface Configuration {
     String getLicenseKey();
 
     /**
-     * Whether MigrateDb should output a table with the results of queries when executing migrations.
-     *
-     * <i>MigrateDb Teams only</i>
+     * Whether MigrateDB should output a table with the results of queries when executing migrations.
      *
      * @return {@code true} to output the results table (default: {@code true})
      */
@@ -586,7 +582,7 @@ public interface Configuration {
     ClassProvider<JavaMigration> getJavaMigrationClassProvider();
 
     /**
-     * Whether MigrateDb should attempt to create the schemas specified in the schemas property.
+     * Whether MigrateDB should attempt to create the schemas specified in the schemas property.
      *
      * @return {@code true} to attempt to create the schemas (default: {@code true})
      */
@@ -600,8 +596,6 @@ public interface Configuration {
     /**
      * Properties to pass to the JDBC driver object
      *
-     * <i>MigrateDb Teams only</i>
-     *
      * @return Properties that will be passed to the JDBC driver object
      */
     Map<String, String> getJdbcProperties();
@@ -614,7 +608,7 @@ public interface Configuration {
     boolean getFailOnMissingLocations();
 
     /**
-     * The log system MigrateDb should use.
+     * The log system MigrateDB should use.
      */
     LogSystem getLogger();
 

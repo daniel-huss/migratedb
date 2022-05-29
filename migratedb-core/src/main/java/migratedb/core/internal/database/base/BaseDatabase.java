@@ -76,14 +76,14 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
     }
 
     /**
-     * Retrieves a MigrateDb Connection for this JDBC connection.
+     * Retrieves a MigrateDB Connection for this JDBC connection.
      */
     private C getConnection(java.sql.Connection connection) {
         return doGetConnection(connection);
     }
 
     /**
-     * Retrieves a MigrateDb Connection for this JDBC connection.
+     * Retrieves a MigrateDB Connection for this JDBC connection.
      */
     protected abstract C doGetConnection(java.sql.Connection connection);
 
@@ -377,7 +377,7 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
     /**
      * Cleans all the objects in this database that need to be cleaned after each schema.
      *
-     * @param schemas The list of schemas managed by MigrateDb.
+     * @param schemas The list of schemas managed by MigrateDB.
      * @throws SQLException when the clean failed.
      */
     protected void doCleanPostSchemas(Schema<?, ?>[] schemas) throws SQLException {

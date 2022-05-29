@@ -16,11 +16,12 @@
  */
 package migratedb.core.api.migration;
 
-import java.math.BigInteger;
 import migratedb.core.api.Checksum;
 import migratedb.core.api.Version;
 import migratedb.core.api.configuration.Configuration;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.math.BigInteger;
 
 /**
  * Interface to be implemented by Java-based Migrations.
@@ -93,7 +94,7 @@ public interface JavaMigration {
      * database supports it and the canExecuteInTransaction returns {@code true}.
      *
      * @param context The context relevant for this migration, containing things like the JDBC connection to use and the
-     *                current MigrateDb configuration.
+     *                current MigrateDB configuration.
      *
      * @throws Exception when the migration failed.
      */

@@ -17,12 +17,12 @@
 package migratedb.core;
 
 import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.MigrateDbValidateException;
 import migratedb.core.api.MigrationInfoService;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.ClassicConfiguration;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.configuration.FluentConfiguration;
-import migratedb.core.api.exception.MigrateDbValidateException;
 import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
@@ -62,7 +62,7 @@ public class MigrateDb {
      * <p>In its simplest form, this is how you configure MigrateDb with all defaults to get started:</p>
      * <pre>MigrateDb migratedb = MigrateDb.configure().dataSource(url, user, password).load();</pre>
      * <p>After that you have a fully-configured MigrateDb instance at your disposal which can be used to invoke
-     * MigrateDb functionality such as migrate() or clean().</p>
+     * MigrateDB functionality such as migrate() or clean().</p>
      *
      * @return A new configuration from which MigrateDb can be loaded.
      */
@@ -79,15 +79,14 @@ public class MigrateDb {
      * MigrateDb functionality such as migrate() or clean().</p>
      *
      * @param classLoader The class loader to use when loading classes and resources.
-     *
-     * @return A new configuration from which MigrateDb can be loaded.
+     * @return A new configuration from which MigrateDB can be loaded.
      */
     public static FluentConfiguration configure(ClassLoader classLoader) {
         return new FluentConfiguration(classLoader);
     }
 
     /**
-     * Creates a new instance of MigrateDb with this configuration. In general the MigrateDb.configure() factory method
+     * Creates a new instance of MigrateDB with this configuration. In general the MigrateDb.configure() factory method
      * should be preferred over this constructor, unless you need to create or reuse separate Configuration objects.
      *
      * @param configuration The configuration to use.
@@ -98,7 +97,7 @@ public class MigrateDb {
     }
 
     /**
-     * @return The configuration that MigrateDb is using.
+     * @return The configuration that MigrateDB is using.
      */
     public Configuration getConfiguration() {
         return new ClassicConfiguration(configuration);
@@ -379,7 +378,7 @@ public class MigrateDb {
      * @param database          The database-specific support.
      * @param migrationResolver The migration resolver;
      * @param schemaHistory     The schema history table.
-     * @param schemas           The schemas managed by MigrateDb.
+     * @param schemas           The schemas managed by MigrateDB.
      * @param callbackExecutor  The callback executor.
      * @param ignorePending     Whether to ignore pending migrations.
      */

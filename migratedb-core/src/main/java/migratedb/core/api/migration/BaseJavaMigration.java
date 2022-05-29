@@ -50,7 +50,7 @@ public abstract class BaseJavaMigration implements JavaMigration {
     private final String description;
 
     /**
-     * Creates a new instance of a Java-based migration following MigrateDb's default naming convention.
+     * Creates a new instance of a Java-based migration following MigrateDB's default naming convention.
      */
     public BaseJavaMigration() {
         String shortName = getClass().getSimpleName();

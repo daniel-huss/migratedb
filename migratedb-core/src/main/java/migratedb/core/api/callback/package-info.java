@@ -13,10 +13,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ /**
- * Interfaces for MigrateDB lifecycle callbacks.
  */
 /**
- * Interfaces for MigrateDb lifecycle callbacks.
+ * Interfaces for MigrateDB lifecycle callbacks.
  */
 package migratedb.core.api.callback;

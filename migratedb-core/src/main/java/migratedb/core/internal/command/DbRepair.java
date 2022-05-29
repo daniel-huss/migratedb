@@ -81,7 +81,7 @@ public class DbRepair {
     private final RepairResult repairResult;
 
     /**
-     * The MigrateDb configuration.
+     * The MigrateDB configuration.
      */
     private final Configuration configuration;
 

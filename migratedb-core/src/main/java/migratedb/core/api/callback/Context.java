@@ -16,10 +16,11 @@
  */
 package migratedb.core.api.callback;
 
-import java.sql.Connection;
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.output.OperationResult;
+
+import java.sql.Connection;
 
 /**
  * The context relevant to an event.
@@ -31,7 +32,7 @@ public interface Context {
     Configuration getConfiguration();
 
     /**
-     * @return The JDBC connection being used. Transaction are managed by MigrateDb. When the context is passed to the
+     * @return The JDBC connection being used. Transaction are managed by MigrateDB. When the context is passed to the
      * {@link Callback#handle(Event, Context)} method, a transaction will already have been started if required and will
      * be automatically committed or rolled back afterwards.
      */

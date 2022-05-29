@@ -31,7 +31,7 @@ public class DerbyDatabase extends BaseDatabase<DerbyConnection> {
     /**
      * Creates a new instance.
      *
-     * @param configuration The MigrateDb configuration.
+     * @param configuration The MigrateDB configuration.
      */
     public DerbyDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);

@@ -28,9 +28,9 @@ import io.kotest.matchers.result.shouldBeFailureOfType
 import io.kotest.matchers.result.shouldNotBeFailureOfType
 import io.kotest.matchers.shouldBe
 import migratedb.core.api.MigrateDbException
+import migratedb.core.api.MigrateDbValidateException
 import migratedb.core.api.MigrationType
 import migratedb.core.api.Version
-import migratedb.core.api.exception.MigrateDbValidateException
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.IntegrationTest

@@ -16,53 +16,10 @@
  */
 package migratedb.commandline;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static migratedb.commandline.CommandLineConfigKey.CONFIG_FILES;
-import static migratedb.commandline.CommandLineConfigKey.CONFIG_FILE_ENCODING;
-import static migratedb.commandline.CommandLineConfigKey.JAR_DIRS;
-import static migratedb.core.internal.configuration.ConfigUtils.loadConfiguration;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.Console;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.NotDirectoryException;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.TreeMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import migratedb.core.MigrateDb;
-import migratedb.core.api.DatabaseTypeRegister;
-import migratedb.core.api.ErrorCode;
-import migratedb.core.api.Location;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrateDbExtension;
+import migratedb.core.api.*;
 import migratedb.core.api.configuration.FluentConfiguration;
 import migratedb.core.api.configuration.PropertyNames;
 import migratedb.core.api.internal.database.base.DatabaseType;
@@ -77,6 +34,26 @@ import migratedb.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.yaml.snakeyaml.Yaml;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static migratedb.commandline.CommandLineConfigKey.*;
+import static migratedb.core.internal.configuration.ConfigUtils.loadConfiguration;
 
 class MigrateDbCommand {
     private static final Log LOG = Log.getLog(MigrateDbCommand.class);
@@ -557,7 +534,7 @@ class MigrateDbCommand {
     }
 
     /**
-     * Filters the properties to remove the MigrateDb Commandline-specific ones.
+     * Filters the properties to remove the MigrateDB command line specific ones.
      */
     private void filterProperties(Map<String, String> config) {
         config.remove(JAR_DIRS);

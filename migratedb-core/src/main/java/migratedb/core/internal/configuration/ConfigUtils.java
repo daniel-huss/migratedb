@@ -16,7 +16,9 @@
  */
 package migratedb.core.internal.configuration;
 
-import static migratedb.core.internal.sqlscript.SqlScriptMetadataImpl.isMultilineBooleanExpression;
+import migratedb.core.api.ErrorCode;
+import migratedb.core.api.MigrateDbException;
+import migratedb.core.internal.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,9 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import migratedb.core.api.ErrorCode;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.internal.util.StringUtils;
+
+import static migratedb.core.internal.sqlscript.SqlScriptMetadataImpl.isMultilineBooleanExpression;
 
 public enum ConfigUtils {
     ;
@@ -181,7 +182,7 @@ public enum ConfigUtils {
      * Reports all remaining keys in {@code config} that start with {@code prefix} as unrecognised by throwing an
      * exception. Does nothing if {@code config} is empty or none of its keys start with {@code prefix}.
      *
-     * @param prefix The expected prefix for MigrateDb configuration parameters. {@code null} if none.
+     * @param prefix The expected prefix for MigrateDB configuration parameters. {@code null} if none.
      */
     public static void reportUnrecognisedProperties(Map<String, String> config, String prefix) {
         ArrayList<String> unknownMigrateDbProperties = new ArrayList<>();

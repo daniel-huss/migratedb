@@ -14,17 +14,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.api.exception;
 
-import migratedb.core.api.ErrorDetails;
-import migratedb.core.api.MigrateDbException;
-
-/**
- * Exception thrown when MigrateDB encounters a problem with Validate.
- */
-public class MigrateDbValidateException extends MigrateDbException {
-
-    public MigrateDbValidateException(ErrorDetails errorDetails, String allValidateMessages) {
-        super("Validate failed: " + errorDetails.errorMessage + "\n" + allValidateMessages, errorDetails.errorCode);
-    }
-}
+package migratedb.core.api.internal.resource;

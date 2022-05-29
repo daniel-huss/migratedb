@@ -28,7 +28,7 @@ public class FirebirdDatabase extends BaseDatabase<FirebirdConnection> {
     /**
      * Creates a new FirebirdDatabase instance with this JdbcTemplate.
      *
-     * @param configuration The MigrateDb configuration.
+     * @param configuration The MigrateDB configuration.
      */
     public FirebirdDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);

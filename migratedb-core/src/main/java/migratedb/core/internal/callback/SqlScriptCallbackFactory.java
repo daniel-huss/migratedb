@@ -16,12 +16,6 @@
  */
 package migratedb.core.internal.callback;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.callback.Callback;
@@ -36,6 +30,8 @@ import migratedb.core.api.logging.Log;
 import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.resource.ResourceNameParser;
 
+import java.util.*;
+
 /**
  * Callback factory, looking for SQL scripts (named like on the callback methods) inside the configured locations.
  */
@@ -49,7 +45,7 @@ public class SqlScriptCallbackFactory {
      *
      * @param resourceProvider The resource provider.
      * @param sqlScriptFactory The SQL statement factory.
-     * @param configuration    The MigrateDb configuration.
+     * @param configuration    The MigrateDB configuration.
      */
     public SqlScriptCallbackFactory(ResourceProvider resourceProvider,
                                     SqlScriptExecutorFactory sqlScriptExecutorFactory,

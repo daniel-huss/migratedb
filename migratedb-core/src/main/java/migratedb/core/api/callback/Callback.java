@@ -46,7 +46,7 @@ public interface Callback {
     boolean canHandleInTransaction(Event event, Context context);
 
     /**
-     * Handles this MigrateDb lifecycle event.
+     * Handles this MigrateDB lifecycle event.
      *
      * @param event   The event to handle.
      * @param context The context for this event.
@@ -54,7 +54,7 @@ public interface Callback {
     void handle(Event event, Context context);
 
     /**
-     * The callback name, MigrateDb will use this to sort the callbacks alphabetically before executing them
+     * The callback name, MigrateDB will use this to sort the callbacks alphabetically before executing them
      *
      * @return The callback name
      */

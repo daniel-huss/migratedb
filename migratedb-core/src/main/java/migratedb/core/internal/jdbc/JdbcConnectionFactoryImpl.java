@@ -50,7 +50,7 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
      * call to openConnection and which must be closed again to avoid leaking it.
      *
      * @param dataSource    The DataSource to obtain the connection from.
-     * @param configuration The MigrateDb configuration.
+     * @param configuration The MigrateDB configuration.
      */
     public JdbcConnectionFactoryImpl(DataSource dataSource, Configuration configuration) {
         this.dataSource = dataSource;

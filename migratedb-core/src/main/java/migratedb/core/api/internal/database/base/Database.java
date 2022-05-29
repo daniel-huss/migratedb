@@ -27,7 +27,7 @@ import java.sql.DatabaseMetaData;
 
 public interface Database<C extends Connection<?>> extends Closeable {
     /**
-     * Ensure MigrateDb supports this version of this database.
+     * Ensure MigrateDB supports this version of this database.
      */
     void ensureSupported();
 
@@ -122,7 +122,7 @@ public interface Database<C extends Connection<?>> extends Closeable {
     /**
      * Cleans all the objects in this database that need to be cleaned after each schema.
      *
-     * @param schemas The list of schemas managed by MigrateDb.
+     * @param schemas The list of schemas managed by MigrateDB.
      */
     void cleanPostSchemas(Schema<?, ?>[] schemas);
 

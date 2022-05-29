@@ -16,12 +16,13 @@
 
 package migratedb.core.internal.database.oracle;
 
-import static migratedb.core.internal.configuration.ConfigUtils.removeBoolean;
-
-import java.util.Map;
 import migratedb.core.api.ConfigPropertiesConverter;
 import migratedb.core.api.ConvertedProperties;
 import migratedb.core.api.ExtensionConfig;
+
+import java.util.Map;
+
+import static migratedb.core.internal.configuration.ConfigUtils.removeBoolean;
 
 public final class OracleConfig implements ExtensionConfig {
 
@@ -68,9 +69,7 @@ public final class OracleConfig implements ExtensionConfig {
     private String oracleWalletLocation;
 
     /**
-     * Whether to MigrateDb's support for Oracle SQL*Plus commands should be activated.
-     *
-     * <i>MigrateDb Teams only</i>
+     * Whether MigrateDB's support for Oracle SQL*Plus commands should be activated.
      *
      * @return {@code true} to active SQL*Plus support. {@code false} to fail fast instead. (default: {@code false})
      */
@@ -79,10 +78,8 @@ public final class OracleConfig implements ExtensionConfig {
     }
 
     /**
-     * Whether MigrateDb should issue a warning instead of an error whenever it encounters an Oracle SQL*Plus statement
+     * Whether MigrateDB should issue a warning instead of an error whenever it encounters an Oracle SQL*Plus statement
      * it doesn't yet support.
-     *
-     * <i>MigrateDb Teams only</i>
      *
      * @return {@code true} to issue a warning. {@code false} to fail fast instead. (default: {@code false})
      */
@@ -105,7 +102,7 @@ public final class OracleConfig implements ExtensionConfig {
     }
 
     /**
-     * Whether MigrateDb's support for Oracle SQL*Plus commands should be activated.
+     * Whether MigrateDB's support for Oracle SQL*Plus commands should be activated.
      *
      * @param oracleSqlplus {@code true} to active SQL*Plus support. {@code false} to fail fast instead. (default:
      *                      {@code false})
@@ -115,7 +112,7 @@ public final class OracleConfig implements ExtensionConfig {
     }
 
     /**
-     * Whether MigrateDb should issue a warning instead of an error whenever it encounters an Oracle SQL*Plus
+     * Whether MigrateDB should issue a warning instead of an error whenever it encounters an Oracle SQL*Plus
      * statementit doesn't yet support.
      *
      * @param oracleSqlplusWarn {@code true} to issue a warning. {@code false} to fail fast instead. (default: {@code

@@ -259,7 +259,7 @@ public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
     }
 
     /**
-     * @param schemas The list of schemas managed by MigrateDb
+     * @param schemas The list of schemas managed by MigrateDB
      * @return The drop statements.
      * @throws SQLException when the clean statements could not be generated.
      */

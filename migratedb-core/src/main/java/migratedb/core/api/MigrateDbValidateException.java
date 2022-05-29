@@ -1,5 +1,4 @@
 /*
- * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * MigrateDB's log abstraction. Custom MigrationResolver, MigrationExecutor, MigrateDbCallback, ErrorHandler and
- * JdbcMigration implementations should use this to obtain a logger that obeys the logging configuration passed to
- * MigrateDB.
- */
-@DefaultQualifier(value = NonNull.class, locations = { TypeUseLocation.PARAMETER, TypeUseLocation.RETURN })
-package migratedb.core.api.logging;
+package migratedb.core.api;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.checkerframework.framework.qual.TypeUseLocation;
+/**
+ * Exception thrown when MigrateDB encounters a problem with Validate.
+ */
+public class MigrateDbValidateException extends MigrateDbException {
+
+    public MigrateDbValidateException(ErrorDetails errorDetails, String allValidateMessages) {
+        super("Validate failed: " + errorDetails.errorMessage + "\n" + allValidateMessages, errorDetails.errorCode);
+    }
+}

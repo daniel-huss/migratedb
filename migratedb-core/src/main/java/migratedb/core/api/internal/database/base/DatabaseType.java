@@ -92,7 +92,7 @@ public interface DatabaseType {
 
     /**
      * Check if this database type handles the connection product name and version. This allows more fine-grained
-     * control over which DatabaseType handles which connection. MigrateDb will use the first DatabaseType that returns
+     * control over which DatabaseType handles which connection. MigrateDB will use the first DatabaseType that returns
      * true for this method.
      *
      * @param databaseProductName    The product name returned by the database.
@@ -106,7 +106,7 @@ public interface DatabaseType {
     /**
      * Initializes the Database class, and optionally prints some information.
      *
-     * @param configuration         The MigrateDb configuration.
+     * @param configuration         The MigrateDB configuration.
      * @param jdbcConnectionFactory The current connection factory.
      * @param printInfo             Where the DB info should be printed in the logs.
      * @return The appropriate Database class.
@@ -118,7 +118,7 @@ public interface DatabaseType {
     /**
      * Initializes the Database used by this Database Type.
      *
-     * @param configuration         The MigrateDb configuration.
+     * @param configuration         The MigrateDB configuration.
      * @param jdbcConnectionFactory The current connection factory.
      * @return The Database.
      */
@@ -128,7 +128,7 @@ public interface DatabaseType {
     /**
      * Initializes the Parser used by this Database Type.
      *
-     * @param configuration The MigrateDb configuration.
+     * @param configuration The MigrateDB configuration.
      * @return The Parser.
      */
     Parser createParser(Configuration configuration, ResourceProvider resourceProvider, ParsingContext parsingContext);
@@ -136,7 +136,7 @@ public interface DatabaseType {
     /**
      * Initializes the SqlScriptFactory used by this Database Type.
      *
-     * @param configuration The MigrateDb configuration.
+     * @param configuration The MigrateDB configuration.
      * @return The SqlScriptFactory.
      */
     SqlScriptFactory createSqlScriptFactory(Configuration configuration,
@@ -179,7 +179,7 @@ public interface DatabaseType {
      * Set any necessary connection properties based on MigrateDb's configuration. These can be overridden by {@code
      * setOverridingConnectionProps}
      *
-     * @param config      The MigrateDb configuration to read properties from
+     * @param config      The MigrateDB configuration to read properties from
      * @param props       The properties to write to.
      * @param classLoader The classLoader to use.
      */
@@ -237,7 +237,7 @@ public interface DatabaseType {
      * Carries out any manipulation on the Connection that is required by MigrateDb's config
      *
      * @param connection    The JDBC connection.
-     * @param configuration The MigrateDb configuration.
+     * @param configuration The MigrateDB configuration.
      */
     Connection alterConnectionAsNeeded(Connection connection, Configuration configuration);
 

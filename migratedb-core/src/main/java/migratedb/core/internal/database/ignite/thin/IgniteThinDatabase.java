@@ -37,7 +37,7 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
     /**
      * Creates a new instance.
      *
-     * @param configuration The MigrateDb configuration.
+     * @param configuration The MigrateDB configuration.
      */
     public IgniteThinDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);

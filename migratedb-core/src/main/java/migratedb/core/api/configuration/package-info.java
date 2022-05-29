@@ -13,10 +13,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ /**
- * Interfaces for MigrateDB configuration injection.
  */
 /**
- * Interfaces for MigrateDb configuration injection.
+ * Interfaces for MigrateDB configuration
  */
 package migratedb.core.api.configuration;

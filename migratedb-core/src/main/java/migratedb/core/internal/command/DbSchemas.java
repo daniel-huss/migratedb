@@ -41,7 +41,7 @@ public class DbSchemas {
     private final Connection<?> connection;
 
     /**
-     * The schemas managed by MigrateDb.
+     * The schemas managed by MigrateDB.
      */
     private final Schema<?, ?>[] schemas;
 
@@ -64,7 +64,7 @@ public class DbSchemas {
      * Creates a new DbSchemas.
      *
      * @param database      The database to use.
-     * @param schemas       The schemas managed by MigrateDb.
+     * @param schemas       The schemas managed by MigrateDB.
      * @param schemaHistory The schema history table.
      */
     public DbSchemas(Database<?> database, Schema<?, ?>[] schemas, SchemaHistory schemaHistory,

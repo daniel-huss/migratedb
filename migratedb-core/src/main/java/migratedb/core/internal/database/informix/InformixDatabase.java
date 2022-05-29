@@ -31,7 +31,7 @@ public class InformixDatabase extends BaseDatabase<InformixConnection> {
     /**
      * Creates a new instance.
      *
-     * @param configuration The MigrateDb configuration.
+     * @param configuration The MigrateDB configuration.
      */
     public InformixDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);

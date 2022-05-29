@@ -125,7 +125,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
     }
 
     /**
-     * This allows more fine-grained control over which DatabaseType handles which connection. MigrateDb will use the
+     * This allows more fine-grained control over which DatabaseType handles which connection. MigrateDB will use the
      * first DatabaseType that returns true for this method.
      */
     @Override
@@ -230,10 +230,10 @@ public abstract class BaseDatabaseType implements DatabaseType {
     }
 
     /**
-     * Set any necessary connection properties based on MigrateDb's configuration. These can be overridden by {@code
+     * Set any necessary connection properties based on MigrateDB's configuration. These can be overridden by {@code
      * setOverridingConnectionProps}.
      *
-     * @param config      The MigrateDb configuration to read properties from.
+     * @param config      The MigrateDB configuration to read properties from.
      * @param props       The properties to write to.
      * @param classLoader The classLoader to use.
      */

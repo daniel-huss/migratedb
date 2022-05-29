@@ -132,7 +132,7 @@ public class DriverDataSource implements DataSource {
      * @param url                  The JDBC URL to use for connecting through the Driver. (required)
      * @param user                 The JDBC user to use for connecting through the Driver.
      * @param password             The JDBC password to use for connecting through the Driver.
-     * @param configuration        The MigrateDb configuration
+     * @param configuration        The MigrateDB configuration
      * @param defaultProperties    Default values of properties to pass to the connection (can be overridden by {@code
      *                             additionalProperties})
      * @param additionalProperties The properties to pass to the connection.
