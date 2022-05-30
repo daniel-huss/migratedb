@@ -67,6 +67,9 @@ enum class Db2(image: String) : DbSystem {
         }
 
         init {
+            withCreateContainerCmdModifier {
+                it.hostConfig!!.withMemory(500_000_000)
+            }
             withEnv("DBNAME", defaultDatabase)
             withEnv("DB2INSTANCE", adminUser)
             withEnv("DB2INST1_PASSWORD", password)

@@ -41,7 +41,6 @@ import java.net.URLClassLoader
  * Resolves Maven artifacts from local / Maven Central repository.
  */
 object DependencyResolver {
-
     fun Collection<Dependency>.toClassLoader(): URLClassLoader {
         val urls = map { it.artifact.file.toPath().toUri().toURL() }.toTypedArray()
         return URLClassLoader(urls, Thread.currentThread().contextClassLoader)

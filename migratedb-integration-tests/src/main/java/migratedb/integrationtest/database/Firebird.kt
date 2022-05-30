@@ -26,7 +26,6 @@ import migratedb.integrationtest.util.container.SharedResources
 import org.firebirdsql.ds.FBSimpleDataSource
 import org.firebirdsql.management.FBMaintenanceManager
 import org.firebirdsql.management.FBManager
-import org.firebirdsql.management.MaintenanceManager
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
@@ -94,6 +93,9 @@ enum class Firebird(image: String) : DbSystem {
         }
 
         init {
+            withCreateContainerCmdModifier {
+                it.hostConfig!!.withMemory(300_000_000)
+            }
             withEnv("FIREBIRD_DATABASE", defaultDatabase)
             withEnv("FIREBIRD_USER", defaultUser)
             withEnv("FIREBIRD_PASSWORD", password)
@@ -121,13 +123,9 @@ enum class Firebird(image: String) : DbSystem {
         }
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
-            val database = namespace.toString()
-            container().withFbMaintenanceManager(database) { maintenanceManager ->
-                maintenanceManager.shutdownDatabase(MaintenanceManager.SHUTDOWN_FORCE, 5)
-                container().withFbManager { manager ->
-                    if (manager.isDatabaseExists(namespace.toString(), adminUser, password)) {
-                        manager.dropDatabase(namespace.toString(), adminUser, password)
-                    }
+            container().withFbManager { manager ->
+                if (manager.isDatabaseExists(namespace.toString(), adminUser, password)) {
+                    manager.dropDatabase(namespace.toString(), adminUser, password)
                 }
             }
         }

@@ -31,12 +31,10 @@ class Slf4jInitializer : TestEngine {
     override fun discover(discoveryRequest: EngineDiscoveryRequest, uniqueId: UniqueId) = EngineDescriptor(uniqueId, id)
     override fun execute(request: ExecutionRequest) {}
 
-    companion object {
-        init {
-            // Init log system early
-            LoggerFactory.getLogger(Slf4jInitializer::class.java)
-            SLF4JBridgeHandler.removeHandlersForRootLogger()
-            SLF4JBridgeHandler.install()
-        }
+    init {
+        // Init log system early
+        LoggerFactory.getLogger(Slf4jInitializer::class.java)
+        SLF4JBridgeHandler.removeHandlersForRootLogger()
+        SLF4JBridgeHandler.install()
     }
 }

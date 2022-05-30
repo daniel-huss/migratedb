@@ -27,7 +27,7 @@ class SharedResources private constructor() : ExtensionContext.Store.CloseableRe
             return getOrComputeIfAbsent(SharedResources::class.java, { SharedResources() }, SharedResources::class.java)
         }
 
-        private const val maxContainers = 10
+        private const val maxContainers = 20
     }
 
     private val lock = object : Any() {}

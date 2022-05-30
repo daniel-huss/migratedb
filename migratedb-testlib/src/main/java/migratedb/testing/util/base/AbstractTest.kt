@@ -30,10 +30,7 @@ abstract class AbstractTest {
 
         init {
             Printers.add(Any::class, object : Print<Any> {
-                @Deprecated(
-                    "Use print(a, level) to respect level hints. Deprecated in 5.0.3",
-                    ReplaceWith("print(a, 0)")
-                )
+                @Suppress("OVERRIDE_DEPRECATION")
                 override fun print(a: Any) = print(a, 0)
                 override fun print(a: Any, level: Int) = when {
                     a.classOverridesObjectToString() -> a.toString().printed()

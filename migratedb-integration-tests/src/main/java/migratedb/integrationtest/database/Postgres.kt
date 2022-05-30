@@ -71,6 +71,9 @@ enum class Postgres(image: String) : DbSystem {
         }
 
         init {
+            withCreateContainerCmdModifier {
+                it.hostConfig!!.withMemory(300_000_000)
+            }
             withEnv("POSTGRES_PASSWORD", password)
             withCreateContainerCmdModifier {
                 it.withCmd("-c", "fsync=off", "-c", "log_destination=stderr", "-c", "log_statement=all")

@@ -19,11 +19,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 
-fun deleteOnExit(dir: Path) = synchronized(dirsToDeleteOnExit) {
-    dirsToDeleteOnExit.add(dir)
-}
-
-
 /**
  * Creates a temporary directory on the local file system.
  * Does not litter the system temp dir, because files are stored in the build target directory of the project.
@@ -43,7 +38,6 @@ fun newTempDir(name: String, deleteOnExit: Boolean = true): Path {
     }
 }
 
-
 private val dirsToDeleteOnExit = mutableSetOf<Path>().also { dirs ->
     Runtime.getRuntime().addShutdownHook(Thread {
         synchronized(dirs) {
@@ -52,4 +46,11 @@ private val dirsToDeleteOnExit = mutableSetOf<Path>().also { dirs ->
             }
         }
     })
+}
+
+/**
+ * Deletes the entire directory tree on JVM exit. You'll want to be extra careful with this.
+ */
+private fun deleteOnExit(dir: Path) = synchronized(dirsToDeleteOnExit) {
+    dirsToDeleteOnExit.add(dir)
 }

@@ -19,6 +19,7 @@ package migratedb.testing.util.io
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.isRegularFile
 
 private val invalidFileNameChars = Regex("[^ \\w_.-]")
 
@@ -33,7 +34,10 @@ fun String.toSafeFileName(): Array<String> {
 /**
  * @return The value of ${project.build.directory} (which we don't change, so it's the default 'target')
  */
-val buildDirectory: Path
-    get() = Paths.get("target").toAbsolutePath()
+val buildDirectory: Path = Paths.get("target").toAbsolutePath().also {
+    check(it.resolveSibling("pom.xml").isRegularFile()) {
+        "Cowardly refusing to accept 'target' directory not next to 'pom.xml'"
+    }
+}
 
 fun Path.resolve(vararg paths: String) = paths.fold(this) { p, seg -> p.resolve(seg) }

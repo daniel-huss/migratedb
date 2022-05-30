@@ -65,6 +65,9 @@ enum class MySql(image: String) : DbSystem {
         }
 
         init {
+            withCreateContainerCmdModifier {
+                it.hostConfig!!.withMemory(300_000_000)
+            }
             withEnv("MYSQL_USER", regularUser)
             withEnv("MYSQL_PASSWORD", password)
             withEnv("MYSQL_ROOT_PASSWORD", password)

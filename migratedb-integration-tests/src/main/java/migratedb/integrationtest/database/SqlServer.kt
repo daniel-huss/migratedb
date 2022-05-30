@@ -93,7 +93,6 @@ enum class SqlServer(image: String) : DbSystem {
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
             internalDs.work {
-                it.update("alter database $namespace set offline with rollback immediate")
                 it.update("drop database if exists $namespace")
             }
         }

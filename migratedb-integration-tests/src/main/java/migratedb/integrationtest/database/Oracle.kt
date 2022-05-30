@@ -64,9 +64,15 @@ enum class Oracle(image: String) : DbSystem {
         }
 
         init {
+            withCreateContainerCmdModifier {
+                it.hostConfig!!.withMemory(2_500_000_000)
+            }
             withEnv("ORACLE_PASSWORD", password)
             withExposedPorts(port)
-            waitingFor(Wait.forListeningPort())
+            waitingFor(
+                Wait.forLogMessage(".*DATABASE IS READY TO USE!.*", 1)
+                    .withStartupTimeout(Duration.ofMinutes(3))
+            )
         }
     }
 

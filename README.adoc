@@ -10,7 +10,11 @@ Evolve your database schema easily and reliably across all your instances.
 
 Oracle, SQL Server, DB2, MySQL, MariaDB, PostgreSQL, CockroachDB, Informix, H2, HSQLDB, Derby, SQLite, Firebird
 
-Current not testable: Sybase ASE, Redshift, Apache Ignite
+Current not testable:
+
+- Sybase ASE (no Docker container available)
+- Redshift (no Docker container available)
+- Apache Ignite (JDBC driver only works on ancient Hotspot JVMs)
 
 == Documentation
 
@@ -22,7 +26,7 @@ xref:CHANGELOG.adoc[Changelog]
 
 The main priority of this project is stability.
 Bugs will be fixed, and new software versions will be supported as long as the changes are testable.
-New features are unlikely to be added, unless they fit reasonably within the scope of a database schema migration _library_, and are requested by a large number (>1) of users.
+New features are unlikely to be added, unless they fit reasonably within the scope of a database schema migration _library_, and are requested by a large number (>1) of users 😉
 
 == How to contribute
 
@@ -38,6 +42,8 @@ https://daniel-huss.github.io/migratedb/documentation/contribute
 This project is a hard fork of Flyway 7.15. There is no affiliation whatsoever between this project and the owners of the Flyway trademark.
 
 Bug fixes from the forked project have been ported manually up to commit 77bb799 (2022-03-10 17:28:00)
+
+=== Switching from Flyway to MigrateDB
 
 == License
 

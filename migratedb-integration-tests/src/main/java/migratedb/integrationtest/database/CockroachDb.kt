@@ -69,6 +69,7 @@ enum class CockroachDb(image: String) : DbSystem {
         init {
             withCreateContainerCmdModifier {
                 it.withCmd("start", "--insecure", "--join=localhost:$port")
+                it.hostConfig!!.withMemory(300_000_000)
             }
             withExposedPorts(port)
             waitingFor(object : HostPortWaitStrategy() {

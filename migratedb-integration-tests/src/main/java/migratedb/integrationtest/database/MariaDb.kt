@@ -67,6 +67,9 @@ enum class MariaDb(image: String) : DbSystem {
         }
 
         init {
+            withCreateContainerCmdModifier {
+                it.hostConfig!!.withMemory(300_000_000)
+            }
             withEnv("MARIADB_USER", regularUser)
             withEnv("MARIADB_PASSWORD", password)
             withEnv("MARIADB_ROOT_PASSWORD", password)

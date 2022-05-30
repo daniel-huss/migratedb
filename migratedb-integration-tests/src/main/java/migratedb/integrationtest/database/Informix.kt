@@ -64,6 +64,9 @@ enum class Informix(image: String) : DbSystem {
         }
 
         init {
+            withCreateContainerCmdModifier {
+                it.hostConfig!!.withMemory(300_000_000)
+            }
             withEnv("LICENSE", "accept")
             withEnv("STORAGE", "local")
             withExposedPorts(port)
@@ -93,7 +96,6 @@ enum class Informix(image: String) : DbSystem {
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
             internalDs.work {
-                it.execute("set lock mode to wait 5")
                 it.execute("drop database if exists $namespace")
             }
         }

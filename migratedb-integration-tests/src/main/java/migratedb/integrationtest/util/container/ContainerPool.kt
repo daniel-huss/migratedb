@@ -92,6 +92,7 @@ class ContainerPool(private val size: Int) : AutoCloseable {
                     maybeOneUnusedSlot.await()
                 }
                 check(!closed) // re-check needed after waiting for condition
+                slotsByName[name]?.let { return it.lease() as Lease<T> }
             }
             val newSlot = Slot(containerInitializer)
             slotsByName[name] = newSlot
