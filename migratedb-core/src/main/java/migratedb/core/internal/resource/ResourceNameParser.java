@@ -20,15 +20,34 @@ import migratedb.core.api.Version;
 import migratedb.core.api.callback.Event;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.resource.ResourceName;
-import migratedb.core.internal.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class ResourceNameParser {
+    private static final class Prefix {
+        final String prefix;
+        final ResourceType resourceType;
+
+        private Prefix(String prefix, ResourceType resourceType) {
+            this.prefix = prefix;
+            this.resourceType = resourceType;
+        }
+    }
+
+    private static final class PrefixAndSuffix {
+        final String prefix;
+        final String suffix;
+
+        private PrefixAndSuffix(String prefix, String suffix) {
+            this.prefix = prefix;
+            this.suffix = suffix;
+        }
+    }
+
     private final Configuration configuration;
-    private final List<Pair<String, ResourceType>> prefixes;
+    private final List<Prefix> prefixes;
 
     public ResourceNameParser(Configuration configuration) {
         this.configuration = configuration;
@@ -43,114 +62,113 @@ public class ResourceNameParser {
 
     public ResourceName parse(String resourceName, String[] suffixes) {
         // Strip off suffixes
-        Pair<String, String> suffixResult = stripSuffix(resourceName, suffixes);
+        var suffixResult = stripSuffix(resourceName, suffixes);
 
         // Find the appropriate prefix
-        Pair<String, ResourceType> prefix = findPrefix(suffixResult.getLeft(), prefixes);
+        var prefix = findPrefix(suffixResult.prefix, prefixes);
         if (prefix != null) {
-
             // Strip off prefix
-            Pair<String, String> prefixResult = stripPrefix(suffixResult.getLeft(), prefix.getLeft());
+            var prefixResult = stripPrefix(suffixResult.prefix, prefix.prefix);
             assert prefixResult != null;
-            String name = prefixResult.getRight();
-            Pair<String, String> splitName = splitAtSeparator(name, configuration.getSqlMigrationSeparator());
+            String name = prefixResult.suffix;
+            var splitName = splitAtSeparator(name, configuration.getSqlMigrationSeparator());
             boolean isValid = true;
             String validationMessage = "";
-            String exampleDescription = ("".equals(splitName.getRight())) ? "description" : splitName.getRight();
+            String exampleDescription = ("".equals(splitName.suffix)) ? "description" : splitName.suffix;
 
             // Validate the name
-            if (!ResourceType.isVersioned(prefix.getRight())) {
+            if (!ResourceType.isVersioned(prefix.resourceType)) {
                 // Must not have a version (that is, something before the separator)
-                if (!"".equals(splitName.getLeft())) {
+                if (!"".equals(splitName.prefix)) {
                     isValid = false;
                     validationMessage = "Invalid repeatable migration / callback name format: " + resourceName
-                                        + " (It cannot contain a version and should look like this: "
-                                        + prefixResult.getLeft() + configuration.getSqlMigrationSeparator() +
-                                        exampleDescription + suffixResult.getRight() + ")";
+                            + " (It cannot contain a version and should look like this: "
+                            + prefixResult.prefix + configuration.getSqlMigrationSeparator() +
+                            exampleDescription + suffixResult.suffix + ")";
                 }
             } else {
                 // Must have a version (that is, something before the separator)
-                if ("".equals(splitName.getLeft())) {
+                if ("".equals(splitName.prefix)) {
                     isValid = false;
                     validationMessage = "Invalid versioned migration name format: " + resourceName
-                                        + " (It must contain a version and should look like this: "
-                                        + prefixResult.getLeft() + "1.2" + configuration.getSqlMigrationSeparator() +
-                                        exampleDescription + suffixResult.getRight() + ")";
+                            + " (It must contain a version and should look like this: "
+                            + prefixResult.prefix + "1.2" + configuration.getSqlMigrationSeparator() +
+                            exampleDescription + suffixResult.suffix + ")";
                 } else {
                     // ... and that must be a legitimate version
                     try {
-                        Version.parse(splitName.getLeft());
+                        Version.parse(splitName.prefix);
                     } catch (RuntimeException e) {
                         isValid = false;
                         validationMessage = "Invalid versioned migration name format: " + resourceName
-                                            + " (could not recognise version number " + splitName.getLeft() + ")";
+                                + " (could not recognise version number " + splitName.prefix + ")";
                     }
                 }
             }
 
-            String description = splitName.getRight().replace("_", " ");
-            return new ResourceName(prefixResult.getLeft(),
-                                    splitName.getLeft(),
-                                    configuration.getSqlMigrationSeparator(),
-                                    description,
-                                    splitName.getRight(),
-                                    suffixResult.getRight(),
-                                    isValid,
-                                    validationMessage);
+            String description = splitName.suffix.replace("_", " ");
+            return new ResourceName(prefixResult.prefix,
+                    splitName.prefix,
+                    configuration.getSqlMigrationSeparator(),
+                    description,
+                    splitName.suffix,
+                    suffixResult.suffix,
+                    isValid,
+                    validationMessage);
         }
 
         // Didn't match any prefix
         return ResourceName.invalid("Unrecognised migration name format: " + resourceName);
     }
 
-    private Pair<String, ResourceType> findPrefix(String nameWithoutSuffix, List<Pair<String, ResourceType>> prefixes) {
-        for (Pair<String, ResourceType> prefix : prefixes) {
-            if (nameWithoutSuffix.startsWith(prefix.getLeft())) {
+    private Prefix findPrefix(String nameWithoutSuffix, List<Prefix> prefixes) {
+        for (var prefix : prefixes) {
+            if (nameWithoutSuffix.startsWith(prefix.prefix)) {
                 return prefix;
             }
         }
         return null;
     }
 
-    private Pair<String, String> stripSuffix(String name, String[] suffixes) {
-        for (String suffix : suffixes) {
+    private PrefixAndSuffix stripSuffix(String name, String[] suffixes) {
+        for (var suffix : suffixes) {
             if (name.endsWith(suffix)) {
-                return Pair.of(name.substring(0, name.length() - suffix.length()), suffix);
+                return new PrefixAndSuffix(name.substring(0, name.length() - suffix.length()), suffix);
             }
         }
-        return Pair.of(name, "");
+        return new PrefixAndSuffix(name, "");
     }
 
-    private Pair<String, String> stripPrefix(String fileName, String prefix) {
+    private PrefixAndSuffix stripPrefix(String fileName, String prefix) {
         if (fileName.startsWith(prefix)) {
-            return Pair.of(prefix, fileName.substring(prefix.length()));
+            return new PrefixAndSuffix(prefix, fileName.substring(prefix.length()));
         }
         return null;
     }
 
-    private Pair<String, String> splitAtSeparator(String name, String separator) {
+    private PrefixAndSuffix splitAtSeparator(String name, String separator) {
         int separatorIndex = name.indexOf(separator);
         if (separatorIndex >= 0) {
-            return Pair.of(name.substring(0, separatorIndex),
-                           name.substring(separatorIndex + separator.length()));
+            return new PrefixAndSuffix(name.substring(0, separatorIndex),
+                    name.substring(separatorIndex + separator.length()));
         } else {
-            return Pair.of(name, "");
+            return new PrefixAndSuffix(name, "");
         }
     }
 
-    private List<Pair<String, ResourceType>> populatePrefixes(Configuration configuration) {
-        List<Pair<String, ResourceType>> prefixes = new ArrayList<>();
+    private List<Prefix> populatePrefixes(Configuration configuration) {
+        List<Prefix> prefixes = new ArrayList<>();
 
-        prefixes.add(Pair.of(configuration.getSqlMigrationPrefix(), ResourceType.MIGRATION));
+        prefixes.add(new Prefix(configuration.getSqlMigrationPrefix(), ResourceType.MIGRATION));
 
-        prefixes.add(Pair.of(configuration.getRepeatableSqlMigrationPrefix(), ResourceType.REPEATABLE_MIGRATION));
+        prefixes.add(new Prefix(configuration.getRepeatableSqlMigrationPrefix(), ResourceType.REPEATABLE_MIGRATION));
         for (Event event : Event.values()) {
-            prefixes.add(Pair.of(event.getId(), ResourceType.CALLBACK));
+            prefixes.add(new Prefix(event.getId(), ResourceType.CALLBACK));
         }
 
-        Comparator<Pair<String, ResourceType>> prefixComparator = (p1, p2) -> {
+        Comparator<Prefix> prefixComparator = (p1, p2) -> {
             // Sort most-hard-to-match first; that is, in descending order of prefix length
-            return p2.getLeft().length() - p1.getLeft().length();
+            return p2.prefix.length() - p1.prefix.length();
         };
 
         prefixes.sort(prefixComparator);
