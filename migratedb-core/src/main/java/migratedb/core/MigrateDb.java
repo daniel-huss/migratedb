@@ -104,11 +104,17 @@ public class MigrateDb {
     }
 
     public LiberateResult liberate() {
-        return executor.execute(context -> new DbLiberate(context.schemaHistory,
-                                                          configuration,
-                                                          context.database,
-                                                          context.schemas).liberate(),
-                                false);
+        return executor.execute(context -> {
+            var liberateResult = new DbLiberate(context.schemaHistory,
+                    configuration,
+                    context.database,
+                    context.defaultSchema,
+                    context.schemas,
+                    context.callbackExecutor)
+                    .liberate();
+            context.callbackExecutor.onOperationFinishEvent(Event.AFTER_LIBERATE_OPERATION_FINISH, liberateResult);
+            return liberateResult;
+        }, false);
     }
 
     /**
@@ -117,22 +123,21 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-migrate.png" alt="migrate">
      *
      * @return An object summarising the successfully applied migrations.
-     *
      * @throws MigrateDbException when the migration failed.
      */
     public MigrateResult migrate() {
         return executor.execute(context -> {
             if (configuration.isValidateOnMigrate()) {
                 ValidateResult validateResult = doValidate(context.database,
-                                                           context.migrationResolver,
-                                                           context.schemaHistory,
-                                                           context.defaultSchema,
-                                                           context.schemas,
-                                                           context.callbackExecutor,
-                                                           true);
+                        context.migrationResolver,
+                        context.schemaHistory,
+                        context.defaultSchema,
+                        context.schemas,
+                        context.callbackExecutor,
+                        true);
                 if (!validateResult.validationSuccessful && !configuration.isCleanOnValidationError()) {
                     throw new MigrateDbValidateException(validateResult.errorDetails,
-                                                         validateResult.getAllErrorMessages());
+                            validateResult.getAllErrorMessages());
                 }
             }
 
@@ -151,24 +156,24 @@ public class MigrateDb {
                         // Second check for MySQL which is sometimes flaky otherwise
                         if (!context.schemaHistory.exists()) {
                             throw new MigrateDbException("Found non-empty schema(s) " +
-                                                         StringUtils.collectionToCommaDelimitedString(
-                                                             nonEmptySchemas) +
-                                                         " but no schema history table. Use baseline()" +
-                                                         " or set baselineOnMigrate to true to initialize the " +
-                                                         "schema history table.");
+                                    StringUtils.collectionToCommaDelimitedString(
+                                            nonEmptySchemas) +
+                                    " but no schema history table. Use baseline()" +
+                                    " or set baselineOnMigrate to true to initialize the " +
+                                    "schema history table.");
                         }
                     }
                 } else {
                     if (configuration.getCreateSchemas()) {
                         new DbSchemas(context.database,
-                                      context.schemas,
-                                      context.schemaHistory,
-                                      context.callbackExecutor).create(false);
+                                context.schemas,
+                                context.schemaHistory,
+                                context.callbackExecutor).create(false);
                     } else if (!context.defaultSchema.exists()) {
                         LOG.warn("The configuration option 'createSchemas' is false.\n" +
-                                 "However, the schema history table still needs a schema to reside in.\n" +
-                                 "You must manually create a schema for the schema history table to reside in.\n" +
-                                 "See " + WebsiteLinks.CREATE_SCHEMAS);
+                                "However, the schema history table still needs a schema to reside in.\n" +
+                                "You must manually create a schema for the schema history table to reside in.\n" +
+                                "See " + WebsiteLinks.CREATE_SCHEMAS);
                     }
 
                     context.schemaHistory.create(false);
@@ -176,11 +181,11 @@ public class MigrateDb {
             }
 
             MigrateResult result = new DbMigrate(context.database,
-                                                 context.schemaHistory,
-                                                 context.defaultSchema,
-                                                 context.migrationResolver,
-                                                 configuration,
-                                                 context.callbackExecutor).migrate();
+                    context.schemaHistory,
+                    context.defaultSchema,
+                    context.migrationResolver,
+                    configuration,
+                    context.callbackExecutor).migrate();
 
             context.callbackExecutor.onOperationFinishEvent(Event.AFTER_MIGRATE_OPERATION_FINISH, result);
 
@@ -194,20 +199,19 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-info.png" alt="info">
      *
      * @return All migrations sorted by version, oldest first.
-     *
      * @throws MigrateDbException when the info retrieval failed.
      */
     public MigrationInfoService info() {
         return executor.execute(context -> {
             MigrationInfoService migrationInfoService = new DbInfo(context.migrationResolver,
-                                                                   context.schemaHistory,
-                                                                   configuration,
-                                                                   context.database,
-                                                                   context.callbackExecutor,
-                                                                   context.schemas).info();
+                    context.schemaHistory,
+                    configuration,
+                    context.database,
+                    context.callbackExecutor,
+                    context.schemas).info();
 
             context.callbackExecutor.onOperationFinishEvent(Event.AFTER_INFO_OPERATION_FINISH,
-                                                            migrationInfoService.getInfoResult());
+                    migrationInfoService.getInfoResult());
 
             return migrationInfoService;
         }, true);
@@ -219,16 +223,15 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-clean.png" alt="clean">
      *
      * @return An object summarising the actions taken
-     *
      * @throws MigrateDbException when the clean fails.
      */
     public CleanResult clean() {
         return executor.execute(context -> {
             CleanResult cleanResult = doClean(context.database,
-                                              context.schemaHistory,
-                                              context.defaultSchema,
-                                              context.schemas,
-                                              context.callbackExecutor);
+                    context.schemaHistory,
+                    context.defaultSchema,
+                    context.schemas,
+                    context.callbackExecutor);
 
             context.callbackExecutor.onOperationFinishEvent(Event.AFTER_CLEAN_OPERATION_FINISH, cleanResult);
 
@@ -253,18 +256,18 @@ public class MigrateDb {
     public void validate() throws MigrateDbException {
         executor.<Void>execute(context -> {
             ValidateResult validateResult = doValidate(context.database,
-                                                       context.migrationResolver,
-                                                       context.schemaHistory,
-                                                       context.defaultSchema,
-                                                       context.schemas,
-                                                       context.callbackExecutor,
-                                                       configuration.isIgnorePendingMigrations());
+                    context.migrationResolver,
+                    context.schemaHistory,
+                    context.defaultSchema,
+                    context.schemas,
+                    context.callbackExecutor,
+                    configuration.isIgnorePendingMigrations());
 
             context.callbackExecutor.onOperationFinishEvent(Event.AFTER_VALIDATE_OPERATION_FINISH, validateResult);
 
             if (!validateResult.validationSuccessful && !configuration.isCleanOnValidationError()) {
                 throw new MigrateDbValidateException(validateResult.errorDetails,
-                                                     validateResult.getAllErrorMessages());
+                        validateResult.getAllErrorMessages());
             }
 
             return null;
@@ -283,18 +286,18 @@ public class MigrateDb {
      *
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-validate.png" alt="validate">
      *
-     * @throws MigrateDbException when the validation failed.
      * @return An object summarising the validation results
+     * @throws MigrateDbException when the validation failed.
      */
     public ValidateResult validateWithResult() throws MigrateDbException {
         return executor.execute(context -> {
             ValidateResult validateResult = doValidate(context.database,
-                                                       context.migrationResolver,
-                                                       context.schemaHistory,
-                                                       context.defaultSchema,
-                                                       context.schemas,
-                                                       context.callbackExecutor,
-                                                       configuration.isIgnorePendingMigrations());
+                    context.migrationResolver,
+                    context.schemaHistory,
+                    context.defaultSchema,
+                    context.schemas,
+                    context.callbackExecutor,
+                    configuration.isIgnorePendingMigrations());
 
             context.callbackExecutor.onOperationFinishEvent(Event.AFTER_VALIDATE_OPERATION_FINISH, validateResult);
 
@@ -308,27 +311,26 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-baseline.png" alt="baseline">
      *
      * @return An object summarising the actions taken
-     *
      * @throws MigrateDbException when the schema baselining failed.
      */
     public BaselineResult baseline() throws MigrateDbException {
         return executor.execute(context -> {
             if (configuration.getCreateSchemas()) {
                 new DbSchemas(context.database,
-                              context.schemas,
-                              context.schemaHistory,
-                              context.callbackExecutor).create(true);
+                        context.schemas,
+                        context.schemaHistory,
+                        context.callbackExecutor).create(true);
             } else {
                 LOG.warn("The configuration option 'createSchemas' is false.\n" +
-                         "Even though MigrateDb is configured not to create any schemas, the schema history table" +
-                         " still needs a schema to reside in.\n" +
-                         "You must manually create a schema for the schema history table to reside in.\n" + "See " +
-                         WebsiteLinks.CREATE_SCHEMAS);
+                        "Even though MigrateDb is configured not to create any schemas, the schema history table" +
+                        " still needs a schema to reside in.\n" +
+                        "You must manually create a schema for the schema history table to reside in.\n" + "See " +
+                        WebsiteLinks.CREATE_SCHEMAS);
             }
 
             BaselineResult baselineResult = doBaseline(context.schemaHistory,
-                                                       context.callbackExecutor,
-                                                       context.database);
+                    context.callbackExecutor,
+                    context.database);
 
             context.callbackExecutor.onOperationFinishEvent(Event.AFTER_BASELINE_OPERATION_FINISH, baselineResult);
 
@@ -347,13 +349,12 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-repair.png" alt="repair">
      *
      * @return An object summarising the actions taken
-     *
      * @throws MigrateDbException when the schema history table repair failed.
      */
     public RepairResult repair() throws MigrateDbException {
         return executor.execute(context -> {
             RepairResult repairResult = new DbRepair(context.database,
-                                                     context.migrationResolver,
+                    context.migrationResolver,
                     context.schemaHistory,
                     context.callbackExecutor,
                     configuration).repair();

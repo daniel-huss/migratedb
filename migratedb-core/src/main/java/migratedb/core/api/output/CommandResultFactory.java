@@ -35,7 +35,7 @@ public class CommandResultFactory {
                                                       Database<?> database,
                                                       String schemaHistorySchema,
                                                       String schemaHistoryTable,
-                                                      List<LiberateOutput> changes) {
+                                                      List<LiberateAction> changes) {
         return new LiberateResult(BuildInfo.VERSION,
                 getDatabaseName(configuration, database),
                 schemaHistorySchema,

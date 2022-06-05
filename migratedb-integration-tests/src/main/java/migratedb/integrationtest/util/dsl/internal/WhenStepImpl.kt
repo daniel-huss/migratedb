@@ -18,6 +18,7 @@ package migratedb.integrationtest.util.dsl.internal
 
 import migratedb.core.api.MigrationInfoService
 import migratedb.core.api.output.BaselineResult
+import migratedb.core.api.output.LiberateResult
 import migratedb.core.api.output.MigrateResult
 import migratedb.core.api.output.RepairResult
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
@@ -47,6 +48,12 @@ class WhenStepImpl<G : Any>(given: G, databaseContext: DatabaseContext) : Dsl.Wh
         val runRepair = RunRepairImpl(databaseContext)
         runRepair.block()
         return runRepair.execute()
+    }
+
+    override fun liberate(block: RunLiberateSpec.() -> Unit): LiberateResult {
+        val runLiberate = RunLiberateImpl(databaseContext)
+        runLiberate.block()
+        return runLiberate.execute()
     }
 
     override fun arbitraryMutation(): IndependentDatabaseMutation {

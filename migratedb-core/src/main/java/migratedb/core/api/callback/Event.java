@@ -139,7 +139,6 @@ public enum Event {
      * operation.
      */
     AFTER_REPAIR_ERROR("afterRepairError"),
-
     /**
      * Fired before info is executed. This event will be fired in a separate transaction from the actual info
      * operation.
@@ -154,6 +153,21 @@ public enum Event {
      * Fired after info has failed. This event will be fired in a separate transaction from the actual info operation.
      */
     AFTER_INFO_ERROR("afterInfoError"),
+    /**
+     * Fired before liberate is executed. This event will be fired in a separate transaction from the actual liberate
+     * operation.
+     */
+    BEFORE_LIBERATE("beforeLiberate"),
+    /**
+     * Fired after liberate has succeeded. This event will be fired in a separate transaction from the actual liberate
+     * operation.
+     */
+    AFTER_LIBERATE("afterLiberate"),
+    /**
+     * Fired after liberate has failed. This event will be fired in a separate transaction from the actual liberate
+     * operation.
+     */
+    AFTER_LIBERATE_ERROR("afterLiberateError"),
     /**
      * Fired after a migrate operation has finished.
      */
@@ -173,15 +187,15 @@ public enum Event {
     /**
      * Fired after a validate operation has finished.
      */
-    AFTER_UNDO_OPERATION_FINISH("afterInfoOperationFinish"),
-    /**
-     * Fired after a validate operation has finished.
-     */
     AFTER_REPAIR_OPERATION_FINISH("afterInfoOperationFinish"),
     /**
      * Fired after a validate operation has finished.
      */
     AFTER_BASELINE_OPERATION_FINISH("afterInfoOperationFinish"),
+    /**
+     * Fired after a liberate operation has finished.
+     */
+    AFTER_LIBERATE_OPERATION_FINISH("afterLiberateOperationFinish"),
     /**
      * Fired before any non-existent schemas are created.
      */
@@ -207,7 +221,6 @@ public enum Event {
      * Retrieves the event with this id.
      *
      * @param id The id.
-     *
      * @return The event. {@code null} if not found.
      */
     public static Event fromId(String id) {

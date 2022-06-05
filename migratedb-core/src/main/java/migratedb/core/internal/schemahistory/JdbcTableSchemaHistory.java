@@ -153,7 +153,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         // Lock again for databases with no clean DDL transactions like Oracle
         // to prevent implicit commits from triggering deadlocks
-        // in highly concurrent environments
+        // in concurrent environments
         if (!database.supportsDdlTransactions()) {
             table.lock();
             tableIsLocked = true;

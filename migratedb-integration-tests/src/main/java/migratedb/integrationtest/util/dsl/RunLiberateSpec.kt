@@ -13,18 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.core.api.output;
 
-public class LiberateOutput {
-    public String type;
-    public String message;
-    public int executionTime;
+package migratedb.integrationtest.util.dsl
 
-    public LiberateOutput(String type,
-                          String message,
-                          int executionTime) {
-        this.type = type;
-        this.message = message;
-        this.executionTime = executionTime;
-    }
-}
+interface RunLiberateSpec : RunWithConfigSpec

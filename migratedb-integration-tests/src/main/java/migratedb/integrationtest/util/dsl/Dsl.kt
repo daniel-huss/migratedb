@@ -23,6 +23,7 @@ import migratedb.core.api.MigrationInfoService
 import migratedb.core.api.Version
 import migratedb.core.api.internal.schemahistory.AppliedMigration
 import migratedb.core.api.output.BaselineResult
+import migratedb.core.api.output.LiberateResult
 import migratedb.core.api.output.MigrateResult
 import migratedb.core.api.output.RepairResult
 import migratedb.integrationtest.database.DbSystem
@@ -30,6 +31,7 @@ import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 import migratedb.integrationtest.util.container.SharedResources
+import migratedb.integrationtest.util.dsl.internal.DatabaseContext
 import migratedb.integrationtest.util.dsl.internal.GivenStepImpl
 import migratedb.integrationtest.util.dsl.internal.ThenStepImpl
 import migratedb.integrationtest.util.dsl.internal.WhenStepImpl
@@ -68,8 +70,6 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
 
         private fun Version.dotToUnderscrore() = toString().replace('.', '_')
         private fun String.spaceToUnderscore() = replace(' ', '_')
-
-        fun List<String>.toMigrationNames() = this.map { it.toMigrationName() }
 
         /**
          * Applies [toMigrationName] to every element in a list of strings, returning `null` if this list is `null`.
@@ -119,6 +119,17 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
     interface GivenStep {
         fun database(block: DatabaseSpec.() -> Unit)
         fun independentDbMutation(): IndependentDatabaseMutation
+
+        /**
+         * For context-specific extensions, not meant to be called by tests.
+         *
+         * ```
+         * fun GivenStep.myPrecondition() = extend { databaseContext ->
+         *      // establish precondition
+         * }
+         * ```
+         */
+        fun extend(extension: (DatabaseContext) -> Unit)
     }
 
     interface GivenStepResult<G : Any> {
@@ -138,6 +149,8 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
         fun info(block: RunInfoSpec.() -> Unit): MigrationInfoService
 
         fun repair(block: RunRepairSpec.() -> Unit): RepairResult
+
+        fun liberate(block: RunLiberateSpec.() -> Unit): LiberateResult
 
         fun arbitraryMutation(): IndependentDatabaseMutation
     }

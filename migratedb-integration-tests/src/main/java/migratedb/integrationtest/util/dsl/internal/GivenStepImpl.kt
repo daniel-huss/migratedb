@@ -25,6 +25,7 @@ import java.sql.Connection
 class GivenStepImpl(private val databaseHandle: DbSystem.Handle) : AutoCloseable, Dsl.GivenStep {
     private var database: DatabaseImpl? = null
     private var databaseContext: DatabaseContext? = null
+    private val extensions = mutableListOf<(DatabaseContext) -> Unit>()
 
     override fun database(block: (DatabaseSpec).() -> Unit) {
         check(database == null) { "Only one database spec, please" }
@@ -42,6 +43,10 @@ class GivenStepImpl(private val databaseHandle: DbSystem.Handle) : AutoCloseable
 
             override fun undo(connection: Connection) = delegate.value.undo(connection)
         }
+    }
+
+    override fun extend(extension: (DatabaseContext) -> Unit) {
+        extensions.add(extension)
     }
 
     override fun close() {
@@ -62,6 +67,10 @@ class GivenStepImpl(private val databaseHandle: DbSystem.Handle) : AutoCloseable
             materializeResult.initializer?.let { initializer ->
                 it.adminDataSource.connection.use(initializer)
             }
+            extensions.forEach { extension ->
+                extension(it)
+            }
+            extensions.clear()
         }
     }
 }

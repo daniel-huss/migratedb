@@ -23,6 +23,10 @@
     <artifactId>migratedb-integration-tests</artifactId>
     <name>MigrateDB - Integration Tests</name>
 
+    <properties>
+        <version.flyway>8.5.12</version.flyway>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>de.unentscheidbar</groupId>
@@ -43,6 +47,28 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <!-- To test compatibilty -->
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${version.flyway}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+            <version>${version.flyway}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-sqlserver</artifactId>
+            <version>${version.flyway}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-firebird</artifactId>
+            <version>${version.flyway}</version>
         </dependency>
 
         <!-- JDBC drivers -->

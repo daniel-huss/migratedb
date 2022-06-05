@@ -43,7 +43,7 @@ class LiberateIT : CommandLineTest() {
             withClue(actual.print().value) {
                 actual.oldSchemaHistoryTable.shouldBe("old_table")
                 actual.schemaHistoryTable.shouldBe("new_table")
-                actual.changes?.shouldBeEmpty()
+                actual.actions?.shouldBeEmpty()
             }
         }
     }

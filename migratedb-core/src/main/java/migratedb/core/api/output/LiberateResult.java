@@ -22,18 +22,18 @@ public class LiberateResult extends OperationResult {
     public String schemaHistorySchema;
     public String oldSchemaHistoryTable;
     public String schemaHistoryTable;
-    public List<LiberateOutput> changes;
+    public List<LiberateAction> actions;
 
     public LiberateResult(String migratedbVersion,
                           String database,
                           String schemaHistorySchema,
                           String oldSchemaHistoryTable,
                           String schemaHistoryTable,
-                          List<LiberateOutput> changes) {
+                          List<LiberateAction> actions) {
         this.schemaHistorySchema = schemaHistorySchema;
         this.oldSchemaHistoryTable = oldSchemaHistoryTable;
         this.schemaHistoryTable = schemaHistoryTable;
-        this.changes = changes;
+        this.actions = actions;
         this.migratedbVersion = migratedbVersion;
         this.database = database;
         this.operation = "liberate";

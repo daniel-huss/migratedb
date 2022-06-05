@@ -137,7 +137,7 @@ public abstract class SchemaHistory {
      */
     public final void addSchemasMarker(Schema<?, ?>[] schemas) {
         addAppliedMigration(null,
-                "<< MigrateDb Schema Creation >>",
+                "<< MigrateDB Schema Creation >>",
                 MigrationType.SCHEMA,
                 StringUtils.arrayToCommaDelimitedString(schemas),
                 null,
