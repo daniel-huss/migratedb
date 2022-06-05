@@ -10,10 +10,16 @@ Evolve your database schema easily and reliably across all your instances.
 
 Oracle, SQL Server, DB2, MySQL, MariaDB, PostgreSQL, CockroachDB, Informix, H2, HSQLDB, Derby, SQLite, Firebird
 
-Current not testable:
+Implemented, but currently not testable:
 
+- SAP HANA (no Docker container available)
+- Snowflake (no Docker container available)
+- Spanner (no Docker container available)
+- Synapse (no Docker container available)
 - Sybase ASE (no Docker container available)
 - Redshift (no Docker container available)
+- YugabyteDB (no Docker container available)
+- TiDB (no Docker container available)
 - Apache Ignite (JDBC driver only works on ancient Hotspot JVMs)
 
 == Documentation
@@ -44,6 +50,24 @@ This project is a hard fork of Flyway 7.15. There is no affiliation whatsoever b
 Bug fixes from the forked project have been ported manually up to commit 77bb799 (2022-03-10 17:28:00)
 
 === Switching from Flyway to MigrateDB
+
+. Since there is no more runtime class path scanning, change your build to use the build-time class path scanner (Maven, Gradle).
+. (Recommended) Clean up any failed migrations before converting to MigrateDB.
+. On the target system(s), run the `liberate` command like this:
++
+[source]
+----
+    MigrateDb.configure()
+        .dataSource(myDataSource)
+        .oldTable("flyway_schema_history")
+        .load()
+        .liberate()
+----
+. Replace code references:
+.. `org.flywaydb` with `migratedb`
+.. `Flyway` with `MigrateDb`
+.. `flyway` with `migratedb`
+.. `MigrationVersion` with either `Version` or `TargetVersion`, depending on how it's used.
 
 == License
 
