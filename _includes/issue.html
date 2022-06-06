@@ -1,0 +1,7 @@
+<li>
+    <a href="https://github.com/daniel-huss/migratedb/issues/{{ include.id }}">Issue {{ include.id }}</a>
+    {{ include.title }}
+    {% if include.pr %}<span class="label label-info"><a
+    href="https://github.com/daniel-huss/migratedb/pull/{{ include.pr }}"><i class="fa fa-mail-reply"></i> Pull Request</a></span>{%
+    endif %}
+</li>

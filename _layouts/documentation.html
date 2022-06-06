@@ -1,0 +1,589 @@
+---
+layout: default-honeycomb
+tab: documentation
+title: Documentation
+---
+
+<div class="padded-v">
+    <div class="row">
+        <div class="col-md-3">
+            <nav class="nav--vertical nav--vertical--minimal">
+                <ul class="nav nav-pills nav-stacked">
+
+                    <li {% if page.menu=='overview' %} class="nav--vertical__active" {% endif %}>
+                    <a href="/documentation">Overview</a></li>
+
+                    <details {% if page.url contains "documentation/getstarted" %} open class="nav--vertical__active-parent" {% endif %}>
+                    <summary class="nav-header">Get Started</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.menu=='gs_overview' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/getstarted">Overview</a></li>
+
+                        <li {% if page.menu=='why' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/getstarted/why">Why database migrations</a></li>
+
+                        <li {% if page.menu=='how' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/getstarted/how">How MigrateDB works</a></li>
+                    </ul>
+
+                    <details {% if page.url contains "documentation/getstarted/firststeps" %} open {% endif %}>
+                    <summary class="nav-header">First steps</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.menu=='commandline' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/getstarted/firststeps/commandline">Command-line</a></li>
+
+                        <li {% if page.menu=='api' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/getstarted/firststeps/api">API</a></li>
+                    </ul>
+                    </details>
+                    </details>
+
+                    <details {% if page.url contains "documentation/concepts" %} open class="nav--vertical__active-parent" {% endif %}>
+                    <summary class="nav-header">Concepts</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.menu=='migrations' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/concepts/migrations">Migrations</a></li>
+
+                        <li {% if page.menu=='callbacks' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/concepts/callbacks">Callbacks</a></li>
+
+                        <li {% if page.menu=='error-overrides' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/concepts/error-overrides">Error Overrides</a></li>
+
+                        <li {% if page.menu=='dry-runs' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/concepts/dry-runs">Dry Runs</a></li>
+
+                        <li {% if page.menu=='baseline-migrations' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/concepts/baseline-migrations">Baseline Migrations</a></li>
+                    </ul>
+                    </details>
+
+                    <details {% if page.url contains "documentation/command" %} open class="nav--vertical__active-parent" {% endif %}>
+                    <summary class="nav-header">Commands</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.menu=='migrate' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/command/migrate">Migrate</a></li>
+
+                        <li {% if page.menu=='clean' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/command/clean">Clean</a></li>
+
+                        <li {% if page.menu=='info' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/command/info">Info</a></li>
+
+                        <li {% if page.menu=='validate' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/command/validate">Validate</a></li>
+
+                        <li {% if page.menu=='baseline' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/command/baseline">Baseline</a></li>
+
+                        <li {% if page.menu=='repair' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/command/repair">Repair</a></li>
+                    </ul>
+                    </details>
+
+                    <details {% if page.url contains "documentation/usage" %} open class="nav--vertical__active-parent" {% endif %}>
+                    <summary class="nav-header">Usage</summary>
+
+                    <details {% if layout.menu=='commandLine' %} open {% endif %} class="collapsible-nested">
+                    <summary class="nav-header">Command-line</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.pill=='cli_overview' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/commandline">Overview</a></li>
+
+                        <li {% if page.pill=='cli_migrate' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/commandline/migrate">migrate</a></li>
+
+                        <li {% if page.pill=='cli_clean' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/commandline/clean">clean</a></li>
+
+                        <li {% if page.pill=='cli_info' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/commandline/info">info</a></li>
+
+                        <li {% if page.pill=='cli_validate' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/commandline/validate">validate</a></li>
+
+                        <li {% if page.pill=='cli_baseline' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/commandline/baseline">baseline</a></li>
+
+                        <li {% if page.pill=='cli_repair' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/commandline/repair">repair</a></li>
+                    </ul>
+                    </details>
+
+                    <details {% if layout.menu=='api' %} open {% endif %} class="collapsible-nested">
+                    <summary class="nav-header">API (Java)</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.pill=='api_overview' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/api">Overview</a></li>
+
+                        <li {% if page.pill=='hooks' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/api/hooks">Hooks</a></li>
+
+                        <li {% if page.pill=='javadoc' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/api/javadoc">Javadoc</a></li>
+                    </ul>
+                    </details>
+
+                    <details {% if layout.menu=='maven' %} open {% endif %} class="collapsible-nested">
+                    <summary class="nav-header">Maven</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.pill=='mvn_overview' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/maven">Overview</a></li>
+
+                        <li {% if page.pill=='mvn_migrate' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/maven/migrate">migrate</a></li>
+
+                        <li {% if page.pill=='mvn_clean' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/maven/clean">clean</a></li>
+
+                        <li {% if page.pill=='mvn_info' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/maven/info">info</a></li>
+
+                        <li {% if page.pill=='mvn_validate' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/maven/validate">validate</a></li>
+
+                        <li {% if page.pill=='mvn_baseline' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/maven/baseline">baseline</a></li>
+
+                        <li {% if page.pill=='mvn_repair' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/maven/repair">repair</a></li>
+                    </ul>
+                    </details>
+
+                    <details {% if layout.menu=='gradle' %} open {% endif %} class="collapsible-nested">
+                    <summary class="nav-header">Gradle</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.pill=='gradle_overview' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/gradle">Overview</a></li>
+                    </ul>
+                    </details>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.menu=='errorcodes' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/errorcodes/">Error Codes</a></li>
+
+                        <li {% if page.menu=='plugins' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/usage/plugins/">Community Plugins</a></li>
+                    </ul>
+                    </details>
+
+                    <details {% if page.url contains
+                    "documentation/tutorials" %} open class="nav--vertical__active-parent" {% endif %}>
+                    <summary class="nav-header">Tutorials</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.menu=='repeatable' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/tutorials/repeatable">Repeatable migrations</a></li>
+
+                        <li {% if page.menu=='tut_baseline-migrations' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/tutorials/baseline-migrations">Baseline Migrations</a></li>
+
+                        <li {% if page.menu=='java' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/tutorials/java">Java-based migrations</a></li>
+
+                        <li {% if page.menu=='tut_callbacks' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/tutorials/callbacks">Callbacks</a></li>
+
+                        <li {% if page.menu=='tut_error-overrides' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/tutorials/error-overrides">Error Overrides</a></li>
+
+                        <li {% if page.menu=='tut_dry-runs' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/tutorials/dry-runs">Dry Runs</a></li>
+
+                        <li {% if page.menu=='tut_customvalidationrules' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/tutorials/custom-validation-rules">Custom Validation Rules</a></li>
+
+                        <li {% if page.menu=='tut_injectingenvironments' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/tutorials/injecting-environments">Injecting Environments</a></li>
+
+                        <li {% if page.menu=='migrationtesting' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/tutorials/migrationtesting">Migration testing</a></li>
+                    </ul>
+                    </details>
+
+                    <details {% if page.url contains "documentation/configuration" %} open class="nav--vertical__active-parent" {% endif %}>
+                    <summary class="nav-header">Configuration</summary>
+
+                    <details {% if page.url contains "documentation/configuration/parameters/" %} open {% endif %} class="collapsible-nested">
+                    <summary class="nav-header">Parameters</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.pill=='configuration' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters">Overview</a></li>
+
+                        <li {% if page.pill=='baselineDescription' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/baselineDescription">baselineDescription</a></li>
+
+                        <li {% if page.pill=='baselineMigrationPrefix' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/baselineMigrationPrefix">baselineMigrationPrefix</a></li>
+
+                        <li {% if page.pill=='baselineOnMigrate' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/baselineOnMigrate">baselineOnMigrate</a></li>
+
+                        <li {% if page.pill=='baselineVersion' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/baselineVersion">baselineVersion</a></li>
+
+                        <li {% if page.pill=='batch' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/batch">batch</a></li>
+
+                        <li {% if page.pill=='callbacks' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/callbacks">callbacks</a></li>
+
+                        <li {% if page.pill=='cherryPick' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/cherryPick">cherryPick</a></li>
+
+                        <li {% if page.pill=='cleanDisabled' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/cleanDisabled">cleanDisabled</a></li>
+
+                        <li {% if page.pill=='cleanOnValidationError' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/cleanOnValidationError">cleanOnValidationError</a></li>
+
+                        <li {% if page.pill=='cliColor' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/cliColor">cliColor</a></li>
+
+                        <li {% if page.pill=='configFileEncoding' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/configFileEncoding">configFileEncoding</a></li>
+
+                        <li {% if page.pill=='configFiles' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/configFiles">configFiles</a></li>
+
+                        <li {% if page.pill=='connectRetries' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/connectRetries">connectRetries</a></li>
+
+                        <li {% if page.pill=='connectRetriesInterval' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/connectRetriesInterval">connectRetriesInterval</a></li>
+
+                        <li {% if page.pill=='createSchemas' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/createSchemas">createSchemas</a></li>
+
+                        <li {% if page.pill=='defaultSchema' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/defaultSchema">defaultSchema</a></li>
+
+                        <li {% if page.pill=='driver' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/driver">driver</a></li>
+
+                        <li {% if page.pill=='dryRunOutput' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/dryRunOutput">dryRunOutput</a></li>
+
+                        <li {% if page.pill=='encoding' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/encoding">encoding</a></li>
+
+                        <li {% if page.pill=='errorOverrides' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/errorOverrides">errorOverrides</a></li>
+
+                        <li {% if page.pill=='failOnMissingLocations' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/failOnMissingLocations">failOnMissingLocations</a></li>
+
+                        <li {% if page.pill=='group' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/group">group</a></li>
+
+                        <li {% if page.pill=='ignoreFutureMigrations' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/ignoreFutureMigrations">ignoreFutureMigrations</a></li>
+
+                        <li {% if page.pill=='ignoreIgnoredMigrations' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/ignoreIgnoredMigrations">ignoreIgnoredMigrations</a></li>
+
+                        <li {% if page.pill=='ignoreMissingMigrations' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/ignoreMissingMigrations">ignoreMissingMigrations</a></li>
+
+                        <li {% if page.pill=='ignorePendingMigrations' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/ignorePendingMigrations">ignorePendingMigrations</a></li>
+
+                        <li {% if page.pill=='ignoreMigrationPatterns' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/ignoreMigrationPatterns">ignoreMigrationPatterns</a></li>
+
+                        <li {% if page.pill=='initSql' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/initSql">initSql</a></li>
+
+                        <li {% if page.pill=='installedBy' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/installedBy">installedBy</a></li>
+
+                        <li {% if page.pill=='jarDirs' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/jarDirs">jarDirs</a></li>
+
+                        <li {% if page.pill=='jdbcProperties' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/jdbcProperties">jdbcProperties</a></li>
+
+                        <li {% if page.pill=='kerberosConfigFile' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/kerberosConfigFile">kerberosConfigFile</a></li>
+
+                        <li {% if page.pill=='locations' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/locations">locations</a></li>
+
+                        <li {% if page.pill=='lockRetryCount' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/lockRetryCount">lockRetryCount</a></li>
+
+                        <li {% if page.pill=='loggers' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/loggers">loggers</a></li>
+
+                        <li {% if page.pill=='mixed' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/mixed">mixed</a></li>
+
+                        <li {% if page.pill=='oracleKerberosCacheFile' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/oracleKerberosCacheFile">oracleKerberosCacheFile</a></li>
+
+                        <li {% if page.pill=='oracleKerberosConfigFile' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/oracleKerberosConfigFile">oracleKerberosConfigFile</a></li>
+
+                        <li {% if page.pill=='oracleSqlPlus' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/oracleSqlPlus">oracleSqlPlus</a></li>
+
+                        <li {% if page.pill=='oracleSqlPlusWarn' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/oracleSqlPlusWarn">oracleSqlPlusWarn</a></li>
+
+                        <li {% if page.pill=='oracleWalletLocation' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/oracleWalletLocation">oracleWalletLocation</a></li>
+
+                        <li {% if page.pill=='outOfOrder' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/outOfOrder">outOfOrder</a></li>
+
+                        <li {% if page.pill=='outputQueryResults' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/outputQueryResults">outputQueryResults</a></li>
+
+                        <li {% if page.pill=='password' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/password">password</a></li>
+
+                        <li {% if page.pill=='placeholderPrefix' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/placeholderPrefix">placeholderPrefix</a></li>
+
+                        <li {% if page.pill=='placeholderReplacement' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/placeholderReplacement">placeholderReplacement</a></li>
+
+                        <li {% if page.pill=='placeholders' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/placeholders">placeholders</a></li>
+
+                        <li {% if page.pill=='placeholderSeparator' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/placeholderSeparator">placeholderSeparator</a></li>
+
+                        <li {% if page.pill=='placeholderSuffix' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/placeholderSuffix">placeholderSuffix</a></li>
+
+                        <li {% if page.pill=='repeatableSqlMigrationPrefix' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/repeatableSqlMigrationPrefix">repeatableSqlMigrationPrefix</a></li>
+
+                        <li {% if page.pill=='resolvers' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/resolvers">resolvers</a></li>
+
+                        <li {% if page.pill=='schemas' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/schemas">schemas</a></li>
+
+                        <li {% if page.pill=='scriptPlaceholderPrefix' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/scriptPlaceholderPrefix">scriptPlaceholderPrefix</a></li>
+
+                        <li {% if page.pill=='scriptPlaceholderSuffix' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/scriptPlaceholderSuffix">scriptPlaceholderSuffix</a></li>
+
+                        <li {% if page.pill=='skipDefaultCallbacks' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/skipDefaultCallbacks">skipDefaultCallbacks</a></li>
+
+                        <li {% if page.pill=='skipDefaultResolvers' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/skipDefaultResolvers">skipDefaultResolvers</a></li>
+
+                        <li {% if page.pill=='skipExecutingMigrations' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/skipExecutingMigrations">skipExecutingMigrations</a></li>
+
+                        <li {% if page.pill=='sqlMigrationPrefix' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/sqlMigrationPrefix">sqlMigrationPrefix</a></li>
+
+                        <li {% if page.pill=='sqlMigrationSeparator' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/sqlMigrationSeparator">sqlMigrationSeparator</a></li>
+
+                        <li {% if page.pill=='sqlMigrationSuffixes' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/sqlMigrationSuffixes">sqlMigrationSuffixes</a></li>
+
+                        <li {% if page.pill=='sqlServerKerberosLoginFile' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/sqlServerKerberosLoginFile">sqlServerKerberosLoginFile</a></li>
+
+                        <li {% if page.pill=='stream' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/stream">stream</a></li>
+
+                        <li {% if page.pill=='table' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/table">table</a></li>
+
+                        <li {% if page.pill=='tablespace' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/tablespace">tablespace</a></li>
+
+                        <li {% if page.pill=='target' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/target">target</a></li>
+
+                        <li {% if page.pill=='url' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/url">url</a></li>
+
+                        <li {% if page.pill=='user' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/user">user</a></li>
+
+                        <li {% if page.pill=='validateMigrationNaming' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/validateMigrationNaming">validateMigrationNaming</a></li>
+
+                        <li {% if page.pill=='validateOnMigrate' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/validateOnMigrate">validateOnMigrate</a></li>
+
+                        <li {% if page.pill=='workingDirectory' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/parameters/workingDirectory">workingDirectory</a></li>
+                    </ul>
+                    </details>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.menu=='envvars' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/envvars">Environment Variables</a></li>
+
+                        <li {% if page.menu=='configFiles' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/configfile">Config Files</a></li>
+
+                        <li {% if page.menu=='scriptconfigfiles' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/scriptconfigfiles">Script Config Files</a></li>
+
+                        <li {% if page.menu=='placeholders' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/placeholder">Placeholders</a></li>
+
+                        <li {% if page.menu=='ssl' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/ssl">SSL support</a></li>
+
+                        <li {% if page.menu=='authentication' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/configuration/authentication">Authentication</a></li>
+                    </ul>
+                    </details>
+
+                    <details {% if page.url contains
+                    "documentation/database" %} open class="nav--vertical__active-parent" {% endif %}>
+                    <summary class="nav-header">Supported Databases</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+
+                        <li {% if page.menu=='aurora-mysql' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/aurora-mysql">Aurora MySQL</a></li>
+
+                        <li {% if page.menu=='aurora-postgresql' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/aurora-postgresql">Aurora PostgreSQL</a></li>
+
+                        <li {% if page.menu=='azuresynapse' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/azuresynapse">Azure Synapse</a></li>
+
+                        <li {% if page.menu=='big-query' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/big-query">Google Big Query</a></li>
+
+                        <li {% if page.menu=='cloud-spanner' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/cloud-spanner">Cloud Spanner</a></li>
+
+                        <li {% if page.menu=='cockroachdb' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/cockroachdb">CockroachDB</a></li>
+
+                        <li {% if page.menu=='db2' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/db2">DB2</a></li>
+
+                        <li {% if page.menu=='derby' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/derby">Derby</a></li>
+
+                        <li {% if page.menu=='firebird' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/firebird">Firebird</a></li>
+
+                        <li {% if page.menu=='h2' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/h2">H2</a></li>
+
+                        <li {% if page.menu=='hsqldb' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/hsqldb">HSQLDB</a></li>
+
+                        <li {% if page.menu=='informix' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/informix">Informix</a></li>
+
+                        <li {% if page.menu=='mariadb' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/mariadb">MariaDB</a></li>
+
+                        <li {% if page.menu=='mysql' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/mysql">MySQL</a></li>
+
+                        <li {% if page.menu=='oracle' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/oracle">Oracle</a></li>
+
+                        <li {% if page.menu=='xtradb' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/xtradb">Percona XtraDB Cluster</a></li>
+
+                        <li {% if page.menu=='postgresql' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/postgresql">PostgreSQL</a></li>
+
+                        <li {% if page.menu=='redshift' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/redshift">Redshift</a></li>
+
+                        <li {% if page.menu=='saphana' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/saphana">SAP HANA</a></li>
+
+                        <li {% if page.menu=='snowflake' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/snowflake">Snowflake</a></li>
+
+                        <li {% if page.menu=='sqlite' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/sqlite">SQLite</a></li>
+
+                        <li {% if page.menu=='sqlServer' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/sqlserver">SQL Server</a></li>
+
+                        <li {% if page.menu=='sybasease' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/sybasease">Sybase ASE</a></li>
+
+                        <li {% if page.menu=='testcontainers' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/testcontainers">TestContainers</a></li>
+
+                        <li {% if page.menu=='timescaledb' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/timescaledb">TimescaleDB</a></li>
+
+                        <li {% if page.menu=='tidb' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/tidb">TiDB</a></li>
+
+                        <li {% if page.menu=='yugabytedb' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/database/yugabytedb">YugabyteDB</a></li>
+                    </ul>
+                    </details>
+
+                    <details {% if page.url contains
+                    "documentation/learnmore" %} open class="nav--vertical__active-parent" {% endif %}>
+                    <summary class="nav-header">Learn more</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.menu=='existing' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/learnmore/existing">Existing Database Setup</a></li>
+
+                        <li {% if page.menu=='faq' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/learnmore/faq">FAQ</a></li>
+
+                    </ul>
+                    </details>
+
+                    <details {% if page.url contains
+                    "documentation/contribute" %} open class="nav--vertical__active-parent" {% endif %}>
+                    <summary class="nav-header">Contribute</summary>
+
+                    <ul class="nav nav-pills nav-stacked">
+                        <li {% if page.menu=='contribute' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/contribute">Contributing to MigrateDB</a></li>
+
+                        <li {% if page.menu=='contributing-database-support' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/contribute/contributing-database-support">Database
+                            Compatibility</a></li>
+
+                        <li {% if layout.menu=='website' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/contribute/website">Documentation</a></li>
+
+                        <li {% if layout.menu=='code' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/contribute/code">Code</a></li>
+
+                        <li {% if page.menu=='flyway-contributors' %} class="nav--vertical__active" {% endif %}>
+                        <a href="/documentation/contribute/flyway-contributors">Attribution</a></li>
+                    </ul>
+                    </details>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-md-9">
+
+            {{ content }}
+
+        </div>
+    </div>
+</div>

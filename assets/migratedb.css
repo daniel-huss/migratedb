@@ -1,0 +1,647 @@
+#top-cta {
+    width: 100%;
+    background-color: #008BC0;
+    text-align: center;
+}
+
+#top-cta a {
+    font-size: 16px;
+    display: block;
+    padding: 10px;
+    color: #EFF7FB;
+    line-height: 24px;
+}
+
+#top-cta a:hover {
+    text-decoration: none;
+}
+
+#top-cta a img {
+    margin-top: -5px;
+}
+
+.inline-cta {
+    display: block;
+    padding: 10px;
+    margin-top: 20px;
+    border: 1px dashed #DFE7EB;
+    background-color: #EFF7FB;
+    color: #008BC0;
+}
+
+.inline-cta i {
+    color: #008BC0;
+}
+
+.inline-cta:hover {
+    text-decoration: none;
+    color: #008BC0;
+}
+
+.inline-cta img {
+    margin-top: -3px;
+}
+
+#header {
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    margin-top: 10px;
+}
+
+#header img {
+    margin-top: 10px;
+    margin-bottom: -20px;
+}
+
+.tab-pane>pre:first-child {
+    margin-top: 10px;
+}
+
+.tab-pane>code {
+    display: inline-block;
+    margin-top: 10px;
+}
+
+#tabs {
+    float: right;
+    margin-top: 30px;
+}
+
+#big-sell {
+    min-height: 750px;
+    text-align: center;
+    width: 100% !important;
+    margin-top: -60px;
+    padding-top: 60px;
+    padding-bottom: 100px;
+    font-size: 12px;
+}
+
+#big-sell div {
+    color: #555555;
+}
+
+#newsletter-sign-up {
+    text-align: center;
+    margin-top: 60px;
+}
+
+.strong-heading {
+    font-weight: bold;
+    font-size: 32px;
+    color: #555555;
+    text-align: center;
+    line-height: 150%;
+}
+
+#tagline {
+    margin-top: 100px;
+}
+
+a {
+    color: #0166AE;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+img {
+    max-width: 100%;
+}
+
+.btn-primary {
+    background-color: #0166AE;
+}
+
+.btn-info {
+    background-color: #aaa;
+    border-color: #999;
+}
+
+.btn-info:hover {
+    background-color: #999;
+    border-color: #888;
+}
+
+.btn-jumbo {
+    font-size: 20px;
+    padding: 14px 24px;
+    margin: 20px 5px;
+    border-radius: 6px;
+}
+}
+
+#social i {
+    font-size: 28px;
+    padding-top: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.tabbable>.nav-tabs>li>a {
+    font-size: 12px !important;
+    padding: 7px 10px;
+}
+
+.nav-pills li a:hover {
+    background-color: #ccc;
+    color: white;
+}
+
+.nav-pills>li.active>a,.nav-pills>li.active>a:hover,.nav-pills>li.active>a:focus, .nav-pills>li.active>a>i {
+    background-color: #0166AE;
+    color: white;
+}
+
+#pills .nav-pills li a {
+    font-size: 12px;
+}
+
+#menu .nav-pills li {
+    font-size: 16px;
+}
+
+#menu .nav-pills li a {
+    border-radius: 0 !important;
+}
+
+#menu .nav-pills .nav-header {
+    cursor: default;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #f0f0f0;
+    margin-top: 5px;
+    color: #333;
+}
+
+#menu .nav-pills .collapsible-nested {
+    margin-left: 15px;
+}
+
+#social a:hover i {
+    color: #0088cc !important;
+}
+
+#tagline-long {
+    margin-top: 20px;
+    margin-bottom: 30px;
+    font-size: 32px;
+}
+
+#top3 {
+    margin-top: 40px;
+    text-align: center;
+}
+
+#top3 .top3-icon {
+    font-size: 120px;
+    margin-bottom: 20px;
+}
+
+#top3 .col-md-4 {
+    margin-bottom: 50px;
+}
+
+hr.soften {
+    height: 1px;
+    margin: 54px 0;
+    background-image: -webkit-linear-gradient(left, transparent, rgba(0, 0, 0, .1), transparent);
+    background-image: -moz-linear-gradient(left, transparent, rgba(0, 0, 0, .1), transparent);
+    background-image: -ms-linear-gradient(left, transparent, rgba(0, 0, 0, .1), transparent);
+    background-image: -o-linear-gradient(left, transparent, rgba(0, 0, 0, .1), transparent);
+    border: 0;
+}
+
+#upAndRunningBg {
+    margin-top: 100px;
+    height: 130px;
+    width: 100%;
+    background: #f0f0f0;
+}
+
+#upAndRunning {
+    margin-top: -150px;
+    margin-bottom: 150px;
+}
+
+#upAndRunningLeft {
+    line-height: 150%;
+    padding-top: 30px;
+}
+
+#upAndRunningLeft span {
+    font-size: 48px;
+    color: #0166AE;
+    display: inline-block;
+    margin-top: 10px;
+    vertical-align: bottom;
+}
+
+#upAndRunningRight {
+    margin-top: -5px;
+    background: #ffffff;
+    padding: 10px;
+    border: 1px #CCCCCC solid;
+    border-radius: 10px;
+}
+
+img.screenshot {
+    border: 1px #ccc dashed;
+    padding: 5px;
+    margin-bottom: 15px;
+}
+
+.info .row {
+    text-align: left;
+    padding-bottom: 10px;
+}
+
+.info .row img {
+    float: left;
+    margin-right: 7px;
+}
+
+.info .row p {
+    clear: both;
+}
+
+.info-section-head {
+    text-align: center;
+    font-size: 36px;
+    font-weight: bold;
+    line-height: 150%;
+}
+
+.info-section-sub {
+    color: #AAAAAA;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px auto 25px;
+    text-align: center;
+    line-height: 150%;
+}
+
+.info-item {
+    font-weight: bold;
+    line-height: 150%;
+    font-size: 16px;
+}
+
+.info .info-item i {
+    color: #000000;
+    font-size: 28px;
+    vertical-align: bottom;
+}
+
+#databases .row .info-item {
+    margin-top: 5px;
+}
+
+#clients {
+    margin-top: 50px;
+}
+
+#features h3 {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+#features td:not(:first-child) {
+    text-align: center;
+}
+
+#features td:nth-child(2) {
+    background: #eeeeee;
+}
+
+pre.filetree {
+    background: #555;
+    color: white;
+}
+
+pre.filetree i.fa {
+    color: white;
+}
+
+pre.filetree code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: #c7254e;
+    background-color: #f9f2f4;
+}
+
+pre.filetree i.fa-folder-open {
+    color: #e38d13;
+}
+
+pre.filetree i.fa-file, pre.filetree i.fa-file-text {
+    color: gold;
+}
+
+pre.filetree span {
+    display: inline-block;
+    padding: 5px;
+    margin-left: -5px;
+    background-color: #666;
+}
+
+.release {
+    margin-bottom: 30px;
+}
+
+.release h3 {
+    font-size: 18px;
+    padding-top: 10px;
+}
+
+.release h4 {
+    font-size: 12px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#get-started {
+    text-align: center;
+}
+
+.next-steps {
+    margin-top: 50px;
+}
+
+.next-steps a {
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+#footer {
+    text-align: center;
+    color: #AAAAAA;
+    font-size: 10px;
+    line-height: 120%;
+}
+
+#footer .mc-field-group {
+    margin-top: 2px;
+}
+
+.fa-heart {
+    color: #990000;
+}
+
+#footer #intellij {
+    position: relative;
+    left: auto;
+    right: auto;
+    display: inline-block;
+}
+
+#menu .date {
+    font-size: 10px;
+}
+
+.note {
+    font-size: 10px;
+}
+
+a.stackoverflow-tag {
+    color: #39739d;
+    background-color: #E1ECF4;
+    padding: .4em .5em;
+    margin: 2px 2px 2px 0;
+    text-decoration: none;
+    font-size: 90%;
+    line-height: 2.4;
+    white-space: nowrap;
+}
+
+a.stackoverflow-tag:hover {
+    background-color: #dae7f1;
+    text-decoration: none;
+}
+
+h2 {
+    margin-top: 40px;
+}
+h2[id], h3[id], tr[id]>td:first-child {
+    cursor: pointer;
+}
+h2[id]:hover:after, h3[id]:hover:after, tr[id]:hover>td:first-child:after {
+    content: ' §';
+    color: #ccc;
+}
+
+pre.console {
+    background: #555;
+    color: white;
+    margin-bottom: 20px;
+}
+
+pre.console span {
+    color: #aaa;
+}
+
+pre.console strong {
+    color: yellow;
+}
+
+pre.prettyprint {
+    padding: 9.5px;
+}
+
+i {
+    color: #555;
+}
+
+.btn i {
+    color: #ffffff;
+    padding-left: 10px;
+}
+
+.btn-primary i {
+    color: #ffffff !important;
+}
+
+#apiJavadoc iframe {
+    width: 100%;
+}
+
+.center {
+    text-align: center;
+}
+
+.label a, .label i {
+    color: #ffffff;
+}
+
+.label a:hover {
+    text-decoration: none;
+}
+
+#plugins table img {
+    height: 40px;
+}
+
+#getStarted #first-steps .info-item {
+    font-size: 14px;
+}
+
+#support td {
+    vertical-align: middle;
+}
+
+#support td:not(:first-child), #support th:not(:first-child) {
+    text-align: center;
+}
+
+#support span {
+    font-size: 10px;
+}
+
+.btn-download i {
+    color: black;
+    padding-left: 0;
+    font-size: 16px;
+    margin-top: 4px;
+}
+
+.plugin {
+    height: 300px;
+    overflow: hidden;
+}
+.plugin .caption p {
+    overflow: hidden;
+}
+.plugin .caption p:after {
+    content: '';
+    width: 80%;
+    height: 10px;
+    position: absolute;
+    left: 25px;
+    bottom: 21px;
+    background: linear-gradient(transparent, white);
+}
+.plugin:hover .caption p:after {
+    background: #ddd;
+}
+a.thumbnail:hover, a.thumbnail:focus {
+    background-color: #ddd;
+    border-color: #ddd;
+    text-decoration: none;
+}
+
+.thumbnail img {
+    min-width: 100%;
+    min-height: 160px;
+    max-height: 160px;
+    object-fit: contain;
+}
+
+.thumbnail h4 {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+a.download {
+    display: block;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-color: #ccc;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5%;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+a.download img {
+    height: 56px;
+}
+
+a.download:hover, a.download:focus {
+    background-color: #ddd;
+    border-color: #ddd;
+    text-decoration: none;
+}
+
+
+.table tr:first-child th, .table tr:first-child td {
+    border-top: 0;
+}
+
+@media screen and (max-width: 1024px) {
+    #downloadStatsRight, #upAndRunningRight {
+        margin-top: 0;
+    }
+
+    #header .col-md-2 {
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #downloadStatsBg {
+        height: 180px;
+    }
+
+    #downloadStats {
+        margin-top: -170px;
+    }
+
+    #upAndRunning {
+        margin-top: -120px;
+    }
+
+    #downloadStatsLeft, #upAndRunningLeft {
+        padding-top: 0;
+    }
+
+    #testimonial img {
+        margin-top: 20px;
+    }
+
+    .info-testimonial {
+        margin-top: 0;
+    }
+}
+
+#community .title {
+    text-align: center;
+    margin-bottom: 2em;
+}
+
+#community .panel-heading h3 {
+    margin: 0;
+}
+
+#community .panel-heading i {
+    margin-right: 7px;
+}
+
+#community .panel-embed .panel-body {
+    padding: 0;
+    text-align: center;
+}
+
+
+.oh-notification {
+    background: #0166AE;
+    text-align: center;
+    padding: 16px 10px 10px;
+}
+
+.oh-notification p {
+    color: #ffffff;
+}
+
+.oh-notification a {
+    background: #ffffff;
+    padding: 6px;
+    margin: 2px 4px 0px;
+    border-radius: 5px;
+}
+

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if page.subtitle %} {{ page.subtitle }} -{% endif %}{% if page.title %} {{ page.title }} -{% endif %}
+        MigrateDB &bull; Database Migrations, Easy and Free.</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link href="/assets/migratedb.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/default.css" rel="stylesheet" type="text/css"/>
+    <meta charset="UTF-8"/>
+    <meta property="og:title" content="MigrateDB &bull; Database Migrations, Easy and Free."/>
+    <meta property="og:site_name" content="MigrateDB"/>
+</head>
+<body class="{{layout.tab}} {{page.tab}}">
+<script src="/assets/trackmenot.js"></script>
+<div class="container">
+        {{ content }}
+</div>
+
+<div class="container">
+    <hr class="soften"/>
+    <div id="footer">
+        {% if page.tab != "community" %}
+        <p>&nbsp;</p>
+        <p id="social">
+            <a href="https://github.com/daniel-huss/migratedb" title="Source Code on GitHub"><i
+                class="fa fa-github"></i></a>
+        </p>
+        <p>&nbsp;</p>
+        {% endif %}
+
+        <p>
+            This work, "MigrateDB Documentation", is a derivative of "Flywaydb.org" by the
+            <a href="/documentation/contribute/flyway-contributors">Flyway contributors</a>,
+            used under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY SA 4.0</a>.
+            "MigrateDB Documentation" is licensed under CC BY SA 4.0 by the MigrateDB contributors.
+        </p>
+        <p>
+            Code licensed under <a href="https://raw.githubusercontent.com/daniel-huss/migratedb/master/LICENSE.txt">Apache
+            License, Version 2</a>
+        </p>
+        <p>
+            All trademarks, trade names, logos or service marks mentioned on this site belong to their respective
+            owners.<br/>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+---
+layout: documentation
+menu: api
+---
+
+<div>
+    <div id="pills">
+        <ul class="nav nav-pills">
+            <li {% if page.pill=='api_overview' %} class="active" {% endif %}>
+            <a href="/documentation/usage/api">Overview</a></li>
+            <li {% if page.pill=='hooks' %} class="active" {% endif %}>
+            <a href="/documentation/usage/api/hooks">Hooks</a></li>
+        </ul>
+    </div>
+
+    {{ content }}
+
+</div>
