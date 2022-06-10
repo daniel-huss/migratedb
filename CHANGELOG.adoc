@@ -12,7 +12,7 @@ This is the initial release after forking from Flyway 7.15 (the "community" vers
 It will get better with every following release.
 
 This is an early access 0.x release, which means *everything* is subject to change.
-Constructive feedback is very welcome!
+Feedback is very welcome!
 
 === Added
 
@@ -26,7 +26,7 @@ Constructive feedback is very welcome!
 * Gradle plugin for build-time class path scanning.
 * Unit tests for most changed/refactored code, especially configuration-related stuff.
 * A few integration tests for databases where a docker container is publicly available.
-* Instead of re-distributing JDBC drivers, the command line tool can download them from Maven Central via the new download-drivers subcommand.
+* Instead of re-distributing JDBC drivers, the command line tool can download them from Maven Central via the new `download-drivers` subcommand.
 * Command that converts an existing schema history table to MigrateDB.
 
 === Changed
@@ -81,20 +81,19 @@ If the deleted migration re-appears, another repair will un-delete it.
 Extensions must be activated in configuration via useExtension().
 * Dependencies on native libraries along with colored console output.
 * Telemetry via "update check".
-* 🔥 Maven plugin(s) for executing migrations, etc. (just script it?).
-* 🔥 Gradle plugin(s) for executing migrations, etc. (just script it?).
+* 🔥 Maven plugin(s) for executing migrations, etc.
+* 🔥 Gradle plugin(s) for executing migrations, etc.
 * 🔥 Explicit support for log4j2 (just use its SLF4J binding?).
 * 🔥 The "empty" migration version.
 * 🔥 Support for wildcards in `filesystem:` locations.
 * 🔥 InsertRowLock because of the deadlocks it caused.
 * 🔥 Raw type usage.
-* 🔥 InsertRowLock because of the deadlocks it caused.
 * 🔥 StatementInterceptor.
 
 === Fixed
 
 * No longer swallows InterruptedException without re-interrupting the current thread.
-* JDBC connection leaks in certain situations.
+* JDBC connection leaks that were possible in certain situations.
 
 === Security
 

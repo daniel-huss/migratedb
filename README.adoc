@@ -24,22 +24,19 @@ Implemented, but currently not testable:
 
 == Documentation
 
-https://daniel-huss.github.io/migratedb[Website]
-
-xref:CHANGELOG.adoc[Changelog]
+https://daniel-huss.github.io/migratedb[Website],
+xref:CHANGELOG.adoc[Changelog],
+https://daniel-huss.github.io/migratedb/documentation/contribute[How to contribute]
 
 == Support
 
-The main priority of this project is stability.
+The main priority of this project is to provide a bloat-free library for database migrations.
 Bugs will be fixed, and new software versions will be supported as long as the changes are testable.
 New features are unlikely to be added, unless they fit reasonably within the scope of a database schema migration _library_, and are requested by a large number (>1) of users 😉
 
-== How to contribute
-
-https://daniel-huss.github.io/migratedb/documentation/contribute
-
 === Build Prerequisites
 
+- Java 11 or later.
 - Maven 3 (preferably the latest version)
 - Local or remote Docker host (for database containers during integration tests)
 
@@ -51,23 +48,7 @@ Bug fixes from the forked project have been ported manually up to commit 77bb799
 
 === Switching from Flyway to MigrateDB
 
-. Since there is no more runtime class path scanning, change your build to use the build-time class path scanner (Maven, Gradle).
-. (Recommended) Clean up any failed migrations before converting to MigrateDB.
-. On the target system(s), run the `liberate` command like this:
-+
-[source]
-----
-    MigrateDb.configure()
-        .dataSource(myDataSource)
-        .oldTable("flyway_schema_history")
-        .load()
-        .liberate()
-----
-. Replace code references:
-.. `org.flywaydb` with `migratedb`
-.. `Flyway` with `MigrateDb`
-.. `flyway` with `migratedb`
-.. `MigrationVersion` with either `Version` or `TargetVersion`, depending on how it's used.
+https://daniel-huss.github.io/migratedb/documentation/switch
 
 == License
 
