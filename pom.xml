@@ -425,6 +425,7 @@
                         <breakiterator>true</breakiterator>
                         <detectOfflineLinks>false</detectOfflineLinks>
                         <locale>en</locale>
+                        <notimestamp>true</notimestamp>
                         <skip>true</skip><!-- Only "needed" when releasing to Maven Central -->
                     </configuration>
                 </plugin>
