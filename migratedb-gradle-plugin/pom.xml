@@ -19,7 +19,7 @@
     <parent>
         <groupId>de.unentscheidbar</groupId>
         <artifactId>migratedb</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>migratedb-gradle-plugin</artifactId>
     <name>MigrateDB - Gradle Plugin Builder</name>
