@@ -48,7 +48,7 @@ Bug fixes from the forked project have been ported manually up to commit 77bb799
 
 === Switching from Flyway to MigrateDB
 
-https://daniel-huss.github.io/migratedb/documentation/switch
+https://daniel-huss.github.io/migratedb/documentation/switch[See instructions].
 
 == License
 

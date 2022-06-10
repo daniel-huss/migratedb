@@ -6,7 +6,7 @@ The format is based on https://keepachangelog.com/en/1.0.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
-== [Unreleased]
+== [0.1.0]
 
 This is the initial release after forking from Flyway 7.15 (the "community" version, obviously) and applying all 8.x bug fixes up to commit 77bb799. Since the forked project has never published any test sources, test coverage may seem a little underwhelming.
 It will get better with every following release.
@@ -19,7 +19,7 @@ Feedback is very welcome!
 * This changelog 😸
 * Support for streaming script resources.
 * Support for baseline migrations.
-* Support for cherry picking migration versions.
+* Support for cherry-picking migration versions.
 * Support for pattern-based ignored migration versions.
 * Support for JDBC batched queries.
 * Maven plugin for build-time class path scanning.
@@ -51,7 +51,7 @@ Feedback is very welcome!
 * Logging during MigrateDB execution is disabled by default, can be changed via "logger" configuration option.
 * Custom logging configuration is now only active while MigrateDB actually executes and no longer mutates global state.
 Afaik there is no mutable global state in the library now.
-* By default, logging outside of MigrateDB execution is silenced.
+* By default, logging outside MigrateDB execution is silenced.
 Can be changed by application code via Log.setDefaultLogSystem().
 * Configuration code that is specific to command line stuff has been moved to CLI artifact.
 * 🔥 Built-in script placeholder migratedb:timestamp now formatted as ISO-8601 instant.
@@ -77,7 +77,7 @@ If the deleted migration re-appears, another repair will un-delete it.
 * 🔥 Options and checks related to some "teams-only" features that haven't been implemented (notably undo migrations).
 * Advertisements and nag messages.
 * 🔥 Brittle runtime class path scanning heuristics.
-* 🔥 Side-effects caused by SPI jars on class path.
+* 🔥 Side effects caused by SPI jars on class path.
 Extensions must be activated in configuration via useExtension().
 * Dependencies on native libraries along with colored console output.
 * Telemetry via "update check".

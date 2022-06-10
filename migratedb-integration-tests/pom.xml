@@ -18,7 +18,7 @@
     <parent>
         <groupId>de.unentscheidbar</groupId>
         <artifactId>migratedb</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.1.0</version>
     </parent>
     <artifactId>migratedb-integration-tests</artifactId>
     <name>MigrateDB - Integration Tests</name>
@@ -136,6 +136,29 @@
                     <systemProperties>
                         <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
                     </systemProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>empty-javadoc-jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classesDirectory>${project.build.outputDirectory}/doc-files</classesDirectory>
+                            <classifier>javadoc</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>migratedb.integrationtests</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>

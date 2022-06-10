@@ -530,6 +530,8 @@ public interface Configuration {
     String[] getErrorOverrides();
 
     /**
+     * <p>Note: This feature is currently not implemented.</p>
+     *
      * The stream supplier where to output the SQL statements of a migration dry run. {@code null} if the SQL statements
      * are executed against the database directly.
      *
@@ -538,6 +540,8 @@ public interface Configuration {
     Supplier<OutputStream> getDryRunOutput();
 
     /**
+     * <p>Note: This feature is currently not implemented.</p>
+     *
      * Whether to batch SQL statements when executing them. Batching can save up to 99 percent of network roundtrips by
      * sending up to 100 statements at once over the network to the database, instead of sending each statement
      * individually. This is particularly useful for very large SQL migrations composed of multiple MB or even GB of

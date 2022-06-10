@@ -472,6 +472,8 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
+     * <p>Note: This feature is currently not implemented.</p>
+     * <p>
      * Sets the stream where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
      * statements directly against the database. The stream will be closed when MigrateDB finishes writing the output.
      *
@@ -482,6 +484,8 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
+     * <p>Note: This feature is currently not implemented.</p>
+     * <p>
      * Sets the file where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
      * statements directly against the database. If the file specified is in a non-existent directory, MigrateDB will
      * create all directories and parent directories as needed.
@@ -648,8 +652,8 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setIgnoreMigrationPatterns(String... ignoreMigrationPatterns) {
         this.ignoreMigrationPatterns = Arrays.stream(ignoreMigrationPatterns)
-                .map(ValidatePattern::fromPattern)
-                .toArray(ValidatePattern[]::new);
+            .map(ValidatePattern::fromPattern)
+            .toArray(ValidatePattern[]::new);
     }
 
     /**
@@ -872,8 +876,8 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setCherryPick(String... cherryPickAsString) {
         this.cherryPick = Arrays.stream(cherryPickAsString)
-                .map(MigrationPattern::new)
-                .toArray(MigrationPattern[]::new);
+            .map(MigrationPattern::new)
+            .toArray(MigrationPattern[]::new);
     }
 
     /**
@@ -994,7 +998,7 @@ public class ClassicConfiguration implements Configuration {
 
 
     /**
-     * <b>Note: This is currently not implemented by the default SQL script executor.</b>
+     * <p>Note: This feature is currently not implemented.</p>
      * <p>
      * Whether to batch SQL statements when executing them. Batching can save up to 99 percent of network roundtrips by
      * sending up to 100 statements at once over the network to the database, instead of sending each statement
@@ -1083,7 +1087,7 @@ public class ClassicConfiguration implements Configuration {
     public void setConnectRetries(int connectRetries) {
         if (connectRetries < 0) {
             throw new MigrateDbException("Invalid number of connectRetries (must be 0 or greater): " + connectRetries,
-                    ErrorCode.CONFIGURATION);
+                ErrorCode.CONFIGURATION);
         }
         this.connectRetries = connectRetries;
     }
@@ -1097,8 +1101,8 @@ public class ClassicConfiguration implements Configuration {
     public void setConnectRetriesInterval(int connectRetriesInterval) {
         if (connectRetriesInterval < 0) {
             throw new MigrateDbException(
-                    "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
-                    ErrorCode.CONFIGURATION);
+                "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
+                ErrorCode.CONFIGURATION);
         }
         this.connectRetriesInterval = connectRetriesInterval;
     }
@@ -1664,21 +1668,21 @@ public class ClassicConfiguration implements Configuration {
 
         // Must be done last, so that any driver-specific config has been done at this point.
         if (StringUtils.hasText(url) && (StringUtils.hasText(urlProp) ||
-                StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
-                StringUtils.hasText(passwordProp))) {
+            StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
+            StringUtils.hasText(passwordProp))) {
             putPropertiesUnderNamespace(
-                    props,
-                    getPlaceholders(),
-                    PropertyNames.JDBC_PROPERTIES_PREFIX);
+                props,
+                getPlaceholders(),
+                PropertyNames.JDBC_PROPERTIES_PREFIX);
 
             setDataSource(new DriverDataSource(classLoader,
-                    driver,
-                    url,
-                    user,
-                    password,
-                    this,
-                    jdbcProperties,
-                    databaseTypeRegister));
+                driver,
+                url,
+                user,
+                password,
+                this,
+                jdbcProperties,
+                databaseTypeRegister));
         }
 
         ConfigUtils.reportUnrecognisedProperties(props, "migratedb.");

@@ -18,7 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.unentscheidbar</groupId>
     <artifactId>migratedb</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
     <name>MigrateDB</name>
     <description>MigrateDB: Database Migrations, Easy and Free.</description>
@@ -75,7 +75,7 @@
         <gitRepository.url>https://unentscheidbar.de/gitea/hussdl/migratedb.git</gitRepository.url>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.outputTimestamp>2022-06-10T22:46:52Z</project.build.outputTimestamp><!-- for reproducible builds -->
+        <project.build.outputTimestamp>2022-06-11T02:05:59Z</project.build.outputTimestamp><!-- for reproducible builds -->
         <project.build.generatedSources.directory>${project.build.directory}/generated-sources/codegen
         </project.build.generatedSources.directory>
 
@@ -96,7 +96,7 @@
         <version.jtds>1.3.1</version.jtds>
         <version.junit>5.8.2</version.junit>
         <version.kotest>5.1.0</version.kotest>
-        <version.kotlin>1.6.10</version.kotlin>
+        <version.kotlin>1.7.0</version.kotlin>
         <version.logback>1.2.8</version.logback>
         <version.maven-api>3.8.4</version.maven-api>
         <version.p6spy>3.9.1</version.p6spy>
@@ -425,7 +425,7 @@
                         <detectOfflineLinks>false</detectOfflineLinks>
                         <locale>en</locale>
                         <notimestamp>true</notimestamp>
-                        <skip>true</skip><!-- Only "needed" when releasing to Maven Central -->
+                        <skip>true</skip><!-- Only "needed" when deploying to Maven Central -->
                     </configuration>
                 </plugin>
             </plugins>
