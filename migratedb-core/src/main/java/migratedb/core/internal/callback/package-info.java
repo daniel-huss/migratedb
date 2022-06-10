@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 /**
- * MigrateDbException, MigrationInfo and related classes.
+ * Private API. No compatibility guarantees provided.
  */
 package migratedb.core.internal.callback;

@@ -17,4 +17,4 @@
 /**
  * Private API. No compatibility guarantees provided.
  */
-package migratedb.core.internal.database.ignite.thin;
+package migratedb.core.internal.authentication;

@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
  * Copyright 2022 The MigrateDB contributors
@@ -17,4 +18,4 @@
 /**
  * Private API. No compatibility guarantees provided.
  */
-package migratedb.core.internal.database.ignite.thin;
+package migratedb.core.internal.database.mysql.mariadb;

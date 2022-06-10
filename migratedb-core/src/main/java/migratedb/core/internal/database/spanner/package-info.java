@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 /**
- * Beta package. No compatibility guarantees provided.
+ * Private API. No compatibility guarantees provided.
  */
 package migratedb.core.internal.database.spanner;
