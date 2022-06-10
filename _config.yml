@@ -7,3 +7,4 @@ whitelist:
 migratedbVersion: 0.1.0
 title: MigrateDB
 description: Database Migrations, Easy and Free.
+baseurl: /migratedb
