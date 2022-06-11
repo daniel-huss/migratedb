@@ -7,13 +7,13 @@ redirect_from: /documentation/envvars/
 
 # Environment Variables
 
-The MigrateDB [command-line tool](/documentation/usage/commandline) supports loading configuration via environment
+The MigrateDB [command-line tool](/migratedb/documentation/usage/commandline) supports loading configuration via environment
 variables.
 
-See [configuration](/documentation/configuration/parameters) for a full list of supported configuration parameters.
+See [configuration](/migratedb/documentation/configuration/parameters) for a full list of supported configuration parameters.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/configuration/ssl">SSL support <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/configuration/ssl">SSL support <i class="fa fa-arrow-right"></i></a>
 </p>
 
 

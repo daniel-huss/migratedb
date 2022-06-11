@@ -12,7 +12,7 @@ redirect_from:
 # Tutorial: Dry Runs
 
 This tutorial assumes you have successfully completed the [**First Steps:
-Command-line**](/documentation/getstarted/firststeps/commandline)
+Command-line**](/migratedb/documentation/getstarted/firststeps/commandline)
 tutorial. **If you have not done so, please do so first.** This tutorial picks up where that one left off.
 
 This brief tutorial will teach **how to do Dry Runs**. It will take you through the
@@ -33,12 +33,12 @@ run. This SQL file can then be reviewed. If satisfactory, MigrateDB can then be 
 all changes will be applied. Alternatively a separate tool of your choice can also be used to apply the dry run SQL file
 directly to the database without using MigrateDB. This SQL file also contains the necessary statements to create and
 update MigrateDB's
-[schema history table](/documentation/concepts/migrations#schema-history-table), ensuring that all schema changes are
+[schema history table](/migratedb/documentation/concepts/migrations#schema-history-table), ensuring that all schema changes are
 tracked the usual way.
 
 ## Reviewing the status
 
-After having completed the [First Steps: Command-line](/documentation/getstarted/firststeps/commandline), you can now
+After having completed the [First Steps: Command-line](/migratedb/documentation/getstarted/firststeps/commandline), you can now
 execute
 
 <pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>info</strong></pre>
@@ -146,5 +146,5 @@ In this brief tutorial we saw how to
 - apply the changes after the dry run has been validated
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/concepts/dry-runs">Read the Dry Runs documentation <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/dry-runs">Read the Dry Runs documentation <i class="fa fa-arrow-right"></i></a>
 </p>

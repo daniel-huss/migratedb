@@ -11,7 +11,7 @@ redirect_from: /documentation/configuration/ignoreIgnoredMigrations/
 ## Description
 
 Ignore ignored migrations when reading
-the [schema history table](/documentation/concepts/migrations#schema-history-table).
+the [schema history table](/migratedb/documentation/concepts/migrations#schema-history-table).
 
 These are migrations that were added in between already migrated migrations in this version.
 

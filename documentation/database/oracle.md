@@ -41,7 +41,7 @@ subtitle: Oracle
 
 ## SQL Script Syntax
 
-- [Standard SQL syntax](/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter `;`
+- [Standard SQL syntax](/migratedb/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter `;`
 - PL/SQL blocks starting with `DECLARE` or `BEGIN` and finishing with `END; /`
 
 ### Compatibility
@@ -93,7 +93,7 @@ MigrateDB can connect to your databases using credentials in your Oracle Wallet.
 
 First you need to ensure you have set the environment variable `TNS_ADMIN` to point to the location containing
 your `tnsnames.ora` file. Then you will need to configure
-the [`migratedb.oracle.walletLocation`](/documentation/configuration/parameters/oracleWalletLocation) parameter to point
+the [`migratedb.oracle.walletLocation`](/migratedb/documentation/configuration/parameters/oracleWalletLocation) parameter to point
 to the location of your Oracle wallet. Lastly your URL should be provided as specified in `tnsnames.ora` i.e. if it is
 using an alias then connect with the `jdbc:oracle:thin:@db_alias` syntax.
 
@@ -116,7 +116,7 @@ MigrateDB allows you to proxy through other users during migrations. You can rea
 users [here](https://docs.oracle.com/cd/E11882_01/java.112/e16548/proxya.htm#JJDBC28352).
 
 To configure MigrateDB to use a proxy connection, you need to add
-to [jdbcProperties](/documentation/configuration/parameters/jdbcProperties) a key `PROXY_USER_NAME` whose value is the
+to [jdbcProperties](/migratedb/documentation/configuration/parameters/jdbcProperties) a key `PROXY_USER_NAME` whose value is the
 name of the user you are trying to proxy as. For example, if you connect as user `A` to MigrateDB (
 i.e. `migratedb.user=A`) and you want to proxy as user `B` for migrations, you need to
 add `migratedb.jdbcproperties.PROXY_USER_NAME=B`.
@@ -161,16 +161,16 @@ workarounds.
 #### A default schema different to the current user's causes remote links to fail
 
 MigrateDB alters the current schema to the
-specified [default schema](/documentation/configuration/parameters/defaultSchema) as this is where the schema history
+specified [default schema](/migratedb/documentation/configuration/parameters/defaultSchema) as this is where the schema history
 table should reside. This causes remote links to fail in migrations that expect the current schema to be the user's. The
 workarounds for this are:
 
 - Create the remote link via dynamic SQL in a stored procedure that resides in the correct schema. Stored procedures
   execute as the schema owner, so the remote link is created in the correct schema
-- Use [beforeEachMigrate](/documentation/concepts/callbacks#beforeEachMigrate)
-  and [afterEachMigrate](/documentation/concepts/callbacks#afterEachMigrate) callbacks to alter the current schema as
+- Use [beforeEachMigrate](/migratedb/documentation/concepts/callbacks#beforeEachMigrate)
+  and [afterEachMigrate](/migratedb/documentation/concepts/callbacks#afterEachMigrate) callbacks to alter the current schema as
   needed
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/database/sqlserver">SQL Server <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/sqlserver">SQL Server <i class="fa fa-arrow-right"></i></a>
 </p>

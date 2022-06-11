@@ -15,7 +15,7 @@ Validation fails if
 - versions have been applied that aren't resolved locally anymore
 - versions have been resolved that haven't been applied yet
 
-<a href="/documentation/command/validate"><img src="/assets/balsamiq/command-validate.png" alt="validate"></a>
+<a href="/migratedb/documentation/command/validate"><img src="/migratedb/assets/balsamiq/command-validate.png" alt="validate"></a>
 
 ## Usage
 
@@ -23,7 +23,7 @@ Validation fails if
 
 ## Options
 
-See [configuration](/documentation/configuration/parameters) for a full list of supported configuration parameters.
+See [configuration](/migratedb/documentation/configuration/parameters) for a full list of supported configuration parameters.
 
 ## Sample configuration
 

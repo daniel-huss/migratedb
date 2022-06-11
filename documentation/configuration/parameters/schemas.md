@@ -16,7 +16,7 @@ MigrateDB will attempt to create these schemas if they do not already exist, and
 list.
 If MigrateDB created them, then the schemas themselves will be dropped when cleaning.
 
-If [defaultSchema](/documentation/configuration/parameters/defaultSchema) is not specified, the first schema in this
+If [defaultSchema](/migratedb/documentation/configuration/parameters/defaultSchema) is not specified, the first schema in this
 list also acts as the default schema, which is where the schema history table will be placed.
 
 ## Usage

@@ -18,7 +18,7 @@ file `sql/V2__my_script.sql.conf`.
 
 Script Config Files have a subset of the options from the other ways of configuring MigrateDB (e.g. `migratedb.conf`).
 See
-the [Reference](/documentation/configuration/scriptconfigfiles#reference) at the bottom of the page for the complete
+the [Reference](/migratedb/documentation/configuration/scriptconfigfiles#reference) at the bottom of the page for the complete
 list of options.
 
 ## Structure
@@ -54,5 +54,5 @@ shouldExecute=${should_execute}==true
 ```
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/concepts/callbacks">Callbacks <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/callbacks">Callbacks <i class="fa fa-arrow-right"></i></a>
 </p>

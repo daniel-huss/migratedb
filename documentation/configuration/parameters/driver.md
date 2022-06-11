@@ -12,11 +12,11 @@ redirect_from: /documentation/configuration/driver/
 
 The fully qualified classname of the jdbc driver to use to connect to the database.
 
-This must match the driver for the database type in the [url](/documentation/configuration/parameters/url) you are
+This must match the driver for the database type in the [url](/migratedb/documentation/configuration/parameters/url) you are
 using.
 
 If you use a driver class that is not shipped with MigrateDB, you must ensure that it is available on the classpath (
-see [Adding to the classpath](/documentation/adding-to-the-class-path)).
+see [Adding to the classpath](/migratedb/documentation/adding-to-the-class-path)).
 
 ## Default
 

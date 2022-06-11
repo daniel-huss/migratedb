@@ -160,7 +160,7 @@ Using the default settings, MigrateDB looks in its default locations (&lt;instal
 tool)
 for SQL files like `beforeMigrate.sql`, `beforeEachMigrate.sql`, `afterEachMigrate.sql`, ...
 
-Placeholder replacement works just like it does for <a href="/documentation/concepts/migrations#sql-based-migrations">
+Placeholder replacement works just like it does for <a href="/migratedb/documentation/concepts/migrations#sql-based-migrations">
 SQL migrations</a>.
 
 Optionally the callback may also include a description. In that case the callback name is composed of the event name,
@@ -171,18 +171,18 @@ the separator, the description and the suffix. Example: `beforeRepair__vacuum.sq
 ## Java Callbacks
 
 If SQL Callbacks aren't flexible enough for you, you have the option to implement the
-[**Callback**](/documentation/usage/api/javadoc/migratedb/core/api/callback/Callback)
+[**Callback**](/migratedb/documentation/usage/api/javadoc/migratedb/core/api/callback/Callback)
 interface yourself. You can even hook multiple Callback implementations in the lifecycle. Java callbacks have the
 additional flexibility that a single Callback implementation can handle multiple lifecycle events, and are
 therefore not bound by the SQL callback naming convention.
 
-**More info:** [Java-based Callbacks](/documentation/usage/api/hooks#callsbacks)
+**More info:** [Java-based Callbacks](/migratedb/documentation/usage/api/hooks#callsbacks)
 
 ## Script Callbacks
 
 Much like SQL callbacks, MigrateDB also supports the execution of callbacks written in a scripting language. The
 supported file extensions are the same as those supported
-by [script migrations](/documentation/concepts/migrations#script-migrations). For example, you could have
+by [script migrations](/migratedb/documentation/concepts/migrations#script-migrations). For example, you could have
 a `beforeRepair__vacuum.ps1` callback. Script callbacks give you much more flexibility and power during the migration
 lifecycle. Some of the things you can achieve are:
 
@@ -195,8 +195,8 @@ When multiple callbacks for the same event are found, they are executed in the a
 
 ## Tutorial
 
-Click [here](/documentation/getstarted/advanced/callbacks) to see a tutorial on using callbacks.
+Click [here](/migratedb/documentation/getstarted/advanced/callbacks) to see a tutorial on using callbacks.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/concepts/error-overrides">Error Overrides <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/error-overrides">Error Overrides <i class="fa fa-arrow-right"></i></a>
 </p>

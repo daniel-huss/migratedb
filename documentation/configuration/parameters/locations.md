@@ -16,7 +16,7 @@ Comma-separated list of locations to scan recursively for migrations. The locati
 
 Unprefixed locations or locations starting with <code>classpath:</code> point to a package on the classpath and may
 contain both SQL and Java-based migrations. You must ensure the package is available on the classpath (
-see [Adding to the classpath](/documentation/adding-to-the-class-path)).
+see [Adding to the classpath](/migratedb/documentation/adding-to-the-class-path)).
 
 ### Filesystem
 

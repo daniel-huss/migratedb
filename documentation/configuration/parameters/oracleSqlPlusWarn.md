@@ -11,7 +11,7 @@ redirect_from: /documentation/configuration/oracleSqlPlusWarn/
 ## Description
 
 Whether MigrateDB should issue a warning instead of an error whenever it encounters
-an [Oracle SQL*Plus statement](/documentation/database/oracle#sqlplus-commands) it doesn't yet support.
+an [Oracle SQL*Plus statement](/migratedb/documentation/database/oracle#sqlplus-commands) it doesn't yet support.
 
 ## Default
 

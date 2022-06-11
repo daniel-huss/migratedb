@@ -37,11 +37,11 @@ subtitle: Azure Synapse
 
 ## Azure Synapse Syntax
 
-- [See SQL Server](/documentation/database/sqlserver#sql-server-syntax)
+- [See SQL Server](/migratedb/documentation/database/sqlserver#sql-server-syntax)
 
 ### Compatibility
 
-- [See SQL Server](/documentation/database/sqlserver#compatibility)
+- [See SQL Server](/migratedb/documentation/database/sqlserver#compatibility)
 
 ### Example
 
@@ -60,13 +60,13 @@ INSERT INTO ${tableName} (name) VALUES ('Mr. T');
 
 ## Authentication
 
-[See SQL Server](/documentation/database/sqlserver#authentication)
+[See SQL Server](/migratedb/documentation/database/sqlserver#authentication)
 
 ## Limitations
 
-- [See SQL Server](/documentation/database/sqlserver#limitations)
+- [See SQL Server](/migratedb/documentation/database/sqlserver#limitations)
 - The JTDS driver does not support Azure Synapse
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/database/db2">DB2 <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/db2">DB2 <i class="fa fa-arrow-right"></i></a>
 </p>

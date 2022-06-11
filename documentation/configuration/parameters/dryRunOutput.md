@@ -15,7 +15,7 @@ directory, MigrateDB will create all directories and parent directories as neede
 
 Omit to use the default mode of executing the SQL statements directly against the database.
 
-See [dry runs](/documentation/concepts/dry-runs) for more details.
+See [dry runs](/migratedb/documentation/concepts/dry-runs) for more details.
 
 ## Default
 
@@ -53,7 +53,7 @@ MigrateDB.configure()
 
 ### Preview changes without altering the database
 
-Quite often a migration may be making use of [placeholders](/documentation/configuration/parameters/placeholders), such
+Quite often a migration may be making use of [placeholders](/migratedb/documentation/configuration/parameters/placeholders), such
 as in the following statement:
 
 ```

@@ -9,8 +9,8 @@ redirect_from: /documentation/placeholders/
 
 MigrateDB comes with support for placeholder replacement in:
 
-- [SQL migrations](/documentation/configuration/placeholder#sql-migration-placeholders)
-- [Script migrations](/documentation/configuration/placeholder#script-migration-placeholders)
+- [SQL migrations](/migratedb/documentation/configuration/placeholder#sql-migration-placeholders)
+- [Script migrations](/migratedb/documentation/configuration/placeholder#script-migration-placeholders)
 
 # SQL Migration Placeholders
 
@@ -37,7 +37,7 @@ Placeholders can be configured through a number of different ways.
 Placeholders are case insensitive, so a placeholder like `${myplaceholder}` can be specified with any of the above
 techniques.
 
-See [parameters](/documentation/configuration/parameters/#placeholders) for placeholder specific configuration
+See [parameters](/migratedb/documentation/configuration/parameters/#placeholders) for placeholder specific configuration
 parameters.
 
 ## Default placeholders
@@ -79,7 +79,7 @@ INSERT INTO ${tableName} (name) VALUES ('Mr. T');
 # Script Migration Placeholders
 
 Much like SQL placeholders, MigrateDB supports placeholder replacement in
-[script migrations](/documentation/concepts/migrations#script-migrations). Placeholders can be read
+[script migrations](/migratedb/documentation/concepts/migrations#script-migrations). Placeholders can be read
 through environment variables in your chosen scripting language and by default are prefixed by `FP__`
 and suffixed by `__`. When accessing a placeholder that contains a colon (`:`), you must replace the colon with an
 underscore (`_`).
@@ -101,5 +101,5 @@ echo $FP__migratedb_filename__
 ```
 
 <p class="next-steps">
-  <a class="btn btn-primary" href="/documentation/configuration/scriptconfigfiles">Script Config Files <i class="fa fa-arrow-right"></i></a>
+  <a class="btn btn-primary" href="/migratedb/documentation/configuration/scriptconfigfiles">Script Config Files <i class="fa fa-arrow-right"></i></a>
 </p>

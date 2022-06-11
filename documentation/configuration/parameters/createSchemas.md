@@ -11,7 +11,7 @@ redirect_from: /documentation/configuration/createSchemas/
 ## Description
 
 Whether MigrateDB should attempt to create the schemas specified in the schemas
-property. [See this page for more details](/documentation/concepts/migrations#the-createschemas-option-and-the-schema-history-table)
+property. [See this page for more details](/migratedb/documentation/concepts/migrations#the-createschemas-option-and-the-schema-history-table)
 
 ## Default
 

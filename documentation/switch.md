@@ -45,11 +45,11 @@ There are scanner plugins for Maven and Gradle users and a scanner library for e
 
 ### Maven
 
-See [Maven plugin usage](/documentation/usage/maven).
+See [Maven plugin usage](/migratedb/documentation/usage/maven).
 
 ### Gradle 
 
-See [Gradle plugin usage](/documentation/usage/gradle).
+See [Gradle plugin usage](/migratedb/documentation/usage/gradle).
 
 ### Other build tools
 

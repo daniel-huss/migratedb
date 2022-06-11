@@ -11,15 +11,15 @@ redirect_from: /documentation/configuration/defaultSchema/
 ## Description
 
 The default schema managed by MigrateDB. This schema will be the one containing
-the [schema history table](/documentation/concepts/migrations#schema-history-table).
-If not specified in [schemas](/documentation/configuration/parameters/schemas), MigrateDB will automatically attempt to
+the [schema history table](/migratedb/documentation/concepts/migrations#schema-history-table).
+If not specified in [schemas](/migratedb/documentation/configuration/parameters/schemas), MigrateDB will automatically attempt to
 create and clean this schema first.
 
 This schema will also be the default for the database connection (provided the database supports this concept).
 
 ## Default
 
-If [schemas](/documentation/configuration/parameters/schemas) is specified, the first schema in that list. Otherwise,
+If [schemas](/migratedb/documentation/configuration/parameters/schemas) is specified, the first schema in that list. Otherwise,
 the database's default schema.
 
 ## Usage

@@ -9,7 +9,7 @@ subtitle: 'Command-line: clean'
 Drops all objects (tables, views, procedures, triggers, ...) in the configured schemas.<br/>
 The schemas are cleaned in the order specified by the `schemas` property.
 
-<a href="/documentation/command/clean"><img src="/assets/balsamiq/command-clean.png" alt="clean"></a>
+<a href="/migratedb/documentation/command/clean"><img src="/migratedb/assets/balsamiq/command-clean.png" alt="clean"></a>
 
 ## Usage
 
@@ -17,7 +17,7 @@ The schemas are cleaned in the order specified by the `schemas` property.
 
 ## Options
 
-See [configuration](/documentation/configuration/parameters) for a full list of supported configuration parameters.
+See [configuration](/migratedb/documentation/configuration/parameters) for a full list of supported configuration parameters.
 
 ## Sample configuration
 
@@ -60,5 +60,5 @@ Cleaned database schema 'PUBLIC' (execution time 00:00.014s)</pre>
 }</pre>
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/usage/commandline/info">Command-line: info <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/info">Command-line: info <i class="fa fa-arrow-right"></i></a>
 </p>

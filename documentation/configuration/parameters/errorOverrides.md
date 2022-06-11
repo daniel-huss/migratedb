@@ -38,7 +38,7 @@ details) instead of warnings, the following errorOverride can be used: <code>S00
 Example 3: to force all errors with SQL error code 123 to be treated as warnings instead, the following errorOverride
 can be used: <code>*:123:W</code>
 
-See [errorOverrides](/documentation/concepts/error-overrides) for more details.
+See [errorOverrides](/migratedb/documentation/concepts/error-overrides) for more details.
 
 ## Usage
 
@@ -70,4 +70,4 @@ MigrateDB.configure()
 
 ## Use Cases
 
-See our [error overrides examples](/documentation/concepts/error-overrides#examples).
+See our [error overrides examples](/migratedb/documentation/concepts/error-overrides#examples).

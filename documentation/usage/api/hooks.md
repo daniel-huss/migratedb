@@ -11,15 +11,15 @@ There are three ways you can hook into the MigrateDB API.
 ## Java-based Migrations
 
 The first one is the the most common
-one: [Java-based Migrations](/documentation/concepts/migrations#java-based-migrations)
+one: [Java-based Migrations](/migratedb/documentation/concepts/migrations#java-based-migrations)
 when you need more power than SQL can offer you. This is great to for dealing with LOBs or performing advanced
 data transformations.
 
 In order to be picked up by MigrateDB, Java-based Migrations must implement the
-[`JavaMigration`](/documentation/usage/api/javadoc/migratedb/core/api/migration/JavaMigration) interface. Most
+[`JavaMigration`](/migratedb/documentation/usage/api/javadoc/migratedb/core/api/migration/JavaMigration) interface. Most
 users
 however should inherit from the convenience
-class [`BaseJavaMigration`](/documentation/usage/api/javadoc/migratedb/core/api/migration/BaseJavaMigration)
+class [`BaseJavaMigration`](/migratedb/documentation/usage/api/javadoc/migratedb/core/api/migration/BaseJavaMigration)
 instead as it encourages MigrateDB's default naming convention, enabling MigrateDB to automatically extract the version
 and
 the description from the class name.
@@ -52,15 +52,15 @@ migratedb.migrate();
 
 ## Java-based Callbacks
 
-Building upon that are the Java-based [Callbacks](/documentation/concepts/callbacks)
+Building upon that are the Java-based [Callbacks](/migratedb/documentation/concepts/callbacks)
 when you need more power or flexibility in a Callback than SQL can offer you.
 
 They can be created by implementing the 
-[**Callback**](/documentation/usage/api/javadoc/migratedb/core/api/callback/Callback)
+[**Callback**](/migratedb/documentation/usage/api/javadoc/migratedb/core/api/callback/Callback)
 interface.
 
 The `event` argument tells you
-which [`Event`](/documentation/usage/api/javadoc/migratedb/core/api/callback/Event)
+which [`Event`](/migratedb/documentation/usage/api/javadoc/migratedb/core/api/callback/Event)
 (`beforeClean`, `afterMigrate`, ...) is being handled and the `context` argument gives you access to things
 like the database connection and the MigrateDB configuration.
 
@@ -105,9 +105,9 @@ classes or scan locations can be specified by the `migratedb.callbacks` configur
 
 For those that need more than what the SQL and Java-based migrations offer, you also have the possibility to
 implement your
-own [`MigrationResolver`](/documentation/usage/api/javadoc/migratedb/core/api/resolver/MigrationResolver)
+own [`MigrationResolver`](/migratedb/documentation/usage/api/javadoc/migratedb/core/api/resolver/MigrationResolver)
 coupled with a
-custom [`MigrationExecutor`](/documentation/usage/api/javadoc/migratedb/core/api/executor/MigrationExecutor).
+custom [`MigrationExecutor`](/migratedb/documentation/usage/api/javadoc/migratedb/core/api/executor/MigrationExecutor).
 
 These can then be used for loading things like CSV-based migrations or other custom formats.
 
@@ -116,5 +116,5 @@ to completely replace the built-in ones (by default, custom resolvers will run i
 built-in ones).
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/usage/api/javadoc">API: Javadoc <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/api/javadoc">API: Javadoc <i class="fa fa-arrow-right"></i></a>
 </p>

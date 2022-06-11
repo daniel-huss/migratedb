@@ -10,7 +10,7 @@ redirect_from: /documentation/configuration/placeholderReplacement/
 
 ## Description
 
-Whether [placeholders](/documentation/configuration/placeholder) should be replaced
+Whether [placeholders](/migratedb/documentation/configuration/placeholder) should be replaced
 
 ## Default
 

@@ -67,7 +67,7 @@ to carry out all the above steps and then simply switch SSL on and off as requir
 
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/configuration/authentication">Authentication<i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/configuration/authentication">Authentication<i class="fa fa-arrow-right"></i></a>
 </p>
 
 

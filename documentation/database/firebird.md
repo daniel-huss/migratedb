@@ -34,7 +34,7 @@ subtitle: Firebird
 
 ## SQL Script Syntax
 
-- [Standard SQL syntax](/documentation/concepts/migrations#syntax)
+- [Standard SQL syntax](/migratedb/documentation/concepts/migrations#syntax)
 - Terminator changes supported using `SET TERM <i>&lt;new terminator&gt;</i><i>&lt;old terminator&gt;</i>
 - Firebird dialect 3 only
 
@@ -75,7 +75,7 @@ SET TERM ;#
 - Mixing DDL and DML involving the same tables in a single migration is not supported. Firebird disallows DDL changes to
   be used by DML in the same transaction, so one of the following is necessary:
     - separate migrations for DML / DDL, or
-    - a [per-script override](/documentation/configuration/scriptconfigfiles) of <code>executeInTransaction</code>
+    - a [per-script override](/migratedb/documentation/configuration/scriptconfigfiles) of <code>executeInTransaction</code>
 
 - `SET TRANSACTION` and `COMMIT [WORK]` are not supported in migrations. `COMMIT RETAIN` can be used, but this will only
   allow partial rollback of a migration; only statements after the last `COMMIT RETAIN` can be rolled back.
@@ -85,5 +85,5 @@ SET TERM ;#
   database and run the migration with exclusive access.
 
  <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/learnmore/existing">Existing database setup <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/learnmore/existing">Existing database setup <i class="fa fa-arrow-right"></i></a>
 </p>

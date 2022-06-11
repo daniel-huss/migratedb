@@ -7,7 +7,7 @@ subtitle: Authentication
 # Authentication
 
 In order to log in to your database, the typical approach is to set your username and password in the
-MigrateDB [configuration file](/documentation/configuration/configfile). This however has some concerns:
+MigrateDB [configuration file](/migratedb/documentation/configuration/configfile). This however has some concerns:
 
 - These properties are stored in plain text - anyone can see your credentials
 - Your credentials must be supplied in every configuration file you use
@@ -25,23 +25,23 @@ someone who has the relevant access, so they do not end up being leaked to any u
 
 ### Oracle
 
-- [Oracle Wallet](/documentation/database/oracle#oracle-wallet)
+- [Oracle Wallet](/migratedb/documentation/database/oracle#oracle-wallet)
 
 ### SQL Server and Azure Synapse
 
-- [Windows Authentication](/documentation/database/sqlserver#windows-authentication)
-- [Azure Active Directory](/documentation/database/sqlserver#azure-active-directory)
-- [Kerberos](/documentation/database/sqlserver#kerberos)
+- [Windows Authentication](/migratedb/documentation/database/sqlserver#windows-authentication)
+- [Azure Active Directory](/migratedb/documentation/database/sqlserver#azure-active-directory)
+- [Kerberos](/migratedb/documentation/database/sqlserver#kerberos)
 
 ### MySQL
 
-- [MySQL Option Files](/documentation/database/mysql#option-files)
+- [MySQL Option Files](/migratedb/documentation/database/mysql#option-files)
 
 ### PostgreSQL
 
-- [SCRAM](/documentation/database/postgresql#scram)
-- [pgpass](/documentation/database/postgresql#pgpass)
+- [SCRAM](/migratedb/documentation/database/postgresql#scram)
+- [pgpass](/migratedb/documentation/database/postgresql#pgpass)
 
 ### Snowflake
 
-- [Key-based Authentication](/documentation/database/snowflake#key-based-authentication)
+- [Key-based Authentication](/migratedb/documentation/database/snowflake#key-based-authentication)

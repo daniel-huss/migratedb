@@ -18,5 +18,5 @@ which other ones are still pending, when they were executed and whether they wer
 {% include commandUsage.html command="info" %}
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/command/validate">Validate <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/command/validate">Validate <i class="fa fa-arrow-right"></i></a>
 </p>

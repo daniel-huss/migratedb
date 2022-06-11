@@ -10,13 +10,13 @@ redirect_from: /documentation/configuration/placeholders/
 
 ## Description
 
-[Placeholders](/documentation/configuration/placeholder) to replace in SQL migrations.
+[Placeholders](/migratedb/documentation/configuration/placeholder) to replace in SQL migrations.
 
 For example to replace a placeholder named `key1` with the value `value1`, you can
 set `migratedb.placeholders.key1=value1`.
 MigrateDB will take the `key1` part, and long with
-the [placeholder prefix](/documentation/configuration/parameters/placeholderPrefix) and
-the [placeholder suffix](/documentation/configuration/parameters/placeholderSuffix) construct a placeholder replacement,
+the [placeholder prefix](/migratedb/documentation/configuration/parameters/placeholderPrefix) and
+the [placeholder suffix](/migratedb/documentation/configuration/parameters/placeholderSuffix) construct a placeholder replacement,
 which by default would look like `${key}`. Then in your SQL migrations and instances of this will be replaced
 with `value1`.
 

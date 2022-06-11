@@ -10,7 +10,7 @@ subtitle: migratedb.ignoreMigrationPatterns
 ## Description
 
 Ignore migrations during `validate` and `repair` according to a given list
-of [patterns](/documentation/configuration/parameters/ignoreMigrationPatterns#patterns).
+of [patterns](/migratedb/documentation/configuration/parameters/ignoreMigrationPatterns#patterns).
 
 Only `Missing` migrations are ignored during `repair`,
 

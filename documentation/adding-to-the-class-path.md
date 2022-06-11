@@ -19,8 +19,8 @@ How you add to the classpath depends on how you are invoking MigrateDB.
 When using the CLI, you can add to the classpath by dropping the `.jar` files for the libraries you want to include into
 either the `drivers` or the `jars` folder in the downloaded folder structure. The two folders are provided to make it
 easier to separate jars used for adding database driver support, and jars used to contain other functionality (such
-as [Java migrations](/documentation/concepts/migrations#java-based-migrations)
-or [Java callbacks](/documentation/concepts/callbacks#java-callbacks)).
+as [Java migrations](/migratedb/documentation/concepts/migrations#java-based-migrations)
+or [Java callbacks](/migratedb/documentation/concepts/callbacks#java-callbacks)).
 
 <pre class="filetree"><i class="fa fa-folder-open"></i> migratedb
   <i class="fa fa-folder-open"></i> conf
@@ -35,7 +35,7 @@ or [Java callbacks](/documentation/concepts/callbacks#java-callbacks)).
   <i class="fa fa-file-text"></i> README.txt
 </pre>
 
-You can also specify more folders to load jars from using the [jarDirs](/documentation/configuration/parameters/jarDirs)
+You can also specify more folders to load jars from using the [jarDirs](/migratedb/documentation/configuration/parameters/jarDirs)
 configuration parameter.
 
 ### API
@@ -46,10 +46,10 @@ would with any other java dependencies.
 ## What can be added
 
 The most common library to be added to MigrateDB is those that add JDBC driver support. For example
-the [Informix](/documentation/database/informix) database is supported by MigrateDB, but the JDBC driver is not shipped
+the [Informix](/migratedb/documentation/database/informix) database is supported by MigrateDB, but the JDBC driver is not shipped
 with it. Therefore the `com.ibm.informix:jdbc:4.10.10.0` dependency needs to be added to the classpath to allow
 MigrateDB to work with it. See each database page for the JDBC driver they use and whether they are shipped with
 MigrateDB or not.
 
-Other uses for adding libraries are [adding logging support](/documentation/usage/commandline/#output),
-adding [Java migrations](/documentation/concepts/migrations#java-based-migrations), and more.
+Other uses for adding libraries are [adding logging support](/migratedb/documentation/usage/commandline/#output),
+adding [Java migrations](/migratedb/documentation/concepts/migrations#java-based-migrations), and more.

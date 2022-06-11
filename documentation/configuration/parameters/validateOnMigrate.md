@@ -10,7 +10,7 @@ redirect_from: /documentation/configuration/validateOnMigrate/
 
 ## Description
 
-Whether to automatically call [validate](/documentation/command/validate) or not when running migrate.
+Whether to automatically call [validate](/migratedb/documentation/command/validate) or not when running migrate.
 
 ## Default
 

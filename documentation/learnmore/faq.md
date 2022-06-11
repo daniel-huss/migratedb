@@ -1,3 +1,4 @@
+
 ---
 layout: documentation
 menu: faq
@@ -17,16 +18,16 @@ Frequently Asked Questions
 * [Does MigrateDB support undo/downgrade/downward migrations?](#downgrade)
 * [What is the best strategy for dealing with hot fixes?](#hot-fixes)
 * [Can multiple nodes migrate in parallel?](#parallel)
-* [Does MigrateDB perform a roll back if a migration fails?](#rollback)
+* [Does MigrateDB perform a rollback if a migration fails?](#rollback)
 * [Does MigrateDB support multiple schemas?](#multiple-schemas)
 * [Does MigrateDB work with OSGI?](#osgi?)
 * [Does MigrateDB support placeholder replacement?](#placeholders)
 * [Does MigrateDB depend on Spring?](#spring)
-* [Can I make structure changes to the DB outside of MigrateDB?](#outside-changes)
+* [Can I make structure changes to the DB outside MigrateDB?](#outside-changes)
 * [How do you repair the database after a failed migration?](#repair)
 * [Why does clean drop individual objects instead of the schema itself?](#clean-objects)
 * [What is the best strategy for handling database-specific sql?](#db-specific-sql)
-* [Why is the migratedb\_state table case-sensitive?](#case-sensitive)
+* [Why is the migratedb_state table case-sensitive?](#case-sensitive)
 
 <div id="defect"></div>
 
@@ -57,7 +58,7 @@ Post your question on [StackOverflow](http://stackoverflow.com).
 What about undo/downgrade/downward migrations?
 ----------------------------------------------
 
-[These are not supported.](../documentation/migrations#no-undo-migrations)
+[These are not supported.](/migratedb/documentation/migrations#no-undo-migrations)
 
 <div id="hot-fixes"></div>
 
@@ -92,7 +93,7 @@ configurations are fully supported.
 
 <div id="rollback"></div>
 
-Does MigrateDB perform a roll back if a migration fails?
+Does MigrateDB perform a rollback if a migration fails?
 --------------------------------------------------------
 
 MigrateDB runs each migration in a separate transaction. In case of failure this transaction is rolled back.
@@ -167,7 +168,7 @@ No. MigrateDB has zero required dependences.
 
 <div id="outside-changes"></div>
 
-Can I make structure changes to the DB outside of MigrateDB?
+Can I make structure changes to the DB outside MigrateDB?
 ------------------------------------------------------------
 
 No. One of the prerequisites for being able to rely on the metadata in the database and having reliable migrations is
@@ -195,7 +196,7 @@ If your database doesn't, these are the steps to follow:
 Why does `clean` drop individual objects instead of the schema itself?
 ----------------------------------------------------------------------
 
-`clean` will remove what MigrateDB created. If MigrateDB also created the schema itself, `clean` will drop it. Otherwise
+`clean` will remove what MigrateDB created. If MigrateDB also created the schema itself, `clean` will drop it. Otherwise,
 it will only drop the objects within the schema.
 
 

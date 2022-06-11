@@ -62,26 +62,26 @@ The following flags provide helpful information without carrying out any other o
     </thead>
     <tbody>
     <tr>
-        <td><a href="/documentation/usage/commandline/migrate">migrate</a></td>
+        <td><a href="/migratedb/documentation/usage/commandline/migrate">migrate</a></td>
         <td>Migrates the database</td>
     </tr>
     <tr>
-        <td><a href="/documentation/usage/commandline/clean">clean</a></td>
+        <td><a href="/migratedb/documentation/usage/commandline/clean">clean</a></td>
         <td>Drops all objects in the configured schemas</td>
     </tr>
     <tr>
-        <td><a href="/documentation/usage/commandline/info">info</a></td>
+        <td><a href="/migratedb/documentation/usage/commandline/info">info</a></td>
         <td>Prints the details and status information about all the migrations</td>
     </tr>
     <tr>
-        <td><a href="/documentation/usage/commandline/validate">validate</a></td>
+        <td><a href="/migratedb/documentation/usage/commandline/validate">validate</a></td>
         <td>Validates the applied migrations against the ones available on the classpath</td>
     <tr>
-        <td><a href="/documentation/usage/commandline/baseline">baseline</a></td>
+        <td><a href="/migratedb/documentation/usage/commandline/baseline">baseline</a></td>
         <td>Baselines an existing database, excluding all migrations up to and including baselineVersion</td>
     </tr>
     <tr>
-        <td><a href="/documentation/usage/commandline/repair">repair</a></td>
+        <td><a href="/migratedb/documentation/usage/commandline/repair">repair</a></td>
         <td>Repairs the schema history table</td>
     </tr>
     </tbody>
@@ -93,7 +93,7 @@ In order to connect with your database, MigrateDB needs the appropriate JDBC dri
 directory.
 
 To see if MigrateDB ships with the JDBC driver for your database, visit the *Driver* section of the documentation page
-for your database. For example, here is the [Oracle Drivers section](/documentation/database/oracle#driver).
+for your database. For example, here is the [Oracle Drivers section](/migratedb/documentation/database/oracle#driver).
 
 If MigrateDB does not ship with the JDBC driver, you will need to download the driver and place it in the `drivers`
 directory yourself. Instructions on where to download drivers from are also in the *Driver* section of the documentation
@@ -106,9 +106,9 @@ variables and command-line parameters. These different means of configuration ca
 
 ### Config files
 
-[Config files](/documentation/configuration/configfile) are supported by the MigrateDB command-line tool. If you are not
+[Config files](/migratedb/documentation/configuration/configfile) are supported by the MigrateDB command-line tool. If you are not
 familiar with them,
-check out the [MigrateDB config file structure and settings reference](/documentation/configuration/configfile) first.
+check out the [MigrateDB config file structure and settings reference](/migratedb/documentation/configuration/configfile) first.
 
 MigrateDB will search for and automatically load the following config files if present:
 
@@ -146,8 +146,8 @@ When set it will take preference over the command-line parameter.
 ### Environment Variables
 
 To make it easier to work with cloud and containerized environments, MigrateDB also supports configuration via
-[environment variables](/documentation/configuration/envvars). Check out
-the [MigrateDB environment variable reference](/documentation/configuration/envvars) for details.
+[environment variables](/migratedb/documentation/configuration/envvars). Check out
+the [MigrateDB environment variable reference](/migratedb/documentation/configuration/envvars) for details.
 
 ### Command-line Arguments
 
@@ -256,7 +256,7 @@ following:
 - SLF4J `org.slf4j.Logger`
 - Log4J v2 `org.apache.logging.log4j.Logger`
 
-Alternatively, you can use the [loggers](/documentation/configuration/parameters/loggers) configuration parameter to
+Alternatively, you can use the [loggers](/migratedb/documentation/configuration/parameters/loggers) configuration parameter to
 specify an exact desired logging framework to use.
 
 The simplest way to make use of MigrateDB's auto-detection is to put all the necessary JAR files in MigrateDB's `lib`
@@ -344,5 +344,5 @@ JSON payload instead of being sent to `stderr`.
 Add `-outputFile=/my/output.txt` to the argument list to also write output to the specified file.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/usage/commandline/migrate">Command-line: migrate <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/migrate">Command-line: migrate <i class="fa fa-arrow-right"></i></a>
 </p>

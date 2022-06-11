@@ -41,5 +41,5 @@ defaults for code formatting and import reordering. Keep this in mind so merge c
 minimum.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/contribute/code/submit">Submit your changes <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/contribute/code/submit">Submit your changes <i class="fa fa-arrow-right"></i></a>
 </p>

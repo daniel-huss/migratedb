@@ -33,7 +33,7 @@ subtitle: Informix
 
 ## SQL Script Syntax
 
-- [Standard SQL syntax](/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter **GO**
+- [Standard SQL syntax](/migratedb/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter **GO**
 - SPL
 
 ### Compatibility
@@ -82,5 +82,5 @@ INSERT INTO ${tableName} (name) VALUES ('Mr. T');
 - No Support for DDL transactions due to Informix limitations.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/database/h2">H2 <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/h2">H2 <i class="fa fa-arrow-right"></i></a>
 </p>

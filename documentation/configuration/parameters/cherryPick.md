@@ -74,7 +74,7 @@ migrate `V1` and `V3` immediately:
 migratedb migrate -cherryPick="1,3"
 ```
 
-When it comes to migrating `V2`, we can utilise [outOfOrder](/documentation/configuration/parameters/outOfOrder) as
+When it comes to migrating `V2`, we can utilise [outOfOrder](/migratedb/documentation/configuration/parameters/outOfOrder) as
 follows:
 
 ```

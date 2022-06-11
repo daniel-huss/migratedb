@@ -17,7 +17,7 @@ validation.
 `ignoreMigrationPatterns` let's you add your own validation rules to tell MigrateDB which migrations are valid.
 
 You can read about how to
-configure `ignoreMigrationPatterns` [here](/documentation/configuration/parameters/ignoreMigrationPatterns). In
+configure `ignoreMigrationPatterns` [here](/migratedb/documentation/configuration/parameters/ignoreMigrationPatterns). In
 summary, `ignoreMigrationPatterns` allows you to specify a list of patterns of the form `type:status` and any migration
 that matches any of these patterns is ignored during validate.
 

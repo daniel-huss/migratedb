@@ -10,7 +10,7 @@ redirect_from: /documentation/configuration/oracleSqlPlus/
 
 ## Description
 
-Enable MigrateDB's support for [Oracle SQL*Plus commands](/documentation/database/oracle#sqlplus-commands).
+Enable MigrateDB's support for [Oracle SQL*Plus commands](/migratedb/documentation/database/oracle#sqlplus-commands).
 
 ## Default
 
@@ -48,6 +48,6 @@ MigrateDB.configure()
 
 ### Configuring consistent sessions for your migrations
 
-See our list of [supported SQL\*Plus commands](/documentation/database/oracle#sqlplus-commands) and how you can utilize
-them with [site and user profiles](/documentation/database/oracle#site-profiles-gloginsql--user-profiles-loginsql) once
+See our list of [supported SQL\*Plus commands](/migratedb/documentation/database/oracle#sqlplus-commands) and how you can utilize
+them with [site and user profiles](/migratedb/documentation/database/oracle#site-profiles-gloginsql--user-profiles-loginsql) once
 SQL\*Plus is enable to achieved this.

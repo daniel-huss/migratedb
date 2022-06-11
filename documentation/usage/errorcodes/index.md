@@ -27,7 +27,7 @@ These error codes may appear from any command, and are indicative of more genera
 ### `JDBC_DRIVER`
 
 - **Caused by:** The JDBC driver is unable to be instantiated
-- **Solution:** Check whether the JDBC driver is present on the [classpath](/documentation/adding-to-the-class-path)
+- **Solution:** Check whether the JDBC driver is present on the [classpath](/migratedb/documentation/adding-to-the-class-path)
 
 ### `DB_CONNECTION`
 
@@ -37,7 +37,7 @@ These error codes may appear from any command, and are indicative of more genera
 ### `CONFIGURATION`
 
 - **Caused by:** Incorrect configuration provided to MigrateDB
-- **Solution:** Ensure your configuration is as per the [documentation](/documentation/configuration/parameters/)
+- **Solution:** Ensure your configuration is as per the [documentation](/migratedb/documentation/configuration/parameters/)
 
 ### `DUPLICATE_VERSIONED_MIGRATION`
 
@@ -54,7 +54,7 @@ These error codes may appear from any command, and are indicative of more genera
 - **Caused by:** Schema history or filesystem corruption causing the same migration to appear to be deleted more than
   once
 - **Solution:** Ensure that you do not tamper with the schema history and all migrations that have been deleted are
-  removed from [locations](/documentation/configuration/parameters/locations) known to MigrateDB
+  removed from [locations](/migratedb/documentation/configuration/parameters/locations) known to MigrateDB
 
 ## Validate Error Codes
 
@@ -69,7 +69,7 @@ These error codes are surfaced when running `validate` or `validateWithResult`.
 
 - **Caused by:** The schema being validated against does not exist
 - **Solution:** Manually create the schema or
-  enable [`createSchemas`](/documentation/configuration/parameters/createSchemas)
+  enable [`createSchemas`](/migratedb/documentation/configuration/parameters/createSchemas)
 
 ### `FAILED_REPEATABLE_MIGRATION`
 
@@ -95,14 +95,14 @@ These error codes are surfaced when running `validate` or `validateWithResult`.
 
 - **Caused by:** A repeatable migration that was resolved has not been applied
 - **Solution:** To ignore this migration
-  enable [`ignoreIgnoredMigrations`](/documentation/configuration/parameters/ignoreIgnoredMigrations)
+  enable [`ignoreIgnoredMigrations`](/migratedb/documentation/configuration/parameters/ignoreIgnoredMigrations)
 
 ### `RESOLVED_VERSIONED_MIGRATION_NOT_APPLIED`
 
 - **Caused by:** A versioned migration that was resolved has not been applied
 - **Solution:** To ignore this migration
-  enable [`ignoreIgnoredMigrations`](/documentation/configuration/parameters/ignoreIgnoredMigrations) and to allow
-  executing this migration enable [`outOfOrder`](/documentation/configuration/parameters/outOfOrder)
+  enable [`ignoreIgnoredMigrations`](/migratedb/documentation/configuration/parameters/ignoreIgnoredMigrations) and to allow
+  executing this migration enable [`outOfOrder`](/migratedb/documentation/configuration/parameters/outOfOrder)
 
 ### `OUTDATED_REPEATABLE_MIGRATION`
 

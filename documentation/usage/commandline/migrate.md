@@ -9,7 +9,7 @@ subtitle: 'Command-line: migrate'
 Migrates the schema to the latest version. MigrateDB will create the schema history table automatically if it doesn't
 exist.
 
-<a href="/documentation/command/migrate"><img src="/assets/balsamiq/command-migrate.png" alt="migrate"></a>
+<a href="/migratedb/documentation/command/migrate"><img src="/migratedb/assets/balsamiq/command-migrate.png" alt="migrate"></a>
 
 ## Usage
 
@@ -17,7 +17,7 @@ exist.
 
 ## Options
 
-See [configuration](/documentation/configuration/parameters) for a full list of supported configuration parameters.
+See [configuration](/migratedb/documentation/configuration/parameters) for a full list of supported configuration parameters.
 
 ## Sample configuration
 
@@ -120,5 +120,5 @@ Successfully applied 2 migrations to schema "PUBLIC" (execution time 00:00.030s)
 }</pre>
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/usage/commandline/clean">Command-line: clean <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/clean">Command-line: clean <i class="fa fa-arrow-right"></i></a>
 </p>

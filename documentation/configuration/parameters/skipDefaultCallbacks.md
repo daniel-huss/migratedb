@@ -11,7 +11,7 @@ redirect_from: /documentation/configuration/skipDefaultCallbacks/
 ## Description
 
 Whether default built-in callbacks (sql) should be skipped. If true,
-only [custom callbacks](/documentation/configuration/parameters/callbacks) are used.
+only [custom callbacks](/migratedb/documentation/configuration/parameters/callbacks) are used.
 
 ## Default
 

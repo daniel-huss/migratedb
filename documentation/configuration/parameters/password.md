@@ -12,8 +12,8 @@ redirect_from: /documentation/configuration/password/
 
 The password to use to connect to the database
 
-This can be omitted if the password is baked into the [url](/documentation/configuration/parameters/url) (
-See [Sql Server](/documentation/database/sqlserver#windows-authentication) for an example), or if password is provided
+This can be omitted if the password is baked into the [url](/migratedb/documentation/configuration/parameters/url) (
+See [Sql Server](/migratedb/documentation/database/sqlserver#windows-authentication) for an example), or if password is provided
 through another means.
 
 ## Usage

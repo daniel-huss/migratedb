@@ -10,7 +10,7 @@ redirect_from: /documentation/configuration/baselineVersion/
 
 ## Description
 
-The version to tag an existing schema with when executing [baseline](/documentation/command/baseline).
+The version to tag an existing schema with when executing [baseline](/migratedb/documentation/command/baseline).
 
 ## Default
 

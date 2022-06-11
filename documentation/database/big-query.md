@@ -81,13 +81,13 @@ configure `path_to_service_account` to point to this file.
 
 You can learn more about service accounts [here](https://cloud.google.com/iam/docs/service-accounts).
 
-Set this URL in the [`url`](/documentation/configuration/parameters/url) property in your MigrateDB configuration.
+Set this URL in the [`url`](/migratedb/documentation/configuration/parameters/url) property in your MigrateDB configuration.
 
 ### Other configuration
 
-Set the [`schemas`](/documentation/configuration/parameters/schemas) property in your MigrateDB configuration to the
-name of a `data set` within your BigQuery project. Set the [`user`](/documentation/configuration/parameters/user)
-and [`password`](/documentation/configuration/parameters/password) properties to empty in your MigrateDB configuration
+Set the [`schemas`](/migratedb/documentation/configuration/parameters/schemas) property in your MigrateDB configuration to the
+name of a `data set` within your BigQuery project. Set the [`user`](/migratedb/documentation/configuration/parameters/user)
+and [`password`](/migratedb/documentation/configuration/parameters/password) properties to empty in your MigrateDB configuration
 since we're authenticating using the JDBC URL i.e.
 
 ```

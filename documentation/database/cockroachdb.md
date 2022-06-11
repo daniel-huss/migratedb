@@ -39,7 +39,7 @@ subtitle: CockroachDB
 
 ## SQL Script Syntax
 
-- [Standard SQL syntax](/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter **;**
+- [Standard SQL syntax](/migratedb/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter **;**
 
 ### Compatibility
 
@@ -74,5 +74,5 @@ INSERT INTO ${tableName} (name) VALUES ('Mr. T');
 - See CockroachDB's walkthrough on using MigrateDB [here](https://www.cockroachlabs.com/docs/stable/migratedb.html)
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/database/saphana">SAP HANA <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/saphana">SAP HANA <i class="fa fa-arrow-right"></i></a>
 </p>

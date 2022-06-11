@@ -10,9 +10,9 @@ redirect_from: /documentation/configuration/configFiles/
 
 ## Description
 
-The [MigrateDB configuration](/documentation/configuration/configfile) files to load.
+The [MigrateDB configuration](/migratedb/documentation/configuration/configfile) files to load.
 
-These files will be relative to the [Working Directory](/documentation/configuration/parameters/workingDirectory).
+These files will be relative to the [Working Directory](/migratedb/documentation/configuration/parameters/workingDirectory).
 
 ## Usage
 

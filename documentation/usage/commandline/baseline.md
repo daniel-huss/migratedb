@@ -8,7 +8,7 @@ subtitle: 'Command-line: baseline'
 
 Baselines an existing database, excluding all migrations up to and including `baselineVersion`.
 
-<a href="/documentation/command/baseline"><img src="/assets/balsamiq/command-baseline.png" alt="baseline"></a>
+<a href="/migratedb/documentation/command/baseline"><img src="/migratedb/assets/balsamiq/command-baseline.png" alt="baseline"></a>
 
 ## Usage
 
@@ -16,7 +16,7 @@ Baselines an existing database, excluding all migrations up to and including `ba
 
 ## Options
 
-See [configuration](/documentation/configuration/parameters) for a full list of supported configuration parameters.
+See [configuration](/migratedb/documentation/configuration/parameters) for a full list of supported configuration parameters.
 
 ## Sample configuration
 
@@ -62,5 +62,5 @@ Schema baselined with version: 1</pre>
 }</pre>
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/usage/commandline/repair">Command-line: repair <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/repair">Command-line: repair <i class="fa fa-arrow-right"></i></a>
 </p>

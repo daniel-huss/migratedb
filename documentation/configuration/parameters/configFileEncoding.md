@@ -10,7 +10,7 @@ redirect_from: /documentation/configuration/configFileEncoding/
 
 ## Description
 
-The file encoding to use when loading [MigrateDB configuration files](/documentation/configuration/configfile).
+The file encoding to use when loading [MigrateDB configuration files](/migratedb/documentation/configuration/configfile).
 
 The encodings that MigrateDB supports are:
 

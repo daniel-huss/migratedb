@@ -9,7 +9,7 @@ subtitle: migratedb.failOnMissingLocations
 
 ## Description
 
-Whether to fail if a location specified in the [`locations`](/documentation/configuration/parameters/locations) option
+Whether to fail if a location specified in the [`locations`](/migratedb/documentation/configuration/parameters/locations) option
 doesn't exist.
 
 ## Default

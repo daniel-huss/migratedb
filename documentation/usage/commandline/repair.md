@@ -12,7 +12,7 @@ Repairs the MigrateDB schema history table. This will perform the following acti
   (User objects left behind must still be cleaned up manually)
 - Realign the checksums, descriptions and types of the applied migrations with the ones of the available migrations
 
-<a href="/documentation/command/repair"><img src="/assets/balsamiq/command-repair.png" alt="repair"></a>
+<a href="/migratedb/documentation/command/repair"><img src="/migratedb/assets/balsamiq/command-repair.png" alt="repair"></a>
 
 ## Usage
 
@@ -20,7 +20,7 @@ Repairs the MigrateDB schema history table. This will perform the following acti
 
 ## Options
 
-See [configuration](/documentation/configuration/parameters) for a full list of supported configuration parameters.
+See [configuration](/migratedb/documentation/configuration/parameters) for a full list of supported configuration parameters.
 
 ## Sample configuration
 
@@ -84,5 +84,5 @@ Repair not necessary. No failed migration detected.</pre>
 }</pre>
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/usage/api">API <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/api">API <i class="fa fa-arrow-right"></i></a>
 </p>

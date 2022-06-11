@@ -36,7 +36,7 @@ subtitle: Snowflake
 
 ## SQL Script Syntax
 
-- [Standard SQL syntax](/documentation/concepts/migrations#syntax) with statement delimiter **;**
+- [Standard SQL syntax](/migratedb/documentation/concepts/migrations#syntax) with statement delimiter **;**
 
 ### Compatibility
 
@@ -79,9 +79,9 @@ location of the private key:
 
 ## Limitations
 
-- Parallel migrations as described [here](/documentation/learnmore/faq#parallel) are unavailable in Snowflake. You can
+- Parallel migrations as described [here](/migratedb/documentation/learnmore/faq#parallel) are unavailable in Snowflake. You can
   track the status of this feature in our GitHub issues [here](https://github.com/daniel-huss/migratedb/issues/3305).
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/database/sqlite">SQLite <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/sqlite">SQLite <i class="fa fa-arrow-right"></i></a>
 </p>

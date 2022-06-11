@@ -28,5 +28,5 @@ In these cases you need a way to tell MigrateDB that these migrations are valid.
 
 ## Usage
 
-See [configuration](/documentation/configuration/parameters/#validate) for validate specific configuration parameters.
+See [configuration](/migratedb/documentation/configuration/parameters/#validate) for validate specific configuration parameters.
 {% include commandUsage.html command="validate" %}

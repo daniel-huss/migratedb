@@ -37,7 +37,7 @@ MigrateDB give you a way to achieve all these scenarios using **Error Overrides*
 ## Configuration
 
 One or more Errors Overrides can be configured using
-the [`errorOverrides`](/documentation/configuration/parameters/errorOverrides)
+the [`errorOverrides`](/migratedb/documentation/configuration/parameters/errorOverrides)
 setting which accepts multiple error override definitions in the following form: `STATE:12345:W`.
 
 This is a 5 character SQL state, a colon, the SQL error code, a colon and finally the desired
@@ -111,13 +111,13 @@ Done.
 
 As an alternative to the simple declarative syntax presented above, you can also fully customize the behavior of
 MigrateDB following the execution of a statement by implementing a
-Java-based [callback](/documentation/concepts/callbacks) which listens to the `afterEachMigrateStatement`
+Java-based [callback](/migratedb/documentation/concepts/callbacks) which listens to the `afterEachMigrateStatement`
 and `afterEachMigrateStatementError`  events.
 
 ## Tutorial
 
-Click [here](/documentation/getstarted/advanced/error-overrides) to see a tutorial on using error overrides.
+Click [here](/migratedb/documentation/getstarted/advanced/error-overrides) to see a tutorial on using error overrides.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/concepts/dry-runs">Dry Runs <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/dry-runs">Dry Runs <i class="fa fa-arrow-right"></i></a>
 </p>

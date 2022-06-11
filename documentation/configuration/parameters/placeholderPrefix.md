@@ -10,7 +10,7 @@ redirect_from: /documentation/configuration/placeholderPrefix/
 
 ## Description
 
-The prefix of every [placeholder](/documentation/configuration/placeholder)
+The prefix of every [placeholder](/migratedb/documentation/configuration/placeholder)
 
 ## Default
 

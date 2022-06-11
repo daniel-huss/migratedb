@@ -10,7 +10,7 @@ redirect_from: /documentation/configuration/baselineOnMigrate/
 
 ## Description
 
-Whether to automatically call [baseline](/documentation/command/baseline) when [migrate](/documentation/command/migrate)
+Whether to automatically call [baseline](/migratedb/documentation/command/baseline) when [migrate](/migratedb/documentation/command/migrate)
 is executed against a non-empty schema with no metadata table. This schema will then be baselined with
 the `baselineVersion` before executing the migrations. Only migrations above `baselineVersion` will then be applied.
 

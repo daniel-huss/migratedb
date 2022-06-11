@@ -17,14 +17,14 @@ behind a lengthy history of migrations that need to be applied in order to bring
 Instead, you might wish to add a single, cumulative migration that represents the state of your database after all of
 those migrations have been applied without disrupting existing environments.
 
-[Baseline migrations](/documentation/concepts/statescripts) let you achieve just that. These are a new type of
-migration, similar to [versioned migrations](/documentation/concepts/migrations#versioned-migrations) except with `B` as
+[Baseline migrations](/migratedb/documentation/concepts/statescripts) let you achieve just that. These are a new type of
+migration, similar to [versioned migrations](/migratedb/documentation/concepts/migrations#versioned-migrations) except with `B` as
 their prefix.
 
 In existing deployments they have no effect as your database is already where it needs to be. In new environments, the
 baseline migration with the latest version is applied first in order to bring your database up to speed before applying
 later migrations. Any migrations with a version older than the latest baseline migration's version are not applied and
-are treated as being [ignored](/documentation/concepts/migrations#migration-states). <br/>
+are treated as being [ignored](/migratedb/documentation/concepts/migrations#migration-states). <br/>
 Note that repeatable migrations are executed as normal.
 
 ## Example

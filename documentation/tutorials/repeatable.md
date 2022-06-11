@@ -13,7 +13,7 @@ redirect_from:
 # Tutorial: Repeatable Migrations
 
 This tutorial assumes you have successfully completed the [**First Steps:
-Command-line**](/documentation/getstarted/firststeps/commandline)
+Command-line**](/migratedb/documentation/getstarted/firststeps/commandline)
 tutorial. **If you have not done so, please do so first.** This tutorial picks up where that one left off.
 
 This brief tutorial will teach **how to use repeatable migrations**. It will take you through the
@@ -32,7 +32,7 @@ They are typically used for
 
 ## Reviewing the status
 
-After having completed the [First Steps: Command-line](/documentation/getstarted/firststeps/commandline), you can now
+After having completed the [First Steps: Command-line](/migratedb/documentation/getstarted/firststeps/commandline), you can now
 execute
 
 <pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>info</strong></pre>
@@ -175,5 +175,5 @@ In this brief tutorial we saw how to
 - run and rerun repeatable migrations
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/concepts/migrations#repeatable-migrations">Read the repeatable migration documentation <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/migrations#repeatable-migrations">Read the repeatable migration documentation <i class="fa fa-arrow-right"></i></a>
 </p>

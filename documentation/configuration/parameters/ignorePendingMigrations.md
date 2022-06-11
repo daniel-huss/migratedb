@@ -11,7 +11,7 @@ redirect_from: /documentation/configuration/ignorePendingMigrations/
 ## Description
 
 Ignore pending migrations when reading
-the [schema history table](/documentation/concepts/migrations#schema-history-table). These are migrations that are
+the [schema history table](/migratedb/documentation/concepts/migrations#schema-history-table). These are migrations that are
 available but have not yet been applied.
 
 This can be useful for verifying that in-development migration changes don't contain any validation-breaking changes of

@@ -10,7 +10,7 @@ redirect_from: /documentation/configuration/baselineDescription/
 
 ## Description
 
-The Description to tag an existing schema with when executing [baseline](/documentation/command/baseline).
+The Description to tag an existing schema with when executing [baseline](/migratedb/documentation/command/baseline).
 
 ## Default
 

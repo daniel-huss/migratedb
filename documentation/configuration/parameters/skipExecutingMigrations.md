@@ -21,7 +21,7 @@ instance, a script run against the database outside of MigrateDB (like a hotfix)
 hotfix migration can be deployed with MigrateDB with `skipExecutingMigrations=true`. The schema history table will be
 updated with the new migration, but the script itself won't be executed again.
 
-`skipExecutingMigrations` can be used with with [cherryPick](/documentation/configuration/parameters/cherryPick) to skip
+`skipExecutingMigrations` can be used with with [cherryPick](/migratedb/documentation/configuration/parameters/cherryPick) to skip
 specific migrations.
 
 ## Default

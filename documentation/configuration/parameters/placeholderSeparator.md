@@ -10,7 +10,7 @@ redirect_from: /documentation/configuration/placeholderSeparator/
 
 ## Description
 
-The separator of default [placeholders](/documentation/configuration/placeholder)
+The separator of default [placeholders](/migratedb/documentation/configuration/placeholder)
 
 ## Default
 

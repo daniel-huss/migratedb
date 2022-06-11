@@ -22,7 +22,7 @@ The encodings that MigrateDB supports are:
 - `UTF-16`
 
 We recommend using a consistent file encoding (UTF-8!) across all of your scripts to minimize the issues you encounter.
-See [Troubleshooting](/documentation/configuration/parameters/encoding#troubleshooting) for known problems and
+See [Troubleshooting](/migratedb/documentation/configuration/parameters/encoding#troubleshooting) for known problems and
 solutions.
 
 ## Default

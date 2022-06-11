@@ -9,14 +9,14 @@ redirect_from: /getStarted/how/
 
     <p>The easiest scenario is when you point <strong>MigrateDB</strong> to an <strong>empty database</strong>. </p>
 
-    <p align="center"><img src="/assets/balsamiq/empty-db.png" style="max-width: 100%"/></p>
+    <p align="center"><img src="/migratedb/assets/balsamiq/empty-db.png" style="max-width: 100%"/></p>
 
     <p>It will try to
         locate its <strong>schema history table</strong>. As the database is empty, MigrateDB won't find it and will
         <strong>create</strong> it instead.<br/> <br/> You now have a database with a single empty table called <i>migratedb_state</i>
         by default: </p>
 
-    <p align="center"><img src="/assets/balsamiq/empty-schema-history.png" style="max-width: 100%"/></p>
+    <p align="center"><img src="/migratedb/assets/balsamiq/empty-schema-history.png" style="max-width: 100%"/></p>
 
     <p>This table will be used to track the state of the database. </p>
 
@@ -27,7 +27,7 @@ redirect_from: /getStarted/how/
     <p>The migrations are then <strong>sorted</strong> based on their <strong>version number</strong> and applied in
         order: </p>
 
-    <p align="center"><img src="/assets/balsamiq/migration-1-2.png" style="max-width: 100%"/></p>
+    <p align="center"><img src="/migratedb/assets/balsamiq/migration-1-2.png" style="max-width: 100%"/></p>
 
     <p>As each
         migration gets applied, the schema history table is updated accordingly: </p>
@@ -84,11 +84,11 @@ redirect_from: /getStarted/how/
         are ignored.<br/> <br/> The remaining migrations are the <strong>pending migrations</strong>: available,
         but not applied. </p>
 
-    <p align="center"><img src="/assets/balsamiq/pending-migration.png" style="max-width: 100%"/></p>
+    <p align="center"><img src="/migratedb/assets/balsamiq/pending-migration.png" style="max-width: 100%"/></p>
 
     <p>They are then <strong>sorted by version number</strong> and <strong>executed in order</strong>: </p>
 
-    <p align="center"><img src="/assets/balsamiq/migration21.png" style="max-width: 100%"/></p>
+    <p align="center"><img src="/migratedb/assets/balsamiq/migration21.png" style="max-width: 100%"/></p>
 
     <p>The <strong>schema history table</strong> is <strong>updated</strong> accordingly: </p>
 
@@ -154,7 +154,7 @@ redirect_from: /getStarted/how/
         find it and upgrade the database accordingly.</p>
 
     <p class="next-steps">
-        <a class="btn btn-primary" href="/documentation/getstarted/firststeps/commandline">First steps <i
+        <a class="btn btn-primary" href="/migratedb/documentation/getstarted/firststeps/commandline">First steps <i
             class="fa fa-arrow-right"></i></a>
     </p>
 </div>

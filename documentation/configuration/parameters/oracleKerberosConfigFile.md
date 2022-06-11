@@ -9,7 +9,7 @@ redirect_from: /documentation/configuration/oracleKerberosConfigFile/
 # Oracle Kerberos Config File
 
 This parameter is deprecated and will be removed in V9. Please
-use [`kerberosConfigFile`](/documentation/configuration/parameters/kerberosConfigFile) instead.
+use [`kerberosConfigFile`](/migratedb/documentation/configuration/parameters/kerberosConfigFile) instead.
 
 ## Description
 

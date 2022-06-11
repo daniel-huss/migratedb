@@ -11,7 +11,7 @@ redirect_from: /documentation/configuration/ignoreMissingMigrations/
 ## Description
 
 Ignore missing migrations when reading
-the [schema history table](/documentation/concepts/migrations#schema-history-table).
+the [schema history table](/migratedb/documentation/concepts/migrations#schema-history-table).
 
 These are migrations that were performed by an older deployment of the application that are no longer available in this
 version.

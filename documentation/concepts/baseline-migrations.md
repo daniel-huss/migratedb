@@ -38,18 +38,18 @@ migrations when you need them and they will be utilized.
 ## Configuration
 
 The `B` prefix is configurable with
-the [baselineMigrationPrefix](/documentation/configuration/parameters/baselineMigrationPrefix) parameter.
+the [baselineMigrationPrefix](/migratedb/documentation/configuration/parameters/baselineMigrationPrefix) parameter.
 
 ## Compatibility Note
 
 Baseline migrations were formally known as State Scripts. These can be used as baseline migrations without modification,
 by either changing the prefix of your state scripts to be `B` or setting the value of
-the [baselineMigrationPrefix](/documentation/configuration/parameters/baselineMigrationPrefix) parameter to `S`.
+the [baselineMigrationPrefix](/migratedb/documentation/configuration/parameters/baselineMigrationPrefix) parameter to `S`.
 
 ## Tutorial
 
-Click [here](/documentation/tutorials/baseline-migrations) to see a tutorial on using baseline migrations.
+Click [here](/migratedb/documentation/tutorials/baseline-migrations) to see a tutorial on using baseline migrations.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/command/migrate">Migrate<i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/command/migrate">Migrate<i class="fa fa-arrow-right"></i></a>
 </p>

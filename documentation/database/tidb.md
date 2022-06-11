@@ -43,7 +43,7 @@ subtitle: TiDB
 
 ## SQL Script Syntax
 
-- [Standard SQL syntax](/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter **;**
+- [Standard SQL syntax](/migratedb/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter **;**
 - MySQL-style single-line comments (# Comment)
 
 ### Example
@@ -76,5 +76,5 @@ INSERT INTO ${tableName} (name) VALUES ('Mr. T');
 ```
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/database/testcontainers">TestContainers <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/testcontainers">TestContainers <i class="fa fa-arrow-right"></i></a>
 </p>

@@ -12,8 +12,8 @@ redirect_from: /documentation/configuration/user/
 
 The user to use to connect to the database.
 
-This can be omitted if the user is baked into the [url](/documentation/configuration/parameters/url) (
-See [Sql Server](/documentation/database/sqlserver#windows-authentication) for an example).
+This can be omitted if the user is baked into the [url](/migratedb/documentation/configuration/parameters/url) (
+See [Sql Server](/migratedb/documentation/database/sqlserver#windows-authentication) for an example).
 
 ## Usage
 

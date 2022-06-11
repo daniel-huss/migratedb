@@ -11,7 +11,7 @@ redirect_from: /documentation/configuration/ignoreFutureMigrations/
 ## Description
 
 Ignore future migrations when reading
-the [schema history table](/documentation/concepts/migrations#schema-history-table). These are migrations that were
+the [schema history table](/migratedb/documentation/concepts/migrations#schema-history-table). These are migrations that were
 performed by a newer deployment of the application that are not yet available in this version.
 
 For example: we have migrations available on the classpath up to version `3.0`. The schema history table indicates that

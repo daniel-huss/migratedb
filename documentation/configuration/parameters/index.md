@@ -16,101 +16,101 @@ variety of different means, depending on how you are using MigrateDB.
 ### Command Line
 
 If using the command line, config parameters can be set via command line arguments (
-e.g. `./migratedb -url=jdbc:h2:mem:migratedb info`), [configuration files](/documentation/configuration/configfile), or
+e.g. `./migratedb -url=jdbc:h2:mem:migratedb info`), [configuration files](/migratedb/documentation/configuration/configfile), or
 environment variables (e.g. `MIGRATEDB_URL=jdbc:h2:mem:migratedb`).
 
 ### API
 
 If using the API, config parameters can be set via calling methods on the configuration object returned
 by `MigrateDB.configure()` (e.g. `MigrateDB.configure().url("jdbc:h2:mem:migratedb").load()`)
-, [configuration files](/documentation/configuration/configfile).
+, [configuration files](/migratedb/documentation/configuration/configfile).
 
 ## Parameters
 
 ### Connection
 
-- [url](/documentation/configuration/parameters/url)
-- [user](/documentation/configuration/parameters/user)
-- [password](/documentation/configuration/parameters/password)
-- [driver](/documentation/configuration/parameters/driver)
-- [connectRetries](/documentation/configuration/parameters/connectRetries)
-- [connectRetriesInterval](/documentation/configuration/parameters/connectRetriesInterval)
-- [initSql](/documentation/configuration/parameters/initSql)
-- [jdbcProperties](/documentation/configuration/parameters/jdbcProperties)
+- [url](/migratedb/documentation/configuration/parameters/url)
+- [user](/migratedb/documentation/configuration/parameters/user)
+- [password](/migratedb/documentation/configuration/parameters/password)
+- [driver](/migratedb/documentation/configuration/parameters/driver)
+- [connectRetries](/migratedb/documentation/configuration/parameters/connectRetries)
+- [connectRetriesInterval](/migratedb/documentation/configuration/parameters/connectRetriesInterval)
+- [initSql](/migratedb/documentation/configuration/parameters/initSql)
+- [jdbcProperties](/migratedb/documentation/configuration/parameters/jdbcProperties)
 
 ### General
 
-- [batch](/documentation/configuration/parameters/batch)
-- [callbacks](/documentation/configuration/parameters/callbacks)
-- [cherryPick](/documentation/configuration/parameters/cherryPick)
-- [configFileEncoding](/documentation/configuration/parameters/configFileEncoding)
-- [configFiles](/documentation/configuration/parameters/configFiles)
-- [dryRunOutput](/documentation/configuration/parameters/dryRunOutput)
-- [encoding](/documentation/configuration/parameters/encoding)
-- [errorOverrides](/documentation/configuration/parameters/errorOverrides)
-- [group](/documentation/configuration/parameters/group)
-- [installedBy](/documentation/configuration/parameters/installedBy)
-- [jarDirs](/documentation/configuration/parameters/jarDirs)
-- [kerberosConfigFile](/documentation/configuration/parameters/kerberosConfigFile)
-- [licenseKey](/documentation/configuration/parameters/licenseKey)
-- [locations](/documentation/configuration/parameters/locations)
-- [failOnMissingLocations](/documentation/configuration/parameters/failOnMissingLocations)
-- [lockRetryCount](/documentation/configuration/parameters/lockRetryCount)
-- [loggers](/documentation/configuration/parameters/loggers)
-- [mixed](/documentation/configuration/parameters/mixed)
-- [outOfOrder](/documentation/configuration/parameters/outOfOrder)
-- [outputQueryResults](/documentation/configuration/parameters/outputQueryResults)
-- [skipDefaultCallbacks](/documentation/configuration/parameters/skipDefaultCallbacks)
-- [skipDefaultResolvers](/documentation/configuration/parameters/skipDefaultResolvers)
-- [skipExecutingMigrations](/documentation/configuration/parameters/skipExecutingMigrations)
-- [stream](/documentation/configuration/parameters/stream)
-- [table](/documentation/configuration/parameters/table)
-- [tablespace](/documentation/configuration/parameters/tablespace)
-- [target](/documentation/configuration/parameters/target)
-- [validateMigrationNaming](/documentation/configuration/parameters/validateMigrationNaming)
-- [validateOnMigrate](/documentation/configuration/parameters/validateOnMigrate)
-- [workingDirectory](/documentation/configuration/parameters/workingDirectory)
+- [batch](/migratedb/documentation/configuration/parameters/batch)
+- [callbacks](/migratedb/documentation/configuration/parameters/callbacks)
+- [cherryPick](/migratedb/documentation/configuration/parameters/cherryPick)
+- [configFileEncoding](/migratedb/documentation/configuration/parameters/configFileEncoding)
+- [configFiles](/migratedb/documentation/configuration/parameters/configFiles)
+- [dryRunOutput](/migratedb/documentation/configuration/parameters/dryRunOutput)
+- [encoding](/migratedb/documentation/configuration/parameters/encoding)
+- [errorOverrides](/migratedb/documentation/configuration/parameters/errorOverrides)
+- [group](/migratedb/documentation/configuration/parameters/group)
+- [installedBy](/migratedb/documentation/configuration/parameters/installedBy)
+- [jarDirs](/migratedb/documentation/configuration/parameters/jarDirs)
+- [kerberosConfigFile](/migratedb/documentation/configuration/parameters/kerberosConfigFile)
+- [licenseKey](/migratedb/documentation/configuration/parameters/licenseKey)
+- [locations](/migratedb/documentation/configuration/parameters/locations)
+- [failOnMissingLocations](/migratedb/documentation/configuration/parameters/failOnMissingLocations)
+- [lockRetryCount](/migratedb/documentation/configuration/parameters/lockRetryCount)
+- [loggers](/migratedb/documentation/configuration/parameters/loggers)
+- [mixed](/migratedb/documentation/configuration/parameters/mixed)
+- [outOfOrder](/migratedb/documentation/configuration/parameters/outOfOrder)
+- [outputQueryResults](/migratedb/documentation/configuration/parameters/outputQueryResults)
+- [skipDefaultCallbacks](/migratedb/documentation/configuration/parameters/skipDefaultCallbacks)
+- [skipDefaultResolvers](/migratedb/documentation/configuration/parameters/skipDefaultResolvers)
+- [skipExecutingMigrations](/migratedb/documentation/configuration/parameters/skipExecutingMigrations)
+- [stream](/migratedb/documentation/configuration/parameters/stream)
+- [table](/migratedb/documentation/configuration/parameters/table)
+- [tablespace](/migratedb/documentation/configuration/parameters/tablespace)
+- [target](/migratedb/documentation/configuration/parameters/target)
+- [validateMigrationNaming](/migratedb/documentation/configuration/parameters/validateMigrationNaming)
+- [validateOnMigrate](/migratedb/documentation/configuration/parameters/validateOnMigrate)
+- [workingDirectory](/migratedb/documentation/configuration/parameters/workingDirectory)
 
 ### Schema
 
-- [createSchemas](/documentation/configuration/parameters/createSchemas)
-- [defaultSchema](/documentation/configuration/parameters/defaultSchema)
-- [schemas](/documentation/configuration/parameters/schemas)
+- [createSchemas](/migratedb/documentation/configuration/parameters/createSchemas)
+- [defaultSchema](/migratedb/documentation/configuration/parameters/defaultSchema)
+- [schemas](/migratedb/documentation/configuration/parameters/schemas)
 
 ### Baseline
 
-- [baselineDescription](/documentation/configuration/parameters/baselineDescription)
-- [baselineOnMigrate](/documentation/configuration/parameters/baselineOnMigrate)
-- [baselineVersion](/documentation/configuration/parameters/baselineVersion)
+- [baselineDescription](/migratedb/documentation/configuration/parameters/baselineDescription)
+- [baselineOnMigrate](/migratedb/documentation/configuration/parameters/baselineOnMigrate)
+- [baselineVersion](/migratedb/documentation/configuration/parameters/baselineVersion)
 
 ### Clean
 
-- [cleanDisabled](/documentation/configuration/parameters/cleanDisabled)
-- [cleanOnValidationError](/documentation/configuration/parameters/cleanOnValidationError)
+- [cleanDisabled](/migratedb/documentation/configuration/parameters/cleanDisabled)
+- [cleanOnValidationError](/migratedb/documentation/configuration/parameters/cleanOnValidationError)
 
 ### Validate
 
-- [ignoreFutureMigrations](/documentation/configuration/parameters/ignoreFutureMigrations)
-- [ignoreIgnoredMigrations](/documentation/configuration/parameters/ignoreIgnoredMigrations)
-- [ignoreMissingMigrations](/documentation/configuration/parameters/ignoreMissingMigrations)
-- [ignorePendingMigrations](/documentation/configuration/parameters/ignorePendingMigrations)
-- [ignoreMigrationPatterns](/documentation/configuration/parameters/ignoreMigrationPatterns)
+- [ignoreFutureMigrations](/migratedb/documentation/configuration/parameters/ignoreFutureMigrations)
+- [ignoreIgnoredMigrations](/migratedb/documentation/configuration/parameters/ignoreIgnoredMigrations)
+- [ignoreMissingMigrations](/migratedb/documentation/configuration/parameters/ignoreMissingMigrations)
+- [ignorePendingMigrations](/migratedb/documentation/configuration/parameters/ignorePendingMigrations)
+- [ignoreMigrationPatterns](/migratedb/documentation/configuration/parameters/ignoreMigrationPatterns)
 
 ### Migrations
 
-- [repeatableSqlMigrationPrefix](/documentation/configuration/parameters/repeatableSqlMigrationPrefix)
-- [resolvers](/documentation/configuration/parameters/resolvers)
-- [sqlMigrationPrefix](/documentation/configuration/parameters/sqlMigrationPrefix)
-- [sqlMigrationSeparator](/documentation/configuration/parameters/sqlMigrationSeparator)
-- [sqlMigrationSuffixes](/documentation/configuration/parameters/sqlMigrationSuffixes)
-- [baselineMigrationPrefix](/documentation/configuration/parameters/baselineMigrationPrefix)
+- [repeatableSqlMigrationPrefix](/migratedb/documentation/configuration/parameters/repeatableSqlMigrationPrefix)
+- [resolvers](/migratedb/documentation/configuration/parameters/resolvers)
+- [sqlMigrationPrefix](/migratedb/documentation/configuration/parameters/sqlMigrationPrefix)
+- [sqlMigrationSeparator](/migratedb/documentation/configuration/parameters/sqlMigrationSeparator)
+- [sqlMigrationSuffixes](/migratedb/documentation/configuration/parameters/sqlMigrationSuffixes)
+- [baselineMigrationPrefix](/migratedb/documentation/configuration/parameters/baselineMigrationPrefix)
 
 ### Placeholders
 
-- [placeholderPrefix](/documentation/configuration/parameters/placeholderPrefix)
-- [scriptPlaceholderPrefix](/documentation/configuration/parameters/scriptPlaceholderPrefix)
-- [placeholderReplacement](/documentation/configuration/parameters/placeholderReplacement)
-- [placeholders](/documentation/configuration/parameters/placeholders)
-- [placeholderSeparator](/documentation/configuration/parameters/placeholderSeparator)
-- [placeholderSuffix](/documentation/configuration/parameters/placeholderSuffix)
-- [scriptPlaceholderSuffix](/documentation/configuration/parameters/scriptPlaceholderSuffix)
+- [placeholderPrefix](/migratedb/documentation/configuration/parameters/placeholderPrefix)
+- [scriptPlaceholderPrefix](/migratedb/documentation/configuration/parameters/scriptPlaceholderPrefix)
+- [placeholderReplacement](/migratedb/documentation/configuration/parameters/placeholderReplacement)
+- [placeholders](/migratedb/documentation/configuration/parameters/placeholders)
+- [placeholderSeparator](/migratedb/documentation/configuration/parameters/placeholderSeparator)
+- [placeholderSuffix](/migratedb/documentation/configuration/parameters/placeholderSuffix)
+- [scriptPlaceholderSuffix](/migratedb/documentation/configuration/parameters/scriptPlaceholderSuffix)

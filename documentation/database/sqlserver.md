@@ -41,7 +41,7 @@ subtitle: SQL Server
 
 ## SQL Script Syntax
 
-- [Standard SQL syntax](/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter **GO**
+- [Standard SQL syntax](/migratedb/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter **GO**
 - T-SQL
 
 ### Compatibility
@@ -204,9 +204,9 @@ the [process of setting `accessToken` as described on this Microsoft documentati
 Kerberos authentication can also be used to connect MigrateDB to your database.
 
 To set this up, you will need to pass the path to your Kerberos configuration file to the
-parameter [`kerberosConfigFile`](/documentation/configuration/parameters/kerberosConfigFile) and the path to your login
+parameter [`kerberosConfigFile`](/migratedb/documentation/configuration/parameters/kerberosConfigFile) and the path to your login
 module configuration file to the
-parameter [`plugin.sqlserver.kerberos.login.file`](/documentation/configuration/parameters/sqlServerKerberosLoginFile).
+parameter [`plugin.sqlserver.kerberos.login.file`](/migratedb/documentation/configuration/parameters/sqlServerKerberosLoginFile).
 
 You may also need to add `;authenticationScheme=JavaKerberos` to your JDBC URL.
 
@@ -236,10 +236,10 @@ the port over the named instance.
 - MigrateDB's automatic detection for whether SQL statements are valid in transactions does not apply to
   `CREATE/ALTER/DROP` statements acting on memory-optimized tables (that is, those created with
   `WITH (MEMORY_OPTIMIZED = ON)`). You will need to override the `executeInTransaction` setting to be false,
-  either on a [per-script basis](/documentation/configuration/scriptconfigfiles) or globally.
+  either on a [per-script basis](/migratedb/documentation/configuration/scriptconfigfiles) or globally.
 - SQL Server is unable to change the default schema for a session. Therefore, setting the `migratedb.defaultSchema`
   property
-  has no value, unless used for a [Placeholder](/documentation/concepts/migrations#placeholder-replacement) in
+  has no value, unless used for a [Placeholder](/migratedb/documentation/concepts/migrations#placeholder-replacement) in
   your sql scripts. If you decide to use `migratedb.defaultSchema`, it also must exist in `migratedb.schemas`.
 - By default, the migratedb schema history table will try to write to the default schema for the database connection.
   You may
@@ -247,10 +247,10 @@ the port over the named instance.
   become the
   default schema if `migratedb.defaultSchema` itself is not set.
 - With these limitations in mind, please refer to the properties or options
-  mentioned [here](/documentation/configuration/parameters/defaultSchema) for descriptions/consequences.
+  mentioned [here](/migratedb/documentation/configuration/parameters/defaultSchema) for descriptions/consequences.
 - If using the JTDS driver, then setting `ANSI_NULLS` or `QUOTED_IDENTIFIER` in a script will cause an error. This is
   a driver limitation, and can be solved by using the Microsoft driver instead.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/database/azuresynapse">Azure Synapse <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/azuresynapse">Azure Synapse <i class="fa fa-arrow-right"></i></a>
 </p>

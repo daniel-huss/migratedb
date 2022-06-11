@@ -24,8 +24,8 @@ Within a single migration run, repeatable migrations are always applied last, af
 have been executed. Repeatable migrations are applied in the order of their description.
 
 By default both versioned and repeatable migrations can be written either
-in **[SQL](/documentation/concepts/migrations#sql-based-migrations)**
-or in **[Java](/documentation/concepts/migrations#java-based-migrations)** and can consist of multiple statements.
+in **[SQL](/migratedb/documentation/concepts/migrations#sql-based-migrations)**
+or in **[Java](/migratedb/documentation/concepts/migrations#java-based-migrations)** and can consist of multiple statements.
 
 MigrateDB automatically discovers migrations on the *filesystem* and on the Java *classpath*.
 
@@ -163,13 +163,13 @@ In order to be picked up by MigrateDB, SQL migrations must comply with the follo
 
 The file name consists of the following parts:
 
-- **Prefix**: `V` for versioned ([configurable](/documentation/configuration/parameters/sqlMigrationPrefix)),
-  `B` for baseline ([configurable](/documentation/configuration/parameters/baselineMigrationPrefix)), and
-  `R` for repeatable migrations ([configurable](/documentation/configuration/parameters/repeatableSqlMigrationPrefix))
+- **Prefix**: `V` for versioned ([configurable](/migratedb/documentation/configuration/parameters/sqlMigrationPrefix)),
+  `B` for baseline ([configurable](/migratedb/documentation/configuration/parameters/baselineMigrationPrefix)), and
+  `R` for repeatable migrations ([configurable](/migratedb/documentation/configuration/parameters/repeatableSqlMigrationPrefix))
 - **Version**: Version with dots or underscores separate as many parts as you like (Not for repeatable migrations)
-- **Separator**: `__` (two underscores) ([configurable](/documentation/configuration/parameters/sqlMigrationSeparator))
+- **Separator**: `__` (two underscores) ([configurable](/migratedb/documentation/configuration/parameters/sqlMigrationSeparator))
 - **Description**: Underscores or spaces separate the words
-- **Suffix**: `.sql` ([configurable](/documentation/configuration/parameters/sqlMigrationSuffixes))
+- **Suffix**: `.sql` ([configurable](/migratedb/documentation/configuration/parameters/sqlMigrationSuffixes))
 
 Optionally versioned SQL migrations can also omit both the separator and the description.
 
@@ -182,7 +182,7 @@ MigrateDB will fail fast and list all files which need to be corrected.
 ### Discovery
 
 MigrateDB discovers SQL-based migrations from one or more directories referenced by
-the **[`locations`](/documentation/configuration/parameters/locations)**
+the **[`locations`](/migratedb/documentation/configuration/parameters/locations)**
 property.
 
 - Unprefixed locations or locations with the `classpath:` prefix target the Java classpath.
@@ -203,7 +203,7 @@ MigrateDB supports all regular SQL syntax elements including:
 - Database-specific SQL syntax extensions (PL/SQL, T-SQL, ...) typically used to define stored procedures, packages, ...
 
 Additionally in the case of Oracle, MigrateDB also
-supports [SQL*Plus commands](/documentation/database/oracle#sqlplus-commands).
+supports [SQL*Plus commands](/migratedb/documentation/database/oracle#sqlplus-commands).
 
 ### Placeholder Replacement
 
@@ -211,7 +211,7 @@ In addition to regular SQL syntax, MigrateDB also supports placeholder replaceme
 By default it looks for Ant-style placeholders like `${myplaceholder}`. This can be very useful to abstract differences
 between environments.
 
-See [Placeholders](/documentation/configuration/placeholder).
+See [Placeholders](/migratedb/documentation/configuration/placeholder).
 
 ## Java-based migrations
 
@@ -225,10 +225,10 @@ These would typically be things like
 ### Naming
 
 In order to be picked up by MigrateDB, Java-based Migrations must implement the
-[`JavaMigration`](/documentation/usage/api/javadoc/migratedb/core/api/migration/JavaMigration) interface. Most
+[`JavaMigration`](/migratedb/documentation/usage/api/javadoc/migratedb/core/api/migration/JavaMigration) interface. Most
 users
 however should inherit from the convenience
-class [`BaseJavaMigration`](/documentation/usage/api/javadoc/migratedb/core/api/migration/BaseJavaMigration)
+class [`BaseJavaMigration`](/migratedb/documentation/usage/api/javadoc/migratedb/core/api/migration/BaseJavaMigration)
 instead as it encourages MigrateDB's default naming convention, enabling MigrateDB to automatically extract the version
 and
 the description from the class name. To be able to do so, the class name must comply with the following naming pattern:
@@ -261,7 +261,7 @@ The class name consists of the following parts:
 - **Description**: Underscores (automatically replaced by spaces at runtime) separate the words
 
 If you need more control over the class name, you can override the default convention by implementing the
-[`JavaMigration`](/documentation/usage/api/javadoc/migratedb/core/api/migration/JavaMigration) interface
+[`JavaMigration`](/migratedb/documentation/usage/api/javadoc/migratedb/core/api/migration/JavaMigration) interface
 directly.
 
 This will allow you to name your class as you wish. Version, description and migration category are provided by
@@ -270,7 +270,7 @@ implementing the respective methods.
 ### Discovery
 
 MigrateDB discovers Java-based migrations on the Java classpath during build-time and places index files in the package
-referenced by the [`locations`](/documentation/configuration/parameters/locations) property.
+referenced by the [`locations`](/migratedb/documentation/configuration/parameters/locations) property.
 
 ### Checksums and Validation
 
@@ -336,13 +336,13 @@ public class V1_2__Another_user extends BaseJavaMigration {
 By default, MigrateDB always wraps the execution of an entire migration within a single transaction.
 
 Alternatively you can also configure MigrateDB to wrap the entire execution of all migrations of a single migration run
-within a single transaction by setting the [`group`](/documentation/configuration/parameters/group) property to `true`.
+within a single transaction by setting the [`group`](/migratedb/documentation/configuration/parameters/group) property to `true`.
 
 If MigrateDB detects that a specific statement cannot be run within a transaction due to technical limitations of your
 database, it won't run that migration within a transaction. Instead it will be marked as *non-transactional*.
 
 By default transactional and non-transactional statements cannot be mixed within a migration run. You can however allow
-this by setting the [`mixed`](/documentation/configuration/parameters/mixed) property to `true`. Note that this is only
+this by setting the [`mixed`](/migratedb/documentation/configuration/parameters/mixed) property to `true`. Note that this is only
 applicable for PostgreSQL, Aurora PostgreSQL, SQL Server and SQLite which all have statements that do not run at all
 within a transaction. This is not to be confused with implicit transaction, as they occur in MySQL or Oracle, where even
 though a DDL statement was run within a transaction, the database will issue an implicit commit before and after
@@ -360,7 +360,7 @@ override
 `canExecuteInTransaction` to execute certain migrations outside a transaction by returning `false`.
 
 For SQL migrations, you can specify the script configuration property `executeInTransaction`.
-See [Script config](/documentation/configuration/scriptconfigfiles).
+See [Script config](/migratedb/documentation/configuration/scriptconfigfiles).
 
 ### Important Note
 
@@ -370,7 +370,7 @@ If your database cleanly supports DDL statements within a transaction, failed mi
 If on the other hand your database does NOT cleanly supports DDL statements within a transaction (by for example
 issuing an implicit commit before and after every DDL statement), MigrateDB won't be able to perform a clean rollback in
 case of failure and will instead mark the migration as failed, indicating that some manual cleanup may be required.
-You may also need to run [repair](/documentation/command/repair) to remove the failed migration entry from the [schema
+You may also need to run [repair](/migratedb/documentation/command/repair) to remove the failed migration entry from the [schema
 history table](#schema-history-table).
 
 ## Query Results
@@ -384,7 +384,7 @@ results in the usual tabular form when a `SELECT` statement (or any other statem
 ### Toggling query results
 
 To prevent MigrateDB from displaying query results, set the configuration
-option [`outputQueryResults`](/documentation/configuration/parameters/outputQueryResults) to `false`.
+option [`outputQueryResults`](/migratedb/documentation/configuration/parameters/outputQueryResults) to `false`.
 
 ## Schema History Table
 
@@ -392,7 +392,7 @@ To keep track of which migrations have already been applied when and by whom, Mi
 **schema history table** to your schema. You can think of this table as a complete audit trail of all changes
 performed against the schema. It also tracks migration checksums and whether or not the migrations were successful.
 
-Read more about this in our getting started guide on [how MigrateDB works](/documentation/getstarted/how).
+Read more about this in our getting started guide on [how MigrateDB works](/migratedb/documentation/getstarted/how).
 
 ## Schema creation
 
@@ -453,13 +453,13 @@ The following will happen:
 | ----- | ----------- |
 | `Pending`          | This migration has not been applied yet |
 | `Success`          | This migration succeeded |
-| `Ignored`          | This migration will not be considered when running [`migrate`](/documentation/command/migrate)
+| `Ignored`          | This migration will not be considered when running [`migrate`](/migratedb/documentation/command/migrate)
 |
-| `Deleted`          | This is a migration that has been marked as deleted by [`repair`](/documentation/command/repair)
+| `Deleted`          | This is a migration that has been marked as deleted by [`repair`](/migratedb/documentation/command/repair)
 |
-| `Above Target`     | This migration has not been applied yet and won't be applied because [`target`](/documentation/configuration/parameters/target) is set to a lower version |
-| `Baseline`         | This migration has [`baselined`](/documentation/command/baseline) this DB |
-| `Below Baseline`   | This migration was not applied against this DB because the schema history table was [`baselined`](/documentation/command/baseline) with a higher version |
+| `Above Target`     | This migration has not been applied yet and won't be applied because [`target`](/migratedb/documentation/configuration/parameters/target) is set to a lower version |
+| `Baseline`         | This migration has [`baselined`](/migratedb/documentation/command/baseline) this DB |
+| `Below Baseline`   | This migration was not applied against this DB because the schema history table was [`baselined`](/migratedb/documentation/command/baseline) with a higher version |
 | `Missing`          | This migration succeeded and could not be resolved |
 | `Failed (Missing)` | This migration failed and could not be resolved |
 | `Failed`           | This migration failed |
@@ -467,9 +467,9 @@ The following will happen:
 |
 | `Future`           | This migration succeeded and its version is higher than the schema history table's current version |
 | `Out of Order`     | This migration succeeded but it was applied out of order. Rerunning the entire migration history might produce different results!                 |
-| `Outdated`         | This is a [`repeatable`](/documentation/getstarted/advanced/repeatable) migration that is outdated and should be re-applied |
-| `Superseded`       | This is a [`repeatable`](/documentation/getstarted/advanced/repeatable) migration that is outdated and has already been superseded by a newer one |
+| `Outdated`         | This is a [`repeatable`](/migratedb/documentation/getstarted/advanced/repeatable) migration that is outdated and should be re-applied |
+| `Superseded`       | This is a [`repeatable`](/migratedb/documentation/getstarted/advanced/repeatable) migration that is outdated and has already been superseded by a newer one |
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/concepts/callbacks">Callbacks <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/callbacks">Callbacks <i class="fa fa-arrow-right"></i></a>
 </p>

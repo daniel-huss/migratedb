@@ -11,7 +11,7 @@ redirect_from: /documentation/configuration/skipDefaultResolvers/
 ## Description
 
 Whether default built-in resolvers (sql and jdbc) should be skipped. If `true`,
-only [custom resolvers](/documentation/configuration/parameters/resolvers) are used.
+only [custom resolvers](/migratedb/documentation/configuration/parameters/resolvers) are used.
 
 ## Default
 

@@ -8,7 +8,7 @@ subtitle: 'Command-line: info'
 
 Prints the details and status information about all the migrations.
 
-<a href="/documentation/command/info"><img src="/assets/balsamiq/command-info.png" alt="info"></a>
+<a href="/migratedb/documentation/command/info"><img src="/migratedb/assets/balsamiq/command-info.png" alt="info"></a>
 
 ## Usage
 
@@ -16,7 +16,7 @@ Prints the details and status information about all the migrations.
 
 ## Options
 
-See [configuration](/documentation/configuration/parameters) for a full list of supported configuration parameters.
+See [configuration](/migratedb/documentation/configuration/parameters) for a full list of supported configuration parameters.
 
 ## Sample configuration
 
@@ -118,7 +118,7 @@ parameters:
 - `infoUntilVersion`: Limits info to show only migrations less than or equal to this version, and any repeatable
   migrations. (e.g. `1.1`)
 - `infoOfState`: Limits info to show only migrations of the provided state. This is case insensitive. The valid states
-  can be found at [Migration States](/documentation/concepts/migrations#migration-states).
+  can be found at [Migration States](/migratedb/documentation/concepts/migrations#migration-states).
 
 Example:
 <pre class="console">&gt; migratedb info -infoSinceDate="01/12/2020 13:00"
@@ -126,5 +126,5 @@ Example:
 
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/usage/commandline/validate">Command-line: validate <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/validate">Command-line: validate <i class="fa fa-arrow-right"></i></a>
 </p>

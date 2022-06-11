@@ -10,7 +10,7 @@ redirect_from: /documentation/configuration/placeholderSuffix/
 
 ## Description
 
-The suffix of every [placeholder](/documentation/configuration/placeholder)
+The suffix of every [placeholder](/migratedb/documentation/configuration/placeholder)
 
 ## Default
 

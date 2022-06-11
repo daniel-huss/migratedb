@@ -31,7 +31,7 @@ run. This SQL file can then be reviewed. If satisfactory, MigrateDB can then be 
 all changes will be applied. Alternatively a separate tool of your choice can also be used to apply the dry run SQL file
 directly to the database without using MigrateDB. This SQL file also contains the necessary statements to create and
 update MigrateDB's
-[schema history table](/documentation/concepts/migrations#schema-history-table), ensuring that all schema changes are
+[schema history table](/migratedb/documentation/concepts/migrations#schema-history-table), ensuring that all schema changes are
 tracked the usual way.
 
 It is not advised to change a dry run script after it's been generated. Instead, any changes should be made to the
@@ -56,17 +56,17 @@ These changes will be executed as normal during a Dry Run. **The schema history 
 will have no record of execution.** Be sure you're aware of the side effects when performing a Dry Run if your MigrateDB
 project contains such changes.
 
-- [Arbitrary script migrations](/documentation/concepts/migrations#script-migrations)
-- [Arbitrary script callbacks](/documentation/concepts/callbacks#script-callbacks)
-- [Java migrations](/documentation/concepts/migrations#java-based-migrations)
-- [Java callbacks](/documentation/concepts/callbacks#java-callbacks)
+- [Arbitrary script migrations](/migratedb/documentation/concepts/migrations#script-migrations)
+- [Arbitrary script callbacks](/migratedb/documentation/concepts/callbacks#script-callbacks)
+- [Java migrations](/migratedb/documentation/concepts/migrations#java-based-migrations)
+- [Java callbacks](/migratedb/documentation/concepts/callbacks#java-callbacks)
 
 ## Configuration
 
-When using the MigrateDB [command-line tool](/documentation/usage/commandline)
-, [Maven plugin](/documentation/usage/maven) or
-[Gradle plugin](/documentation/usage/gradle), a SQL file contained the output of the dry run can be configured using the
-[`migratedb.dryRunOutput`](/documentation/configuration/parameters/dryRunOutput) property.
+When using the MigrateDB [command-line tool](/migratedb/documentation/usage/commandline)
+, [Maven plugin](/migratedb/documentation/usage/maven) or
+[Gradle plugin](/migratedb/documentation/usage/gradle), a SQL file contained the output of the dry run can be configured using the
+[`migratedb.dryRunOutput`](/migratedb/documentation/configuration/parameters/dryRunOutput) property.
 
 When using the API directly, the dry run output can be configured using a `java.io.OutputStream`, giving you additional
 flexibility.
@@ -77,8 +77,8 @@ that would have been applied are sent to the dry run output instead.
 
 ## Tutorial
 
-Click [here](/documentation/getstarted/advanced/dry-runs) to see a tutorial on using dry runs.
+Click [here](/migratedb/documentation/getstarted/advanced/dry-runs) to see a tutorial on using dry runs.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/concepts/baseline-migrations">Baseline Migrations<i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/baseline-migrations">Baseline Migrations<i class="fa fa-arrow-right"></i></a>
 </p>

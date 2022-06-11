@@ -13,7 +13,7 @@ redirect_from:
 # Tutorial: Callbacks
 
 This tutorial assumes you have successfully completed the [**First Steps:
-Command-line**](/documentation/getstarted/firststeps/commandline)
+Command-line**](/migratedb/documentation/getstarted/firststeps/commandline)
 tutorial. **If you have not done so, please do so first.** This tutorial picks up where that one left off.
 
 This brief tutorial will teach **how to use callbacks**. It will take you through the
@@ -33,7 +33,7 @@ They are typically used for
 
 ## Reviewing the status
 
-After having completed the [First Steps: Command-line](/documentation/getstarted/firststeps/commandline), you can now
+After having completed the [First Steps: Command-line](/migratedb/documentation/getstarted/firststeps/commandline), you can now
 execute
 
 <pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>info</strong></pre>
@@ -91,5 +91,5 @@ In this brief tutorial we saw how to
 - triggers the execution of callbacks
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/documentation/concepts/callbacks">Read the callback documentation <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/callbacks">Read the callback documentation <i class="fa fa-arrow-right"></i></a>
 </p>
