@@ -6,6 +6,8 @@ subtitle: migratedb.batch
 redirect_from: /documentation/configuration/batch/
 ---
 
+{% include not-implemented.html %}
+
 # Batch
 
 ## Description

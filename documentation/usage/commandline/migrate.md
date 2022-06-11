@@ -64,7 +64,6 @@ migratedb.cleanDisabled=false
 migratedb.baselineOnMigrate=false
 migratedb.installedBy=my-user
 migratedb.errorOverrides=99999:17110:E,42001:42001:W
-migratedb.dryRunOutput=/my/sql/dryrun-outputfile.sql
 migratedb.lockRetryCount=10
 migratedb.oracle.sqlplus=true
 migratedb.oracle.sqlplusWarn=true

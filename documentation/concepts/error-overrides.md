@@ -117,7 +117,3 @@ and `afterEachMigrateStatementError`  events.
 ## Tutorial
 
 Click [here](/migratedb/documentation/getstarted/advanced/error-overrides) to see a tutorial on using error overrides.
-
-<p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/concepts/dry-runs">Dry Runs <i class="fa fa-arrow-right"></i></a>
-</p>

@@ -45,7 +45,6 @@ by `MigrateDB.configure()` (e.g. `MigrateDB.configure().url("jdbc:h2:mem:migrate
 - [cherryPick](/migratedb/documentation/configuration/parameters/cherryPick)
 - [configFileEncoding](/migratedb/documentation/configuration/parameters/configFileEncoding)
 - [configFiles](/migratedb/documentation/configuration/parameters/configFiles)
-- [dryRunOutput](/migratedb/documentation/configuration/parameters/dryRunOutput)
 - [encoding](/migratedb/documentation/configuration/parameters/encoding)
 - [errorOverrides](/migratedb/documentation/configuration/parameters/errorOverrides)
 - [group](/migratedb/documentation/configuration/parameters/group)
