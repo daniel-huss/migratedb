@@ -28,10 +28,8 @@ import migratedb.core.internal.util.ClassUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.sql.DataSource;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.function.Supplier;
 
 /**
  * Fluent configuration for MigrateDB . This is the preferred means of configuring the MigrateDB API. This configuration
@@ -323,21 +321,6 @@ public class FluentConfiguration implements Configuration {
     }
 
     @Override
-    public Supplier<OutputStream> getDryRunOutput() {
-        return config.getDryRunOutput();
-    }
-
-    @Override
-    public boolean isBatch() {
-        return config.isBatch();
-    }
-
-    @Override
-    public String getLicenseKey() {
-        return config.getLicenseKey();
-    }
-
-    @Override
     public ResourceProvider getResourceProvider() {
         return config.getResourceProvider();
     }
@@ -385,30 +368,6 @@ public class FluentConfiguration implements Configuration {
     @Override
     public Map<Class<? extends ExtensionConfig>, ? extends ExtensionConfig> getExtensionConfig() {
         return config.getExtensionConfig();
-    }
-
-    /**
-     * Sets the stream where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
-     * statements directly against the database. The stream when be closing when MigrateDB finishes writing the output.
-     *
-     * @param dryRunOutput The output file or {@code null} to execute the SQL statements directly against the database.
-     */
-    public FluentConfiguration dryRunOutput(Supplier<OutputStream> dryRunOutput) {
-        config.setDryRunOutput(dryRunOutput);
-        return this;
-    }
-
-    /**
-     * Sets the file where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
-     * statements directly against the database. If the file specified is in a non-existent directory, MigrateDB will
-     * create all directories and parent directories as needed.
-     *
-     * @param dryRunOutputFileName The name of the output file or {@code null} to execute the SQL statements directly
-     *                             against the database.
-     */
-    public FluentConfiguration dryRunOutput(String dryRunOutputFileName) {
-        config.setDryRunOutputAsFileName(dryRunOutputFileName);
-        return this;
     }
 
     /**
@@ -1160,22 +1119,6 @@ public class FluentConfiguration implements Configuration {
      */
     public FluentConfiguration skipDefaultResolvers(boolean skipDefaultResolvers) {
         config.setSkipDefaultResolvers(skipDefaultResolvers);
-        return this;
-    }
-
-    /**
-     * <b>Note: Currently not implemented.</b>
-     * Whether to batch SQL statements when executing them. Batching can save up to 99 percent of network roundtrips by
-     * sending up to 100 statements at once over the network to the database, instead of sending each statement
-     * individually. This is particularly useful for very large SQL migrations composed of multiple MB or even GB of
-     * reference data, as this can dramatically reduce the network overhead. This is supported for INSERT, UPDATE,
-     * DELETE, MERGE and UPSERT statements. All other statements are automatically executed without batching.
-     *
-     * @param batch {@code true} to batch SQL statements. {@code false} to execute them individually instead. (default:
-     *              {@code false})
-     */
-    public FluentConfiguration batch(boolean batch) {
-        config.setBatch(batch);
         return this;
     }
 

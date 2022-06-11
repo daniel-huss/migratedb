@@ -23,5 +23,5 @@ public interface SqlScriptExecutorFactory {
      *
      * @return A new SQL script executor.
      */
-    SqlScriptExecutor createSqlScriptExecutor(Connection connection, boolean batch, boolean outputQueryResults);
+    SqlScriptExecutor createSqlScriptExecutor(Connection connection, boolean outputQueryResults);
 }

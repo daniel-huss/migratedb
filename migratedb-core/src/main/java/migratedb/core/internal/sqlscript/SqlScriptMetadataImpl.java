@@ -16,10 +16,6 @@
  */
 package migratedb.core.internal.sqlscript;
 
-import static migratedb.core.internal.configuration.ConfigUtils.loadConfiguration;
-
-import java.util.HashMap;
-import java.util.Map;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.internal.parser.Parser;
 import migratedb.core.api.internal.sqlscript.SqlScriptMetadata;
@@ -28,6 +24,11 @@ import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.configuration.ConfigUtils;
 import migratedb.core.internal.parser.PlaceholderReplacingReader;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static migratedb.core.internal.configuration.ConfigUtils.loadConfiguration;
 
 public class SqlScriptMetadataImpl implements SqlScriptMetadata {
     private static final Log LOG = Log.getLog(SqlScriptMetadataImpl.class);

@@ -16,7 +16,6 @@
 
 package migratedb.core.internal.extension;
 
-import java.util.Set;
 import migratedb.core.api.MigrateDbExtension;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.internal.database.bigquery.BigQueryDatabaseType;
@@ -42,6 +41,8 @@ import migratedb.core.internal.database.sqlserver.SQLServerDatabaseType;
 import migratedb.core.internal.database.sqlserver.synapse.SynapseDatabaseType;
 import migratedb.core.internal.database.sybasease.SybaseASEJTDSDatabaseType;
 import migratedb.core.internal.database.yugabytedb.YugabyteDBDatabaseType;
+
+import java.util.Set;
 
 public final class BuiltinFeatures implements MigrateDbExtension {
 

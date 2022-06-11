@@ -16,17 +16,6 @@
 
 package migratedb.maven;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import kotlin.Unit;
 import migratedb.scanner.PathTarget;
 import migratedb.scanner.Scanner;
@@ -40,6 +29,14 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Scans the output of this project (and optionally its dependencies) for database migration resources, e.g. scripts, so

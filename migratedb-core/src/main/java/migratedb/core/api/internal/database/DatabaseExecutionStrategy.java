@@ -15,8 +15,9 @@
  */
 package migratedb.core.api.internal.database;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.util.SqlCallable;
+
+import java.sql.SQLException;
 
 /**
  * Defines a strategy for executing a {@code SqlCallable} against a particular database.

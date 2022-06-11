@@ -79,13 +79,10 @@ public class SqlScriptCallbackFactory {
                                                                        resourceProvider);
                 callbacksFound.put(name, sqlScript);
 
-                boolean batch = false;
-
                 callbacks.add(new SqlScriptCallback(event,
                                                     parsedName.getDescription(),
                                                     sqlScriptExecutorFactory,
-                                                    sqlScript,
-                                                    batch));
+                                                    sqlScript));
             }
         }
         Collections.sort(callbacks);
@@ -95,20 +92,18 @@ public class SqlScriptCallbackFactory {
         return new ArrayList<>(callbacks);
     }
 
-    private static class SqlScriptCallback implements Callback, Comparable<SqlScriptCallback> {
+    private static final class SqlScriptCallback implements Callback, Comparable<SqlScriptCallback> {
         private final Event event;
         private final String description;
         private final SqlScriptExecutorFactory sqlScriptExecutorFactory;
         private final SqlScript sqlScript;
-        private final boolean batch;
 
         private SqlScriptCallback(Event event, String description, SqlScriptExecutorFactory sqlScriptExecutorFactory,
-                                  SqlScript sqlScript, boolean batch) {
+                                  SqlScript sqlScript) {
             this.event = event;
             this.description = description;
             this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
             this.sqlScript = sqlScript;
-            this.batch = batch;
         }
 
         @Override
@@ -135,7 +130,7 @@ public class SqlScriptCallbackFactory {
 
             boolean outputQueryResults = false;
 
-            sqlScriptExecutorFactory.createSqlScriptExecutor(context.getConnection(), batch, outputQueryResults)
+            sqlScriptExecutorFactory.createSqlScriptExecutor(context.getConnection(), outputQueryResults)
                                     .execute(sqlScript);
         }
 

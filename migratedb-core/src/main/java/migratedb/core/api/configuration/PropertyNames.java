@@ -21,7 +21,6 @@ import migratedb.core.api.Version;
 import migratedb.core.api.logging.LogSystems;
 import migratedb.core.api.pattern.ValidatePattern;
 
-import java.io.File;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -35,8 +34,6 @@ public class PropertyNames {
     public static final String BASELINE_ON_MIGRATE = "migratedb.baselineOnMigrate";
     @Info(typeHint = Version.class)
     public static final String BASELINE_VERSION = "migratedb.baselineVersion";
-    @Info(typeHint = Boolean.class)
-    public static final String BATCH = "migratedb.batch";
     @Info(typeHint = Class.class, commaSeparated = true)
     public static final String CALLBACKS = "migratedb.callbacks";
     @Info(typeHint = Boolean.class)
@@ -51,8 +48,6 @@ public class PropertyNames {
     public static final String DEFAULT_SCHEMA = "migratedb.defaultSchema";
     @Info(typeHint = Class.class)
     public static final String DRIVER = "migratedb.driver";
-    @Info(typeHint = File.class)
-    public static final String DRYRUN_OUTPUT = "migratedb.dryRunOutput";
     @Info(typeHint = Charset.class)
     public static final String ENCODING = "migratedb.encoding";
     @Info(typeHint = ErrorOverrideString.class)

@@ -16,16 +16,13 @@
 
 package migratedb.core.internal.info;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Optional;
-import java.util.function.Predicate;
 import migratedb.core.api.Version;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.resolver.ResolvedMigration;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * All migrations except for DELETED markers in a more easily navigable data structure.

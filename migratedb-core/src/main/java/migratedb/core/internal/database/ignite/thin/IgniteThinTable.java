@@ -16,13 +16,14 @@
  */
 package migratedb.core.internal.database.ignite.thin;
 
-import java.sql.SQLException;
-import java.util.UUID;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.internal.jdbc.Results;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseTable;
+
+import java.sql.SQLException;
+import java.util.UUID;
 
 /**
  * Ignite Thin-specific table.

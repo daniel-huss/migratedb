@@ -16,10 +16,11 @@
 
 package migratedb.core.internal.info;
 
+import migratedb.core.api.configuration.Configuration;
+
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
-import migratedb.core.api.configuration.Configuration;
 
 public final class ValidationContext {
     public static ValidationContext allAllowed() {

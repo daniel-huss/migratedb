@@ -16,8 +16,9 @@
  */
 package migratedb.core.internal.resolver;
 
-import java.util.Comparator;
 import migratedb.core.api.resolver.ResolvedMigration;
+
+import java.util.Comparator;
 
 public class ResolvedMigrationComparator implements Comparator<ResolvedMigration> {
     @Override

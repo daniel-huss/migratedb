@@ -16,12 +16,13 @@
  */
 package migratedb.core.api.logging;
 
+import migratedb.core.internal.util.ClassUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
-import migratedb.core.internal.util.ClassUtils;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Logging frontend for MigrateDB components and extensions.

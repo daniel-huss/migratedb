@@ -19,16 +19,27 @@ package migratedb.commandline
 import io.kotest.assertions.asClue
 import io.kotest.assertions.print.print
 import io.kotest.assertions.withClue
-import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import migratedb.commandline.testing.CommandLineTest
 import migratedb.core.api.output.LiberateResult
+import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.logging.LogFactory
+import org.flywaydb.core.internal.logging.multi.MultiLogger
 import org.junit.jupiter.api.Test
 
 class LiberateIT : CommandLineTest() {
     @Test
     fun `Can run liberate command`() = withCommandLine {
         val dbUrl = "jdbc:h2:${installationDir.resolve("mydb.h2").absolutePath}"
+        withDatabase(dbUrl) {
+            LogFactory.setLogCreator { MultiLogger(emptyList()) } // No logging, please
+            Flyway.configure()
+                .dataSource(it.dataSource)
+                .table("old_table")
+                .baselineVersion("14")
+                .load()
+                .baseline()
+        }
         exec(
             "-outputType=json",
             "-url=$dbUrl",
@@ -43,7 +54,6 @@ class LiberateIT : CommandLineTest() {
             withClue(actual.print().value) {
                 actual.oldSchemaHistoryTable.shouldBe("old_table")
                 actual.schemaHistoryTable.shouldBe("new_table")
-                actual.actions?.shouldBeEmpty()
             }
         }
     }

@@ -16,73 +16,13 @@
 
 package migratedb.commandline;
 
-import static migratedb.commandline.CommandLineConfigKey.CONFIG_FILES;
-import static migratedb.commandline.CommandLineConfigKey.CONFIG_FILE_ENCODING;
-import static migratedb.commandline.CommandLineConfigKey.JAR_DIRS;
-import static migratedb.core.api.configuration.PropertyNames.BASELINE_DESCRIPTION;
-import static migratedb.core.api.configuration.PropertyNames.BASELINE_MIGRATION_PREFIX;
-import static migratedb.core.api.configuration.PropertyNames.BASELINE_ON_MIGRATE;
-import static migratedb.core.api.configuration.PropertyNames.BASELINE_VERSION;
-import static migratedb.core.api.configuration.PropertyNames.BATCH;
-import static migratedb.core.api.configuration.PropertyNames.CALLBACKS;
-import static migratedb.core.api.configuration.PropertyNames.CHERRY_PICK;
-import static migratedb.core.api.configuration.PropertyNames.CLEAN_DISABLED;
-import static migratedb.core.api.configuration.PropertyNames.CLEAN_ON_VALIDATION_ERROR;
-import static migratedb.core.api.configuration.PropertyNames.CONNECT_RETRIES;
-import static migratedb.core.api.configuration.PropertyNames.CONNECT_RETRIES_INTERVAL;
-import static migratedb.core.api.configuration.PropertyNames.CREATE_SCHEMAS;
-import static migratedb.core.api.configuration.PropertyNames.DEFAULT_SCHEMA;
-import static migratedb.core.api.configuration.PropertyNames.DRIVER;
-import static migratedb.core.api.configuration.PropertyNames.DRYRUN_OUTPUT;
-import static migratedb.core.api.configuration.PropertyNames.ENCODING;
-import static migratedb.core.api.configuration.PropertyNames.ERROR_OVERRIDES;
-import static migratedb.core.api.configuration.PropertyNames.FAIL_ON_MISSING_LOCATIONS;
-import static migratedb.core.api.configuration.PropertyNames.GROUP;
-import static migratedb.core.api.configuration.PropertyNames.IGNORE_FUTURE_MIGRATIONS;
-import static migratedb.core.api.configuration.PropertyNames.IGNORE_IGNORED_MIGRATIONS;
-import static migratedb.core.api.configuration.PropertyNames.IGNORE_MIGRATION_PATTERNS;
-import static migratedb.core.api.configuration.PropertyNames.IGNORE_MISSING_MIGRATIONS;
-import static migratedb.core.api.configuration.PropertyNames.IGNORE_PENDING_MIGRATIONS;
-import static migratedb.core.api.configuration.PropertyNames.INIT_SQL;
-import static migratedb.core.api.configuration.PropertyNames.INSTALLED_BY;
-import static migratedb.core.api.configuration.PropertyNames.JDBC_PROPERTIES_PREFIX;
-import static migratedb.core.api.configuration.PropertyNames.LOCATIONS;
-import static migratedb.core.api.configuration.PropertyNames.LOCK_RETRY_COUNT;
-import static migratedb.core.api.configuration.PropertyNames.LOGGER;
-import static migratedb.core.api.configuration.PropertyNames.MIXED;
-import static migratedb.core.api.configuration.PropertyNames.OUTPUT_QUERY_RESULTS;
-import static migratedb.core.api.configuration.PropertyNames.OUT_OF_ORDER;
-import static migratedb.core.api.configuration.PropertyNames.PASSWORD;
-import static migratedb.core.api.configuration.PropertyNames.PLACEHOLDERS_PROPERTY_PREFIX;
-import static migratedb.core.api.configuration.PropertyNames.PLACEHOLDER_PREFIX;
-import static migratedb.core.api.configuration.PropertyNames.PLACEHOLDER_REPLACEMENT;
-import static migratedb.core.api.configuration.PropertyNames.PLACEHOLDER_SUFFIX;
-import static migratedb.core.api.configuration.PropertyNames.REPEATABLE_SQL_MIGRATION_PREFIX;
-import static migratedb.core.api.configuration.PropertyNames.RESOLVERS;
-import static migratedb.core.api.configuration.PropertyNames.SCHEMAS;
-import static migratedb.core.api.configuration.PropertyNames.SCRIPT_PLACEHOLDER_PREFIX;
-import static migratedb.core.api.configuration.PropertyNames.SCRIPT_PLACEHOLDER_SUFFIX;
-import static migratedb.core.api.configuration.PropertyNames.SKIP_DEFAULT_CALLBACKS;
-import static migratedb.core.api.configuration.PropertyNames.SKIP_DEFAULT_RESOLVERS;
-import static migratedb.core.api.configuration.PropertyNames.SKIP_EXECUTING_MIGRATIONS;
-import static migratedb.core.api.configuration.PropertyNames.SQL_MIGRATION_PREFIX;
-import static migratedb.core.api.configuration.PropertyNames.SQL_MIGRATION_SEPARATOR;
-import static migratedb.core.api.configuration.PropertyNames.SQL_MIGRATION_SUFFIXES;
-import static migratedb.core.api.configuration.PropertyNames.TABLE;
-import static migratedb.core.api.configuration.PropertyNames.TABLESPACE;
-import static migratedb.core.api.configuration.PropertyNames.TARGET;
-import static migratedb.core.api.configuration.PropertyNames.URL;
-import static migratedb.core.api.configuration.PropertyNames.USER;
-import static migratedb.core.api.configuration.PropertyNames.VALIDATE_MIGRATION_NAMING;
-import static migratedb.core.api.configuration.PropertyNames.VALIDATE_ON_MIGRATE;
-import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_KERBEROS_CACHE_FILE;
-import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_KERBEROS_CONFIG_FILE;
-import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_SQLPLUS;
-import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_SQLPLUS_WARN;
-import static migratedb.core.internal.database.oracle.OracleConfig.ORACLE_WALLET_LOCATION;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Locale;
-import org.checkerframework.checker.nullness.qual.Nullable;
+
+import static migratedb.commandline.CommandLineConfigKey.*;
+import static migratedb.core.api.configuration.PropertyNames.*;
+import static migratedb.core.internal.database.oracle.OracleConfig.*;
 
 final class EnvironmentMapper {
     static @Nullable String convertKey(String key) {
@@ -94,9 +34,6 @@ final class EnvironmentMapper {
         }
         if ("MIGRATEDB_BASELINE_VERSION".equals(key)) {
             return BASELINE_VERSION;
-        }
-        if ("MIGRATEDB_BATCH".equals(key)) {
-            return BATCH;
         }
         if ("MIGRATEDB_CALLBACKS".equals(key)) {
             return CALLBACKS;
@@ -124,9 +61,6 @@ final class EnvironmentMapper {
         }
         if ("MIGRATEDB_DRIVER".equals(key)) {
             return DRIVER;
-        }
-        if ("MIGRATEDB_DRYRUN_OUTPUT".equals(key)) {
-            return DRYRUN_OUTPUT;
         }
         if ("MIGRATEDB_ENCODING".equals(key)) {
             return ENCODING;

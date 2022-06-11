@@ -34,16 +34,13 @@ public class DefaultSqlScriptExecutor implements SqlScriptExecutor {
 
     protected final JdbcTemplate jdbcTemplate;
     private final CallbackExecutor callbackExecutor;
-    private final boolean batch;
     private final boolean outputQueryResults;
 
     public DefaultSqlScriptExecutor(JdbcTemplate jdbcTemplate,
                                     CallbackExecutor callbackExecutor,
-                                    boolean batch,
                                     boolean outputQueryResults) {
         this.jdbcTemplate = jdbcTemplate;
         this.callbackExecutor = callbackExecutor;
-        this.batch = batch;
         this.outputQueryResults = outputQueryResults;
     }
 

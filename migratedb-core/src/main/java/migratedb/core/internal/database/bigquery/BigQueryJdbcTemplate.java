@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.database.bigquery;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.jdbc.JdbcNullTypes;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 
 public class BigQueryJdbcTemplate extends JdbcTemplate {
 

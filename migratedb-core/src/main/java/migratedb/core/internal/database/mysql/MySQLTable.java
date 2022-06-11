@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database.mysql;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseTable;
+
+import java.sql.SQLException;
 
 /**
  * MySQL-specific table.

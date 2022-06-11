@@ -16,29 +16,18 @@
 
 package migratedb.core.internal.info;
 
-import static java.util.stream.Collectors.toMap;
-import static migratedb.core.api.TargetVersion.CURRENT;
-import static migratedb.core.api.TargetVersion.LATEST;
-import static migratedb.core.api.TargetVersion.NEXT;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.MigrationInfo;
-import migratedb.core.api.MigrationPattern;
-import migratedb.core.api.MigrationState;
-import migratedb.core.api.MigrationType;
-import migratedb.core.api.TargetVersion;
-import migratedb.core.api.Version;
+import migratedb.core.api.*;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.info.NavigableMigrations.RepeatableMigrationEntry;
 import migratedb.core.internal.info.NavigableMigrations.VersionedMigrationEntry;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.*;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toMap;
+import static migratedb.core.api.TargetVersion.*;
 
 final class RefreshHelper {
     private final @Nullable MigrationPattern[] cherryPick;

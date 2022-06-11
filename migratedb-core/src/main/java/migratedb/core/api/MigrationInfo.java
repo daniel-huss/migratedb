@@ -16,12 +16,13 @@
 
 package migratedb.core.api;
 
-import java.time.Instant;
-import java.util.Comparator;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.info.MigrationExecutionOrdering;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.time.Instant;
+import java.util.Comparator;
 
 /**
  * Info about a migration.

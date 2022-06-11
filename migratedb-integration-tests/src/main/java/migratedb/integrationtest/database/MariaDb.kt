@@ -40,7 +40,7 @@ enum class MariaDb(image: String) : DbSystem {
     V10_7("mariadb:10.7"),
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - Same as MySQL
 
     private val containerAlias = "mariadb_${name.lowercase()}"

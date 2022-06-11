@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.logging;
 
+import migratedb.core.api.logging.LogSystem;
+
 import java.util.Collection;
 import java.util.List;
-import migratedb.core.api.logging.LogSystem;
 
 /**
  * Log implementation that forwards method calls to multiple implementations.

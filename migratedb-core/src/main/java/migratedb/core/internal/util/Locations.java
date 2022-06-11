@@ -16,13 +16,14 @@
  */
 package migratedb.core.internal.util;
 
+import migratedb.core.api.Location;
+import migratedb.core.api.Location.FileSystemLocation;
+import migratedb.core.api.logging.Log;
+
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import migratedb.core.api.Location;
-import migratedb.core.api.Location.FileSystemLocation;
-import migratedb.core.api.logging.Log;
 
 /**
  * Encapsulation of a location list. Removes duplicates and sub-locations (for file-based locations).

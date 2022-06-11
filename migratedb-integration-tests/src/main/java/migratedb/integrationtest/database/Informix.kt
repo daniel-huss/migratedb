@@ -29,6 +29,7 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 import java.time.Duration
+import java.util.concurrent.Semaphore
 import javax.sql.DataSource
 
 enum class Informix(image: String) : DbSystem {
@@ -36,7 +37,7 @@ enum class Informix(image: String) : DbSystem {
     V12_10("ibmcom/informix-developer-database:12.10.FC11DE"),
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - Does not support schemas as namespaces (CREATE SCHEMA just assigns the same owner to multiple DB objects)
 
     private val containerAlias = "informix_${name.lowercase()}"
@@ -64,9 +65,6 @@ enum class Informix(image: String) : DbSystem {
         }
 
         init {
-            withCreateContainerCmdModifier {
-                it.hostConfig!!.withMemory(300_000_000)
-            }
             withEnv("LICENSE", "accept")
             withEnv("STORAGE", "local")
             withExposedPorts(port)
@@ -74,13 +72,19 @@ enum class Informix(image: String) : DbSystem {
         }
     }
 
+    private val handles = Semaphore(5, true)
+
+    /**
+     * Informix seems allergic to more than 5 connections per container.
+     */
     override fun get(sharedResources: SharedResources): DbSystem.Handle {
+        handles.acquire()
         return Handle(sharedResources.container(containerAlias) { Container(image) })
     }
 
-    private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
+    private inner class Handle(private val container: Lease<Container>) : DbSystem.Handle {
         override val type = InformixDatabaseType()
-
+        private var released = false
         private val internalDs = container().dataSource()
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier? {
@@ -105,6 +109,15 @@ enum class Informix(image: String) : DbSystem {
             return InformixCreateTableMutation(normalizeCase(Names.nextTable()))
         }
 
-        override fun close() = container.close()
+        override fun close() {
+            container.use {
+                synchronized(this) {
+                    if (!released) {
+                        released = true
+                        handles.release()
+                    }
+                }
+            }
+        }
     }
 }

@@ -38,7 +38,6 @@ object ConfigSetters {
     val baselineOnMigrate = Setter("setBaselineOnMigrate", Boolean.any())
     val baselineVersion = Setter("setBaselineVersion", anyMigrationVersion())
     val baselineVersionAsString = Setter("setBaselineVersionAsString", anyMigrationVersionString())
-    val batch = Setter("setBatch", Boolean.any())
     val callbacks = Setter("setCallbacks", Arbitraries.ofSuppliers(::UniversalDummy).array(Callback::class))
     val callbacksAsClassNames = Setter(
         "setCallbacksAsClassNames", just(UniversalDummy::class.java.name).array(String::class)
@@ -59,10 +58,6 @@ object ConfigSetters {
         Setter("setDataSource", just(JdbcDataSource().apply { setUrl("jdbc:h2:mem:") }), DataSource::class)
     val dataSource2 = Setter("setDataSource", dataSourceParamsArbitrary(), String::class, String::class, String::class)
     val defaultSchema = Setter("setDefaultSchema", anySchemaObjectName())
-    val dryRunOutput = Setter("setDryRunOutput", just(UniversalDummy()))
-    val dryRunOutputAsFileName = Setter(
-        "setDryRunOutputAsFileName", Arbitraries.of("target/dryRunOutput1", "target/dryRunOutput2")
-    )
     val encoding = Setter("setEncoding", Arbitraries.of(Charset.availableCharsets().values))
     val encodingAsString = Setter("setEncodingAsString", Arbitraries.of(Charset.availableCharsets().keys))
     val errorOverrides = Setter("setErrorOverrides", anyErrorOverride().array(String::class))
@@ -94,7 +89,6 @@ object ConfigSetters {
     )
     val javaMigrations2 = Setter("setJavaMigrations", Arbitraries.of(UniversalDummy()).list(), Collection::class)
     val jdbcProperties = Setter("setJdbcProperties", anyProperties())
-    val licenseKey = Setter("setLicenseKey", String.any().ofLength(0..100))
     val locations = Setter("setLocations", anyLocation().array(Location::class))
     val locationsAsStrings = Setter("setLocationsAsStrings", anyLocation().map { it.toString() }.array(String::class))
     val lockRetryCount = Setter("setLockRetryCount", Int.any(0..Int.MAX_VALUE))

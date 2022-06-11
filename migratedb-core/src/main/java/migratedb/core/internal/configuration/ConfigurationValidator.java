@@ -16,10 +16,11 @@
  */
 package migratedb.core.internal.configuration;
 
-import java.util.Locale;
 import migratedb.core.api.ErrorCode;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
+
+import java.util.Locale;
 
 public class ConfigurationValidator {
     public void validate(Configuration configuration) {

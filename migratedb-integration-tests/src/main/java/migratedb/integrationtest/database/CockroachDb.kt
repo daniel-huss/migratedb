@@ -38,7 +38,7 @@ enum class CockroachDb(image: String) : DbSystem {
     // Lower versions are EOL, should we test them?
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - Normalizes identifiers to lower case instead of upper case
     //  - Tries to be compatible with Postgres, but many features are not implemented
 

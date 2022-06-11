@@ -16,20 +16,15 @@
  */
 package migratedb.core.internal.database.postgresql;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.regex.Pattern;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.api.internal.sqlscript.Delimiter;
-import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.parser.ParserContext;
-import migratedb.core.internal.parser.PeekingReader;
-import migratedb.core.internal.parser.Recorder;
-import migratedb.core.internal.parser.StatementType;
-import migratedb.core.internal.parser.Token;
-import migratedb.core.internal.parser.TokenType;
+import migratedb.core.internal.parser.*;
 import migratedb.core.internal.sqlscript.ParsedSqlStatement;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class PostgreSQLParser extends BaseParser {
     private static final Pattern COPY_FROM_STDIN_REGEX = Pattern.compile("^COPY( .*)? FROM STDIN");

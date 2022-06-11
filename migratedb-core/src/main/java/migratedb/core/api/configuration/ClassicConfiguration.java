@@ -24,7 +24,6 @@ import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.pattern.ValidatePattern;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.internal.configuration.ConfigUtils;
-import migratedb.core.internal.configuration.FileOutputStreamFactory;
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl;
 import migratedb.core.internal.extension.BuiltinFeatures;
 import migratedb.core.internal.jdbc.DriverDataSource;
@@ -34,12 +33,9 @@ import migratedb.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.sql.DataSource;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.Supplier;
 
 import static migratedb.core.internal.configuration.ConfigUtils.removeBoolean;
 import static migratedb.core.internal.configuration.ConfigUtils.removeInteger;
@@ -107,14 +103,11 @@ public class ClassicConfiguration implements Configuration {
     private String installedBy;
     private boolean createSchemas = true;
     private String[] errorOverrides = new String[0];
-    private Supplier<OutputStream> dryRunOutput;
-    private boolean batch;
     private boolean outputQueryResults = true;
     private int lockRetryCount = 50;
     private Map<String, String> jdbcProperties = new HashMap<>();
     private boolean failOnMissingLocations = false;
     private LogSystem logger;
-    private String licenseKey;
     private final DatabaseTypeRegisterImpl databaseTypeRegister = new DatabaseTypeRegisterImpl();
     private final Set<MigrateDbExtension> loadedExtensions = new HashSet<>();
     private final Map<Class<? extends ExtensionConfig>, ExtensionConfig> extensionConfig = new HashMap<>();
@@ -392,16 +385,6 @@ public class ClassicConfiguration implements Configuration {
     }
 
     @Override
-    public Supplier<OutputStream> getDryRunOutput() {
-        return dryRunOutput;
-    }
-
-    @Override
-    public String getLicenseKey() {
-        return licenseKey;
-    }
-
-    @Override
     public int getLockRetryCount() {
         return lockRetryCount;
     }
@@ -442,11 +425,6 @@ public class ClassicConfiguration implements Configuration {
     }
 
     @Override
-    public boolean isBatch() {
-        return batch;
-    }
-
-    @Override
     public Callback[] getCallbacks() {
         return callbacks.toArray(new Callback[0]);
     }
@@ -469,32 +447,6 @@ public class ClassicConfiguration implements Configuration {
     @Override
     public Map<Class<? extends ExtensionConfig>, ? extends ExtensionConfig> getExtensionConfig() {
         return Collections.unmodifiableMap(extensionConfig);
-    }
-
-    /**
-     * <p>Note: This feature is currently not implemented.</p>
-     * <p>
-     * Sets the stream where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
-     * statements directly against the database. The stream will be closed when MigrateDB finishes writing the output.
-     *
-     * @param dryRunOutput The output file or {@code null} to execute the SQL statements directly against the database.
-     */
-    public void setDryRunOutput(Supplier<OutputStream> dryRunOutput) {
-        this.dryRunOutput = dryRunOutput;
-    }
-
-    /**
-     * <p>Note: This feature is currently not implemented.</p>
-     * <p>
-     * Sets the file where to output the SQL statements of a migration dry run. {@code null} to execute the SQL
-     * statements directly against the database. If the file specified is in a non-existent directory, MigrateDB will
-     * create all directories and parent directories as needed.
-     *
-     * @param dryRunOutputFileName The name of the output file or {@code null} to execute the SQL statements directly
-     *                             against the database.
-     */
-    public void setDryRunOutputAsFileName(String dryRunOutputFileName) {
-        this.dryRunOutput = new FileOutputStreamFactory(Paths.get(dryRunOutputFileName));
     }
 
     /**
@@ -996,23 +948,6 @@ public class ClassicConfiguration implements Configuration {
         this.javaMigrations = javaMigrations.toArray(JavaMigration[]::new);
     }
 
-
-    /**
-     * <p>Note: This feature is currently not implemented.</p>
-     * <p>
-     * Whether to batch SQL statements when executing them. Batching can save up to 99 percent of network roundtrips by
-     * sending up to 100 statements at once over the network to the database, instead of sending each statement
-     * individually. This is particularly useful for very large SQL migrations composed of multiple MB or even GB of
-     * reference data, as this can dramatically reduce the network overhead. This is supported for INSERT, UPDATE,
-     * DELETE, MERGE and UPSERT statements. All other statements are automatically executed without batching.
-     *
-     * @param batch {@code true} to batch SQL statements. {@code false} to execute them individually instead. (default:
-     *              {@code false})
-     */
-    public void setBatch(boolean batch) {
-        this.batch = batch;
-    }
-
     /**
      * Sets the file name prefix for repeatable sql migrations. Repeatable SQL migrations have the following file name
      * structure: prefixSeparatorDESCRIPTIONsuffix, which using the defaults translates to R__My_description.sql
@@ -1274,18 +1209,6 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Merely exists for compatibility. Setting a license key has no effect except that {@link #getLicenseKey()} will
-     * return that key.
-     *
-     * @deprecated No longer needed.
-     */
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated
-    public void setLicenseKey(String licenseKey) {
-        this.licenseKey = licenseKey;
-    }
-
-    /**
      * Whether MigrateDB should output a table with the results of queries when executing migrations.
      */
     public void setOutputQueryResults(boolean outputQueryResults) {
@@ -1342,7 +1265,6 @@ public class ClassicConfiguration implements Configuration {
         setBaselineMigrationPrefix(configuration.getBaselineMigrationPrefix());
         setBaselineOnMigrate(configuration.isBaselineOnMigrate());
         setBaselineVersion(configuration.getBaselineVersion());
-        setBatch(configuration.isBatch());
         setCallbacks(configuration.getCallbacks());
         setCherryPick(configuration.getCherryPick());
         setCleanDisabled(configuration.isCleanDisabled());
@@ -1351,7 +1273,6 @@ public class ClassicConfiguration implements Configuration {
         setConnectRetriesInterval(configuration.getConnectRetriesInterval());
         setDataSource(configuration.getDataSource());
         setDefaultSchema(configuration.getDefaultSchema());
-        setDryRunOutput(configuration.getDryRunOutput());
         setEncoding(configuration.getEncoding());
         setErrorOverrides(configuration.getErrorOverrides());
         setFailOnMissingLocations(configuration.getFailOnMissingLocations());
@@ -1367,7 +1288,6 @@ public class ClassicConfiguration implements Configuration {
         setJavaMigrationClassProvider(configuration.getJavaMigrationClassProvider());
         setJavaMigrations(configuration.getJavaMigrations());
         setJdbcProperties(configuration.getJdbcProperties());
-        setLicenseKey(configuration.getLicenseKey());
         setLocations(configuration.getLocations());
         setLockRetryCount(configuration.getLockRetryCount());
         setLogger(configuration.getLogger());
@@ -1630,24 +1550,14 @@ public class ClassicConfiguration implements Configuration {
         if (installedByProp != null) {
             setInstalledBy(installedByProp);
         }
-        String dryRunOutputProp = props.remove(PropertyNames.DRYRUN_OUTPUT);
-        if (dryRunOutputProp != null) {
-            setDryRunOutputAsFileName(dryRunOutputProp);
-        }
         String errorOverridesProp = props.remove(PropertyNames.ERROR_OVERRIDES);
         if (errorOverridesProp != null) {
             setErrorOverrides(StringUtils.tokenizeToStringArray(errorOverridesProp, ","));
         }
-        Boolean batchProp = removeBoolean(props, PropertyNames.BATCH);
-        if (batchProp != null) {
-            setBatch(batchProp);
-        }
-
         Boolean createSchemasProp = removeBoolean(props, PropertyNames.CREATE_SCHEMAS);
         if (createSchemasProp != null) {
             setShouldCreateSchemas(createSchemasProp);
         }
-
         String ignoreMigrationPatternsProp = props.remove(PropertyNames.IGNORE_MIGRATION_PATTERNS);
         if (ignoreMigrationPatternsProp != null) {
             setIgnoreMigrationPatterns(StringUtils.tokenizeToStringArray(ignoreMigrationPatternsProp, ","));

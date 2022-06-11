@@ -38,7 +38,7 @@ enum class Hsqldb : DbSystem {
     V2_3_6,
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - None
 
     companion object {

@@ -16,11 +16,12 @@
  */
 package migratedb.core.internal.exception;
 
-import java.sql.SQLException;
 import migratedb.core.api.ErrorCode;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.internal.util.ExceptionUtils;
 import migratedb.core.internal.util.StringUtils;
+
+import java.sql.SQLException;
 
 /**
  * The specific exception thrown when MigrateDB encounters a problem in SQL statement.

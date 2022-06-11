@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database.informix;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseTable;
+
+import java.sql.SQLException;
 
 /**
  * Informix-specific table.

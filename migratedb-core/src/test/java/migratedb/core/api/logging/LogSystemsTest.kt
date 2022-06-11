@@ -19,12 +19,7 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.kotest.matchers.types.shouldBeSameInstanceAs
-import migratedb.core.internal.logging.AndroidLogSystem
-import migratedb.core.internal.logging.ApacheCommonsLogSystem
-import migratedb.core.internal.logging.JavaUtilLogSystem
-import migratedb.core.internal.logging.MultiLogSystem
-import migratedb.core.internal.logging.NoLogSystem
-import migratedb.core.internal.logging.Slf4jLogSystem
+import migratedb.core.internal.logging.*
 import migratedb.core.internal.util.ClassUtils.defaultClassLoader
 import migratedb.core.testing.LogRecorder
 import org.junit.jupiter.api.Test

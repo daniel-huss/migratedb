@@ -55,7 +55,7 @@ enum class Sqlite : DbSystem {
     V3_36_0_3,
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - Doesn't really support schemas, although other databases can be "attached" with a custom alias to qualify
     //    its tables (we don't use that feature here)
 

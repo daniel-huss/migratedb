@@ -16,7 +16,10 @@
  */
 package migratedb.core.api;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import migratedb.core.internal.resource.classpath.ClassPathResourceProvider;
+import migratedb.core.internal.resource.filesystem.FileSystemResourceProvider;
+import migratedb.core.internal.util.ClassUtils;
+import migratedb.core.internal.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,16 +27,10 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
-import migratedb.core.internal.resource.classpath.ClassPathResourceProvider;
-import migratedb.core.internal.resource.filesystem.FileSystemResourceProvider;
-import migratedb.core.internal.util.ClassUtils;
-import migratedb.core.internal.util.StringUtils;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * A location to load migrations from.

@@ -16,8 +16,6 @@
  */
 package migratedb.core.internal.database.mysql.mariadb;
 
-import java.util.List;
-import java.util.regex.Pattern;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.database.mysql.MySQLParser;
@@ -25,6 +23,9 @@ import migratedb.core.internal.parser.ParserContext;
 import migratedb.core.internal.parser.PeekingReader;
 import migratedb.core.internal.parser.StatementType;
 import migratedb.core.internal.parser.Token;
+
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class MariaDBParser extends MySQLParser {
     private static final Pattern BEGIN_NOT_ATOMIC_REGEX = Pattern.compile(

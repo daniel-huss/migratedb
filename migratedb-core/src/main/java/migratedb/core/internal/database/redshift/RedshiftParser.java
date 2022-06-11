@@ -16,16 +16,13 @@
  */
 package migratedb.core.internal.database.redshift;
 
+import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.internal.parser.*;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
-import migratedb.core.api.configuration.Configuration;
-import migratedb.core.api.internal.parser.ParsingContext;
-import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.parser.ParserContext;
-import migratedb.core.internal.parser.PeekingReader;
-import migratedb.core.internal.parser.Token;
-import migratedb.core.internal.parser.TokenType;
 
 public class RedshiftParser extends BaseParser {
     private static final Pattern CREATE_LIBRARY_REGEX = Pattern.compile("^(CREATE|DROP) LIBRARY");

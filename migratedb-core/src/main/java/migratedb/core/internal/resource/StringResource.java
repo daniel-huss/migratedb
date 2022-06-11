@@ -16,10 +16,11 @@
  */
 package migratedb.core.internal.resource;
 
+import migratedb.core.api.resource.Resource;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
-import migratedb.core.api.resource.Resource;
 
 public class StringResource implements Resource {
     private final String str;

@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.resolver;
 
-import java.util.Objects;
 import migratedb.core.api.Checksum;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.Version;
 import migratedb.core.api.executor.MigrationExecutor;
 import migratedb.core.api.resolver.ResolvedMigration;
+
+import java.util.Objects;
 
 /**
  * A migration available on the classpath.

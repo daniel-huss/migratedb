@@ -15,10 +15,11 @@
  */
 package migratedb.core.api;
 
-import java.util.Collections;
-import java.util.Set;
 import migratedb.core.api.configuration.FluentConfiguration;
 import migratedb.core.api.internal.database.base.DatabaseType;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Third-party extensions can contribute additional features through implementations of this interface. To enable an

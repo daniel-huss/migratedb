@@ -16,8 +16,9 @@
 
 package migratedb.core.api.internal.jdbc;
 
-import java.sql.Connection;
 import migratedb.core.api.internal.database.base.DatabaseType;
+
+import java.sql.Connection;
 
 public interface JdbcConnectionFactory {
     DatabaseType getDatabaseType();

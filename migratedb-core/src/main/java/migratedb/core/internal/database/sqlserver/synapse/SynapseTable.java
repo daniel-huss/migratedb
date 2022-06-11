@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.database.sqlserver.synapse;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.sqlserver.SQLServerDatabase;
 import migratedb.core.internal.database.sqlserver.SQLServerSchema;
 import migratedb.core.internal.database.sqlserver.SQLServerTable;
+
+import java.sql.SQLException;
 
 public class SynapseTable extends SQLServerTable {
     private static final Log LOG = Log.getLog(SynapseTable.class);

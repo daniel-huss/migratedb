@@ -6,6 +6,17 @@ The format is based on https://keepachangelog.com/en/1.0.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
+== Unreleased
+
+This is an early access 0.x release, which means *everything* is subject to change.
+Feedback is very welcome!
+
+=== Removed
+* 🔥 Batch, dryRun and licenseKey configuration.
+
+=== Fixed
+* JdbcTableSchemaHistory.create() no longer ignores being interrupted.
+
 == [0.1.0]
 
 This is the initial release after forking from Flyway 7.15 (the "community" version, obviously) and applying all 8.x bug fixes up to commit 77bb799. Since the forked project has never published any test sources, test coverage may seem a little underwhelming.
@@ -21,12 +32,11 @@ Feedback is very welcome!
 * Support for baseline migrations.
 * Support for cherry-picking migration versions.
 * Support for pattern-based ignored migration versions.
-* Support for JDBC batched queries.
 * Maven plugin for build-time class path scanning.
 * Gradle plugin for build-time class path scanning.
 * Unit tests for most changed/refactored code, especially configuration-related stuff.
 * A few integration tests for databases where a docker container is publicly available.
-* Instead of re-distributing JDBC drivers, the command line tool can download them from Maven Central via the new `download-drivers` subcommand.
+* Instead of re-distributing JDBC drivers, the command line tool can help you download them from Maven Central via the new `download-drivers` subcommand.
 * Command that converts an existing schema history table to MigrateDB.
 
 === Changed

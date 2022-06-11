@@ -35,7 +35,7 @@ enum class Firebird(image: String) : DbSystem {
     V4_0_1("jacobalberty/firebird:v4.0.1"),
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - Doesn't support schemas
     //  - Doesn't allow qualified table names
     //  - Doesn't allow CREATE DATABASE via JDBC statement

@@ -16,11 +16,12 @@
 
 package migratedb.core.internal.info;
 
-import java.util.Comparator;
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.api.MigrationInfoService;
 import migratedb.core.api.MigrationState;
 import migratedb.core.api.MigrationState.Category;
+
+import java.util.Comparator;
 
 /**
  * The ordering used by {@link MigrationInfoService}. It places

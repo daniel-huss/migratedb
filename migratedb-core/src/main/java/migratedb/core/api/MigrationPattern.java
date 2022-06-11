@@ -16,9 +16,10 @@
  */
 package migratedb.core.api;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Arrays;
 import java.util.Objects;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class MigrationPattern {
     private final String migrationName;

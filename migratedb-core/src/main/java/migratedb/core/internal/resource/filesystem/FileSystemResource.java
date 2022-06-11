@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.resource.filesystem;
 
+import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.resource.Resource;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.resource.Resource;
 
 public class FileSystemResource implements Resource {
     private final Path file;

@@ -36,7 +36,7 @@ enum class MySql(image: String) : DbSystem {
     V5_7("mysql:5.7"),
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - Doesn't use single quotes for string literals
     //  - Calls schemas "databases"
     //  - Doesn't normalize unquoted schema/database names

@@ -16,9 +16,7 @@
 
 package migratedb.integrationtest.info
 
-import migratedb.core.api.MigrationState.BASELINE
-import migratedb.core.api.MigrationState.MISSING_SUCCESS
-import migratedb.core.api.MigrationState.PENDING
+import migratedb.core.api.MigrationState.*
 import migratedb.core.api.MigrationType
 import org.junit.jupiter.api.Test
 

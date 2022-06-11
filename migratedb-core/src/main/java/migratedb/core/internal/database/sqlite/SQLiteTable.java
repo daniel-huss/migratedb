@@ -16,10 +16,11 @@
  */
 package migratedb.core.internal.database.sqlite;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseTable;
+
+import java.sql.SQLException;
 
 /**
  * SQLite-specific table.

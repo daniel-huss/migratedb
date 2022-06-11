@@ -16,11 +16,12 @@
  */
 package migratedb.core.internal.resource.classpath;
 
+import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.resource.Resource;
+
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.resource.Resource;
 
 public class ClassPathResource implements Resource {
     private final ClassLoader classLoader;

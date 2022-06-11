@@ -33,6 +33,7 @@ gradlePlugin {
 pluginBundle {
     website = 'https://unentscheidbar.de/gitea/hussdl/migratedb'
     vcsUrl = 'https://unentscheidbar.de/gitea/hussdl/migratedb'
+    tags = ['database', 'migrations', 'build', 'scanner']
 }
 
 publishing {

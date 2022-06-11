@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database.postgresql;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.Type;
+
+import java.sql.SQLException;
 
 /**
  * PostgreSQL-specific type.

@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.info;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import migratedb.core.api.MigrationInfo;
 import migratedb.core.internal.util.AsciiTable;
 import migratedb.core.internal.util.DateTimeUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Dumps migrations in an ascii-art table in the logs and the console.

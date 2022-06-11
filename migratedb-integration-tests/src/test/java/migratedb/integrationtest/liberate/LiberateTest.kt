@@ -155,7 +155,6 @@ class LiberateTest : IntegrationTest() {
         Postgres.V14,
         H2.V2_1_210,
         Informix.V14_10,
-        Firebird.V4_0_1,
     )
 
     //

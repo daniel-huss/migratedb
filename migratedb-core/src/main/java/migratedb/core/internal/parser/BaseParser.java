@@ -16,15 +16,6 @@
  */
 package migratedb.core.internal.parser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.regex.Pattern;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.parser.Parser;
@@ -41,6 +32,12 @@ import migratedb.core.internal.sqlscript.ParsedSqlStatement;
 import migratedb.core.internal.util.BomStrippingReader;
 import migratedb.core.internal.util.IOUtils;
 import migratedb.core.internal.util.WebsiteLinks;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * The main parser all database-specific parsers derive from.

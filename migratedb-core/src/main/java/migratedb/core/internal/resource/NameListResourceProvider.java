@@ -16,12 +16,13 @@
 
 package migratedb.core.internal.resource;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Collectors;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.util.StringUtils;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public abstract class NameListResourceProvider implements ResourceProvider {
     private final String[] names;

@@ -17,18 +17,14 @@
 
 package migratedb.core.api.logging;
 
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Set;
-import migratedb.core.internal.logging.AndroidLogSystem;
-import migratedb.core.internal.logging.ApacheCommonsLogSystem;
-import migratedb.core.internal.logging.JavaUtilLogSystem;
-import migratedb.core.internal.logging.MultiLogSystem;
-import migratedb.core.internal.logging.NoLogSystem;
-import migratedb.core.internal.logging.Slf4jLogSystem;
+import migratedb.core.internal.logging.*;
 import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.FeatureDetector;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * Pre-defined log system names and auto-detection.

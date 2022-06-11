@@ -38,7 +38,7 @@ enum class Oracle(image: String) : DbSystem {
     V21_3_0("gvenzl/oracle-xe:21.3.0-slim"),
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - Treats the empty string as NULL
     //  - Schemas and users are kinda the same thing
     //  - Passwords must be valid table/column identifiers

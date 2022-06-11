@@ -62,8 +62,7 @@ public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
         if (database.supportsSchemas()) {
             String sp = jdbcTemplate.queryForString("SHOW search_path");
             // Up to Cockroach 20, the default response is "public". In 21, that became "$user,public", but this is
-            // illegal in the corresponding SET query. Normally this simply results in an exception which we skip over,
-            // but in dry runs the produced script will be invalid and error when you run it.
+            // illegal in the corresponding SET query.
             if (sp.contains("$user")) {
                 LOG.debug("Search path contains $user; removing...");
                 ArrayList<String> paths = new ArrayList<>(Arrays.asList(sp.split(",")));

@@ -24,13 +24,9 @@ import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.Opcodes
 import java.io.FilterInputStream
 import java.io.InputStream
-import java.nio.file.FileVisitOption
-import java.nio.file.FileVisitResult
+import java.nio.file.*
 import java.nio.file.FileVisitResult.CONTINUE
 import java.nio.file.FileVisitResult.SKIP_SUBTREE
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.*
 import java.util.zip.ZipInputStream

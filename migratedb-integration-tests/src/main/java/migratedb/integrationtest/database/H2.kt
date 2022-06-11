@@ -36,7 +36,7 @@ enum class H2 : DbSystem {
     V1_4_200,
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - None
 
     companion object {

@@ -41,7 +41,7 @@ enum class Postgres(image: String) : DbSystem {
     V14("postgres:14-alpine"),
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - Normalizes identifiers to lower case instead of upper case
 
     private val containerAlias = "postgres_${name.lowercase()}"

@@ -16,9 +16,6 @@
  */
 package migratedb.core.internal.resource;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
@@ -26,6 +23,10 @@ import migratedb.core.api.internal.resource.ResourceName;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class ResourceNameValidator {
     private static final Log LOG = Log.getLog(ResourceNameValidator.class);

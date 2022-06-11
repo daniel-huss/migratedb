@@ -16,14 +16,15 @@
  */
 package migratedb.core.internal.resolver;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
 import migratedb.core.api.Checksum;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.resource.Resource;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 
 public enum ChecksumCalculator {
     ;

@@ -25,15 +25,8 @@ import io.kotest.matchers.shouldBe
 import migratedb.core.api.Location.ClassPathLocation
 import migratedb.scanner.testing.Dsl
 import migratedb.scanner.testing.FsConfigurations
-import migratedb.scanner.testing.Kind.ANNOTATION
-import migratedb.scanner.testing.Kind.ENUM
-import migratedb.scanner.testing.Kind.INTERFACE
-import migratedb.scanner.testing.Kind.PLAIN_CLASS
-import migratedb.scanner.testing.Mod.ABSTRACT
-import migratedb.scanner.testing.Mod.FINAL
-import migratedb.scanner.testing.Mod.PRIVATE
-import migratedb.scanner.testing.Mod.PROTECTED
-import migratedb.scanner.testing.Mod.PUBLIC
+import migratedb.scanner.testing.Kind.*
+import migratedb.scanner.testing.Mod.*
 import migratedb.testing.util.io.resolve
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource

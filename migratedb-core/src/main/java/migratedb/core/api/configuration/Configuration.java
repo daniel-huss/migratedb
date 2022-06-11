@@ -25,11 +25,9 @@ import migratedb.core.api.resolver.MigrationResolver;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import javax.sql.DataSource;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public interface Configuration {
     /**
@@ -528,39 +526,6 @@ public interface Configuration {
      * @return The ErrorOverrides or an empty array if none are defined. (default: none)
      */
     String[] getErrorOverrides();
-
-    /**
-     * <p>Note: This feature is currently not implemented.</p>
-     *
-     * The stream supplier where to output the SQL statements of a migration dry run. {@code null} if the SQL statements
-     * are executed against the database directly.
-     *
-     * @return The stream or {@code null} if the SQL statements are executed against the database directly.
-     */
-    Supplier<OutputStream> getDryRunOutput();
-
-    /**
-     * <p>Note: This feature is currently not implemented.</p>
-     *
-     * Whether to batch SQL statements when executing them. Batching can save up to 99 percent of network roundtrips by
-     * sending up to 100 statements at once over the network to the database, instead of sending each statement
-     * individually. This is particularly useful for very large SQL migrations composed of multiple MB or even GB of
-     * reference data, as this can dramatically reduce the network overhead. This is supported for INSERT, UPDATE,
-     * DELETE, MERGE and UPSERT statements. All other statements are automatically executed without batching.
-     *
-     * @return {@code true} to batch SQL statements. {@code false} to execute them individually instead. (default:
-     * {@code false})
-     */
-    boolean isBatch();
-
-    /**
-     * Merely exists for API compatibility. If a value was set, returns that same value.
-     *
-     * @deprecated No longer needed.
-     */
-    @Deprecated
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    String getLicenseKey();
 
     /**
      * Whether MigrateDB should output a table with the results of queries when executing migrations.

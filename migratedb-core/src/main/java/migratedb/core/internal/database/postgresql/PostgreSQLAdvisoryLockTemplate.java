@@ -16,15 +16,16 @@
  */
 package migratedb.core.internal.database.postgresql;
 
-import java.sql.SQLException;
-import java.util.List;
-import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
 import migratedb.core.internal.strategy.RetryStrategy;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Spring-like template for executing with PostgreSQL advisory locks.

@@ -97,11 +97,10 @@ public class OracleDatabaseType extends BaseDatabaseType {
     public SqlScriptExecutorFactory createSqlScriptExecutorFactory(JdbcConnectionFactory jdbcConnectionFactory,
                                                                    CallbackExecutor callbackExecutor) {
         DatabaseType thisRef = this;
-        return (connection, batch, outputQueryResults) ->
+        return (connection,  outputQueryResults) ->
                 new OracleSqlScriptExecutor(
                         new JdbcTemplate(connection, thisRef),
                         callbackExecutor,
-                        batch,
                         outputQueryResults);
     }
 

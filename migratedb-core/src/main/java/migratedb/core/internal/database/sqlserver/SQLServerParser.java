@@ -16,18 +16,15 @@
  */
 package migratedb.core.internal.database.sqlserver;
 
+import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.api.internal.sqlscript.Delimiter;
+import migratedb.core.internal.parser.*;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
-import migratedb.core.api.configuration.Configuration;
-import migratedb.core.api.internal.parser.ParsingContext;
-import migratedb.core.api.internal.sqlscript.Delimiter;
-import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.parser.ParserContext;
-import migratedb.core.internal.parser.PeekingReader;
-import migratedb.core.internal.parser.Token;
-import migratedb.core.internal.parser.TokenType;
 
 public class SQLServerParser extends BaseParser {
     // #2175, 2298, 2542: Various system sprocs, mostly around replication, cannot be executed within a transaction.

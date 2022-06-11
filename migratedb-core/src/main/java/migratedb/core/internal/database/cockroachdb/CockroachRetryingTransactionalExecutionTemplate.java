@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.database.cockroachdb;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.jdbc.TransactionalExecutionTemplate;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.concurrent.Callable;
 
 /**
  * Spring-like template for executing transactions. Cockroach always operates with transaction isolation level

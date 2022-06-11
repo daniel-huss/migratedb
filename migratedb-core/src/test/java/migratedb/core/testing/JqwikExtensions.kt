@@ -17,9 +17,7 @@
 package migratedb.core.testing
 
 import migratedb.core.api.Location
-import migratedb.core.api.Location.ClassPathLocation
-import migratedb.core.api.Location.CustomLocation
-import migratedb.core.api.Location.FileSystemLocation
+import migratedb.core.api.Location.*
 import migratedb.core.api.MigrationPattern
 import migratedb.core.api.TargetVersion
 import migratedb.core.api.Version

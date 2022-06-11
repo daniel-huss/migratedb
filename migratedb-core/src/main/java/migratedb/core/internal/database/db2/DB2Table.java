@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database.db2;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.core.internal.database.base.BaseTable;
+
+import java.sql.SQLException;
 
 /**
  * Db2-specific table.

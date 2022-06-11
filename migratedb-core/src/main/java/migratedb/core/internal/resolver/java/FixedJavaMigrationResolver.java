@@ -16,15 +16,16 @@
  */
 package migratedb.core.internal.resolver.java;
 
-import static migratedb.core.internal.resolver.java.JavaMigrationResolver.newResolvedJavaMigration;
-
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.resolver.ResolvedMigrationComparator;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static migratedb.core.internal.resolver.java.JavaMigrationResolver.newResolvedJavaMigration;
 
 /**
  * Migration resolver for a fixed set of pre-instantiated Java-based migrations.

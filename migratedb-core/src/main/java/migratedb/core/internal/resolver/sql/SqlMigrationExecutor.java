@@ -16,13 +16,14 @@
  */
 package migratedb.core.internal.resolver.sql;
 
-import java.sql.SQLException;
 import migratedb.core.api.executor.Context;
 import migratedb.core.api.executor.MigrationExecutor;
 import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.internal.sqlscript.SqlScript;
 import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+
+import java.sql.SQLException;
 
 /**
  * Database migration based on a sql file.
@@ -36,20 +37,13 @@ public class SqlMigrationExecutor implements MigrationExecutor {
     private final SqlScript sqlScript;
 
     /**
-     * Whether to batch SQL statements.
-     */
-    private final boolean batch;
-
-    /**
      * Creates a new sql script migration based on this sql script.
      *
      * @param sqlScript The SQL script that will be executed.
      */
-    SqlMigrationExecutor(SqlScriptExecutorFactory sqlScriptExecutorFactory, SqlScript sqlScript,
-                         boolean batch) {
+    SqlMigrationExecutor(SqlScriptExecutorFactory sqlScriptExecutorFactory, SqlScript sqlScript) {
         this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
         this.sqlScript = sqlScript;
-        this.batch = batch;
     }
 
     @Override
@@ -68,7 +62,7 @@ public class SqlMigrationExecutor implements MigrationExecutor {
     private void executeOnce(Context context) {
         boolean outputQueryResults = false;
 
-        sqlScriptExecutorFactory.createSqlScriptExecutor(context.getConnection(), batch, outputQueryResults)
+        sqlScriptExecutorFactory.createSqlScriptExecutor(context.getConnection(), outputQueryResults)
                                 .execute(sqlScript);
     }
 

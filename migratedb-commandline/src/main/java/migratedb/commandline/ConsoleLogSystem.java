@@ -16,8 +16,9 @@
  */
 package migratedb.commandline;
 
-import java.io.PrintStream;
 import migratedb.core.api.logging.LogSystem;
+
+import java.io.PrintStream;
 
 public class ConsoleLogSystem implements LogSystem {
     private final Arguments commandLineArguments;

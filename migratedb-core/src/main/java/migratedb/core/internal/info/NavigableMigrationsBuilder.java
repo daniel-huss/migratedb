@@ -16,23 +16,6 @@
 
 package migratedb.core.internal.info;
 
-import static java.util.Comparator.comparing;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.Version;
@@ -40,6 +23,14 @@ import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.info.NavigableMigrations.RepeatableMigrationEntry;
 import migratedb.core.internal.info.NavigableMigrations.VersionedMigrationEntry;
+
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import static java.util.Comparator.comparing;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.*;
 
 class NavigableMigrationsBuilder {
     private final List<ResolvedMigration> allResolvedMigrations;

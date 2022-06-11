@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.strategy;
 
-import java.sql.SQLException;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.util.SqlCallable;
+
+import java.sql.SQLException;
 
 /**
  * A class that retries a Callable a given number of times until success is obtained.

@@ -50,7 +50,7 @@ enum class Derby : DbSystem {
     V10_12_1_1
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - Does not normalize database names because it's just a file name
 
     companion object {

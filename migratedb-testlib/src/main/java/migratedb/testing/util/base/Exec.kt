@@ -26,7 +26,7 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.full.isSubclassOf
 
 object Exec {
-    private val threadFactory = object : ThreadFactory {
+    val threadFactory = object : ThreadFactory {
         private val delegate = Executors.defaultThreadFactory()
         override fun newThread(r: Runnable) = delegate.newThread(r).also {
             it.isDaemon = true

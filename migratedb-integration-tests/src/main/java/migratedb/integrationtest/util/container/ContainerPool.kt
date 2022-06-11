@@ -15,10 +15,19 @@
  */
 package migratedb.integrationtest.util.container
 
+import migratedb.testing.util.base.Exec
 import migratedb.testing.util.base.Exec.async
 import migratedb.testing.util.base.Exec.tryAll
+import java.time.Duration
+import java.time.Instant
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.locks.ReentrantLock
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.read
 import kotlin.concurrent.withLock
+import kotlin.concurrent.write
 
 /**
  * Pools containers for shared use, so the same container can be used by multiple threads, but only up to [size] containers
@@ -51,25 +60,36 @@ class ContainerPool(private val size: Int) : AutoCloseable {
         private var leases: Int = 0
         private val futureContainer = async<AutoCloseable>(waitOnClose = true, containerInitializer)
         private var closed: Boolean = false
+        private var idleStart: Instant? = null
 
         @Suppress("UNCHECKED_CAST")
         val container
             get() = futureContainer.get() as T
 
-        fun lease(): LeaseImpl<T> = leaseCountLock.withLock {
+        val idleSince: Duration?
+            get() = slotLock.read {
+                when (leases) {
+                    0 -> idleStart?.let { Duration.between(it, Instant.now()) }
+                    else -> null
+                }
+            }
+
+        fun lease(): LeaseImpl<T> = slotLock.write {
             check(!closed)
+            idleStart = Instant.now()
             leases++
             LeaseImpl(this)
         }
 
-        fun leases() = leaseCountLock.withLock { leases }
-
-        fun unlease() = leaseCountLock.withLock {
+        fun unlease() = slotLock.write {
+            idleStart = Instant.now()
             leases = (leases - 1).coerceAtLeast(0)
-            if (leases == 0) maybeOneUnusedSlot.signalAll()
+            if (leases == 0) {
+                mayHaveFreeSlots.signalAll()
+            }
         }
 
-        override fun close() = leaseCountLock.withLock {
+        override fun close() = slotLock.write {
             if (!closed) {
                 futureContainer.close()
                 closed = true
@@ -77,50 +97,94 @@ class ContainerPool(private val size: Int) : AutoCloseable {
         }
     }
 
-    private var closed = false
-    private val leaseCountLock = ReentrantLock()
-    private val slotsByName = HashMap<String, Slot<*>>()
-    private val maybeOneUnusedSlot = leaseCountLock.newCondition()
+    private inner class Reaper : AutoCloseable {
+        private val lock = ReentrantLock()
+        private val timeToWakeUp = lock.newCondition()
+        private val executor = Executors.newSingleThreadExecutor(Exec.threadFactory).also {
+            it.submit(this::reaperCycle)
+        }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T : AutoCloseable> lease(name: String, containerInitializer: () -> T): Lease<T> {
-        leaseCountLock.withLock {
-            check(!closed)
-            slotsByName[name]?.let { return it.lease() as Lease<T> }
-            while (slotsByName.size >= size) {
-                if (!removeOneSlotWithoutLeases()) {
-                    maybeOneUnusedSlot.await()
+        private fun reaperCycle() {
+            while (!Thread.currentThread().isInterrupted) {
+                lock.withLock {
+                    timeToWakeUp.await(2, TimeUnit.SECONDS)
                 }
-                check(!closed) // re-check needed after waiting for condition
-                slotsByName[name]?.let { return it.lease() as Lease<T> }
+                reapIdleSlots()
             }
-            val newSlot = Slot(containerInitializer)
-            slotsByName[name] = newSlot
-            return newSlot.lease()
+        }
+
+        private fun reapIdleSlots() {
+            slotLock.write {
+                if (slotsByName.size < size) return
+                val slotsToKill = slotsByName.asSequence()
+                    .mapNotNull { (name, slot) -> slot.idleSince?.let { it to name } }
+                    .filter { (idleTime, _) -> idleTime > Duration.ofSeconds(1) }
+                    .sortedByDescending { (idleTime, _) -> idleTime }
+                    .take(requestedSlots.get().coerceAtLeast(1))
+                    .map { (_, name) -> name }
+                    .toList()
+
+                slotsToKill.forEach {
+                    slotsByName.remove(it)?.close()
+                    mayHaveFreeSlots.signal()
+                }
+            }
+        }
+
+        fun wakeUp() {
+            lock.withLock {
+                timeToWakeUp.signalAll()
+            }
+        }
+
+        override fun close() {
+            executor.shutdownNow()
         }
     }
 
-    private fun removeOneSlotWithoutLeases(): Boolean {
-        var oneWasRemoved = false
-        val iter = slotsByName.iterator()
-        while (iter.hasNext() && !oneWasRemoved) {
-            val candidate = iter.next().value
-            if (candidate.leases() == 0) {
-                candidate.close()
-                iter.remove()
-                oneWasRemoved = true
+    private var closed = false
+    private val requestedSlots = AtomicInteger(0)
+    private val slotLock = ReentrantReadWriteLock()
+    private val slotsByName = LinkedHashMap<String, Slot<*>>()
+    private val mayHaveFreeSlots = slotLock.writeLock().newCondition()
+    private val reaper = Reaper()
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : AutoCloseable> lease(name: String, containerInitializer: () -> T): Lease<T> {
+        requestedSlots.incrementAndGet()
+        try {
+            while (true) {
+                slotLock.read {
+                    check(!closed)
+                    slotsByName[name]?.let { return it.lease() as Lease<T> }
+                    reaper.wakeUp()
+                    slotLock.write {
+                        check(!closed) // re-check needed after upgrading lock
+                        slotsByName[name]?.let { return it.lease() as Lease<T> }
+                        if (slotsByName.size < size) {
+                            val newSlot = Slot(containerInitializer)
+                            slotsByName[name] = newSlot
+                            return newSlot.lease()
+                        } else {
+                            mayHaveFreeSlots.await()
+                        }
+                    }
+                }
             }
+        } finally {
+            requestedSlots.decrementAndGet()
         }
-        return oneWasRemoved
     }
 
 
     override fun close() {
-        leaseCountLock.withLock {
+        slotLock.write {
             if (closed) return
             closed = true
-            tryAll(slotsByName.values.map { { it.close() } })
-            maybeOneUnusedSlot.signalAll()
+            reaper.use {
+                tryAll(slotsByName.values.map { { it.close() } })
+                mayHaveFreeSlots.signalAll()
+            }
         }
     }
 }

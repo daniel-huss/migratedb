@@ -16,10 +16,6 @@
  */
 package migratedb.core.internal.resolver.sql;
 
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.Checksum;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.ResourceProvider;
@@ -41,6 +37,11 @@ import migratedb.core.internal.resolver.ResolvedMigrationComparator;
 import migratedb.core.internal.resolver.ResolvedMigrationImpl;
 import migratedb.core.internal.resource.ResourceNameParser;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Migration resolver for SQL file resources.
@@ -150,7 +151,7 @@ public class SqlMigrationResolver implements MigrationResolver {
                 equivalentChecksum,
                 isBaseline ? MigrationType.SQL_BASELINE : MigrationType.SQL,
                 resource.describeLocation(),
-                new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript, configuration.isBatch())) {
+                new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript)) {
             });
         }
     }

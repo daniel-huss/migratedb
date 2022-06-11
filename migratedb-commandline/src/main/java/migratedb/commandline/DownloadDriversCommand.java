@@ -16,6 +16,15 @@
 
 package migratedb.commandline;
 
+import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.logging.Log;
+import migratedb.core.api.output.OperationResult;
+import migratedb.core.internal.info.BuildInfo;
+import migratedb.core.internal.util.StringUtils;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.text.StringSubstitutor;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,22 +39,8 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.logging.Log;
-import migratedb.core.api.output.OperationResult;
-import migratedb.core.internal.info.BuildInfo;
-import migratedb.core.internal.util.StringUtils;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.text.StringSubstitutor;
 
 public class DownloadDriversCommand {
     private final DriverDefinitions driverDefinitions;

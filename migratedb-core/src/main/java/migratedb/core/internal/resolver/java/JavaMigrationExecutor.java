@@ -16,8 +16,6 @@
  */
 package migratedb.core.internal.resolver.java;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.executor.Context;
@@ -25,6 +23,9 @@ import migratedb.core.api.executor.MigrationExecutor;
 import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.migration.JavaMigration;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Adapter for executing migrations implementing JavaMigration.

@@ -16,11 +16,12 @@
  */
 package migratedb.core.api.output;
 
-import java.util.LinkedList;
-import java.util.List;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.checkerframework.framework.qual.TypeUseLocation;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @DefaultQualifier(value = Nullable.class, locations = { TypeUseLocation.FIELD, TypeUseLocation.PARAMETER })
 public abstract class OperationResult {

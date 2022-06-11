@@ -16,16 +16,17 @@
 
 package migratedb.core.internal.util;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
-
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
 import migratedb.core.api.ClassProvider;
 import migratedb.core.api.Location;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.resource.Resource;
+
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 /**
  * (Almost) drop-in replacement for class path scanning stuff.

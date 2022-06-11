@@ -16,6 +16,9 @@
  */
 package migratedb.commandline;
 
+import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.logging.LogSystem;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -24,8 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.logging.LogSystem;
 
 public class FileLogSystem implements LogSystem {
     private final LogLevel level;

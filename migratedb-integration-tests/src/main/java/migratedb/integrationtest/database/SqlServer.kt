@@ -36,7 +36,7 @@ enum class SqlServer(image: String) : DbSystem {
     V2019_CU15("mcr.microsoft.com/mssql/server:2019-CU15-ubuntu-20.04"),
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - Makes it really hard to change the "current" schema, so we just use databases for namespacing
 
     private val containerAlias = "sql_server_${name.lowercase()}"

@@ -175,10 +175,9 @@ public abstract class BaseDatabaseType implements DatabaseType {
     public SqlScriptExecutorFactory createSqlScriptExecutorFactory(JdbcConnectionFactory jdbcConnectionFactory,
                                                                    CallbackExecutor callbackExecutor) {
         DatabaseType thisRef = this;
-        return (connection, batch, outputQueryResults) ->
+        return (connection, outputQueryResults) ->
                 new DefaultSqlScriptExecutor(new JdbcTemplate(connection, thisRef),
                         callbackExecutor,
-                        batch,
                         outputQueryResults);
     }
 

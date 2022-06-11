@@ -16,12 +16,13 @@
  */
 package migratedb.commandline;
 
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.logging.Log;
 import migratedb.core.api.logging.LogSystem;
 import migratedb.core.internal.logging.MultiLogSystem;
 import migratedb.core.internal.logging.NoLogSystem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {

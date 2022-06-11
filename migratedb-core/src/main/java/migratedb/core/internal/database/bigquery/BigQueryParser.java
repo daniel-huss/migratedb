@@ -16,18 +16,15 @@
  */
 package migratedb.core.internal.database.bigquery;
 
+import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
+import migratedb.core.internal.parser.*;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import migratedb.core.api.configuration.Configuration;
-import migratedb.core.api.internal.parser.ParsingContext;
-import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.parser.ParserContext;
-import migratedb.core.internal.parser.PeekingReader;
-import migratedb.core.internal.parser.Token;
-import migratedb.core.internal.parser.TokenType;
 
 public class BigQueryParser extends BaseParser {
     private static final String ALTERNATIVE_SINGLE_LINE_COMMENT = "#";

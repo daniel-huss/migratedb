@@ -16,15 +16,16 @@
  */
 package migratedb.core.internal.parser;
 
+import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.parser.ParsingContext;
+
 import java.io.FilterReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.configuration.Configuration;
-import migratedb.core.api.internal.parser.ParsingContext;
 
 public class PlaceholderReplacingReader extends FilterReader {
     private final String prefix;

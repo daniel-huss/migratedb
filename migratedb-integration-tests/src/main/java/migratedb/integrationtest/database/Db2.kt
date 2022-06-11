@@ -38,7 +38,7 @@ enum class Db2(image: String) : DbSystem {
     V11_5_7_0("ibmcom/db2:11.5.7.0"),
     ;
 
-    // Relevant idiosyncracies:
+    // Relevant idiosyncrasies:
     //  - When a table/column is created as "quoted_lower_case" it cannot be referenced using an unquoted identifier
 
     private val containerAlias = "db2_${name.lowercase()}"

@@ -16,10 +16,11 @@
  */
 package migratedb.core.internal.database.cockroachdb;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.api.internal.util.SqlCallable;
 import migratedb.core.api.logging.Log;
+
+import java.sql.SQLException;
 
 /**
  * CockroachDB recommend the use of retries should we see a SQL error code 40001, which represents a lock wait timeout.

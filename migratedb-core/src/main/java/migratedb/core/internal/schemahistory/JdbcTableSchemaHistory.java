@@ -94,6 +94,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
         return table.exists();
     }
 
+    @SuppressWarnings("BusyWait")
     @Override
     public void create(boolean baseline) {
         connection.lock(table, () -> {
@@ -101,17 +102,16 @@ class JdbcTableSchemaHistory extends SchemaHistory {
             while (!exists()) {
                 if (retries == 0) {
                     LOG.info(
-                        "Creating Schema History table " + table + (baseline ? " with baseline" : "") + " ...");
+                            "Creating Schema History table " + table + (baseline ? " with baseline" : "") + " ...");
                 }
                 try {
                     createExecutionTemplate(connection.getJdbcConnection(),
-                                            database).execute(() -> {
+                            database).execute(() -> {
                         sqlScriptExecutorFactory.createSqlScriptExecutor(connection.getJdbcConnection(),
-                                                                         false,
-                                                                         true)
-                                                .execute(database.getCreateScript(sqlScriptFactory,
-                                                                                  table,
-                                                                                  baseline));
+                                        false)
+                                .execute(database.getCreateScript(sqlScriptFactory,
+                                        table,
+                                        baseline));
                         LOG.debug("Created Schema History table " + table + (baseline ? " with baseline" : ""));
                         return null;
                     });
@@ -123,8 +123,8 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                         LOG.debug("Schema History table creation failed. Retrying in 1 sec ...");
                         Thread.sleep(1000);
                     } catch (InterruptedException e1) {
-                        // Ignore
                         Thread.currentThread().interrupt();
+                        throw new MigrateDbException("Interrupted");
                     }
                 }
             }
@@ -170,20 +170,20 @@ class JdbcTableSchemaHistory extends SchemaHistory {
             Object checksumObj = checksum == null ? JdbcNullTypes.StringNull : checksum.toString();
 
             jdbcTemplate.update(database.getInsertStatement(table),
-                                installedRank,
-                                versionObj,
-                                description,
-                                type.name(),
-                                script,
-                                checksumObj,
-                                database.getInstalledBy(),
-                                executionTime,
-                                success);
+                    installedRank,
+                    versionObj,
+                    description,
+                    type.name(),
+                    script,
+                    checksumObj,
+                    database.getInstalledBy(),
+                    executionTime,
+                    success);
 
             LOG.debug("Schema History table " + table + " successfully updated to reflect changes");
         } catch (SQLException e) {
             throw new MigrateDbSqlException(
-                "Unable to insert row for version '" + version + "' in Schema History table " + table, e);
+                    "Unable to insert row for version '" + version + "' in Schema History table " + table, e);
         } finally {
             if (tableIsLocked) {
                 table.unlock();
@@ -239,9 +239,9 @@ class JdbcTableSchemaHistory extends SchemaHistory {
             }, maxCachedInstalledRank));
         } catch (SQLException e) {
             throw new MigrateDbSqlException(
-                "Error while retrieving the list of applied migrations from Schema History table "
-                + table,
-                e);
+                    "Error while retrieving the list of applied migrations from Schema History table "
+                            + table,
+                    e);
         }
     }
 
@@ -261,7 +261,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
     public boolean removeFailedMigrations(RepairResult repairResult, MigrationPattern[] migrationPatternFilter) {
         if (!exists()) {
             LOG.info("Repair of failed migration in Schema History table " + table +
-                     " not necessary as table doesn't exist.");
+                    " not necessary as table doesn't exist.");
             return false;
         }
 
@@ -270,25 +270,25 @@ class JdbcTableSchemaHistory extends SchemaHistory {
         boolean failed = appliedMigrations.stream().anyMatch(am -> !am.isSuccess());
         if (!failed) {
             LOG.info("Repair of failed migration in Schema History table " + table +
-                     " not necessary. No failed migration detected.");
+                    " not necessary. No failed migration detected.");
             return false;
         }
 
         try {
             appliedMigrations.stream()
-                             .filter(am -> !am.isSuccess())
-                             .forEach(am -> repairResult.migrationsRemoved.add(CommandResultFactory.createRepairOutput(
-                                 am)));
+                    .filter(am -> !am.isSuccess())
+                    .forEach(am -> repairResult.migrationsRemoved.add(CommandResultFactory.createRepairOutput(
+                            am)));
 
             for (AppliedMigration appliedMigration : appliedMigrations) {
                 jdbcTemplate.execute("DELETE FROM " + table +
-                                     " WHERE " + database.quote("success") + " = " + database.getBooleanFalse() +
-                                     " AND " +
-                                     (appliedMigration.getVersion() != null ?
-                                      database.quote("version") + " = '" + appliedMigration.getVersion() +
-                                      "'" :
-                                      database.quote("description") + " = '" + appliedMigration.getDescription() +
-                                      "'"));
+                        " WHERE " + database.quote("success") + " = " + database.getBooleanFalse() +
+                        " AND " +
+                        (appliedMigration.getVersion() != null ?
+                                database.quote("version") + " = '" + appliedMigration.getVersion() +
+                                        "'" :
+                                database.quote("description") + " = '" + appliedMigration.getDescription() +
+                                        "'"));
             }
 
             clearCache();
@@ -329,11 +329,11 @@ class JdbcTableSchemaHistory extends SchemaHistory {
         String description = resolvedMigration.getDescription();
         Checksum checksum = resolvedMigration.getChecksum();
         MigrationType type = appliedMigration.getType().isExclusiveToAppliedMigrations()
-                             ? appliedMigration.getType()
-                             : resolvedMigration.getType();
+                ? appliedMigration.getType()
+                : resolvedMigration.getType();
 
         LOG.info("Repairing Schema History table for version " + version
-                 + " (Description: " + description + ", Type: " + type + ", Checksum: " + checksum + ")  ...");
+                + " (Description: " + description + ", Type: " + type + ", Checksum: " + checksum + ")  ...");
 
         if (!database.supportsEmptyMigrationDescription() && "".equals(description)) {
             description = NO_DESCRIPTION_MARKER;
@@ -343,15 +343,15 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         try {
             jdbcTemplate.update("UPDATE " + table
-                                + " SET "
-                                + database.quote("description") + "=? , "
-                                + database.quote("type") + "=? , "
-                                + database.quote("checksum") + "=?"
-                                + " WHERE " + database.quote("installed_rank") + "=?",
-                                description, type.name(), checksumObj, appliedMigration.getInstalledRank());
+                            + " SET "
+                            + database.quote("description") + "=? , "
+                            + database.quote("type") + "=? , "
+                            + database.quote("checksum") + "=?"
+                            + " WHERE " + database.quote("installed_rank") + "=?",
+                    description, type.name(), checksumObj, appliedMigration.getInstalledRank());
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to repair Schema History table " + table
-                                            + " for version " + version, e);
+                    + " for version " + version, e);
         }
     }
 
@@ -365,7 +365,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         if (version == null) {
             LOG.info("Repairing Schema History table for description \"" + appliedMigration.getDescription() +
-                     "\" (Marking as DELETED)  ...");
+                    "\" (Marking as DELETED)  ...");
         } else {
             LOG.info("Repairing Schema History table for version \"" + version + "\" (Marking as DELETED)  ...");
         }
@@ -375,10 +375,10 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                             + " SET "
                             + database.quote("type") + "=?  "
                             + " WHERE " + database.quote("installed_rank") + "=?",
-                                "DELETED", appliedMigration.getInstalledRank());
+                    "DELETED", appliedMigration.getInstalledRank());
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to repair Schema History table " + table
-                                            + " for version " + version, e);
+                    + " for version " + version, e);
         }
     }
 }

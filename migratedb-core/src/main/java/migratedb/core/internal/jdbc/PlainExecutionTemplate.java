@@ -16,12 +16,13 @@
  */
 package migratedb.core.internal.jdbc;
 
-import java.sql.SQLException;
-import java.util.concurrent.Callable;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.internal.jdbc.ExecutionTemplate;
 import migratedb.core.api.logging.Log;
 import migratedb.core.internal.exception.MigrateDbSqlException;
+
+import java.sql.SQLException;
+import java.util.concurrent.Callable;
 
 public class PlainExecutionTemplate implements ExecutionTemplate {
     private static final Log LOG = Log.getLog(PlainExecutionTemplate.class);

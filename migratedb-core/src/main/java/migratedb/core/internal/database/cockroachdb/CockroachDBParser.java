@@ -16,15 +16,12 @@
  */
 package migratedb.core.internal.database.cockroachdb;
 
-import java.io.IOException;
-import java.util.List;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.parser.ParsingContext;
-import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.parser.ParserContext;
-import migratedb.core.internal.parser.PeekingReader;
-import migratedb.core.internal.parser.Token;
-import migratedb.core.internal.parser.TokenType;
+import migratedb.core.internal.parser.*;
+
+import java.io.IOException;
+import java.util.List;
 
 public class CockroachDBParser extends BaseParser {
     public CockroachDBParser(Configuration configuration, ParsingContext parsingContext) {

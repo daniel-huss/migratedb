@@ -16,10 +16,11 @@
  */
 package migratedb.core.api.pattern;
 
-import java.util.List;
-import java.util.Locale;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrationState;
+
+import java.util.List;
+import java.util.Locale;
 
 public final class ValidatePattern {
     private final String migrationType;

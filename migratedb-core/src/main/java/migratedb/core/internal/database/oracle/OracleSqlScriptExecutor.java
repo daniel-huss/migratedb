@@ -23,7 +23,7 @@ import migratedb.core.internal.sqlscript.DefaultSqlScriptExecutor;
 public class OracleSqlScriptExecutor extends DefaultSqlScriptExecutor {
 
     public OracleSqlScriptExecutor(JdbcTemplate jdbcTemplate, CallbackExecutor callbackExecutor,
-                                   boolean batch, boolean outputQueryResults) {
-        super(jdbcTemplate, callbackExecutor, batch, outputQueryResults);
+                                   boolean outputQueryResults) {
+        super(jdbcTemplate, callbackExecutor, outputQueryResults);
     }
 }

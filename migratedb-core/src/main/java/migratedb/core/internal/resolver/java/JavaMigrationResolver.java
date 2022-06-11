@@ -16,8 +16,6 @@
  */
 package migratedb.core.internal.resolver.java;
 
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.ClassProvider;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.configuration.Configuration;
@@ -28,6 +26,9 @@ import migratedb.core.api.resolver.ResolvedMigration;
 import migratedb.core.internal.resolver.ResolvedMigrationComparator;
 import migratedb.core.internal.resolver.ResolvedMigrationImpl;
 import migratedb.core.internal.util.ClassUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Migration resolver for Java-based migrations.

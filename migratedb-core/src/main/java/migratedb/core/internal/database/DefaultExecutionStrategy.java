@@ -16,9 +16,10 @@
  */
 package migratedb.core.internal.database;
 
-import java.sql.SQLException;
 import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.api.internal.util.SqlCallable;
+
+import java.sql.SQLException;
 
 /**
  * The default execution strategy for a {@code SQLCallable}, which performs a single execution.

@@ -16,13 +16,14 @@
  */
 package migratedb.core.internal.database.sybasease;
 
-import java.io.IOException;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.api.internal.sqlscript.Delimiter;
 import migratedb.core.internal.parser.BaseParser;
 import migratedb.core.internal.parser.ParserContext;
 import migratedb.core.internal.parser.PeekingReader;
+
+import java.io.IOException;
 
 public class SybaseASEParser extends BaseParser {
     public SybaseASEParser(Configuration configuration, ParsingContext parsingContext) {

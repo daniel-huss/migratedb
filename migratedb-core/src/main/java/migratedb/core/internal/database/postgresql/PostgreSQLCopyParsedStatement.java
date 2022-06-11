@@ -16,6 +16,13 @@
  */
 package migratedb.core.internal.database.postgresql;
 
+import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.internal.jdbc.Result;
+import migratedb.core.api.internal.jdbc.Results;
+import migratedb.core.api.internal.sqlscript.Delimiter;
+import migratedb.core.internal.sqlscript.ParsedSqlStatement;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
@@ -23,12 +30,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import migratedb.core.api.MigrateDbException;
-import migratedb.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.core.api.internal.jdbc.Result;
-import migratedb.core.api.internal.jdbc.Results;
-import migratedb.core.api.internal.sqlscript.Delimiter;
-import migratedb.core.internal.sqlscript.ParsedSqlStatement;
 
 /**
  * A PostgreSQL COPY FROM STDIN statement.
