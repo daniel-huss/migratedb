@@ -144,13 +144,14 @@ object ConfigSetters {
         val files = String.any().ofLength(1..100).map { "target/$it" }
         val booleans = Boolean.any()
         val freshConfigs = Arbitraries.ofSuppliers(::OracleConfig)
-        return Combinators.combine(freshConfigs, booleans, booleans, files, files)
-            .`as` { config, isA, isB, fileA, fileB ->
-                config.isOracleSqlplus = isA
-                config.isOracleSqlplusWarn = isB
-                config.oracleKerberosCacheFile = fileA
-                config.oracleKerberosConfigFile = fileB
-                Params(arrayOf(config::class.java, config))
+        return Combinators.combine(freshConfigs, booleans, booleans, files, files, files)
+            .`as` { oracle, isA, isB, fileA, fileB, fileC ->
+                oracle.isSqlplus = isA
+                oracle.isSqlplusWarn = isB
+                oracle.kerberosCacheFile = fileA
+                oracle.kerberosConfigFile = fileB
+                oracle.walletLocation = fileC
+                Params(arrayOf(oracle::class.java, oracle))
             }
     }
 
