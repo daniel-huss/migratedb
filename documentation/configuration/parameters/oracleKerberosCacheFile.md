@@ -37,6 +37,7 @@ MIGRATEDB_ORACLE_KERBEROS_CACHE_FILE=/temp/krb5cc_123
 
 ```java
 MigrateDB.configure()
+        
     .oracleKerberosCacheFile("/temp/krb5cc_123")
     .load()
 ```

@@ -183,37 +183,6 @@ To use the various authentication types, amend your JDBC URL to set the `authent
 [The Microsoft documentation has more details about how these work with JDBC URLs](https://docs.microsoft.com/en-us/sql/connect/jdbc/connecting-using-azure-active-directory-authentication?view=sql-server-ver15)
 .
 
-#### Azure access tokens
-
-Another way to authenticate using Azure Active Directory is through access tokens. As of the time of writing, the access
-token property on Microsoft's JDBC driver cannot be supplied through the URL. Therefore you should use
-MigrateDB's `jdbcProperties` configuration property.
-
-E.g, in a `migratedb.conf` file:
-
-```
-migratedb.jdbcProperties.accessToken=my-access-token
-```
-
-This is equivalent to
-the [process of setting `accessToken` as described on this Microsoft documentation page](https://docs.microsoft.com/en-us/sql/connect/jdbc/connecting-using-azure-active-directory-authentication?view=sql-server-ver15#connecting-using-access-token)
-.
-
-### Kerberos
-
-Kerberos authentication can also be used to connect MigrateDB to your database.
-
-To set this up, you will need to pass the path to your Kerberos configuration file to the
-parameter [`kerberosConfigFile`](/migratedb/documentation/configuration/parameters/kerberosConfigFile) and the path to your login
-module configuration file to the
-parameter [`plugin.sqlserver.kerberos.login.file`](/migratedb/documentation/configuration/parameters/sqlServerKerberosLoginFile).
-
-You may also need to add `;authenticationScheme=JavaKerberos` to your JDBC URL.
-
-For more information on Kerberos authentication with SQL Server, you can read the official
-documentation [here](https://docs.microsoft.com/en-us/sql/connect/jdbc/using-kerberos-integrated-authentication-to-connect-to-sql-server?view=sql-server-ver15)
-.
-
 ## Connecting to a Named Instance
 
 When connecting to a named instance, the JDBC URL must be of the form:

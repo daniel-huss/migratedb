@@ -31,7 +31,6 @@ someone who has the relevant access, so they do not end up being leaked to any u
 
 - [Windows Authentication](/migratedb/documentation/database/sqlserver#windows-authentication)
 - [Azure Active Directory](/migratedb/documentation/database/sqlserver#azure-active-directory)
-- [Kerberos](/migratedb/documentation/database/sqlserver#kerberos)
 
 ### MySQL
 

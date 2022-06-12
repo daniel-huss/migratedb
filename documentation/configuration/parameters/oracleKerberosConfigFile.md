@@ -8,9 +8,6 @@ redirect_from: /documentation/configuration/oracleKerberosConfigFile/
 
 # Oracle Kerberos Config File
 
-This parameter is deprecated and will be removed in V9. Please
-use [`kerberosConfigFile`](/migratedb/documentation/configuration/parameters/kerberosConfigFile) instead.
-
 ## Description
 
 The location of the `krb5.conf` file for use in Kerberos authentication.
