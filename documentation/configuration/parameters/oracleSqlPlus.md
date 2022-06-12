@@ -5,6 +5,7 @@ pill: oracleSqlPlus
 subtitle: migratedb.oracleSqlPlus
 redirect_from: /documentation/configuration/oracleSqlPlus/
 ---
+{% include not-implemented.html %}
 
 # Oracle SQL*Plus
 
@@ -40,7 +41,8 @@ MIGRATEDB_ORACLE_SQLPLUS=true
 
 ```java
 MigrateDB.configure()
-    .oracleSqlplus(true)
+    .extensionConfig(OracleConfig.class, new OracleConfig()
+            .sqlplus(true))
     .load()
 ```
 

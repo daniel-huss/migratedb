@@ -5,6 +5,7 @@ pill: oracleKerberosConfigFile
 subtitle: migratedb.oracle.kerberosConfigFile
 redirect_from: /documentation/configuration/oracleKerberosConfigFile/
 ---
+{% include not-implemented.html %}
 
 # Oracle Kerberos Config File
 
@@ -36,6 +37,7 @@ MIGRATEDB_ORACLE_KERBEROS_CONFIG_FILE=/etc/krb5.conf
 
 ```java
 MigrateDB.configure()
-    .oracleKerberosConfigFile("/etc/krb5.conf")
+    .extensionConfig(OracleConfig.class, new OracleConfig()
+            .kerberosConfigFile("/etc/krb5.conf"))
     .load()
 ```

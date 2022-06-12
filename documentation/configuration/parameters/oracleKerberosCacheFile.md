@@ -5,6 +5,7 @@ pill: oracleKerberosCacheFile
 subtitle: migratedb.oracle.kerberosCacheFile
 redirect_from: /documentation/configuration/oracleKerberosCacheFile/
 ---
+{% include not-implemented.html %}
 
 # Oracle Kerberos Cache File
 
@@ -37,7 +38,7 @@ MIGRATEDB_ORACLE_KERBEROS_CACHE_FILE=/temp/krb5cc_123
 
 ```java
 MigrateDB.configure()
-        
-    .oracleKerberosCacheFile("/temp/krb5cc_123")
+    .extensionConfig(OracleConfig.class, new OracleConfig()
+            .kerberosCacheFile("/temp/krb5cc_123"))
     .load()
 ```

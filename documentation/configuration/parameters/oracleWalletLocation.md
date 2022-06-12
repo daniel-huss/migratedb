@@ -4,6 +4,7 @@ menu: configuration
 pill: oracleWalletLocation
 subtitle: migratedb.oracleWalletLocation
 ---
+{% include not-implemented.html %}       
 
 # Oracle Wallet Location
 
@@ -39,6 +40,7 @@ MIGRATEDB_ORACLE_WALLET_LOCATION=/User/db/my_wallet
 
 ```java
 MigrateDB.configure()
-    .oracleWalletLocation("/User/db/my_wallet")
+    .extensionConfig(OracleConfig.class, new OracleConfig()
+            .walletLocation("/User/db/my_wallet"))
     .load()
 ```

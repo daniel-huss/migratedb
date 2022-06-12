@@ -5,6 +5,7 @@ pill: oracleSqlPlusWarn
 subtitle: migratedb.oracleSqlPlusWarn
 redirect_from: /documentation/configuration/oracleSqlPlusWarn/
 ---
+{% include not-implemented.html %}
 
 # Oracle SQL*Plus Warn
 
@@ -41,6 +42,7 @@ MIGRATEDB_ORACLE_SQLPLUS_WARN=true
 
 ```java
 MigrateDB.configure()
-    .oracleSqlplusWarn(true)
+    .extensionConfig(OracleConfig.class, new OracleConfig()
+        .sqlplusWarn(true))
     .load()
 ```
