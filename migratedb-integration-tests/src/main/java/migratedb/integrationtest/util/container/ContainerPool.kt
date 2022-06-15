@@ -107,7 +107,7 @@ class ContainerPool(private val size: Int) : AutoCloseable {
         private fun reaperCycle() {
             while (!Thread.currentThread().isInterrupted) {
                 lock.withLock {
-                    timeToWakeUp.await(2, TimeUnit.SECONDS)
+                    timeToWakeUp.await(5, TimeUnit.SECONDS)
                 }
                 reapIdleSlots()
             }
@@ -145,7 +145,7 @@ class ContainerPool(private val size: Int) : AutoCloseable {
     private var closed = false
     private val requestedSlots = AtomicInteger(0)
     private val slotLock = ReentrantReadWriteLock()
-    private val slotsByName = LinkedHashMap<String, Slot<*>>()
+    private val slotsByName = HashMap<String, Slot<*>>()
     private val mayHaveFreeSlots = slotLock.writeLock().newCondition()
     private val reaper = Reaper()
 
@@ -166,7 +166,7 @@ class ContainerPool(private val size: Int) : AutoCloseable {
                             slotsByName[name] = newSlot
                             return newSlot.lease()
                         } else {
-                            mayHaveFreeSlots.await()
+                            mayHaveFreeSlots.await(1, TimeUnit.SECONDS)
                         }
                     }
                 }

@@ -30,6 +30,7 @@ import org.postgresql.ds.PGSimpleDataSource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
 import org.testcontainers.utility.DockerImageName
+import java.util.concurrent.Semaphore
 import javax.sql.DataSource
 
 enum class CockroachDb(image: String) : DbSystem {
@@ -89,13 +90,18 @@ enum class CockroachDb(image: String) : DbSystem {
         }
     }
 
+    // No locking implemented atm, so concurrent execution would lead to serialization errors
+    private val permits = Semaphore(1)
+
     override fun get(sharedResources: SharedResources): DbSystem.Handle {
+        permits.acquire()
         return Handle(sharedResources.container(containerAlias) { Container(image) })
     }
 
-    private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
+    private inner class Handle(private val container: Lease<Container>) : DbSystem.Handle {
         override val type: DatabaseType = CockroachDBDatabaseType()
         private val internalDs = container().dataSource()
+        private var closed = false
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             internalDs.work {
@@ -120,6 +126,14 @@ enum class CockroachDb(image: String) : DbSystem {
 
         override fun normalizeCase(s: CharSequence) = s.toString().lowercase()
 
-        override fun close() = container.close()
+        override fun close() {
+            synchronized(this) {
+                if (closed) return
+                closed = true
+                container.use {
+                    permits.release()
+                }
+            }
+        }
     }
 }
