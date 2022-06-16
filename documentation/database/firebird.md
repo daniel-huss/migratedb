@@ -50,7 +50,7 @@ subtitle: Firebird
  ```sql
 /* Single line comment */
 CREATE TABLE test_data (
-  value VARCHAR(25) NOT NULL PRIMARY KEY
+  name VARCHAR(25) NOT NULL PRIMARY KEY
 );
  /*
 Multi-line

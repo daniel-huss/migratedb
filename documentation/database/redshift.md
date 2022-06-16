@@ -51,7 +51,8 @@ subtitle: Redshift
 
 ### Example
 
-<pre class="prettyprint">/* Single line comment */
+```sql
+/* Single line comment */
 CREATE TABLE test_data (
   test_id INT IDENTITY NOT NULL PRIMARY KEY,
   value VARCHAR(25) NOT NULL
@@ -74,7 +75,8 @@ CREATE FUNCTION add(integer, integer) RETURNS integer
 $$ LANGUAGE sql;
 
 -- Placeholder
-INSERT INTO ${tableName} (name) VALUES ('Mr. T');</pre>
+INSERT INTO ${tableName} (value) VALUES ('Mr. T');
+```
 
 ## Limitations
 

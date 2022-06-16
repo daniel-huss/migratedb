@@ -40,7 +40,8 @@ subtitle: SAP HANA
 
 ### Example
 
-<pre class="prettyprint">/* Single line comment */
+```sql
+/* Single line comment */
 CREATE TABLE t (a INT, b NVARCHAR(10), c NVARCHAR(20));
 CREATE INDEX idx ON t(b);
 
@@ -98,7 +99,8 @@ BEGIN
 END;
 
 -- Placeholders
-INSERT INTO ${tableName} (name) VALUES ('Mr. T');</pre>
+INSERT INTO ${tableName} (name) VALUES ('Mr. T');
+```
 
 ## Limitations
 

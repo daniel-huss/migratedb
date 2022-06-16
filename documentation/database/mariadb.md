@@ -88,7 +88,7 @@ CALL AddData();
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 
 -- Placeholder
-INSERT INTO ${tableName} (name) VALUES ('Mr. T');
+INSERT INTO ${tableName} (value) VALUES ('Mr. T');
 ```
 
 <p class="next-steps">

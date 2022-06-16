@@ -39,7 +39,8 @@ subtitle: SQLite
 
 ## SQL Script Syntax
 
-- [Standard SQL syntax](/migratedb/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter **;**
+- [Standard SQL syntax](/migratedb/documentation/concepts/migrations#sql-based-migrations#syntax) with statement
+  delimiter **;**
 - Triggers with `BEGIN ... END;` block
 
 ### Compatibility
@@ -50,7 +51,8 @@ subtitle: SQLite
 
 ### Example
 
-<pre class="prettyprint">/* Single line comment */
+```sql
+/* Single line comment */
 CREATE TABLE test_data (
   value VARCHAR(25) NOT NULL PRIMARY KEY
 );
@@ -63,12 +65,15 @@ comment
 -- Sql-style comment
 
 -- Placeholder
-INSERT INTO ${tableName} (name) VALUES ('Mr. T');
+INSERT INTO ${tableName} (value) VALUES ('Mr. T');
 
+CREATE TABLE customers(name VARCHAR, address VARCHAR);
+CREATE TABLE orders(address VARCHAR, customer_name VARCHAR);
 CREATE TRIGGER update_customer_address UPDATE OF address ON customers
   BEGIN
     UPDATE orders SET address = new.address WHERE customer_name = old.name;
-  END;</pre>
+  END;
+```
 
 ## Limitations
 

@@ -41,7 +41,8 @@ subtitle: Oracle
 
 ## SQL Script Syntax
 
-- [Standard SQL syntax](/migratedb/documentation/concepts/migrations#sql-based-migrations#syntax) with statement delimiter `;`
+- [Standard SQL syntax](/migratedb/documentation/concepts/migrations#sql-based-migrations#syntax) with statement
+  delimiter `;`
 - PL/SQL blocks starting with `DECLARE` or `BEGIN` and finishing with `END; /`
 
 ### Compatibility
@@ -52,7 +53,8 @@ subtitle: Oracle
 
 ### Example
 
-<pre class="prettyprint">/* Single line comment */
+```sql
+/* Single line comment */
 CREATE TABLE test_user (
   name VARCHAR(25) NOT NULL,
   PRIMARY KEY(name)
@@ -70,7 +72,8 @@ END;
 /
 
 -- Placeholder
-INSERT INTO ${tableName} (name) VALUES ('Mr. T');</pre>
+INSERT INTO ${tableName} (name) VALUES ('Mr. T');
+```
 
 ### Output
 

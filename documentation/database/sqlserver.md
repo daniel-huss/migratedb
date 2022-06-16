@@ -85,9 +85,9 @@ UPDATE Customers
 SET
  Priority =
    case
-     when t.Total &lt; 10000 then 3
+     when t.Total < 10000 then 3
      when t.Total between 10000 and 50000 then 2
-     when t.Total &gt; 50000 then 1
+     when t.Total > 50000 then 1
      when t.Total IS NULL then NULL
    end
 FROM Customers c
@@ -105,7 +105,7 @@ LEFT JOIN (
 GO
 
 -- Placeholder
-INSERT INTO ${tableName} (name) VALUES ('Mr. T');
+INSERT INTO ${tableName} (Name, Priority) VALUES ('Mr. T', 1);
 ```
 
 ## Authentication

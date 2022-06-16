@@ -62,7 +62,7 @@ comment
 -- Sql-style comment
 
 -- Placeholder
-INSERT INTO ${tableName} (name) VALUES ('Mr. T');
+INSERT INTO ${tableName} (value) VALUES ('Mr. T');
 ```
 
 ## Limitations

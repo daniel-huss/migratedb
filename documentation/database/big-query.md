@@ -51,17 +51,14 @@ If you are using the MigrateDB command-line, you will need to extract the conten
 the `migratedb/drivers/` folder.
 
 If you are using the MigrateDB Maven plugin, you will need to add the contents of this archive to your classpath.
-​
 
 ### Configuring MigrateDB
 
-​
 This is a JDBC URL that points to your database. You can configure a connection using this sample URL as an example:
 
 `jdbc:bigquery://https://www.googleapis.com/bigquery/v2:443;ProjectId=<project_id>;OAuthType=0;OAuthServiceAcctEmail=<service_account_name>;OAuthPvtKeyPath=<path_to_service_account>;`
 
 We need to fetch three things to complete this URL:
-​
 
 - `project_id`
 - `service_account_name`
@@ -96,7 +93,6 @@ migratedb.user=
 migratedb.password=
 ```
 
-​
 In a MigrateDB configuration file.
 
 ## Limitations

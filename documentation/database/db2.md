@@ -55,7 +55,7 @@ subtitle: DB2
 
 ```sql
 /* Single line comment */
-CREATE TABLE test_user (
+CREATE TABLE usertable (
  name VARCHAR(25) NOT NULL,
  PRIMARY KEY(name)
 );

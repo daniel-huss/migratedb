@@ -54,7 +54,8 @@ subtitle: PostgreSQL
 
 ### Example
 
-<pre class="prettyprint">/* Single line comment */
+```sql
+/* Single line comment */
 CREATE TABLE test_data (
  value VARCHAR(25) NOT NULL PRIMARY KEY
 );
@@ -85,11 +86,13 @@ CREATE FUNCTION add(integer, integer) RETURNS integer
 INSERT INTO ${tableName} (name) VALUES ('Mr. T');
 
 -- COPY ... FROM STDIN
+CREATE TABLE copy_test(c1 text, c2 text, c3 text);
 COPY copy_test (c1, c2, c3) FROM stdin;
 1	utf8: ümlaute: äüß	NaN
 2	\N	123
 3	text	123.234444444444449
-\.</pre>
+\.
+```
 
 ## Authentication
 

@@ -54,7 +54,7 @@ subtitle: HSQLDB
 
 ```sql
 /* Single line comment */
-CREATE TABLE test_data (
+CREATE TABLE usertable (
   value VARCHAR(25) NOT NULL PRIMARY KEY
 );
 
