@@ -38,15 +38,15 @@ public class DB2Parser extends BaseParser {
     private static final List<String> CONTROL_FLOW_KEYWORDS = Arrays.asList("LOOP", "CASE", "DO", "REPEAT", "IF");
 
     private static final Pattern CREATE_IF_NOT_EXISTS = Pattern.compile(
-            ".*CREATE\\s(\\S+\\s){0,2}IF\\sNOT\\sEXISTS");
+            ".*CREATE\\s([^\\s]+\\s){0,2}IF\\sNOT\\sEXISTS");
+    private static final Pattern CREATE_OR_REPLACE_PACKAGE = Pattern.compile(
+            ".*CREATE\\s(OR\\sREPLACE\\s)?PACKAGE\\s([^\\s]+\\s){0,2}(IS|AS)");
     private static final Pattern DROP_IF_EXISTS = Pattern.compile(
-            ".*DROP\\s(\\S+\\s){0,2}IF\\sEXISTS");
+            ".*DROP\\s([^\\s]+\\s){0,2}IF\\sEXISTS");
 
     @Override
-    protected void adjustBlockDepth(ParserContext context, List<Token> tokens, Token keyword, PeekingReader reader)
-    throws IOException {
-        boolean previousTokenIsKeyword = !tokens.isEmpty() && tokens.get(tokens.size() - 1).getType() ==
-                                                              TokenType.KEYWORD;
+    protected void adjustBlockDepth(ParserContext context, List<Token> tokens, Token keyword, PeekingReader reader) throws IOException {
+        boolean previousTokenIsKeyword = !tokens.isEmpty() && tokens.get(tokens.size() - 1).getType() == TokenType.KEYWORD;
 
         int lastKeywordIndex = getLastKeywordIndex(tokens);
         String previousKeyword = lastKeywordIndex >= 0 ? tokens.get(lastKeywordIndex).getText() : null;
@@ -54,23 +54,15 @@ public class DB2Parser extends BaseParser {
         lastKeywordIndex = getLastKeywordIndex(tokens, lastKeywordIndex);
         String previousPreviousToken = lastKeywordIndex >= 0 ? tokens.get(lastKeywordIndex).getText() : null;
 
-        if (
-            // BEGIN increases block depth, exception when used with ROW BEGIN
-            ("BEGIN".equals(keyword.getText()) &&
-             (!"ROW".equals(previousKeyword) || previousPreviousToken == null || "EACH".equals(previousPreviousToken)))
-            // Control flow keywords increase depth
-            || CONTROL_FLOW_KEYWORDS.contains(keyword.getText())
-        ) {
-            // But not END IF and END WHILE
+        if (("BEGIN".equals(keyword.getText()) && (!"ROW".equals(previousKeyword) || previousPreviousToken == null || "EACH".equals(previousPreviousToken)))
+                || CONTROL_FLOW_KEYWORDS.contains(keyword.getText())
+                || doTokensMatchPattern(tokens, keyword, CREATE_OR_REPLACE_PACKAGE)) {
             if (!previousTokenIsKeyword || !"END".equals(previousKeyword)) {
                 context.increaseBlockDepth(keyword.getText());
-
             }
-        } else if (
-            // END decreases block depth, exception when used with ROW END
-            ("END".equals(keyword.getText()) && !"ROW".equals(previousKeyword))
-            || doTokensMatchPattern(tokens, keyword, CREATE_IF_NOT_EXISTS)
-            || doTokensMatchPattern(tokens, keyword, DROP_IF_EXISTS)) {
+        } else if (("END".equals(keyword.getText()) && !"ROW".equals(previousKeyword))
+                || doTokensMatchPattern(tokens, keyword, CREATE_IF_NOT_EXISTS)
+                || doTokensMatchPattern(tokens, keyword, DROP_IF_EXISTS)) {
             context.decreaseBlockDepth();
         }
     }
@@ -87,17 +79,17 @@ public class DB2Parser extends BaseParser {
 
     @Override
     protected Token handleCommentDirective(PeekingReader reader, ParserContext context, int pos, int line, int col)
-    throws IOException {
+            throws IOException {
         if (SET_TERMINATOR_DIRECTIVE.equals(reader.peek(SET_TERMINATOR_DIRECTIVE.length()))) {
             reader.swallow(SET_TERMINATOR_DIRECTIVE.length());
             String delimiter = reader.readUntilExcluding('\n', '\r');
             return new Token(TokenType.NEW_DELIMITER,
-                             pos,
-                             line,
-                             col,
-                             delimiter.trim(),
-                             delimiter,
-                             context.getParensDepth());
+                    pos,
+                    line,
+                    col,
+                    delimiter.trim(),
+                    delimiter,
+                    context.getParensDepth());
         }
         reader.swallowUntilExcluding('\n', '\r');
         return new Token(TokenType.COMMENT, pos, line, col, null, null, context.getParensDepth());
