@@ -45,7 +45,7 @@ New features are unlikely to be added, unless they fit reasonably within the sco
 
 This project is a hard fork of Flyway 7.15. There is no affiliation whatsoever between this project and the owners of the Flyway trademark.
 
-Bug fixes from the forked project have been ported manually up to commit 77bb799 (2022-03-10 17:28:00)
+Bug fixes from the forked project have been ported manually up to commit 8c38d8ee (2022-06-16 17:02:00)
 
 === Switching from Flyway to MigrateDB
 
