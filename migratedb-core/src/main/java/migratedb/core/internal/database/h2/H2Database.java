@@ -43,6 +43,8 @@ public class H2Database extends BaseDatabase<H2Connection> {
      */
     private enum CompatibilityMode {
         REGULAR,
+        STRICT,
+        LEGACY,
         DB2,
         Derby,
         HSQLDB,
