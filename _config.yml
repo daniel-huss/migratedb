@@ -5,6 +5,6 @@ plugins:
     - jekyll-redirect-from
 whitelist:
     - jekyll-redirect-from
-migratedbVersion: 0.1.0
+migratedbVersion: 0.2.0
 title: MigrateDB
 description: Database Migrations, Easy and Free.
