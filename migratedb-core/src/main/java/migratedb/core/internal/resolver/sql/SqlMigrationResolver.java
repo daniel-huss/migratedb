@@ -106,8 +106,9 @@ public class SqlMigrationResolver implements MigrationResolver {
         return list;
     }
 
-    private Checksum getChecksumForResource(boolean repeatable, List<Resource> resources) {
+    private Checksum getChecksumForResource(boolean repeatable, List<Resource> resources, ResourceName resourceName) {
         if (repeatable && configuration.isPlaceholderReplacement()) {
+            parsingContext.updateFilenamePlaceholder(resourceName);
             return ChecksumCalculator.calculate(createPlaceholderReplacingResources(resources), configuration);
         }
         return ChecksumCalculator.calculate(resources, configuration);
@@ -129,8 +130,8 @@ public class SqlMigrationResolver implements MigrationResolver {
 
         for (Resource resource : resourceProvider.getResources(prefix, suffixes)) {
             String filename = resource.getLastNameComponent();
-            ResourceName result = resourceNameParser.parse(filename);
-            if (!result.isValid() || isSqlCallback(result) || !prefix.equals(result.getPrefix())) {
+            ResourceName resourceName = resourceNameParser.parse(filename);
+            if (!resourceName.isValid() || isSqlCallback(resourceName) || !prefix.equals(resourceName.getPrefix())) {
                 continue;
             }
 
@@ -139,13 +140,13 @@ public class SqlMigrationResolver implements MigrationResolver {
             List<Resource> resources = new ArrayList<>();
             resources.add(resource);
 
-            var checksum = getChecksumForResource(repeatable, resources);
+            var checksum = getChecksumForResource(repeatable, resources, resourceName);
             var equivalentChecksum = getEquivalentChecksumForResource(repeatable, resources);
 
             var isBaseline = filename.startsWith(configuration.getBaselineMigrationPrefix());
             migrations.add(new ResolvedMigrationImpl(
-                result.getVersion(),
-                result.getDescription(),
+                resourceName.getVersion(),
+                resourceName.getDescription(),
                 resource.getLastNameComponent(),
                 checksum,
                 equivalentChecksum,
@@ -161,7 +162,7 @@ public class SqlMigrationResolver implements MigrationResolver {
      *
      * @param result The parsing result to check.
      */
-    protected static boolean isSqlCallback(ResourceName result) {
+    private static boolean isSqlCallback(ResourceName result) {
         return Event.fromId(result.getPrefix()) != null;
     }
 }
