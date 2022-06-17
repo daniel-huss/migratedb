@@ -6,7 +6,7 @@ The format is based on https://keepachangelog.com/en/1.0.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
-== https://search.maven.org/artifact/de.unentscheidbar/migratedb-core/0.1.0/jar[0.2.0] (unreleased)
+== https://search.maven.org/artifact/de.unentscheidbar/migratedb-core/0.1.0/jar[0.2.0]
 
 This is an early access 0.x release, which means *everything* is subject to change.
 Feedback is very welcome!
