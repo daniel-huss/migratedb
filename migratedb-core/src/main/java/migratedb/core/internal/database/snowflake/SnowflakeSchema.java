@@ -18,12 +18,17 @@ package migratedb.core.internal.database.snowflake;
 
 import migratedb.core.api.internal.database.base.Table;
 import migratedb.core.api.internal.jdbc.JdbcTemplate;
+import migratedb.core.api.logging.Log;
 import migratedb.core.internal.database.base.BaseSchema;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTable> {
+    private static final Log LOG = Log.getLog(SnowflakeSchema.class);
+
     /**
      * Creates a new Snowflake schema.
      *
@@ -77,12 +82,24 @@ public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTabl
             jdbcTemplate.execute(dropStatement);
         }
 
-        for (String dropStatement : generateDropStatementsWithArgs("USER FUNCTIONS", "FUNCTION")) {
-            jdbcTemplate.execute(dropStatement);
+        for (var dropStatement : generateDropStatementsWithArgs("USER FUNCTIONS", "FUNCTION")) {
+            var name = dropStatement.getKey();
+            var statement = dropStatement.getValue();
+            try {
+                jdbcTemplate.execute(statement);
+            } catch (SQLException sqlException) {
+                LOG.warn("Unable to drop user function " + name + ": " + sqlException.getMessage());
+            }
         }
 
-        for (String dropStatement : generateDropStatementsWithArgs("PROCEDURES", "PROCEDURE")) {
-            jdbcTemplate.execute(dropStatement);
+        for (var dropStatement : generateDropStatementsWithArgs("PROCEDURES", "PROCEDURE")) {
+            var name = dropStatement.getKey();
+            var statement = dropStatement.getValue();
+            try {
+                jdbcTemplate.execute(statement);
+            } catch (SQLException sqlException) {
+                LOG.warn("Unable to drop procedure " + name + ": " + sqlException.getMessage());
+            }
         }
     }
 
@@ -108,14 +125,14 @@ public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTabl
         });
     }
 
-    private List<String> generateDropStatementsWithArgs(String showObjectType, String dropObjectType)
+    private List<Entry<String,String>> generateDropStatementsWithArgs(String showObjectType, String dropObjectType)
     throws SQLException {
         return jdbcTemplate.query("SHOW " + showObjectType + " IN SCHEMA " + database.quote(name),
                 rs -> {
                     String nameAndArgsList = rs.getString("arguments");
                     int indexOfEndOfArgs = nameAndArgsList.indexOf(") RETURN ");
                     String functionName = nameAndArgsList.substring(0, indexOfEndOfArgs + 1);
-                    return "DROP " + dropObjectType + " " + name + "." + functionName;
+                    return Map.entry(functionName, "DROP " + dropObjectType + " " + name + "." + functionName);
                 });
     }
 }
