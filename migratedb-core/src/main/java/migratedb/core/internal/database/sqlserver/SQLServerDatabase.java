@@ -87,6 +87,9 @@ public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
             if ("15".equals(getVersion().getMajorAsString())) {
                 return "2019";
             }
+            if ("16".equals(getVersion().getMajorAsString())) {
+                return "2022";
+            }
         }
         return super.computeVersionDisplayName(version);
     }
