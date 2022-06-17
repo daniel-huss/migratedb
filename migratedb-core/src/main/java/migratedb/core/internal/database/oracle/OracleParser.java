@@ -321,13 +321,7 @@ public class OracleParser extends BaseParser {
         if (delimiter.shouldBeAloneOnLine()) {
             // Only consider alone-on-line delimiters (such as "/" for PL/SQL) if
             // it's the first character on the line
-            if (colIgnoringWhitespace == 1 && peek.equals(delimiter.getDelimiter())) {
-                return true;
-            }
-
-            if (colIgnoringWhitespace != 1) {
-                return false;
-            }
+            return colIgnoringWhitespace == 1 && peek.trim().equals(delimiter.getDelimiter());
         } else {
             if (colIgnoringWhitespace == 1 && "/".equals(peek.trim())) {
                 return true;
