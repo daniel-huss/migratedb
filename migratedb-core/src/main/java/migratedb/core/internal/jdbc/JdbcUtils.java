@@ -29,11 +29,9 @@ import java.sql.*;
 /**
  * Utility class for dealing with jdbc connections.
  */
-public class JdbcUtils {
+public enum JdbcUtils {
+    ;
     private static final Log LOG = Log.getLog(JdbcUtils.class);
-
-    private JdbcUtils() {
-    }
 
     /**
      * Opens a new connection from {@code dataSource}.
@@ -41,14 +39,13 @@ public class JdbcUtils {
      * @param dataSource             The dataSource to obtain the connection from.
      * @param connectRetries         The maximum number of retries when attempting to connect to the database.
      * @param connectRetriesInterval The maximum time between retries in seconds
-     *
      * @return The new connection.
-     *
      * @throws MigrateDbException if the connection could not be opened.
      */
+    @SuppressWarnings("BusyWait")
     public static Connection openConnection(DataSource dataSource, int connectRetries, int connectRetriesInterval,
                                             DatabaseTypeRegister databaseTypeRegister)
-    throws MigrateDbException {
+            throws MigrateDbException {
         BackoffStrategy backoffStrategy = new BackoffStrategy(1, 2, connectRetriesInterval);
         int retries = 0;
         while (true) {
@@ -56,23 +53,23 @@ public class JdbcUtils {
                 return dataSource.getConnection();
             } catch (SQLException e) {
                 if ("08S01".equals(e.getSQLState()) && e.getMessage().contains(
-                    "This driver is not configured for integrated authentication")) {
+                        "This driver is not configured for integrated authentication")) {
                     throw new MigrateDbSqlException("Unable to obtain connection from database"
-                                                    + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
-                                                    e.getMessage(),
-                                                    e);
+                            + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
+                            e.getMessage(),
+                            e);
                 } else if (e.getSQLState() == null && e.getMessage().contains("MSAL4J")) {
                     throw new MigrateDbSqlException("Unable to obtain connection from database"
-                                                    + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
-                                                    e.getMessage() +
-                                                    "\nYou need to install some extra drivers in order for " +
-                                                    "interactive authentication to work.", e);
+                            + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
+                            e.getMessage() +
+                            "\nYou need to install some extra drivers in order for " +
+                            "interactive authentication to work.", e);
                 }
 
                 if (++retries > connectRetries) {
                     throw new MigrateDbSqlException("Unable to obtain connection from database"
-                                                    + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
-                                                    e.getMessage(), e);
+                            + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
+                            e.getMessage(), e);
                 }
                 Throwable rootCause = ExceptionUtils.getRootCause(e);
                 String msg = "Connection error: " + e.getMessage();
@@ -81,12 +78,12 @@ public class JdbcUtils {
                 }
                 LOG.warn(msg + " Retrying in " + backoffStrategy.peek() + " sec...");
                 try {
-                    Thread.sleep(backoffStrategy.next() * 1000);
+                    Thread.sleep(backoffStrategy.next() * 1000L);
                 } catch (InterruptedException e1) {
                     Thread.currentThread().interrupt();
                     throw new MigrateDbSqlException("Unable to obtain connection from database"
-                                                    + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
-                                                    e.getMessage(), e);
+                            + getDataSourceInfo(dataSource, databaseTypeRegister) + ": " +
+                            e.getMessage(), e);
                 }
             }
         }
@@ -98,7 +95,7 @@ public class JdbcUtils {
         }
         DriverDataSource driverDataSource = (DriverDataSource) dataSource;
         return " (" + databaseTypeRegister.redactJdbcUrl(driverDataSource.getUrl()) + ") for user '" +
-               driverDataSource.getUser() + "'";
+                driverDataSource.getUser() + "'";
     }
 
     /**
@@ -108,9 +105,10 @@ public class JdbcUtils {
         if (connection == null) {
             return;
         }
-
         try {
-            connection.close();
+            if (!connection.isClosed()) {
+                connection.close();
+            }
         } catch (SQLException | RuntimeException e) {
             LOG.error("Error while closing database connection: " + e.getMessage(), e);
         }
