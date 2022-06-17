@@ -6,18 +6,25 @@ The format is based on https://keepachangelog.com/en/1.0.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
-== Unreleased
+== https://search.maven.org/artifact/de.unentscheidbar/migratedb-core/0.1.0/jar[0.2.0] (unreleased)
 
 This is an early access 0.x release, which means *everything* is subject to change.
 Feedback is very welcome!
 
+=== Added
+
+* Tests for CockroachDB v22.1.1
+* Some parser tests.
+
 === Removed
+
 * 🔥 Batch, dryRun and licenseKey configuration.
 
 === Fixed
+
 * JdbcTableSchemaHistory.create() no longer ignores being interrupted.
 
-== [0.1.0]
+== https://search.maven.org/artifact/de.unentscheidbar/migratedb-core/0.1.0/jar[0.1.0]
 
 This is the initial release after forking from Flyway 7.15 (the "community" version, obviously) and applying all 8.x bug fixes up to commit 77bb799. Since the forked project has never published any test sources, test coverage may seem a little underwhelming.
 It will get better with every following release.
@@ -72,7 +79,7 @@ Can be changed by application code via Log.setDefaultLogSystem().
 If the deleted migration re-appears, another repair will un-delete it.
 * 🔥 Future migrations are no longer (?) marked as deleted by the repair command.
 * 🔥 Some additional states of schema history corruption are now detected.
-* 🔥 The checksum is now 20 bytes SHA-256 instead of 4 bytes CRC32.
+* 🔥 The checksum is now an SHA-256 hash instead of 4 bytes CRC32.
 * Converted README to Asciidoc.
 * Removed a compile-time dependency on Oracle JDBC driver classes from the core library.
 * Builds should now be reproducible.

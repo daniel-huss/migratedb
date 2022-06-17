@@ -1,6 +1,7 @@
 package migratedb.integrationtest.parser
 
 import io.kotest.matchers.shouldBe
+import migratedb.integrationtest.database.Db2
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.database.Oracle
 import migratedb.integrationtest.util.base.IntegrationTest
@@ -46,5 +47,11 @@ internal class OracleParserTest : IntegrationTest() {
         }.then {
             it.migrationsExecuted.shouldBe(1)
         }
+    }
+
+    @ParameterizedTest
+    @EnumSource(Oracle::class)
+    fun `Process engine example can be parsed`(dbSystem: DbSystem) {
+        ProcessEngineTestCase(dbSystem)
     }
 }

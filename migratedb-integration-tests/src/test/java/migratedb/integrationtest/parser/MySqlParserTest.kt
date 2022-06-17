@@ -1,6 +1,7 @@
 package migratedb.integrationtest.parser
 
 import io.kotest.matchers.shouldBe
+import migratedb.integrationtest.database.Db2
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.database.MySql
 import migratedb.integrationtest.util.base.IntegrationTest
@@ -55,5 +56,11 @@ internal class MySqlParserTest : IntegrationTest() {
         }.then {
             it.migrationsExecuted.shouldBe(1)
         }
+    }
+
+    @ParameterizedTest
+    @EnumSource(MySql::class)
+    fun `Process engine example can be parsed`(dbSystem: DbSystem) {
+        ProcessEngineTestCase(dbSystem)
     }
 }

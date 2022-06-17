@@ -112,6 +112,19 @@
             <artifactId>jdbc</artifactId>
             <version>4.50.7.1</version>
         </dependency>
+
+        <dependency>
+            <!-- Contains some SQL scripts we can use to test the parsers -->
+            <groupId>org.camunda.bpm</groupId>
+            <artifactId>camunda-engine</artifactId>
+            <version>7.17.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <build>

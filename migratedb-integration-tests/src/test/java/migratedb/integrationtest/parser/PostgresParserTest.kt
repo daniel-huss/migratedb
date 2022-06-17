@@ -1,6 +1,7 @@
 package migratedb.integrationtest.parser
 
 import io.kotest.matchers.shouldBe
+import migratedb.integrationtest.database.Db2
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.database.MariaDb
 import migratedb.integrationtest.database.Postgres
@@ -65,5 +66,11 @@ internal class PostgresParserTest : IntegrationTest() {
         }.then {
             it.migrationsExecuted.shouldBe(1)
         }
+    }
+
+    @ParameterizedTest
+    @EnumSource(Postgres::class)
+    fun `Process engine example can be parsed`(dbSystem: DbSystem) {
+        ProcessEngineTestCase(dbSystem)
     }
 }

@@ -80,4 +80,10 @@ internal class SqlServerParserTest : IntegrationTest() {
             it.migrationsExecuted.shouldBe(1)
         }
     }
+
+    @ParameterizedTest
+    @EnumSource(SqlServer::class)
+    fun `Process engine example can be parsed`(dbSystem: DbSystem) {
+        ProcessEngineTestCase(dbSystem)
+    }
 }

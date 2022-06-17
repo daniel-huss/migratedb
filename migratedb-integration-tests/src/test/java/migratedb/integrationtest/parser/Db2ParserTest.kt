@@ -3,7 +3,6 @@ package migratedb.integrationtest.parser
 import io.kotest.matchers.shouldBe
 import migratedb.integrationtest.database.Db2
 import migratedb.integrationtest.database.DbSystem
-import migratedb.integrationtest.database.Hsqldb
 import migratedb.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
@@ -65,5 +64,11 @@ internal class Db2ParserTest : IntegrationTest() {
         }.then {
             it.migrationsExecuted.shouldBe(1)
         }
+    }
+
+    @ParameterizedTest
+    @EnumSource(Db2::class)
+    fun `Process engine example can be parsed`(dbSystem: DbSystem) {
+        ProcessEngineTestCase(dbSystem)
     }
 }

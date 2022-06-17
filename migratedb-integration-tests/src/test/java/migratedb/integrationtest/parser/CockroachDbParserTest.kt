@@ -41,4 +41,12 @@ internal class CockroachDbParserTest : IntegrationTest() {
             it.migrationsExecuted.shouldBe(1)
         }
     }
+
+    @ParameterizedTest
+    @EnumSource(CockroachDb::class)
+    fun `Process engine example can be parsed`(dbSystem: DbSystem) {
+        // If we don't skip the drop script, Cockroachdb barfs up errors like
+        // "referencing constraint ... in the middle of being added, try again later"
+        ProcessEngineTestCase(dbSystem, skipDrop = true)
+    }
 }
