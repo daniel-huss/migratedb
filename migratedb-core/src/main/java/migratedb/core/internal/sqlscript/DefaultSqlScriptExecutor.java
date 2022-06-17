@@ -88,7 +88,7 @@ public class DefaultSqlScriptExecutor implements SqlScriptExecutor {
     }
 
     protected void outputQueryResult(Result result) {
-        if (outputQueryResults && result.getColumns() != null) {
+        if (outputQueryResults && result.getColumns() != null && !result.getColumns().isEmpty()) {
             LOG.info(new AsciiTable(result.getColumns(), result.getData(),
                     true, "", "No rows returned").render());
         }
