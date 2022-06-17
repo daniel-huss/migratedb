@@ -173,12 +173,12 @@ class MigrateDbCommand {
         initializeDefaults(configProps);
         loadConfigurationFromConfigFiles(configProps, envVars);
 
+        configProps.putAll(envVars);
+        configProps = overrideConfiguration(configProps, arguments.getConfiguration());
+
         if (arguments.isWorkingDirectorySet()) {
             makeRelativeLocationsBasedOnWorkingDirectory(configProps);
         }
-
-        configProps.putAll(envVars);
-        configProps = overrideConfiguration(configProps, arguments.getConfiguration());
 
         ClassLoader classLoader = ClassUtils.defaultClassLoader();
         List<Path> jarFiles = new ArrayList<>();
