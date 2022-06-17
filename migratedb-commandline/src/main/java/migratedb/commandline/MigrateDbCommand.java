@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import migratedb.core.MigrateDb;
 import migratedb.core.api.*;
-import migratedb.core.api.configuration.FluentConfiguration;
 import migratedb.core.api.configuration.PropertyNames;
 import migratedb.core.api.internal.database.base.DatabaseType;
 import migratedb.core.api.logging.Log;
@@ -146,16 +145,16 @@ class MigrateDbCommand {
         if (exception instanceof MigrateDbException) {
             MigrateDbException migratedbException = (MigrateDbException) exception;
             return new ErrorOutput(
-                migratedbException.getErrorCode(),
-                message == null ? "Error occurred" : message,
-                arguments.getLogLevel() == LogLevel.DEBUG ? getStackTrace(exception) : null,
-                currentOperation);
+                    migratedbException.getErrorCode(),
+                    message == null ? "Error occurred" : message,
+                    arguments.getLogLevel() == LogLevel.DEBUG ? getStackTrace(exception) : null,
+                    currentOperation);
         } else {
             return new ErrorOutput(
-                ErrorCode.FAULT,
-                message == null ? "Fault occurred" : message,
-                getStackTrace(exception),
-                currentOperation);
+                    ErrorCode.FAULT,
+                    message == null ? "Fault occurred" : message,
+                    getStackTrace(exception),
+                    currentOperation);
         }
     }
 
@@ -188,14 +187,14 @@ class MigrateDbCommand {
             classLoader = addJarsOrDirectoriesToClasspath(classLoader, jarFiles);
         }
         var spiExtensions = ServiceLoader.load(MigrateDbExtension.class, classLoader)
-                                         .stream()
-                                         .map(ServiceLoader.Provider::get)
-                                         .collect(Collectors.toList());
+                .stream()
+                .map(ServiceLoader.Provider::get)
+                .collect(Collectors.toList());
 
         // Necessary because we need a database type register for dumpConfiguration and promptForCredentialsIfMissing
         var databaseTypeRegister = MigrateDb.configure(classLoader)
-                                            .useExtensions(spiExtensions)
-                                            .getDatabaseTypeRegister();
+                .useExtensions(spiExtensions)
+                .getDatabaseTypeRegister();
 
         if (!arguments.shouldSuppressPrompt()) {
             promptForCredentialsIfMissing(configProps, databaseTypeRegister);
@@ -205,9 +204,9 @@ class MigrateDbCommand {
         filterProperties(configProps);
 
         return MigrateDb.configure(classLoader)
-                        .configuration(configProps)
-                        .useExtensions(spiExtensions)
-                        .load();
+                .configuration(configProps)
+                .useExtensions(spiExtensions)
+                .load();
     }
 
     /**
@@ -222,7 +221,7 @@ class MigrateDbCommand {
             String convertedKey = EnvironmentMapper.convertKey(entry.getKey());
             if (convertedKey != null) {
                 // Known environment variable
-                result.put(EnvironmentMapper.convertKey(entry.getKey()), entry.getValue());
+                result.put(EnvironmentMapper.convertKey(entry.getKey()), expandEnvironmentVariables(entry.getValue()));
             }
         }
         return result;
@@ -239,7 +238,7 @@ class MigrateDbCommand {
 
             LOG.debug("Expanding environment variable in config: " + variableName + " -> " + variableValue);
             expandedValue = expandedValue.replaceAll(Pattern.quote(matcher.group(0)),
-                                                     Matcher.quoteReplacement(variableValue));
+                    Matcher.quoteReplacement(variableValue));
         }
 
         return expandedValue;
@@ -250,7 +249,6 @@ class MigrateDbCommand {
      *
      * @param classLoader The current ClassLoader.
      * @param jarFiles    The jars or directories to add.
-     *
      * @return The new ClassLoader containing the additional jar or directory.
      */
     private ClassLoader addJarsOrDirectoriesToClasspath(ClassLoader classLoader, List<Path> jarFiles) {
@@ -269,20 +267,16 @@ class MigrateDbCommand {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Using configuration:");
             for (Map.Entry<String, String> entry : new TreeMap<>(config).entrySet()) {
+                String key = entry.getKey();
                 String value = entry.getValue();
 
-                switch (entry.getKey()) {
-                    // Mask the password. Ex.: T0pS3cr3t -> *********
-                    case PropertyNames.PASSWORD:
-                        value = StringUtils.trimOrPad("", value.length(), '*');
-                        break;
-                    // Mask any password in the URL
-                    case PropertyNames.URL:
-                        value = databaseTypeRegister.redactJdbcUrl(value);
-                        break;
-                }
+                if (key.toLowerCase(Locale.ROOT).endsWith("password")) {
+                    value = StringUtils.trimOrPad("", value.length(), '*');
+                } else if (key.equals(PropertyNames.URL)) {
+                    value = databaseTypeRegister.redactJdbcUrl(value);
 
-                LOG.debug(entry.getKey() + " -> " + value);
+                }
+                LOG.debug(key + " -> " + value);
             }
         }
     }
@@ -290,32 +284,18 @@ class MigrateDbCommand {
     /**
      * Load configuration files from the default locations: $installationDir$/conf/migratedb.conf
      * $user.home$/migratedb.conf $workingDirectory$/migratedb.conf
-     * <p>
-     * The configuration files must be encoded with UTF-8.
-     *
-     * @throws MigrateDbException When the configuration failed.
-     */
-    private FluentConfiguration loadDefaultConfigurationFiles() {
-        Map<String, String> configMap = loadDefaultConfigurationFiles(installationDir, "UTF-8");
-        return new FluentConfiguration().configuration(configMap);
-    }
-
-    /**
-     * Load configuration files from the default locations: $installationDir$/conf/migratedb.conf
-     * $user.home$/migratedb.conf $workingDirectory$/migratedb.conf
      *
      * @param encoding The conf file encoding.
-     *
      * @throws MigrateDbException When the configuration failed.
      */
-    private Map<String, String> loadDefaultConfigurationFiles(Path installationDir, String encoding) {
+    private Map<String, String> loadDefaultConfigurationFiles(String encoding) {
         Map<String, String> configMap = new HashMap<>();
         configMap.putAll(loadConfigurationFile(configDir.resolve(CONFIG_FILE_NAME),
-                                               encoding,
-                                               false));
+                encoding,
+                false));
         configMap.putAll(loadConfigurationFile(fileSystem.getPath(System.getProperty("user.home"), CONFIG_FILE_NAME),
-                                               encoding,
-                                               false));
+                encoding,
+                false));
         configMap.putAll(loadConfigurationFile(fileSystem.getPath(CONFIG_FILE_NAME), encoding, false));
         return configMap;
     }
@@ -326,9 +306,7 @@ class MigrateDbCommand {
      * @param configFile    The configuration file to load.
      * @param encoding      The encoding of the configuration file.
      * @param failIfMissing Whether to fail if the file is missing.
-     *
      * @return The properties from the configuration file. An empty Map if none.
-     *
      * @throws MigrateDbException When the configuration file could not be loaded.
      */
     private Map<String, String> loadConfigurationFile(Path configFile,
@@ -452,10 +430,10 @@ class MigrateDbCommand {
         OperationResult result = null;
         if ("download-drivers".equals(operation)) {
             result = new DownloadDriversCommand(
-                parseDriverDefinitions(configDir.resolve("drivers.yaml")),
-                driversDir,
-                arguments.getDriverNames())
-                .run();
+                    parseDriverDefinitions(configDir.resolve("drivers.yaml")),
+                    driversDir,
+                    arguments.getDriverNames())
+                    .run();
             // Re-create with new available drivers
             migrateDb = createMigrateDb();
             return result;
@@ -482,8 +460,8 @@ class MigrateDbCommand {
 
             if (!arguments.shouldOutputJson()) {
                 stdout.println(
-                    "Schema version: " + (currentSchemaVersion == null ? SchemaHistory.EMPTY_SCHEMA_DESCRIPTION
-                                                                       : currentSchemaVersion));
+                        "Schema version: " + (currentSchemaVersion == null ? SchemaHistory.EMPTY_SCHEMA_DESCRIPTION
+                                : currentSchemaVersion));
                 stdout.println();
                 stdout.println(MigrationInfoDumper.dumpToAsciiTable(info.all()));
             }
@@ -508,10 +486,10 @@ class MigrateDbCommand {
             Path path = fileSystem.getPath(arguments.getOutputFile());
             try {
                 Files.write(path,
-                            bytes,
-                            StandardOpenOption.WRITE,
-                            StandardOpenOption.TRUNCATE_EXISTING,
-                            StandardOpenOption.CREATE);
+                        bytes,
+                        StandardOpenOption.WRITE,
+                        StandardOpenOption.TRUNCATE_EXISTING,
+                        StandardOpenOption.CREATE);
             } catch (IOException e) {
                 throw new MigrateDbException("Could not write to output file " + arguments.getOutputFile(), e);
             }
@@ -527,9 +505,9 @@ class MigrateDbCommand {
     private void initializeDefaults(Map<String, String> config) {
         // To maintain override order, return extension value first if present
         String workingDirectory = arguments.isWorkingDirectorySet() ? arguments.getWorkingDirectory()
-                                                                    : installationDir.toString();
+                : installationDir.toString();
         config.put(PropertyNames.LOCATIONS,
-                   "filesystem:" + fileSystem.getPath(workingDirectory, "sql").toAbsolutePath());
+                "filesystem:" + fileSystem.getPath(workingDirectory, "sql").toAbsolutePath());
         config.put(JAR_DIRS, fileSystem.getPath(workingDirectory, "jars").toAbsolutePath().toString());
     }
 
@@ -544,15 +522,15 @@ class MigrateDbCommand {
 
     private void printVersion() throws IOException {
         var lines = List.of(
-            ("MigrateDB version " + BuildInfo.VERSION),
-            ("Java " + System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")"),
-            (System.getProperty("os.name") + " " + System.getProperty("os.version") + " " +
-             System.getProperty("os.arch") + "\n"));
+                ("MigrateDB version " + BuildInfo.VERSION),
+                ("Java " + System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")"),
+                (System.getProperty("os.name") + " " + System.getProperty("os.version") + " " +
+                        System.getProperty("os.arch") + "\n"));
         if (arguments.shouldOutputJson()) {
             printJson(new ErrorOutput(ErrorCode.CLI_USAGE,
-                                      String.join("\n", lines),
-                                      null,
-                                      null));
+                    String.join("\n", lines),
+                    null,
+                    null));
         } else {
             lines.forEach(stdout::println);
         }
@@ -560,94 +538,94 @@ class MigrateDbCommand {
 
     private void printUsage() throws IOException {
         var usageLines = List.of(
-            ("Usage"),
-            ("====="),
-            (""),
-            ("migratedb [options] command"),
-            (""),
-            ("By default, the configuration will be read from conf/migratedb.conf."),
-            ("Options passed from the command-line override the configuration."),
-            (""),
-            ("Commands"),
-            ("--------"),
-            ("migrate  : Migrates the database"),
-            ("clean    : Drops all objects in the configured schemas"),
-            ("info     : Prints the information about applied, current and pending migrations"),
-            ("validate : Validates the applied migrations against the ones on the classpath"),
-            ("baseline : Baselines an existing database at the baselineVersion"),
-            ("repair   : Repairs the schema history table"),
-            ("repair   : Repairs the schema history table"),
-            (""),
-            ("Options (Format: -key=value)"),
-            ("-------"),
-            ("driver                       : Fully qualified classname of the JDBC driver"),
-            ("url                          : JDBC url to use to connect to the database"),
-            ("user                         : User to use to connect to the database"),
-            ("password                     : Password to use to connect to the database"),
-            ("connectRetries               : Maximum number of retries when attempting to connect to the database"),
-            ("initSql                      : SQL statements to run to initialize a new database connection"),
-            ("schemas                      : Comma-separated list of the schemas managed by MigrateDb"),
-            ("table                        : Name of MigrateDB's schema history table"),
-            ("locations                    : Classpath locations to scan recursively for migrations"),
-            ("failOnMissingLocations       : Whether to fail if a location specified in the migratedb.locations " +
-             "option doesn't exist"),
-            ("resolvers                    : Comma-separated list of custom MigrationResolvers"),
-            ("skipDefaultResolvers         : Skips default resolvers (jdbc, sql and Spring-jdbc)"),
-            ("sqlMigrationPrefix           : File name prefix for versioned SQL migrations"),
-            ("repeatableSqlMigrationPrefix : File name prefix for repeatable SQL migrations"),
-            ("sqlMigrationSeparator        : File name separator for SQL migrations"),
-            ("sqlMigrationSuffixes         : Comma-separated list of file name suffixes for SQL migrations"),
-            ("mixed                        : Allow mixing transactional and non-transactional statements"),
-            ("encoding                     : Encoding of SQL migrations"),
-            ("placeholderReplacement       : Whether placeholders should be replaced"),
-            ("placeholders                 : Placeholders to replace in sql migrations"),
-            ("placeholderPrefix            : Prefix of every placeholder"),
-            ("placeholderSuffix            : Suffix of every placeholder"),
-            ("scriptPlaceholderPrefix      : Prefix of every script placeholder"),
-            ("scriptPlaceholderSuffix      : Suffix of every script placeholder"),
-            ("lockRetryCount               : The maximum number of retries when trying to obtain a lock"),
-            ("jdbcProperties               : Properties to pass to the JDBC driver object"),
-            ("installedBy                  : Username that will be recorded in the schema history table"),
-            ("target                       : Target version up to which MigrateDB should use migrations"),
-            ("outOfOrder                   : Allows migrations to be run \"out of order\""),
-            ("callbacks                    : Comma-separated list of MigrateDbCallback classes"),
-            ("skipDefaultCallbacks         : Skips default callbacks (sql)"),
-            ("validateOnMigrate            : Validate when running migrate"),
-            ("validateMigrationNaming      : Validate file names of SQL migrations (including callbacks)"),
-            ("ignoreMissingMigrations      : Allow missing migrations when validating"),
-            ("ignoreIgnoredMigrations      : Allow ignored migrations when validating"),
-            ("ignorePendingMigrations      : Allow pending migrations when validating"),
-            ("ignoreFutureMigrations       : Allow future migrations when validating"),
-            ("cleanOnValidationError       : Automatically clean on a validation error"),
-            ("cleanDisabled                : Whether to disable clean"),
-            ("baselineVersion              : Version to tag schema with when executing baseline"),
-            ("baselineDescription          : Description to tag schema with when executing baseline"),
-            ("baselineOnMigrate            : Baseline on migrate against uninitialized non-empty schema"),
-            ("configFiles                  : Comma-separated list of config files to use"),
-            ("configFileEncoding           : Encoding to use when loading the config files"),
-            ("jarDirs                      : Comma-separated list of dirs for Jdbc drivers & Java migrations"),
-            ("createSchemas                : Whether MigrateDB should attempt to create the schemas specified " +
-             "in theschemas property"),
-            ("outputFile                   : Send output to the specified file alongside the console"),
-            ("outputType                   : Serialise the output in the given format, Values: json"),
-            (""),
-            ("Flags"),
-            ("-----"),
-            ("-X              : Print debug output"),
-            ("-q              : Suppress all output, except for errors and warnings"),
-            ("-n              : Suppress prompting for a user and password"),
-            ("--version, -v   : Print the MigrateDB version and exit"),
-            ("--help, -h, -?  : Print this usage info and exit"),
-            (""),
-            ("Example"),
-            ("-------"),
-            ("migratedb -user=myuser -password=s3cr3t -url=jdbc:h2:mem -placeholders.abc=def migrate")
+                ("Usage"),
+                ("====="),
+                (""),
+                ("migratedb [options] command"),
+                (""),
+                ("By default, the configuration will be read from conf/migratedb.conf."),
+                ("Options passed from the command-line override the configuration."),
+                (""),
+                ("Commands"),
+                ("--------"),
+                ("migrate  : Migrates the database"),
+                ("clean    : Drops all objects in the configured schemas"),
+                ("info     : Prints the information about applied, current and pending migrations"),
+                ("validate : Validates the applied migrations against the ones on the classpath"),
+                ("baseline : Baselines an existing database at the baselineVersion"),
+                ("repair   : Repairs the schema history table"),
+                ("repair   : Repairs the schema history table"),
+                (""),
+                ("Options (Format: -key=value)"),
+                ("-------"),
+                ("driver                       : Fully qualified classname of the JDBC driver"),
+                ("url                          : JDBC url to use to connect to the database"),
+                ("user                         : User to use to connect to the database"),
+                ("password                     : Password to use to connect to the database"),
+                ("connectRetries               : Maximum number of retries when attempting to connect to the database"),
+                ("initSql                      : SQL statements to run to initialize a new database connection"),
+                ("schemas                      : Comma-separated list of the schemas managed by MigrateDb"),
+                ("table                        : Name of MigrateDB's schema history table"),
+                ("locations                    : Classpath locations to scan recursively for migrations"),
+                ("failOnMissingLocations       : Whether to fail if a location specified in the migratedb.locations " +
+                        "option doesn't exist"),
+                ("resolvers                    : Comma-separated list of custom MigrationResolvers"),
+                ("skipDefaultResolvers         : Skips default resolvers (jdbc, sql and Spring-jdbc)"),
+                ("sqlMigrationPrefix           : File name prefix for versioned SQL migrations"),
+                ("repeatableSqlMigrationPrefix : File name prefix for repeatable SQL migrations"),
+                ("sqlMigrationSeparator        : File name separator for SQL migrations"),
+                ("sqlMigrationSuffixes         : Comma-separated list of file name suffixes for SQL migrations"),
+                ("mixed                        : Allow mixing transactional and non-transactional statements"),
+                ("encoding                     : Encoding of SQL migrations"),
+                ("placeholderReplacement       : Whether placeholders should be replaced"),
+                ("placeholders                 : Placeholders to replace in sql migrations"),
+                ("placeholderPrefix            : Prefix of every placeholder"),
+                ("placeholderSuffix            : Suffix of every placeholder"),
+                ("scriptPlaceholderPrefix      : Prefix of every script placeholder"),
+                ("scriptPlaceholderSuffix      : Suffix of every script placeholder"),
+                ("lockRetryCount               : The maximum number of retries when trying to obtain a lock"),
+                ("jdbcProperties               : Properties to pass to the JDBC driver object"),
+                ("installedBy                  : Username that will be recorded in the schema history table"),
+                ("target                       : Target version up to which MigrateDB should use migrations"),
+                ("outOfOrder                   : Allows migrations to be run \"out of order\""),
+                ("callbacks                    : Comma-separated list of MigrateDbCallback classes"),
+                ("skipDefaultCallbacks         : Skips default callbacks (sql)"),
+                ("validateOnMigrate            : Validate when running migrate"),
+                ("validateMigrationNaming      : Validate file names of SQL migrations (including callbacks)"),
+                ("ignoreMissingMigrations      : Allow missing migrations when validating"),
+                ("ignoreIgnoredMigrations      : Allow ignored migrations when validating"),
+                ("ignorePendingMigrations      : Allow pending migrations when validating"),
+                ("ignoreFutureMigrations       : Allow future migrations when validating"),
+                ("cleanOnValidationError       : Automatically clean on a validation error"),
+                ("cleanDisabled                : Whether to disable clean"),
+                ("baselineVersion              : Version to tag schema with when executing baseline"),
+                ("baselineDescription          : Description to tag schema with when executing baseline"),
+                ("baselineOnMigrate            : Baseline on migrate against uninitialized non-empty schema"),
+                ("configFiles                  : Comma-separated list of config files to use"),
+                ("configFileEncoding           : Encoding to use when loading the config files"),
+                ("jarDirs                      : Comma-separated list of dirs for Jdbc drivers & Java migrations"),
+                ("createSchemas                : Whether MigrateDB should attempt to create the schemas specified " +
+                        "in theschemas property"),
+                ("outputFile                   : Send output to the specified file alongside the console"),
+                ("outputType                   : Serialise the output in the given format, Values: json"),
+                (""),
+                ("Flags"),
+                ("-----"),
+                ("-X              : Print debug output"),
+                ("-q              : Suppress all output, except for errors and warnings"),
+                ("-n              : Suppress prompting for a user and password"),
+                ("--version, -v   : Print the MigrateDB version and exit"),
+                ("--help, -h, -?  : Print this usage info and exit"),
+                (""),
+                ("Example"),
+                ("-------"),
+                ("migratedb -user=myuser -password=s3cr3t -url=jdbc:h2:mem -placeholders.abc=def migrate")
         );
         if (arguments.shouldOutputJson()) {
             printJson(new ErrorOutput(ErrorCode.CLI_USAGE,
-                                      String.join("\n", usageLines),
-                                      null,
-                                      null));
+                    String.join("\n", usageLines),
+                    null,
+                    null));
         } else {
             usageLines.forEach(stdout::println);
         }
@@ -656,8 +634,8 @@ class MigrateDbCommand {
     private List<Path> getJdbcDriverJarFiles() throws IOException {
         try (var fileStream = Files.list(driversDir)) {
             return fileStream
-                .filter(it -> it.getFileName().toString().endsWith(".jar"))
-                .collect(Collectors.toList());
+                    .filter(it -> it.getFileName().toString().endsWith(".jar"))
+                    .collect(Collectors.toList());
 
         } catch (NotDirectoryException | NoSuchFileException e) {
             LOG.warn("Directory for JDBC Drivers not found: " + driversDir.toAbsolutePath());
@@ -678,8 +656,8 @@ class MigrateDbCommand {
         for (String dirName : dirs) {
             try (var fileStream = Files.list(fileSystem.getPath(dirName))) {
                 jarFiles.addAll(
-                    fileStream.filter(it -> it.getFileName().toString().endsWith(".jar"))
-                              .collect(Collectors.toList())
+                        fileStream.filter(it -> it.getFileName().toString().endsWith(".jar"))
+                                .collect(Collectors.toList())
                 );
             } catch (NotDirectoryException | NoSuchFileException e) {
                 LOG.warn("Directory for Java migrations not found: " + dirName);
@@ -692,7 +670,7 @@ class MigrateDbCommand {
                                                   Map<String, String> envVars) {
         var encoding = determineConfigurationFileEncoding(arguments, envVars);
 
-        config.putAll(loadDefaultConfigurationFiles(installationDir, encoding));
+        config.putAll(loadDefaultConfigurationFiles(encoding));
 
         for (var configFile : determineConfigFilesFromArgs(arguments, envVars)) {
             config.putAll(loadConfigurationFile(configFile, encoding, true));
@@ -718,12 +696,12 @@ class MigrateDbCommand {
 
         String url = config.get(PropertyNames.URL);
         if (!config.containsKey(PropertyNames.USER)
-            && needsUser(url, config.getOrDefault(PropertyNames.PASSWORD, null), databaseTypeRegister)) {
+                && needsUser(url, databaseTypeRegister)) {
             config.put(PropertyNames.USER, console.readLine("Database user: "));
         }
 
         if (!config.containsKey(PropertyNames.PASSWORD) &&
-            needsPassword(url, config.get(PropertyNames.USER), databaseTypeRegister)) {
+                needsPassword(url, databaseTypeRegister)) {
             char[] password = console.readPassword("Database password: ");
             config.put(PropertyNames.PASSWORD, password == null ? "" : String.valueOf(password));
         }
@@ -732,7 +710,7 @@ class MigrateDbCommand {
     /**
      * Detect whether the JDBC URL specifies a known authentication mechanism that does not need a username.
      */
-    private boolean needsUser(String url, String password, DatabaseTypeRegister databaseTypeRegister) {
+    private boolean needsUser(String url, DatabaseTypeRegister databaseTypeRegister) {
         DatabaseType databaseType = databaseTypeRegister.getDatabaseTypeForUrl(url);
         return databaseType.detectUserRequiredByUrl(url);
     }
@@ -740,7 +718,7 @@ class MigrateDbCommand {
     /**
      * Detect whether the JDBC URL specifies a known authentication mechanism that does not need a password.
      */
-    private boolean needsPassword(String url, String username, DatabaseTypeRegister databaseTypeRegister) {
+    private boolean needsPassword(String url, DatabaseTypeRegister databaseTypeRegister) {
         DatabaseType databaseType = databaseTypeRegister.getDatabaseTypeForUrl(url);
         return databaseType.detectPasswordRequiredByUrl(url);
     }

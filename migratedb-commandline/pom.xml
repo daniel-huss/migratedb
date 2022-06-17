@@ -108,7 +108,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>11.0.8</version>
+            <version>11.0.9</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -123,10 +123,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <!-- To test compatibilty -->
+            <!-- To test compatibility -->
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>${version.flyway}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
