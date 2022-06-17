@@ -317,6 +317,7 @@ public class DriverDataSource implements DataSource {
      */
     protected Connection getConnectionFromDriver(String username, String password) throws SQLException {
         Properties properties = new Properties(defaultProperties);
+        properties.putAll(additionalProperties);
 
         if (username != null) {
             properties.setProperty("user", username);
@@ -324,8 +325,6 @@ public class DriverDataSource implements DataSource {
         if (password != null) {
             properties.setProperty("password", password);
         }
-
-        properties.putAll(additionalProperties);
 
         Connection connection = driver.connect(url, properties);
         if (connection == null) {
