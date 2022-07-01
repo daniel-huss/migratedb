@@ -6,8 +6,8 @@
 #
 properties:
   version.protobuf: '3.11.4'
-  version.hsqldb: '2.6.0'
-  version.h2: '2.1.210'
+  version.hsqldb: '2.6.1'
+  version.h2: '2.1.214'
   version.derby: '10.15.2.0'
   version.gcs: '1.113.13'
   version.db2: '11.5.7.0'
@@ -16,12 +16,12 @@ properties:
   version.jaybird: '3.0.10'
   version.jtds: '1.3.1'
   version.jna: '4.5.2'
-  version.mariadb: '2.7.2'
+  version.mariadb: '2.7.6'
   version.msal4j: '1.10.1'
   version.mssql: '10.2.0.jre11'
   version.mysql: '8.0.27'
   version.oracle: '19.13.0.0.1'
-  version.postgresql: '42.2.25'
+  version.postgresql: '42.4.0'
   version.redshift: '1.2.10.1009'
   version.snowflake: '3.13.1'
   version.spanner: '2.2.6'
@@ -55,7 +55,7 @@ drivers:
     alias: mariadb
     artifacts:
       - m2: org.mariadb.jdbc:mariadb-java-client:${version.mariadb}
-        sha256: 'a3f6776df0842cf65e7f158515012d5307da949f66042282e1ee4474dd19f448'
+        sha256: 'd3e448b1e8799ccc06c7ad2745aa03e72f19e13124b676b9656a54a833af7a93'
       - m2: net.java.dev.jna:jna:${version.jna}
         sha256: '0c8eb7acf67261656d79005191debaba3b6bf5dd60a43735a245429381dbecff'
       - m2: net.java.dev.jna:jna-platform:${version.jna}
@@ -64,7 +64,7 @@ drivers:
     alias: postgresql
     artifacts:
       - m2: org.postgresql:postgresql:${version.postgresql}
-        sha256: 'e97fafe15bee2358cf8d0ede26f80e31d4e6387a58e194fd7cc0f203f648a9f2'
+        sha256: 'fe25b9c0a2c59458504ec88862853df522ee87f8a02564835d537c29ae4cb125'
   - name: Apache Derby ${version.derby}
     alias: derby
     artifacts:
@@ -80,7 +80,7 @@ drivers:
     alias: hsqldb
     artifacts:
       - m2: org.hsqldb:hsqldb:${version.hsqldb}
-        sha256: '0f85006fc5e359717f4711297aa9f427ae928c2972f2ff0445ff65a6022446eb'
+        sha256: 'e3f9e9d472d985b95ee5c10ed40d03496c3a26b950590ae0a49ce608626dcbe8'
   - name: DB2 ${version.db2}
     alias: db2
     artifacts:
@@ -90,7 +90,7 @@ drivers:
     alias: h2
     artifacts:
       - m2: com.h2database:h2:${version.h2}
-        sha256: 'edc57299926297fd9315e04de75f8538c4cb5fe97fd3da2a1e5cee6a4c98b5cd'
+        sha256: 'd623cdc0f61d218cf549a8d09f1c391ff91096116b22e2475475fce4fbe72bd0'
   - name: Firebird ${version.jaybird}
     alias: firebird
     artifacts:

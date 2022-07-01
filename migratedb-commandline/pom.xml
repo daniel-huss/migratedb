@@ -150,25 +150,10 @@
                 <executions>
                     <execution>
                         <id>copy-license</id>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
                         <phase>generate-resources</phase>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>..</directory>
-                                    <includes>
-                                        <include>LICENSE.txt</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                            <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
