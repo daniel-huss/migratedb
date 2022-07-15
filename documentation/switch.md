@@ -14,7 +14,7 @@ However, there's not much to do if you want to make the switch, and you won't ha
 * Replace `org.flywaydb` with `migratedb`
 * Replace `Flyway` with `MigrateDb`
 * Replace `flyway` with `migratedb`
-* Replace `MigrationVersion` with either `Version` or `TargetVersion`, depending on how it's used. If its value could be 'current' or 'latest', use TargetVersion, otherwise MigrationVersion.
+* Replace `MigrationVersion` with either `Version` or `TargetVersion`, depending on how it's used. If its value could be 'current' or 'latest', use TargetVersion, otherwise Version.
                     
 This should cover most changes, but we recommend checking the full list of breaking changes in the [change log](https://github.com/daniel-huss/migratedb/blob/master/CHANGELOG.adoc).
 
