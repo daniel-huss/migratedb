@@ -49,12 +49,6 @@ These error codes may appear from any command, and are indicative of more genera
 - **Caused by:** Multiple repeatable migrations having the same description
 - **Solution:** Ensure that all repeatable migrations have a unique description
 
-### `DUPLICATE_DELETED_MIGRATION`
-
-- **Caused by:** Schema history or filesystem corruption causing the same migration to appear to be deleted more than
-  once
-- **Solution:** Ensure that you do not tamper with the schema history and all migrations that have been deleted are
-  removed from [locations](/migratedb/documentation/configuration/parameters/locations) known to MigrateDB
 
 ## Validate Error Codes
 
