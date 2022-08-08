@@ -70,5 +70,5 @@ INSERT INTO ${tableName} (value) VALUES ('Mr. T');
 - *None*
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/snowflake">Snowflake <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/snowflake">Snowflake ➡️</a>
 </p>

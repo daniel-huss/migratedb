@@ -13,34 +13,34 @@ install a build tool.
 
 ## Download and installation
 
-TODO Just link to the Maven Central artifact.
+[Download from Maven Central](/migratedb/download).
 
 ## Directory structure
 
 The MigrateDB download, once extracted, now becomes a directory with the following structure:
 
-<pre class="filetree"><i class="fa fa-folder-open"></i> migratedb-{{site.migratedbVersion}}
-  <i class="fa fa-folder-open"></i> conf
-    <span><i class="fa fa-file-text"></i> migratedb.conf</span> <i class="fa fa-long-arrow-left"></i> configuration file
-  <i class="fa fa-folder"></i> drivers        <i class="fa fa-long-arrow-left" style="margin-left: -3px"></i> JDBC drivers
-  <i class="fa fa-folder"></i> jars           <i class="fa fa-long-arrow-left" style="margin-left: -3px"></i> Java-based migrations (as jars)
-  <i class="fa fa-folder"></i> jre
-  <i class="fa fa-folder"></i> lib
-  <i class="fa fa-folder"></i> licenses
-  <i class="fa fa-folder"></i> sql            <i class="fa fa-long-arrow-left" style="margin-left: -3px"></i> SQL migrations
-  <span><i class="fa fa-file"></i> migratedb</span>        <i class="fa fa-long-arrow-left"></i> macOS/Linux executable
-  <span><i class="fa fa-file"></i> migratedb.cmd</span>    <i class="fa fa-long-arrow-left"></i> Windows executable
+<pre class="filetree">
+📂 migratedb-{{site.migratedbVersion}}
+  📂 conf
+    📄 migratedb.conf    <i>configuration file</i>
+ 📁 drivers              <i>JDBC drivers</i>
+ 📁 jars                 <i>Java-based migrations (as jars)</i>
+ 📁 lib
+ 📁 licenses
+ 📁 sql                  <i>SQL migrations</i>
+ 📄 migratedb            <i>macOS/Linux executable</i>
+ 📄 migratedb.cmd        <i>Windows executable</i>
 </pre>
 
 ## Usage
 
-<pre class="console"><span>&gt;</span> migratedb [options] command</pre>
+<pre class="console">migratedb [options] command</pre>
 
 ## Help flags
 
 The following flags provide helpful information without carrying out any other operations:
 
-<table class="table table-striped">
+<table class="table">
     <tr>
         <td><code>--help</code><br/><code>-h</code><br/><code>-?</code></td>
         <td>Print the list of available commands and options</td>
@@ -52,38 +52,41 @@ The following flags provide helpful information without carrying out any other o
 </table>
 
 ## Commands
+                   
+The following commands are available:
 
-<table class="table table-bordered table-hover">
+<table class="table">
     <thead>
-    <tr>
-        <th>Name</th>
-        <th>Description</th>
-    </tr>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
     </thead>
     <tbody>
-    <tr>
-        <td><a href="/migratedb/documentation/usage/commandline/migrate">migrate</a></td>
-        <td>Migrates the database</td>
-    </tr>
-    <tr>
-        <td><a href="/migratedb/documentation/usage/commandline/clean">clean</a></td>
-        <td>Drops all objects in the configured schemas</td>
-    </tr>
-    <tr>
-        <td><a href="/migratedb/documentation/usage/commandline/info">info</a></td>
-        <td>Prints the details and status information about all the migrations</td>
-    </tr>
-    <tr>
-        <td><a href="/migratedb/documentation/usage/commandline/validate">validate</a></td>
-        <td>Validates the applied migrations against the ones available on the classpath</td>
-    <tr>
-        <td><a href="/migratedb/documentation/usage/commandline/baseline">baseline</a></td>
-        <td>Baselines an existing database, excluding all migrations up to and including baselineVersion</td>
-    </tr>
-    <tr>
-        <td><a href="/migratedb/documentation/usage/commandline/repair">repair</a></td>
-        <td>Repairs the schema history table</td>
-    </tr>
+        <tr>
+            <td><a href="/migratedb/documentation/usage/commandline/migrate">migrate</a></td>
+            <td>Migrates the database</td>
+        </tr>
+        <tr>
+            <td><a href="/migratedb/documentation/usage/commandline/clean">clean</a></td>
+            <td>Drops all objects in the configured schemas</td>
+        </tr>
+        <tr>
+            <td><a href="/migratedb/documentation/usage/commandline/info">info</a></td>
+            <td>Prints the details and status information about all the migrations</td>
+        </tr>
+        <tr>
+            <td><a href="/migratedb/documentation/usage/commandline/validate">validate</a></td>
+            <td>Validates the applied migrations against the ones available on the classpath</td>
+        </tr>
+        <tr>
+            <td><a href="/migratedb/documentation/usage/commandline/baseline">baseline</a></td>
+            <td>Baselines an existing database, excluding all migrations up to and including baselineVersion</td>
+        </tr>
+        <tr>
+            <td><a href="/migratedb/documentation/usage/commandline/repair">repair</a></td>
+            <td>Repairs the schema history table</td>
+        </tr>
     </tbody>
 </table>
 
@@ -119,11 +122,11 @@ MigrateDB will search for and automatically load the following config files if p
 It is also possible to point MigrateDB at one or more additional config files. This is achieved by
 supplying the command line parameter `-configFiles=` as follows:
 
-<pre class="console"><span>&gt;</span> migratedb <strong>-configFiles=</strong>path/to/myAlternativeConfig.conf migrate</pre>
+<pre class="console">migratedb <strong>-configFiles=</strong>path/to/myAlternativeConfig.conf migrate</pre>
 
 To pass in multiple files, separate their names with commas:
 
-<pre class="console"><span>&gt;</span> migratedb <strong>-configFiles</strong>=path/to/myAlternativeConfig.conf,other.conf migrate</pre>
+<pre class="console">migratedb <strong>-configFiles</strong>=path/to/myAlternativeConfig.conf,other.conf migrate</pre>
 
 Relative paths are relative to the current working directory. The special option `-configFiles=-` reads from
 standard input.
@@ -131,17 +134,17 @@ standard input.
 Alternatively you can also use the `MIGRATEDB_CONFIG_FILES` environment variable for this.
 When set it will take preference over the command-line parameter.
 
-<pre class="console"><span>&gt;</span> export <strong>MIGRATEDB_CONFIG_FILES</strong>=path/to/myAlternativeConfig.conf,other.conf
-<span>&gt;</span> migratedb migrate</pre>
+<pre class="console">export <strong>MIGRATEDB_CONFIG_FILES</strong>=path/to/myAlternativeConfig.conf,other.conf
+migratedb migrate</pre>
 
-By default MigrateDB loads configuration files using UTF-8. To use an alternative encoding, use the command line
+By default, MigrateDB loads configuration files using UTF-8. To use an alternative encoding, use the command line
 parameter `-configFileEncoding=` as follows:
-<pre class="console"><span>&gt;</span> migratedb <strong>-configFileEncoding=</strong>ISO-8859-1 migrate</pre>
+<pre class="console">migratedb <strong>-configFileEncoding=</strong>ISO-8859-1 migrate</pre>
 
 Alternatively you can also use the `MIGRATEDB_CONFIG_FILE_ENCODING` environment variable for this.
 When set it will take preference over the command-line parameter.
 
-<pre class="console"><span>&gt;</span> export <strong>MIGRATEDB_CONFIG_FILE_ENCODING</strong>=ISO-8859-1</pre>
+<pre class="console">export <strong>MIGRATEDB_CONFIG_FILE_ENCODING</strong>=ISO-8859-1</pre>
 
 ### Environment Variables
 
@@ -153,7 +156,7 @@ the [MigrateDB environment variable reference](/migratedb/documentation/configur
 
 Finally, MigrateDB can also be configured by passing arguments directly from the command-line:
 
-<pre class="console"><span>&gt;</span> migratedb -user=myuser -schemas=schema1,schema2 -placeholders.keyABC=valueXYZ migrate</pre>
+<pre class="console">migratedb -user=myuser -schemas=schema1,schema2 -placeholders.keyABC=valueXYZ migrate</pre>
 
 #### A note on escaping command-line arguments
 
@@ -163,11 +166,11 @@ equals `=` and ampersands `&`. For example:
 
 **bash**, **macOS terminal** and **Windows cmd**: use double-quotes:
 
-<pre class="console"><span>&gt;</span> migratedb info -url="jdbc:snowflake://ab12345.snowflakecomputing.com/?db=demo_db&user=foo"</pre>
+<pre class="console">migratedb info -url="jdbc:snowflake://ab12345.snowflakecomputing.com/?db=demo_db&user=foo"</pre>
 
 **Powershell**: use double-quotes inside single-quotes:
 
-<pre class="console"><span>&gt;</span> ./migratedb info -url='"jdbc:snowflake://ab12345.snowflakecomputing.com/?db=demo_db&user=foo"'</pre>
+<pre class="console">./migratedb info -url='"jdbc:snowflake://ab12345.snowflakecomputing.com/?db=demo_db&user=foo"'</pre>
 
 ### Configuration from standard input
 
@@ -181,29 +184,29 @@ login credentials and pipe it straight into MigrateDB.
 
 Read a single option from `echo`:
 <pre class="console">
-<span>&gt;</span> echo $'migratedb.url=jdbc:h2:mem:mydb' | migratedb info -configFiles=-
+echo $'migratedb.url=jdbc:h2:mem:mydb' | migratedb info -configFiles=-
 </pre>
 
 Read multiple options from `echo`, delimited by newlines:
 <pre class="console">
-<span>&gt;</span> echo $'migratedb.url=jdbc:h2:mem:mydb\nmigratedb.user=sa' | migratedb info -configFiles=-
+echo $'migratedb.url=jdbc:h2:mem:mydb\nmigratedb.user=sa' | migratedb info -configFiles=-
 </pre>
 
 Use `cat` to read a config file and pipe it directly into MigrateDB:
 <pre class="console">
-<span>&gt;</span> cat migratedb.conf | migratedb migrate -configFiles=-
+cat migratedb.conf | migratedb migrate -configFiles=-
 </pre>
 
 Use `gpg` to encrypt a config file, then pipe it into MigrateDB.
 
 Encrypt the config file:
 <pre class="console">
-<span>&gt;</span> gpg -e -r "Your Name" migratedb.conf
+gpg -e -r "Your Name" migratedb.conf
 </pre>
 
 Decrypt the file and pipe it to MigrateDB:
 <pre class="console">
-<span>&gt;</span> gpg -d -q migratedb.conf.gpg | migratedb info -configFiles=-
+gpg -d -q migratedb.conf.gpg | migratedb info -configFiles=-
 </pre>
 
 ### Overriding order
@@ -213,13 +216,13 @@ The MigrateDB command-line tool has been carefully designed to load and override
 Settings are loaded in the following order (higher items in the list take precedence over lower ones):
 
 1. Command-line arguments
-1. Environment variables
-1. Standard input
-1. Custom config files
-1. `<current-dir>/migratedb.conf`
-1. `<user-home>/migratedb.conf`
-1. `<install-dir>/conf/migratedb.conf`
-1. MigrateDB command-line defaults
+2. Environment variables
+3. Standard input
+4. Custom config files
+5. `<current-dir>/migratedb.conf`
+6. `<user-home>/migratedb.conf`
+7. `<install-dir>/conf/migratedb.conf`
+8. MigrateDB command-line defaults
 
 The means that if for example `migratedb.url` is both present in a config file and passed as `-url=` from the
 command-line,
@@ -261,36 +264,20 @@ specify an exact desired logging framework to use.
 
 The simplest way to make use of MigrateDB's auto-detection is to put all the necessary JAR files in MigrateDB's `lib`
 folder and any configuration in the MigrateDB root folder.
-For example, if you wished to use `log4j` v2 with the MigrateDB command line, you would achieve this by placing the
-log4j JAR files and the corresponding configuration file `log4j2.xml` like this:
+For example, if you wished to use Logback with the MigrateDB command line, you would achieve this by placing the Logback JAR files and the corresponding configuration file `logback.xml` like this:
 
-<pre class="filetree"><i class="fa fa-folder-open"></i> migratedb-{{site.migratedbVersion}}
-  <i class="fa fa-folder"></i> conf
-  <i class="fa fa-folder"></i> drivers
-  <i class="fa fa-folder"></i> jars
-  <i class="fa fa-folder"></i> jre
-  <i class="fa fa-folder-open"></i> lib
-    <span><i class="fa fa-file-text"></i> log4j-api-2.17.1.jar</span>       <i class="fa fa-long-arrow-left"></i> log4j v2 jar
-    <span><i class="fa fa-file-text"></i> log4j-core-2.17.1.jar</span>      <i class="fa fa-long-arrow-left"></i> log4j v2 jar
-  <i class="fa fa-folder"></i> licenses
-  <i class="fa fa-folder"></i> sql
-  <span><i class="fa fa-file"></i> log4j2.xml</span>                   <i class="fa fa-long-arrow-left"></i> log4j configuration
-</pre>
-
-Similarly, to use `Logback` add the relevant files like this:
-
-<pre class="filetree"><i class="fa fa-folder-open"></i> migratedb-{{site.migratedbVersion}}
-  <i class="fa fa-folder"></i> conf
-  <i class="fa fa-folder"></i> drivers
-  <i class="fa fa-folder"></i> jars
-  <i class="fa fa-folder"></i> jre
-  <i class="fa fa-folder-open"></i> lib
-    <span><i class="fa fa-file-text"></i> logback-classic.1.1.7.jar</span> <i class="fa fa-long-arrow-left"></i> Logback jar
-    <span><i class="fa fa-file-text"></i> logback-core-1.1.7.jar</span>    <i class="fa fa-long-arrow-left"></i> Logback jar
-    <span><i class="fa fa-file-text"></i> slf4j-api-1.7.21.jar</span>      <i class="fa fa-long-arrow-left"></i> Logback dependency
-  <i class="fa fa-folder"></i> licenses
-  <i class="fa fa-folder"></i> sql
-  <span><i class="fa fa-file"></i> logback.xml</span>                 <i class="fa fa-long-arrow-left"></i> Logback configuration
+<pre class="filetree">
+  📂 migratedb-{{site.migratedbVersion}}
+  📁 conf
+  📁 drivers
+  📁 jars
+  📂 lib
+    📄 logback-classic.1.2.3.jar         <i>Logback jar</i>
+    📄 logback-core-1.2.3.jar            <i>Logback jar</i>
+    📄 slf4j-api-1.7.30.jar              <i>API jar</i>
+  📁 licenses
+  📁 sql
+  📄 logback.xml                         <i>Logback configuration</i>
 </pre>
 
 If you are building MigrateDB into a larger application, this means you do not need to explicitly wire up any logging as
@@ -305,7 +292,7 @@ it [here](https://p6spy.readthedocs.io/en/latest/configandusage.html#configurati
 
 ### Colors
 
-By default the output is automatically colorized if `stdout` is associated with a terminal.
+By default, the output is automatically colorized if `stdout` is associated with a terminal.
 
 You can override this behavior with the `-color` option. Possible values:
 
@@ -320,15 +307,15 @@ with normal command-line tools, for example:
 
 **bash, macOS terminal**
 
-<pre class="console"><span>&gt;</span> migratedb migrate -X <strong>| grep -v 'term-to-filter-out'</strong></pre>
+<pre class="console">migratedb migrate -X <strong>| grep -v 'term-to-filter-out'</strong></pre>
 
 **Powershell**
 
-<pre class="console"><span>&gt;</span> migratedb migrate -X <strong>| sls -Pattern 'term-to-filter-out' -NoMatch</strong></pre>
+<pre class="console">migratedb migrate -X <strong>| sls -Pattern 'term-to-filter-out' -NoMatch</strong></pre>
 
 **Windows cmd**
 
-<pre class="console"><span>&gt;</span> migratedb migrate -X <strong>| findstr /v /c:"term-to-filter-out"</strong></pre>
+<pre class="console">migratedb migrate -X <strong>| findstr /v /c:"term-to-filter-out"</strong></pre>
 
 ### Quiet mode
 
@@ -344,5 +331,5 @@ JSON payload instead of being sent to `stderr`.
 Add `-outputFile=/my/output.txt` to the argument list to also write output to the specified file.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/migrate">Command-line: migrate <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/migrate">Command-line: migrate ➡️</a>
 </p>

@@ -92,5 +92,5 @@ INSERT INTO ${tableName} (value) VALUES ('Mr. T');
 ```
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/xtradb">Percona XtraDB Cluster <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/xtradb">Percona XtraDB Cluster ➡️</a>
 </p>

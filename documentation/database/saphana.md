@@ -107,5 +107,5 @@ INSERT INTO ${tableName} (name) VALUES ('Mr. T');
 - *None*
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/sybasease">Sybase ASE <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/sybasease">Sybase ASE ➡️</a>
 </p>

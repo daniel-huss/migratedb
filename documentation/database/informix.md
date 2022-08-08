@@ -82,5 +82,5 @@ INSERT INTO ${tableName} (col1, col2) VALUES (2, 3);
 - No Support for DDL transactions due to Informix limitations.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/h2">H2 <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/h2">H2 ➡️</a>
 </p>

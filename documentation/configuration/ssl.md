@@ -28,14 +28,14 @@ To import the certificate, use the `keytool` utility. This is included as part o
 is shipped with MigrateDB. If you're making a new store then you will be prompted for a password. Don't lose it - you
 will need that password later!
 
-<pre class="console"><span>&gt;</span> keytool -keystore myStorePath -alias "My database certificate" -import -file databaseCertificate.pem</pre>
+<pre class="console">keytool -keystore myStorePath -alias "My database certificate" -import -file databaseCertificate.pem</pre>
 
 If you don't specify a particular truststore then the default location is in your home directory:
 `$HOME/.keystore` (Linux) or `%USER_HOME%\.keystore` (Windows)
 
 You can also check which certificates have been imported already:
 
-<pre class="console"><span>&gt;</span> keytool -keystore myStorePath -list</pre>
+<pre class="console">keytool -keystore myStorePath -list</pre>
 
 ## Make sure Java can access the truststore
 
@@ -43,12 +43,12 @@ You now need to configure your Java environment to be able to access these store
 setting a couple of JVM properties. If you're using the MigrateDB
 command-line, then you can set the `JAVA_ARGS` environment variable which the command-line script reads.
 
-<pre class="console"><span>&gt;</span> JAVA_ARGS='-Djavax.net.ssl.trustStore="myStorePath" -Djavax.net.ssl.trustStorePassword="myStorePassword"'</pre>
+<pre class="console">JAVA_ARGS='-Djavax.net.ssl.trustStore="myStorePath" -Djavax.net.ssl.trustStorePassword="myStorePassword"'</pre>
 
 If you're using the MigrateDB Java API directly, or another tool which invokes Java, then you should add these arguments
 to the place where you start the Java process:
 
-<pre class="console"><span>&gt;</span> java -Djavax.net.ssl.trustStore="myStorePath" -Djavax.net.ssl.trustStorePassword="myStorePassword" myJavaApplication</pre>
+<pre class="console">java -Djavax.net.ssl.trustStore="myStorePath" -Djavax.net.ssl.trustStorePassword="myStorePassword" myJavaApplication</pre>
 
 ## Configure MigrateDB's database connection to use SSL
 
@@ -67,7 +67,7 @@ to carry out all the above steps and then simply switch SSL on and off as requir
 
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/configuration/authentication">Authentication<i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/configuration/authentication">Authentication➡️</a>
 </p>
 
 

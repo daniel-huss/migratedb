@@ -12,7 +12,7 @@ Baselines an existing database, excluding all migrations up to and including `ba
 
 ## Usage
 
-<pre class="console"><span>&gt;</span> migratedb [options] baseline</pre>
+<pre class="console">migratedb [options] baseline</pre>
 
 ## Options
 
@@ -62,5 +62,5 @@ Schema baselined with version: 1</pre>
 }</pre>
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/repair">Command-line: repair <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/repair">Command-line: repair ➡️</a>
 </p>

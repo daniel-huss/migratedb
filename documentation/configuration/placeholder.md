@@ -101,5 +101,5 @@ echo $FP__migratedb_filename__
 ```
 
 <p class="next-steps">
-  <a class="btn btn-primary" href="/migratedb/documentation/configuration/scriptconfigfiles">Script Config Files <i class="fa fa-arrow-right"></i></a>
+  <a class="btn btn-primary" href="/migratedb/documentation/configuration/scriptconfigfiles">Script Config Files ➡️</a>
 </p>

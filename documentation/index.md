@@ -41,5 +41,5 @@ title: Documentation
     for migrating the database on application startup.</p>
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/concepts/migrations">Migrations <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/migrations">Migrations ➡️</a>
 </p>

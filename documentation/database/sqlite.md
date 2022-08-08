@@ -83,5 +83,5 @@ CREATE TRIGGER update_customer_address UPDATE OF address ON customers
   transactions
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/firebird">Firebird <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/firebird">Firebird ➡️</a>
 </p>

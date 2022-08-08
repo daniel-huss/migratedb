@@ -116,5 +116,5 @@ to completely replace the built-in ones (by default, custom resolvers will run i
 built-in ones).
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/usage/api/javadoc">API: Javadoc <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/api/javadoc">API: Javadoc ➡️</a>
 </p>

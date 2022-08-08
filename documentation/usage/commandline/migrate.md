@@ -13,7 +13,7 @@ exist.
 
 ## Usage
 
-<pre class="console"><span>&gt;</span> migratedb [options] migrate</pre>
+<pre class="console">migratedb [options] migrate</pre>
 
 ## Options
 
@@ -119,5 +119,5 @@ Successfully applied 2 migrations to schema "PUBLIC" (execution time 00:00.030s)
 }</pre>
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/clean">Command-line: clean <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/clean">Command-line: clean ➡️</a>
 </p>

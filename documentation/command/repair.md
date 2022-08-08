@@ -23,5 +23,5 @@ Repair is your tool to fix issues with the schema history table. It has a few ma
 {% include commandUsage.html command="repair" %}
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/">Command-line <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/">Command-line ➡️</a>
 </p>

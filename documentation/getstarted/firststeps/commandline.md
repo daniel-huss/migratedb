@@ -34,7 +34,7 @@ INFO    Successfully downloaded 15 drivers
 
 Let's now jump into our new directory created from downloading MigrateDB:
 
-<pre class="console"><span>&gt;</span> cd migratedb-{{ site.migratedbVersion }}</pre>
+<pre class="console">cd migratedb-{{ site.migratedbVersion }}</pre>
 
 Configure MigrateDB by editing `/conf/migratedb.conf`, like this:
 
@@ -101,5 +101,5 @@ In this brief tutorial we saw how to:
 These migrations were then successfully found and executed.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline">Read the documentation <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline">Read the documentation ➡️</a>
 </p>

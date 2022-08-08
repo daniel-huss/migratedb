@@ -471,5 +471,5 @@ The following will happen:
 | `Superseded`       | This is a [`repeatable`](/migratedb/documentation/getstarted/advanced/repeatable) migration that is outdated and has already been superseded by a newer one |
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/concepts/callbacks">Callbacks <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/callbacks">Callbacks ➡️</a>
 </p>

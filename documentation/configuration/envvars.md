@@ -13,7 +13,7 @@ variables.
 See [configuration](/migratedb/documentation/configuration/parameters) for a full list of supported configuration parameters.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/configuration/ssl">SSL support <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/configuration/ssl">SSL support ➡️</a>
 </p>
 
 

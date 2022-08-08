@@ -70,7 +70,7 @@ Spring application using XML bean configuration:
 ```
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/usage/api/hooks">API: Hooks <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/api/hooks">API: Hooks ➡️</a>
 </p>
 
 

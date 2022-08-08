@@ -85,5 +85,5 @@ SET TERM ;#
   database and run the migration with exclusive access.
 
  <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/learnmore/existing">Existing database setup <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/learnmore/existing">Existing database setup ➡️</a>
 </p>

@@ -175,5 +175,5 @@ workarounds for this are:
   needed
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/sqlserver">SQL Server <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/sqlserver">SQL Server ➡️</a>
 </p>

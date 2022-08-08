@@ -19,7 +19,7 @@ Validation fails if
 
 ## Usage
 
-<pre class="console"><span>&gt;</span> migratedb [options] validate</pre>
+<pre class="console">migratedb [options] validate</pre>
 
 ## Options
 

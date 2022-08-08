@@ -46,5 +46,5 @@ please refer to the [PostgreSQL](/migratedb/documentation/database/postgresql) p
 - AWS SecretsManager is not supported with TimescaleDB.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/yugabytedb">YugabyteDB <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/yugabytedb">YugabyteDB ➡️</a>
 </p>

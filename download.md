@@ -5,13 +5,11 @@ title: Download
 ---
 # Downloads                     
 
-MigrateDB is available via Maven Central!           
+<ul>
+    <li><a href="https://search.maven.org/artifact/de.unentscheidbar/migratedb-core/{{ site.migratedbVersion }}/jar">Core Library</a></li>
+    <li><a href="https://search.maven.org/artifact/de.unentscheidbar/migratedb-commandline/{{ site.migratedbVersion }}/tar.gz">Command Line Interface</a></li>
 
-## Core Library
-https://search.maven.org/artifact/de.unentscheidbar/migratedb-core/{{ site.migratedbVersion }}/jar
-
-## Command Line Interface
-https://search.maven.org/artifact/de.unentscheidbar/migratedb-commandline/{{ site.migratedbVersion }}/tar.gz
+</ul>
 
 ## Maven Plugin
 ````xml

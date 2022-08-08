@@ -134,5 +134,5 @@ structure [here](https://www.postgresql.org/docs/9.6/libpq-pgpass.html).
 - No support for the `passfile` or `hostaddr` parameter when using pgpass as there is no JDBC equivalent
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/aurora-postgresql">Aurora PostgreSQL <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/aurora-postgresql">Aurora PostgreSQL ➡️</a>
 </p>

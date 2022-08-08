@@ -12,7 +12,7 @@ Prints the details and status information about all the migrations.
 
 ## Usage
 
-<pre class="console"><span>&gt;</span> migratedb [options] info</pre>
+<pre class="console">migratedb [options] info</pre>
 
 ## Options
 
@@ -126,5 +126,5 @@ Example:
 
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/validate">Command-line: validate <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/validate">Command-line: validate ➡️</a>
 </p>

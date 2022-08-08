@@ -91,5 +91,5 @@ We recommend using the latest v1 driver for the time being.
 See [here](https://github.com/aws/amazon-redshift-jdbc-driver/issues/4) for more details.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/cockroachdb">CockroachDB <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/cockroachdb">CockroachDB ➡️</a>
 </p>

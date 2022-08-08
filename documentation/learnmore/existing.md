@@ -66,5 +66,5 @@ to the state of production and the others will be left as is.
 As soon as you add a new migration, it can be applied identically to any of your databases.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/configuration/envvars">Environment Variables<i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/configuration/envvars">Environment Variables➡️</a>
 </p>

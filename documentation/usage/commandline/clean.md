@@ -13,7 +13,7 @@ The schemas are cleaned in the order specified by the `schemas` property.
 
 ## Usage
 
-<pre class="console"><span>&gt;</span> migratedb [options] clean</pre>
+<pre class="console">migratedb [options] clean</pre>
 
 ## Options
 
@@ -60,5 +60,5 @@ Cleaned database schema 'PUBLIC' (execution time 00:00.014s)</pre>
 }</pre>
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/info">Command-line: info <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/info">Command-line: info ➡️</a>
 </p>

@@ -103,5 +103,5 @@ COPY copy_test (c1, c2, c3) FROM stdin;
   in `pg_largeobject` ([Issue 1934](https://github.com/daniel-huss/migratedb/issues/1934))
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/redshift">Redshift <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/redshift">Redshift ➡️</a>
 </p>

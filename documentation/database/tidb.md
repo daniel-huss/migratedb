@@ -76,5 +76,5 @@ INSERT INTO ${tableName} (name) VALUES ('Mr. T');
 ```
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/testcontainers">TestContainers <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/testcontainers">TestContainers ➡️</a>
 </p>

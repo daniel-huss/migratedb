@@ -221,5 +221,5 @@ the port over the named instance.
   a driver limitation, and can be solved by using the Microsoft driver instead.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/azuresynapse">Azure Synapse <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/azuresynapse">Azure Synapse ➡️</a>
 </p>

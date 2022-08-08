@@ -91,5 +91,5 @@ In this brief tutorial we saw how to
 - triggers the execution of callbacks
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/concepts/callbacks">Read the callback documentation <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/callbacks">Read the callback documentation ➡️</a>
 </p>

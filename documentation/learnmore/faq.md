@@ -1,16 +1,13 @@
-
 ---
 layout: documentation
 menu: faq
 subtitle: FAQ
 redirect_from:
-
-- /documentation/faq/
-- /documentation/faq.html/
-
+  - /documentation/faq/
+  - /documentation/faq.html/
 ---
-Frequently Asked Questions
-==========================
+# Frequently Asked Questions
+
 
 * [I found a defect. Where should I report it?](#defect)
 * [I have a feature request. Where should I submit it?](#feature-request)
@@ -31,8 +28,7 @@ Frequently Asked Questions
 
 <div id="defect"></div>
 
-I found a defect. Where should I report it?
--------------------------------------------
+## I found a defect. Where should I report it?
 
 Check the [issue tracker](https://github.com/daniel-huss/migratedb/issues?state=open) if someone else already reported
 it. If not, [raise a new issue](https://github.com/daniel-huss/migratedb/issues?state=open).
@@ -40,30 +36,26 @@ it. If not, [raise a new issue](https://github.com/daniel-huss/migratedb/issues?
 
 <div id="feature-request"></div>
 
-I have a feature request. Where should I submit it?
----------------------------------------------------
+## I have a feature request. Where should I submit it?
 
 Check the [issue tracker](https://github.com/daniel-huss/migratedb/issues?state=open) if someone else already suggested
 it. If not, [raise a new issue](https://github.com/daniel-huss/migratedb/issues?state=open).
 
 <div id="question"></div>
 
-I have a question. Where can I ask it?
---------------------------------------
+##  I have a question. Where can I ask it?
 
 Post your question on [StackOverflow](http://stackoverflow.com).
 
 <div id="downgrade"></div>
 
-What about undo/downgrade/downward migrations?
-----------------------------------------------
+## What about undo/downgrade/downward migrations?
 
 [These are not supported.](/migratedb/documentation/migrations#no-undo-migrations)
 
 <div id="hot-fixes"></div>
 
-What is the best strategy for dealing with hot fixes?
------------------------------------------------------
+## What is the best strategy for dealing with hot fixes?
 
 You have a regular release schedule, say once per sprint. Version 7 is live and you are developing version 8. Version 8
 contains DB Schema Changes. Suddenly hot fix is required for version 7, and it also needs a schema change.
@@ -84,8 +76,7 @@ order and fill the gaps.
 
 <div id="parallel"></div>
 
-Can multiple nodes migrate in parallel?
----------------------------------------
+## Can multiple nodes migrate in parallel?
 
 Yes! MigrateDB uses the locking technology of your database to coordinate multiple nodes. This ensures that even if
 multiple instances of your application attempt to migrate the database at the same time, it still works. Cluster
@@ -93,8 +84,7 @@ configurations are fully supported.
 
 <div id="rollback"></div>
 
-Does MigrateDB perform a rollback if a migration fails?
---------------------------------------------------------
+## Does MigrateDB perform a rollback if a migration fails?
 
 MigrateDB runs each migration in a separate transaction. In case of failure this transaction is rolled back.
 Unfortunately, today only DB2, PostgreSQL, Derby, EnterpriseDB and to a certain extent SQL Server support DDL statements
@@ -105,8 +95,7 @@ to include only a single DDL statement per migration. This solution however has 
 
 <div id="multiple-schemas"></div>
 
-Does MigrateDB support multiple schemas?
-----------------------------------------
+## Does MigrateDB support multiple schemas?
 
 Yes! These are the recommended strategies for dealing with them:
 
@@ -142,16 +131,14 @@ Schema bar:
 
 <div id="osgi"></div>
 
-Does MigrateDB work with OSGI?
-------------------------------
+## Does MigrateDB work with OSGI?
 
 Yes!
 
 
 <div id="placeholders"></div>
 
-Does MigrateDB support placeholder replacement?
------------------------------------------------
+## Does MigrateDB support placeholder replacement?
 
 Yes! MigrateDB can replace placeholders in SQL migrations. The default pattern is ${placeholder}. This can be configured
 using the placeholderPrefix and placeholderSuffix properties.
@@ -161,15 +148,13 @@ See [Placeholders](../configuration/placeholder) for more details.
 
 <div id="spring"></div>
 
-Does MigrateDB depend on Spring?
---------------------------------
+## Does MigrateDB depend on Spring?
 
 No. MigrateDB has zero required dependences.
 
 <div id="outside-changes"></div>
 
-Can I make structure changes to the DB outside MigrateDB?
-------------------------------------------------------------
+## Can I make structure changes to the DB outside MigrateDB?
 
 No. One of the prerequisites for being able to rely on the metadata in the database and having reliable migrations is
 that ALL database changes are made by MigrateDB. No exceptions. The price for this reliability is discipline. Ad hoc
@@ -178,8 +163,7 @@ trip over a migration if it has already been added manually before.
 
 <div id="repair"></div>
 
-How do you repair the database after a failed migration?
---------------------------------------------------------
+## How do you repair the database after a failed migration?
 
 If your database supports DDL transactions, MigrateDB does the work for you.
 
@@ -193,8 +177,7 @@ If your database doesn't, these are the steps to follow:
 
 <div id="clean-objects"></div>
 
-Why does `clean` drop individual objects instead of the schema itself?
-----------------------------------------------------------------------
+## Why does `clean` drop individual objects instead of the schema itself?
 
 `clean` will remove what MigrateDB created. If MigrateDB also created the schema itself, `clean` will drop it. Otherwise,
 it will only drop the objects within the schema.
@@ -202,8 +185,7 @@ it will only drop the objects within the schema.
 
 <div id="db-specific-sql"></div>
 
-What is the best strategy for handling database-specific sql?
--------------------------------------------------------------
+## What is the best strategy for handling database-specific sql?
 
 Assuming you use Derby in TEST and Oracle in PROD.
 
@@ -222,8 +204,7 @@ but on the other hand you also eliminate another difference (and potential sourc
 
 <div id="case-sensitive"></div>
 
-Why is the migratedb_state table case-sensitive?
--------------------------------------------------
+## Why is the migratedb_state table case-sensitive?
 
 The migratedb_state is case-sensitive due to the quotes used in its creation script. This allows for characters not
 supported in identifiers otherwise.

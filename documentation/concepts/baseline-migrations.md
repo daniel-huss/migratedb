@@ -51,5 +51,5 @@ the [baselineMigrationPrefix](/migratedb/documentation/configuration/parameters/
 Click [here](/migratedb/documentation/tutorials/baseline-migrations) to see a tutorial on using baseline migrations.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/command/migrate">Migrate<i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/command/migrate">Migrate➡️</a>
 </p>

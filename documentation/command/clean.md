@@ -21,5 +21,5 @@ See [configuration](/migratedb/documentation/configuration/parameters/#clean) fo
 {% include commandUsage.html command="clean" %}
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/command/info">Info <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/command/info">Info ➡️</a>
 </p>

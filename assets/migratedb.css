@@ -1,3 +1,7 @@
+.pills {
+    padding-bottom: 1em;
+}
+
 #top-cta {
     width: 100%;
     background-color: #008BC0;
@@ -114,6 +118,11 @@ img {
     background-color: #0166AE;
 }
 
+.btn-icon {
+    max-height:1em;
+    margin-right:10px;
+}
+
 .btn-info {
     background-color: #aaa;
     border-color: #999;
@@ -130,54 +139,12 @@ img {
     margin: 20px 5px;
     border-radius: 6px;
 }
-}
 
 #social i {
     font-size: 28px;
     padding-top: 40px;
     padding-left: 10px;
     padding-right: 10px;
-}
-
-.tabbable>.nav-tabs>li>a {
-    font-size: 12px !important;
-    padding: 7px 10px;
-}
-
-.nav-pills li a:hover {
-    background-color: #ccc;
-    color: white;
-}
-
-.nav-pills>li.active>a,.nav-pills>li.active>a:hover,.nav-pills>li.active>a:focus, .nav-pills>li.active>a>i {
-    background-color: #0166AE;
-    color: white;
-}
-
-#pills .nav-pills li a {
-    font-size: 12px;
-}
-
-#menu .nav-pills li {
-    font-size: 16px;
-}
-
-#menu .nav-pills li a {
-    border-radius: 0 !important;
-}
-
-#menu .nav-pills .nav-header {
-    cursor: default;
-    font-size: 12px;
-    font-weight: bold;
-    text-transform: uppercase;
-    background-color: #f0f0f0;
-    margin-top: 5px;
-    color: #333;
-}
-
-#menu .nav-pills .collapsible-nested {
-    margin-left: 15px;
 }
 
 #social a:hover i {
@@ -321,30 +288,11 @@ pre.filetree {
     color: white;
 }
 
-pre.filetree i.fa {
-    color: white;
-}
-
 pre.filetree code {
     padding: 2px 4px;
     font-size: 90%;
     color: #c7254e;
     background-color: #f9f2f4;
-}
-
-pre.filetree i.fa-folder-open {
-    color: #e38d13;
-}
-
-pre.filetree i.fa-file, pre.filetree i.fa-file-text {
-    color: gold;
-}
-
-pre.filetree span {
-    display: inline-block;
-    padding: 5px;
-    margin-left: -5px;
-    background-color: #666;
 }
 
 .release {

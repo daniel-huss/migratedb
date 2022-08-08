@@ -48,5 +48,5 @@ please refer to the [PostgreSQL](/migratedb/documentation/database/postgresql) p
 - AWS SecretsManager is not supported with YugabyteDB.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/aurora-postgresql">Aurora PostgreSQL <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/aurora-postgresql">Aurora PostgreSQL ➡️</a>
 </p>

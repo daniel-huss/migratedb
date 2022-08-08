@@ -83,5 +83,5 @@ location of the private key:
   track the status of this feature in our GitHub issues [here](https://github.com/daniel-huss/migratedb/issues/3305).
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/sqlite">SQLite <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/sqlite">SQLite ➡️</a>
 </p>

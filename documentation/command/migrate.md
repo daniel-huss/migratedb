@@ -32,5 +32,5 @@ Migrate does nothing.
 {% include commandUsage.html command="migrate" %}
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/command/clean">Clean <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/command/clean">Clean ➡️</a>
 </p>

@@ -198,5 +198,5 @@ When multiple callbacks for the same event are found, they are executed in the a
 Click [here](/migratedb/documentation/getstarted/advanced/callbacks) to see a tutorial on using callbacks.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/concepts/error-overrides">Error Overrides <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/error-overrides">Error Overrides ➡️</a>
 </p>

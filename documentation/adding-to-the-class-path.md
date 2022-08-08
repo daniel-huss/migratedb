@@ -22,17 +22,17 @@ easier to separate jars used for adding database driver support, and jars used t
 as [Java migrations](/migratedb/documentation/concepts/migrations#java-based-migrations)
 or [Java callbacks](/migratedb/documentation/concepts/callbacks#java-callbacks)).
 
-<pre class="filetree"><i class="fa fa-folder-open"></i> migratedb
-  <i class="fa fa-folder-open"></i> conf
-  <i class="fa fa-folder-open"></i> drivers <i class="fa fa-long-arrow-left"></i> <code>here</code>
-  <i class="fa fa-folder-open"></i> jars    <i class="fa fa-long-arrow-left"></i> <code>or here</code>
-  <i class="fa fa-folder-open"></i> jre
-  <i class="fa fa-folder-open"></i> lib
-  <i class="fa fa-folder-open"></i> licenses
-  <i class="fa fa-folder-open"></i> sql
-  <i class="fa fa-file"></i> migratedb
-  <i class="fa fa-file"></i> migratedb.cmd
-  <i class="fa fa-file-text"></i> README.txt
+<pre class="filetree">
+📂 migratedb
+  📁 conf
+  📁 drivers         <i>here</i>
+  📁 jars            <i>or here</i>
+  📁 lib
+  📁 licenses
+  📁 sql
+  📄 migratedb
+  📄 migratedb.cmd
+  📄 README.txt
 </pre>
 
 You can also specify more folders to load jars from using the [jarDirs](/migratedb/documentation/configuration/parameters/jarDirs)

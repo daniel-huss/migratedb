@@ -27,5 +27,5 @@ See [configuration](/migratedb/documentation/configuration/parameters/#baseline)
 {% include commandUsage.html command="baseline" %}
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/command/repair">Repair <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/command/repair">Repair ➡️</a>
 </p>

@@ -53,5 +53,5 @@ If an environment variable isn't set, an empty value is assumed.
 See [configuration](/migratedb/documentation/configuration/parameters) for a full list of supported configuration parameters.
 
 <p class="next-steps">
-  <a class="btn btn-primary" href="/migratedb/documentation/configuration/envvars">Environment Variables <i class="fa fa-arrow-right"></i></a>
+  <a class="btn btn-primary" href="/migratedb/documentation/configuration/envvars">Environment Variables ➡️</a>
 </p>

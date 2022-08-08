@@ -62,5 +62,5 @@ jdbc:tc:postgresql:11-alpine://localhost:5432/databasename
   still need to provide a DB2 driver whose Maven Central coordinates are <code>com.ibm.db2.jcc:11.5.0.0</code>
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/postgresql">PostgreSQL <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/postgresql">PostgreSQL ➡️</a>
 </p>

@@ -20,7 +20,7 @@ This tutorial should take you about **5 minutes** to complete.
 ## Creating the project
 
 We're going to create our project using the Maven Archetype Plugin by issuing the following command:
-<pre class="console"><span>&gt;</span> mvn archetype:generate -B ^
+<pre class="console">mvn archetype:generate -B ^
     -DarchetypeGroupId=org.apache.maven.archetypes ^
     -DarchetypeArtifactId=maven-archetype-quickstart ^
     -DarchetypeVersion=1.1 ^
@@ -30,7 +30,7 @@ We're going to create our project using the Maven Archetype Plugin by issuing th
     -Dpackage=foobar</pre>
 
 We are now ready to get started. Let's jump into our project:
-<pre class="console"><span>&gt;</span> cd bar</pre>
+<pre class="console">cd bar</pre>
 
 ## Adding the dependencies
 
@@ -144,5 +144,5 @@ In this brief tutorial we saw how to
 These migrations were then successfully found and executed.
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/usage/api">Read the documentation <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/usage/api">Read the documentation ➡️</a>
 </p>

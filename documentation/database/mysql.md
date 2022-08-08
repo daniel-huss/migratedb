@@ -135,5 +135,5 @@ You can read more about MySQL option files [here](https://dev.mysql.com/doc/refm
 - No support for loading properties other than `user` and `password` from option files
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/aurora-mysql">Aurora MySQL <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/aurora-mysql">Aurora MySQL ➡️</a>
 </p>

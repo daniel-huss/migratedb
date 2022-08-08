@@ -68,5 +68,5 @@ INSERT INTO ${tableName} (name) VALUES ('Mr. T');
 - The JTDS driver does not support Azure Synapse
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/database/db2">DB2 <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/database/db2">DB2 ➡️</a>
 </p>

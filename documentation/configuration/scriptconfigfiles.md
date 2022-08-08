@@ -54,5 +54,5 @@ shouldExecute=${should_execute}==true
 ```
 
 <p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/concepts/callbacks">Callbacks <i class="fa fa-arrow-right"></i></a>
+    <a class="btn btn-primary" href="/migratedb/documentation/concepts/callbacks">Callbacks ➡️</a>
 </p>
