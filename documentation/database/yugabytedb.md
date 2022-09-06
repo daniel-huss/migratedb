@@ -43,10 +43,6 @@ subtitle: YugabyteDB
 YugabyteDB is a variant of PostgreSQL and MigrateDB usage is the same for the two databases. For more details,
 please refer to the [PostgreSQL](/migratedb/documentation/database/postgresql) page.
 
-## Limitations
-
-- AWS SecretsManager is not supported with YugabyteDB.
-
 <p class="next-steps">
     <a class="btn btn-primary" href="/migratedb/documentation/database/aurora-postgresql">Aurora PostgreSQL ➡️</a>
 </p>
