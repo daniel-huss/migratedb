@@ -87,7 +87,7 @@
         <version.commons-codec>1.15</version.commons-codec>
         <version.commons-io>2.11.0</version.commons-io>
         <version.commons-logging>1.2</version.commons-logging>
-        <version.groovy>4.0.3</version.groovy>
+        <version.groovy>4.0.4</version.groovy>
         <version.gson>2.9.0</version.gson>
         <version.h2.latest>2.1.214</version.h2.latest>
         <version.java>11</version.java>
@@ -317,11 +317,11 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.0.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M2</version>
+                    <version>3.0.0</version>
                     <configuration>
                         <deployAtEnd>true</deployAtEnd>
                         <retryFailedDeploymentCount>2</retryFailedDeploymentCount>
