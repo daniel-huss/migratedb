@@ -23,6 +23,7 @@ import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.core.internal.info.BuildInfo;
 import migratedb.core.internal.schemahistory.SchemaHistory;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,13 +36,14 @@ public class CommandResultFactory {
                                                       Database<?> database,
                                                       String schemaHistorySchema,
                                                       String schemaHistoryTable,
-                                                      List<LiberateAction> changes) {
+                                                      List<LiberateAction> changes
+    ) {
         return new LiberateResult(BuildInfo.VERSION,
-                getDatabaseName(configuration, database),
-                schemaHistorySchema,
-                configuration.getOldTable(),
-                schemaHistoryTable,
-                changes);
+                                  getDatabaseName(configuration, database),
+                                  schemaHistorySchema,
+                                  configuration.getOldTable(),
+                                  schemaHistoryTable,
+                                  changes);
     }
 
     public static InfoResult createInfoResult(Configuration configuration,
@@ -59,7 +61,7 @@ public class CommandResultFactory {
 
         var currentSchemaVersion = current == null ? null : current.getVersion();
         String schemaVersion = convertToString(currentSchemaVersion == null ? SchemaHistory.EMPTY_SCHEMA_DESCRIPTION
-                : currentSchemaVersion);
+                                                       : currentSchemaVersion);
 
         return new InfoResult(
                 migratedbVersion,
@@ -70,9 +72,12 @@ public class CommandResultFactory {
                 allSchemasEmpty);
     }
 
-    public static MigrateResult createMigrateResult(String databaseName, Configuration configuration) {
+    public static MigrateResult createMigrateResult(String databaseName,
+                                                    Configuration configuration) {
         String migratedbVersion = BuildInfo.VERSION;
-        return new MigrateResult(migratedbVersion, databaseName, String.join(", ", configuration.getSchemas()));
+        return new MigrateResult(migratedbVersion,
+                                 databaseName,
+                                 String.join(", ", configuration.getSchemas()));
     }
 
     public static CleanResult createCleanResult(String databaseName) {
@@ -92,15 +97,13 @@ public class CommandResultFactory {
                                                       List<String> warnings) {
         String migratedbVersion = BuildInfo.VERSION;
         boolean validationSuccessful = errorDetails == null;
-        String errorMessage = errorDetails == null ? null : errorDetails.errorMessage;
-
         return new ValidateResult(migratedbVersion,
-                databaseName,
-                errorDetails,
-                validationSuccessful,
-                validationCount,
-                invalidMigrations,
-                warnings);
+                                  databaseName,
+                                  errorDetails,
+                                  validationSuccessful,
+                                  validationCount,
+                                  invalidMigrations,
+                                  warnings);
     }
 
     public static RepairResult createRepairResult(Configuration configuration, Database<?> database) {
@@ -110,23 +113,23 @@ public class CommandResultFactory {
 
     public static InfoOutput createInfoOutput(MigrationInfo migrationInfo) {
         return new InfoOutput(getCategory(migrationInfo),
-                convertToString(migrationInfo.getVersion()),
-                migrationInfo.getDescription(),
-                convertToString(migrationInfo.getType()),
-                convertToString(migrationInfo.getInstalledOn()),
-                migrationInfo.getState().getDisplayName(),
-                convertToString(migrationInfo.getPhysicalLocation()),
-                convertToString(migrationInfo.getInstalledBy()),
-                migrationInfo.getExecutionTime() != null ? migrationInfo.getExecutionTime() : 0);
+                              convertToString(migrationInfo.getVersion()),
+                              migrationInfo.getDescription(),
+                              convertToString(migrationInfo.getType()),
+                              convertToString(migrationInfo.getInstalledOn()),
+                              migrationInfo.getState().getDisplayName(),
+                              convertToString(migrationInfo.getPhysicalLocation()),
+                              convertToString(migrationInfo.getInstalledBy()),
+                              migrationInfo.getExecutionTime() != null ? migrationInfo.getExecutionTime() : 0);
     }
 
     public static MigrateOutput createMigrateOutput(MigrationInfo migrationInfo, int executionTime) {
         return new MigrateOutput(getCategory(migrationInfo),
-                convertToString(migrationInfo.getVersion()),
-                migrationInfo.getDescription(),
-                convertToString(migrationInfo.getType()),
-                convertToString(migrationInfo.getPhysicalLocation()),
-                executionTime);
+                                 convertToString(migrationInfo.getVersion()),
+                                 migrationInfo.getDescription(),
+                                 convertToString(migrationInfo.getType()),
+                                 convertToString(migrationInfo.getPhysicalLocation()),
+                                 executionTime);
     }
 
     public static ValidateOutput createValidateOutput(MigrationInfo migrationInfo, ErrorDetails validateError) {
@@ -146,8 +149,8 @@ public class CommandResultFactory {
 
     public static RepairOutput createRepairOutput(AppliedMigration am) {
         return new RepairOutput(convertToString(am.getVersion()),
-                am.getDescription(),
-                "");
+                                am.getDescription(),
+                                "");
     }
 
     private static String getDatabaseName(Configuration configuration, Database<?> database) {
@@ -163,11 +166,11 @@ public class CommandResultFactory {
         }
     }
 
-    private static String convertToString(Object value) {
+    private static String convertToString(@Nullable Object value) {
         return convertToString(value, Object::toString);
     }
 
-    private static <T> String convertToString(T value, Function<? super T, String> transform) {
+    private static <T> String convertToString(@Nullable T value, Function<? super T, String> transform) {
         if (value == null) {
             return "";
         }

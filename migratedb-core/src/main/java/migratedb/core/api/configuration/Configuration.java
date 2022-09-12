@@ -185,10 +185,10 @@ public interface Configuration {
     String[] getSqlMigrationSuffixes();
 
     /**
-     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
-     * scanning and instantiated by MigrateDB. Instead these are manually added instances of JavaMigration. This is
-     * particularly useful when working with a dependency injection container, where you may want the DI container to
-     * instantiate the class and wire up its dependencies for you.
+     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath scanning
+     * and instantiated by MigrateDB. Instead, these are manually added instances of JavaMigration. This is particularly
+     * useful when working with a dependency injection container, where you may want the DI container to instantiate the
+     * class and wire up its dependencies for you.
      *
      * @return The additional Java-based migrations. An empty array if none. (default: none)
      */
@@ -267,7 +267,7 @@ public interface Configuration {
     MigrationPattern[] getCherryPick();
 
     /**
-     * Retrieves the name of the schema history table that will be used by MigrateDB. By default (single-schema mode)
+     * Retrieves the name of the schema history table that will be used by MigrateDB. By default, (single-schema mode)
      * the schema history table is placed in the default schema for the connection provided by the datasource. When the
      * <i>migratedb.schemas</i> property is set (multi-schema mode), the schema history table is placed in the first
      * schema of the list.
@@ -279,7 +279,13 @@ public interface Configuration {
     /**
      * The old table to convert into the format used by MigrateDB. Only used for the "liberate" command.
      */
-    @Nullable String getOldTable();
+    String getOldTable();
+
+    /**
+     * Whether the {@code liberate} command is automatically executed on {@code migrate} if the schema history table
+     * does not exist, but {@code oldTable} exists. (Default: {@code true})
+     */
+    boolean isLiberateOnMigrate();
 
     /**
      * The tablespace where to create the schema history table that will be used by MigrateDB. If not specified,
@@ -551,7 +557,7 @@ public interface Configuration {
     ClassProvider<JavaMigration> getJavaMigrationClassProvider();
 
     /**
-     * Whether MigrateDB should attempt to create the schemas specified in the schemas property.
+     * Whether MigrateDB should attempt to create the schemas specified in the {@code schemas} property.
      *
      * @return {@code true} to attempt to create the schemas (default: {@code true})
      */
@@ -563,14 +569,14 @@ public interface Configuration {
     int getLockRetryCount();
 
     /**
-     * Properties to pass to the JDBC driver object
+     * Properties to pass to the JDBC driver.
      *
      * @return Properties that will be passed to the JDBC driver object
      */
     Map<String, String> getJdbcProperties();
 
     /**
-     * Whether to fail if a location specified in the migratedb.locations option doesn't exist
+     * Whether to fail if a location specified in the {@code migratedb.locations} option doesn't exist.
      *
      * @return {@code true} to fail (default: {@code false})
      */

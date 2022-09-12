@@ -16,6 +16,8 @@
 package migratedb.core.api.output;
 
 public class LiberateAction {
+    public static final String TYPE_ABORTED = "aborted";
+
     public String type;
     public String message;
 

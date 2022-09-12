@@ -61,7 +61,8 @@ public class ClassicConfiguration implements Configuration {
     private String defaultSchemaName = null;
     private String[] schemaNames = {};
     private String table = "migratedb_state";
-    private String oldTable;
+    private String oldTable = "flyway_schema_history";
+    private boolean liberateOnMigrate = true;
     private String tablespace;
     private TargetVersion target;
     private boolean failOnMissingTarget = true;
@@ -117,7 +118,7 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * @param classLoader The ClassLoader to use for loading migrations, resolvers, etc from the classpath. (default:
+     * @param classLoader The ClassLoader to use for loading migrations, resolvers, etc. from the classpath. (default:
      *                    Thread.currentThread().getContextClassLoader()). Nullable for compatibility.
      */
     public ClassicConfiguration(@Nullable ClassLoader classLoader) {
@@ -162,6 +163,11 @@ public class ClassicConfiguration implements Configuration {
     @Override
     public String getOldTable() {
         return oldTable;
+    }
+
+    @Override
+    public boolean isLiberateOnMigrate() {
+        return liberateOnMigrate;
     }
 
     @Override
@@ -604,8 +610,8 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setIgnoreMigrationPatterns(String... ignoreMigrationPatterns) {
         this.ignoreMigrationPatterns = Arrays.stream(ignoreMigrationPatterns)
-            .map(ValidatePattern::fromPattern)
-            .toArray(ValidatePattern[]::new);
+                                             .map(ValidatePattern::fromPattern)
+                                             .toArray(ValidatePattern[]::new);
     }
 
     /**
@@ -743,19 +749,19 @@ public class ClassicConfiguration implements Configuration {
      * <i>migratedb.schemas</i> property is set (multi-schema mode), the schema history table is placed in the first
      * schema of the list.
      *
-     * @param table The name of the schema history table that will be used by MigrateDB. (default:
-     *              migratedb_state)
+     * @param table The name of the schema history table that will be used by MigrateDB. (default: migratedb_state)
      */
     public void setTable(String table) {
         this.table = table;
     }
 
     /**
-     * Sets the name of the old table to convert into the format used by MigrateDB. Only used for the "liberate" command.
+     * Sets the name of the old table to convert into the format used by MigrateDB. Only used for the "liberate"
+     * command.
      *
      * @param oldTable Name of old table to convert.
      */
-    public void setOldTable(@Nullable String oldTable) {
+    public void setOldTable(String oldTable) {
         this.oldTable = oldTable;
     }
 
@@ -828,8 +834,8 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setCherryPick(String... cherryPickAsString) {
         this.cherryPick = Arrays.stream(cherryPickAsString)
-            .map(MigrationPattern::new)
-            .toArray(MigrationPattern[]::new);
+                                .map(MigrationPattern::new)
+                                .toArray(MigrationPattern[]::new);
     }
 
     /**
@@ -919,8 +925,8 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
-     * scanning and instantiated by MigrateDB. Instead these are application-managed instances of JavaMigration. This is
+     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath scanning
+     * and instantiated by MigrateDB. Instead, these are application-managed instances of JavaMigration. This is
      * particularly useful when working with a dependency injection container, where you may want the DI container to
      * instantiate the class and wire up its dependencies for you.
      *
@@ -934,8 +940,8 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
-     * scanning and instantiated by MigrateDB. Instead these are application-managed instances of JavaMigration. This is
+     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath scanning
+     * and instantiated by MigrateDB. Instead, these are application-managed instances of JavaMigration. This is
      * particularly useful when working with a dependency injection container, where you may want the DI container to
      * instantiate the class and wire up its dependencies for you.
      *
@@ -1022,7 +1028,7 @@ public class ClassicConfiguration implements Configuration {
     public void setConnectRetries(int connectRetries) {
         if (connectRetries < 0) {
             throw new MigrateDbException("Invalid number of connectRetries (must be 0 or greater): " + connectRetries,
-                ErrorCode.CONFIGURATION);
+                                         ErrorCode.CONFIGURATION);
         }
         this.connectRetries = connectRetries;
     }
@@ -1036,8 +1042,8 @@ public class ClassicConfiguration implements Configuration {
     public void setConnectRetriesInterval(int connectRetriesInterval) {
         if (connectRetriesInterval < 0) {
             throw new MigrateDbException(
-                "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
-                ErrorCode.CONFIGURATION);
+                    "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
+                    ErrorCode.CONFIGURATION);
         }
         this.connectRetriesInterval = connectRetriesInterval;
     }
@@ -1235,10 +1241,18 @@ public class ClassicConfiguration implements Configuration {
     }
 
     /**
-     * Whether to fail if a location specified in the migratedb.locations option doesn't exist
+     * Whether to fail if a location specified in the {@code migratedb.locations} option doesn't exist
      */
     public void setFailOnMissingLocations(boolean failOnMissingLocations) {
         this.failOnMissingLocations = failOnMissingLocations;
+    }
+
+    /**
+     * Whether the {@code liberate} command is automatically executed on {@code migrate} if the schema history table
+     * does not exist, but {@code oldTable} exists. (Default: {@code true})
+     */
+    public void setLiberateOnMigrate(boolean liberateOnMigrate) {
+        this.liberateOnMigrate = liberateOnMigrate;
     }
 
     /**
@@ -1293,6 +1307,7 @@ public class ClassicConfiguration implements Configuration {
         setLogger(configuration.getLogger());
         setMixed(configuration.isMixed());
         setOldTable(configuration.getOldTable());
+        setLiberateOnMigrate(configuration.isLiberateOnMigrate());
         setOutOfOrder(configuration.isOutOfOrder());
         setOutputQueryResults(configuration.isOutputQueryResults());
         setPlaceholderPrefix(configuration.getPlaceholderPrefix());
@@ -1445,6 +1460,10 @@ public class ClassicConfiguration implements Configuration {
         if (oldTableProp != null) {
             setOldTable(oldTableProp);
         }
+        Boolean liberateOnMigrateProp = removeBoolean(props, PropertyNames.LIBERATE_ON_MIGRATE);
+        if (liberateOnMigrateProp != null) {
+            setLiberateOnMigrate(liberateOnMigrateProp);
+        }
         String tablespaceProp = props.remove(PropertyNames.TABLESPACE);
         if (tablespaceProp != null) {
             setTablespace(tablespaceProp);
@@ -1578,21 +1597,21 @@ public class ClassicConfiguration implements Configuration {
 
         // Must be done last, so that any driver-specific config has been done at this point.
         if (StringUtils.hasText(url) && (StringUtils.hasText(urlProp) ||
-            StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
-            StringUtils.hasText(passwordProp))) {
+                                         StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
+                                         StringUtils.hasText(passwordProp))) {
             putPropertiesUnderNamespace(
-                props,
-                getPlaceholders(),
-                PropertyNames.JDBC_PROPERTIES_PREFIX);
+                    props,
+                    getPlaceholders(),
+                    PropertyNames.JDBC_PROPERTIES_PREFIX);
 
             setDataSource(new DriverDataSource(classLoader,
-                driver,
-                url,
-                user,
-                password,
-                this,
-                jdbcProperties,
-                databaseTypeRegister));
+                                               driver,
+                                               url,
+                                               user,
+                                               password,
+                                               this,
+                                               jdbcProperties,
+                                               databaseTypeRegister));
         }
 
         ConfigUtils.reportUnrecognisedProperties(props, "migratedb.");

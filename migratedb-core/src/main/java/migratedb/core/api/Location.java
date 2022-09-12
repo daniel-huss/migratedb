@@ -20,6 +20,7 @@ import migratedb.core.internal.resource.classpath.ClassPathResourceProvider;
 import migratedb.core.internal.resource.filesystem.FileSystemResourceProvider;
 import migratedb.core.internal.util.ClassUtils;
 import migratedb.core.internal.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,11 +41,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public abstract class Location {
 
-    // Prevent subclassing outside of this compilation unit
+    // Prevent subclassing outside this compilation unit
     private Location() {
     }
 
-    public static Location parse(String locationString, ClassLoader classLoader) {
+    public static Location parse(String locationString, @Nullable ClassLoader classLoader) {
         if (locationString.startsWith(FileSystemLocation.PREFIX)) {
             var baseDirectory = Paths.get(locationString.substring(FileSystemLocation.PREFIX.length()));
             return new FileSystemLocation(baseDirectory);
@@ -77,7 +78,7 @@ public abstract class Location {
         private final ClassProvider<?> classProvider;
         private final ResourceProvider resourceProvider;
 
-        public static CustomLocation fromClass(String className, ClassLoader classLoader) {
+        public static CustomLocation fromClass(String className, @Nullable ClassLoader classLoader) {
             var providerInstance = ClassUtils.instantiate(className, classLoader);
             var errorPrefix = "Location '" + CustomLocation.PREFIX + className + "' must implement ";
             if (!(providerInstance instanceof ClassProvider)) {
@@ -161,10 +162,10 @@ public abstract class Location {
         public ClassProvider<?> classProvider() {
             return new ClassProvider<>() {
                 private final List<Class<?>> classes = readLines(CLASS_LIST_RESOURCE_NAME)
-                    .stream()
-                    .map(it -> ClassUtils.loadClass(it, classLoader))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toUnmodifiableList());
+                        .stream()
+                        .map(it -> ClassUtils.loadClass(it, classLoader))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toUnmodifiableList());
 
                 @Override
                 public Collection<Class<?>> getClasses() {
@@ -176,7 +177,7 @@ public abstract class Location {
         @Override
         public boolean exists() {
             return classLoader.getResource(namePrefix + RESOURCE_LIST_RESOURCE_NAME) != null ||
-                   classLoader.getResource(namePrefix + CLASS_LIST_RESOURCE_NAME) != null;
+                    classLoader.getResource(namePrefix + CLASS_LIST_RESOURCE_NAME) != null;
         }
 
         private List<String> readLines(String relativeResourceName) {

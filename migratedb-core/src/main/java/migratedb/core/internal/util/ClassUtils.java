@@ -45,7 +45,7 @@ public enum ClassUtils {
      * @throws MigrateDbException Thrown when the instantiation failed.
      */
     @SuppressWarnings({"unchecked"})
-    public static <T> T instantiate(String className, ClassLoader classLoader) {
+    public static <T> T instantiate(String className, @Nullable ClassLoader classLoader) {
         try {
             return (T) Class.forName(className, true, classLoader).getConstructor().newInstance();
         } catch (ReflectiveOperationException | RuntimeException e) {

@@ -16,8 +16,6 @@
  */
 package migratedb.core;
 
-import java.util.ArrayList;
-import java.util.List;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.MigrateDbValidateException;
 import migratedb.core.api.MigrationInfoService;
@@ -29,24 +27,15 @@ import migratedb.core.api.internal.callback.CallbackExecutor;
 import migratedb.core.api.internal.database.base.Database;
 import migratedb.core.api.internal.database.base.Schema;
 import migratedb.core.api.logging.Log;
-import migratedb.core.api.output.BaselineResult;
-import migratedb.core.api.output.CleanResult;
-import migratedb.core.api.output.LiberateResult;
-import migratedb.core.api.output.MigrateResult;
-import migratedb.core.api.output.RepairResult;
-import migratedb.core.api.output.ValidateResult;
+import migratedb.core.api.output.*;
 import migratedb.core.api.resolver.MigrationResolver;
-import migratedb.core.internal.command.DbBaseline;
-import migratedb.core.internal.command.DbClean;
-import migratedb.core.internal.command.DbInfo;
-import migratedb.core.internal.command.DbLiberate;
-import migratedb.core.internal.command.DbMigrate;
-import migratedb.core.internal.command.DbRepair;
-import migratedb.core.internal.command.DbSchemas;
-import migratedb.core.internal.command.DbValidate;
+import migratedb.core.internal.command.*;
 import migratedb.core.internal.schemahistory.SchemaHistory;
 import migratedb.core.internal.util.StringUtils;
 import migratedb.core.internal.util.WebsiteLinks;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the centre point of MigrateDB, and for most users, the only class they will ever have to deal with.
@@ -90,7 +79,6 @@ public class MigrateDb {
      * MigrateDb functionality such as migrate() or clean().</p>
      *
      * @param classLoader The class loader to use when loading classes and resources.
-      *
      * @return A new configuration from which MigrateDB can be loaded.
      */
     public static FluentConfiguration configure(ClassLoader classLoader) {
@@ -121,8 +109,8 @@ public class MigrateDb {
      * old schema history table.
      *
      * @return Summary of schema history conversion.
-     *
-     * @throws MigrateDbException when the conversion failed.
+     * @throws MigrateDbException if the conversion failed, e.g. because the schema history table used by MigrateDB
+     *                            already contains applied migrations.
      */
     public LiberateResult liberate() {
         return executor.execute(context -> {
@@ -131,8 +119,9 @@ public class MigrateDb {
                                                 context.database,
                                                 context.defaultSchema,
                                                 context.schemas,
-                                                context.callbackExecutor)
-                .liberate();
+                                                context.callbackExecutor,
+                                                true)
+                    .liberate();
             context.callbackExecutor.onOperationFinishEvent(Event.AFTER_LIBERATE_OPERATION_FINISH, liberateResult);
             return liberateResult;
         }, false);
@@ -144,11 +133,27 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-migrate.png" alt="migrate">
      *
      * @return An object summarising the successfully applied migrations.
-     *
      * @throws MigrateDbException when the migration failed.
      */
     public MigrateResult migrate() {
         return executor.execute(context -> {
+            LiberateResult liberateResult = null;
+            if (configuration.isLiberateOnMigrate()) {
+                if (!context.schemaHistory.exists() &&
+                    context.defaultSchema.getTable(configuration.getOldTable()).exists()) {
+                    LOG.info("Executing liberate command because " + context.schemaHistory.getTable() + " is missing , but table" +
+                             configuration.getOldTable() + " exists");
+                    liberateResult = new DbLiberate(context.schemaHistory,
+                                                    configuration,
+                                                    context.database,
+                                                    context.defaultSchema,
+                                                    new Schema[0],
+                                                    context.callbackExecutor,
+                                                    false)
+                            .liberate();
+                }
+            }
+
             if (configuration.isValidateOnMigrate()) {
                 ValidateResult validateResult = doValidate(context.database,
                                                            context.migrationResolver,
@@ -179,7 +184,7 @@ public class MigrateDb {
                         if (!context.schemaHistory.exists()) {
                             throw new MigrateDbException("Found non-empty schema(s) " +
                                                          StringUtils.collectionToCommaDelimitedString(
-                                                             nonEmptySchemas) +
+                                                                 nonEmptySchemas) +
                                                          " but no schema history table. Use baseline()" +
                                                          " or set baselineOnMigrate to true to initialize the " +
                                                          "schema history table.");
@@ -208,9 +213,9 @@ public class MigrateDb {
                                                  context.migrationResolver,
                                                  configuration,
                                                  context.callbackExecutor).migrate();
+            result.liberateResult = liberateResult;
 
             context.callbackExecutor.onOperationFinishEvent(Event.AFTER_MIGRATE_OPERATION_FINISH, result);
-
             return result;
         }, true);
     }
@@ -221,7 +226,6 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-info.png" alt="info">
      *
      * @return All migrations sorted by version, oldest first.
-     *
      * @throws MigrateDbException when the info retrieval failed.
      */
     public MigrationInfoService info() {
@@ -246,7 +250,6 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-clean.png" alt="clean">
      *
      * @return An object summarising the actions taken
-     *
      * @throws MigrateDbException when the clean fails.
      */
     public CleanResult clean() {
@@ -311,7 +314,6 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-validate.png" alt="validate">
      *
      * @return An object summarising the validation results
-     *
      * @throws MigrateDbException when the validation failed.
      */
     public ValidateResult validateWithResult() throws MigrateDbException {
@@ -336,7 +338,6 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-baseline.png" alt="baseline">
      *
      * @return An object summarising the actions taken
-     *
      * @throws MigrateDbException when the schema baselining failed.
      */
     public BaselineResult baseline() throws MigrateDbException {
@@ -375,7 +376,6 @@ public class MigrateDb {
      * <img src="https://daniel-huss.github.io/migratedb/assets/balsamiq/command-repair.png" alt="repair">
      *
      * @return An object summarising the actions taken
-     *
      * @throws MigrateDbException when the schema history table repair failed.
      */
     public RepairResult repair() throws MigrateDbException {

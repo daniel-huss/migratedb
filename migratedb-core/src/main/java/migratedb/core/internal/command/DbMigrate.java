@@ -43,6 +43,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.sql.SQLException;
 import java.util.*;
 
+import static migratedb.core.api.output.LiberateAction.TYPE_ABORTED;
 import static migratedb.core.internal.jdbc.ExecutionTemplateFactory.createExecutionTemplate;
 
 public class DbMigrate {
@@ -69,8 +70,11 @@ public class DbMigrate {
     private final List<ResolvedMigration> appliedResolvedMigrations = new ArrayList<>();
 
     public DbMigrate(Database<?> database,
-                     SchemaHistory schemaHistory, Schema<?, ?> schema, MigrationResolver migrationResolver,
-                     Configuration configuration, CallbackExecutor callbackExecutor) {
+                     SchemaHistory schemaHistory,
+                     Schema<?, ?> schema,
+                     MigrationResolver migrationResolver,
+                     Configuration configuration,
+                     CallbackExecutor callbackExecutor) {
         this.database = database;
         this.connectionUserObjects = database.getMigrationConnection();
         this.schemaHistory = schemaHistory;
@@ -139,10 +143,10 @@ public class DbMigrate {
         while (true) {
             boolean firstRun = total == 0;
             int count = configuration.isGroup()
-                        // With group active a lock on the schema history table has already been acquired.
-                        ? migrateGroup(firstRun)
-                        // Otherwise acquire the lock now. The lock will be released at the end of each migration.
-                        : schemaHistory.lock(() -> migrateGroup(firstRun));
+                    // With group active a lock on the schema history table has already been acquired.
+                    ? migrateGroup(firstRun)
+                    // Otherwise acquire the lock now. The lock will be released at the end of each migration.
+                    : schemaHistory.lock(() -> migrateGroup(firstRun));
             total += count;
             if (count == 0) {
                 // No further migrations available
@@ -164,7 +168,6 @@ public class DbMigrate {
      * Migrate a group of one (group = false) or more (group = true) migrations.
      *
      * @param firstRun Whether this is the first time this code runs in this migration run.
-     *
      * @return The number of newly applied migrations.
      */
     private Integer migrateGroup(boolean firstRun) {
@@ -172,7 +175,6 @@ public class DbMigrate {
         if (!configuration.isOutOfOrder()) {
             allowedMatches.remove(ValidationMatch.OUT_OF_ORDER);
         }
-        var validationContext = new ValidationContext(allowedMatches);
         var infoService = new MigrationInfoServiceImpl(migrationResolver,
                                                        schemaHistory,
                                                        database,
@@ -185,14 +187,14 @@ public class DbMigrate {
         var current = infoService.current();
         var currentSchemaVersion = current == null ? null : current.getVersion();
         var currentSchemaVersionString = currentSchemaVersion == null ? SchemaHistory.EMPTY_SCHEMA_DESCRIPTION
-                                                                      : currentSchemaVersion.toString();
+                : currentSchemaVersion.toString();
         if (firstRun) {
             LOG.info("Current version of schema " + schema + ": " + currentSchemaVersionString);
 
             migrateResult.initialSchemaVersion = currentSchemaVersionString;
             if (configuration.isOutOfOrder()) {
                 String outOfOrderWarning =
-                    "outOfOrder mode is active. Migration of schema " + schema + " may not be reproducible.";
+                        "outOfOrder mode is active. Migration of schema " + schema + " may not be reproducible.";
                 LOG.warn(outOfOrderWarning);
                 migrateResult.addWarning(outOfOrderWarning);
             }
@@ -224,15 +226,15 @@ public class DbMigrate {
                 && (failed[0].getState() == MigrationState.FUTURE_FAILED)
                 && configuration.isIgnoreFutureMigrations()) {
                 LOG.warn(
-                    "Schema " + schema + " contains a failed future migration to version " + failed[0].getVersion() +
-                    " !");
+                        "Schema " + schema + " contains a failed future migration to version " + failed[0].getVersion() +
+                        " !");
             } else {
                 if (failed[0].getVersion() == null) {
                     throw new MigrateDbException("Schema " + schema + " contains a failed repeatable migration (" +
                                                  doQuote(failed[0].getDescription()) + ") !");
                 }
                 throw new MigrateDbException(
-                    "Schema " + schema + " contains a failed migration to version " + failed[0].getVersion() + " !");
+                        "Schema " + schema + " contains a failed migration to version " + failed[0].getVersion() + " !");
             }
         }
 
@@ -290,10 +292,10 @@ public class DbMigrate {
         try {
             if (executeGroupInTransaction) {
                 createExecutionTemplate(connectionUserObjects.getJdbcConnection(), database)
-                    .execute(() -> {
-                        doMigrateGroup(group, stopWatch, skipExecutingMigrations, true);
-                        return null;
-                    });
+                        .execute(() -> {
+                            doMigrateGroup(group, stopWatch, skipExecutingMigrations, true);
+                            return null;
+                        });
             } else {
                 doMigrateGroup(group, stopWatch, skipExecutingMigrations, false);
             }
@@ -338,13 +340,13 @@ public class DbMigrate {
 
             if (!configuration.isMixed() && executeGroupInTransaction != inTransaction) {
                 throw new MigrateDbException(
-                    "Detected both transactional and non-transactional migrations within the same migration group"
-                    + " (even though mixed is false). First offending migration: "
-                    + doQuote((resolvedMigration.getVersion() == null ? "" : resolvedMigration.getVersion())
-                              + (StringUtils.hasLength(resolvedMigration.getDescription()) ? " " +
-                                                                                             resolvedMigration.getDescription()
-                                                                                           : ""))
-                    + (inTransaction ? "" : " [non-transactional]"));
+                        "Detected both transactional and non-transactional migrations within the same migration group"
+                        + " (even though mixed is false). First offending migration: "
+                        + doQuote((resolvedMigration.getVersion() == null ? "" : resolvedMigration.getVersion())
+                                  + (StringUtils.hasLength(resolvedMigration.getDescription()) ? " " +
+                                                                                                 resolvedMigration.getDescription()
+                                : ""))
+                        + (inTransaction ? "" : " [non-transactional]"));
             }
 
             executeGroupInTransaction &= inTransaction;
@@ -448,7 +450,7 @@ public class DbMigrate {
             migrationText = "schema " + schema + " to version " + doQuote(migration.getVersion()
                                                                           +
                                                                           (StringUtils.hasLength(migration.getDescription())
-                                                                           ? " - " + migration.getDescription() : ""))
+                                                                                  ? " - " + migration.getDescription() : ""))
                             + (isOutOfOrder ? " [out of order]" : "")
                             + (migrationExecutor.canExecuteInTransaction() ? "" : " [non-transactional]");
         } else {

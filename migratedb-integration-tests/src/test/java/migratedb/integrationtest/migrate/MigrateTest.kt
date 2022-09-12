@@ -20,25 +20,82 @@ import io.kotest.assertions.asClue
 import io.kotest.assertions.print.print
 import io.kotest.assertions.withClue
 import io.kotest.inspectors.forOne
+import io.kotest.inspectors.shouldForExactly
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldBeSingleton
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.result.shouldBeFailureOfType
 import io.kotest.matchers.result.shouldNotBeFailureOfType
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldBeEqualIgnoringCase
 import migratedb.core.api.MigrateDbException
 import migratedb.core.api.MigrateDbValidateException
 import migratedb.core.api.MigrationType
 import migratedb.core.api.Version
+import migratedb.core.api.configuration.ClassicConfiguration
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.IntegrationTest
+import migratedb.integrationtest.util.dsl.DatabasesSupportedByFw
+import migratedb.integrationtest.util.dsl.fwSchemaHistory
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
 import java.sql.Connection
 
 internal class MigrateTest : IntegrationTest() {
+
+    @ParameterizedTest
+    @ArgumentsSource(DatabasesSupportedByFw::class)
+    fun `LiberateOnMigrate works`(dbSystem: DbSystem) = withDsl(dbSystem) {
+        val oldSchemaHistoryTable = ClassicConfiguration().oldTable
+        given {
+            database { }
+            fwSchemaHistory(oldSchemaHistoryTable) {
+                entry(version = "1", description = "Foo", type = "JDBC", success = true)
+                entry(version = "2", description = "Bar", type = "JDBC", success = true)
+            }
+        }.`when` {
+            migrate {
+                withConfig { liberateOnMigrate(true) }
+                fromCode("V1__Foo", arbitraryMutation())
+                fromCode("V2__Bar", arbitraryMutation())
+                fromCode("V3__Baz", arbitraryMutation())
+            }
+        }.then { actual ->
+            withClue(actual.print().value) {
+                actual.liberateResult.shouldNotBeNull().apply {
+                    oldSchemaHistoryTable.shouldBeEqualIgnoringCase(oldSchemaHistoryTable)
+                    actions.shouldForExactly(2) {
+                        it.type.shouldBe("copied_jdbc_migration")
+                    }
+                }
+                actual.migrationsExecuted.shouldBe(1)
+                actual.migrations.shouldBeSingleton {
+                    it.version.shouldBe("3")
+                    it.description.shouldBe("Baz")
+                }
+                schemaHistory {
+                    forOne {
+                        it.version.shouldBe(Version.parse("1"))
+                        it.description.shouldBe("Foo")
+                        withClue("Success?") {
+                            it.isSuccess.shouldBeTrue()
+                        }
+                    }
+                    forOne {
+                        it.version.shouldBe(Version.parse("2"))
+                        it.description.shouldBe("Bar")
+                        withClue("Success?") {
+                            it.isSuccess.shouldBeTrue()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @ParameterizedTest
     @ArgumentsSource(DbSystem.All::class)
     fun `Can apply a single migration against an empty database`(dbSystem: DbSystem) = withDsl(dbSystem) {

@@ -96,6 +96,11 @@ public class FluentConfiguration implements Configuration {
     }
 
     @Override
+    public boolean isLiberateOnMigrate() {
+        return config.isLiberateOnMigrate();
+    }
+
+    @Override
     public String getTablespace() {
         return config.getTablespace();
     }
@@ -681,8 +686,7 @@ public class FluentConfiguration implements Configuration {
      * <i>migratedb.schemas</i> property is set (multi-schema mode), the schema history table is placed in the first
      * schema of the list.
      *
-     * @param table The name of the schema history table that will be used by MigrateDB. (default:
-     *              migratedb_state)
+     * @param table The name of the schema history table that will be used by MigrateDB. (default: migratedb_state)
      */
     public FluentConfiguration table(String table) {
         config.setTable(table);
@@ -690,12 +694,22 @@ public class FluentConfiguration implements Configuration {
     }
 
     /**
-     * Sets the name of the old table to convert into the format used by MigrateDB. Only used for the "liberate" command.
+     * Sets the name of the old table to convert into the format used by MigrateDB. Only used for the "liberate"
+     * command.
      *
      * @param oldTable Name of old table to convert.
      */
-    public FluentConfiguration oldTable(@Nullable String oldTable) {
+    public FluentConfiguration oldTable(String oldTable) {
         config.setOldTable(oldTable);
+        return this;
+    }
+
+    /**
+     * Whether the {@code liberate} command is automatically executed on {@code migrate} if the schema history table
+     * does not exist, but {@code oldTable} exists. (Default: {@code true})
+     */
+    public FluentConfiguration liberateOnMigrate(boolean liberateOnMigrate) {
+        config.setLiberateOnMigrate(liberateOnMigrate);
         return this;
     }
 
@@ -891,9 +905,9 @@ public class FluentConfiguration implements Configuration {
     }
 
     /**
-     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
-     * scanning and instantiated by MigrateDB. Instead these are application-controlled instances of JavaMigration. This
-     * is particularly useful when working with a dependency injection container, where you may want the DI container to
+     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath scanning
+     * and instantiated by MigrateDB. Instead these are application-controlled instances of JavaMigration. This is
+     * particularly useful when working with a dependency injection container, where you may want the DI container to
      * instantiate the class and wire up its dependencies for you.
      *
      * @param javaMigrations The additional Java-based migrations. An empty array if none. (default: none)
@@ -904,9 +918,9 @@ public class FluentConfiguration implements Configuration {
     }
 
     /**
-     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath
-     * scanning and instantiated by MigrateDB. Instead these are application-controlled instances of JavaMigration. This
-     * is particularly useful when working with a dependency injection container, where you may want the DI container to
+     * The additional Java-based migrations. These are not Java-based migrations discovered through classpath scanning
+     * and instantiated by MigrateDB. Instead these are application-controlled instances of JavaMigration. This is
+     * particularly useful when working with a dependency injection container, where you may want the DI container to
      * instantiate the class and wire up its dependencies for you.
      *
      * @param javaMigrations The additional Java-based migrations. An empty array if none. (default: none)

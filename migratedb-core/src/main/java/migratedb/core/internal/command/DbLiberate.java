@@ -55,13 +55,15 @@ public class DbLiberate {
     private final Schema<?, ?>[] schemas;
     private final CallbackExecutor callbackExecutor;
     private final JdbcTemplate jdbcTemplate;
+    private final boolean failOnNonEmptySchemaHistoryTable;
 
     public DbLiberate(SchemaHistory schemaHistory,
                       Configuration configuration,
                       Database<?> database,
                       Schema<?, ?> defaultSchema,
                       Schema<?, ?>[] schemas,
-                      CallbackExecutor callbackExecutor) {
+                      CallbackExecutor callbackExecutor,
+                      boolean failOnNonEmptySchemaHistoryTable) {
         this.schemaHistory = schemaHistory;
         this.configuration = configuration;
         this.database = database;
@@ -69,6 +71,7 @@ public class DbLiberate {
         this.schemas = schemas;
         this.callbackExecutor = callbackExecutor;
         this.jdbcTemplate = database.getMainConnection().getJdbcTemplate();
+        this.failOnNonEmptySchemaHistoryTable = failOnNonEmptySchemaHistoryTable;
     }
 
     public LiberateResult liberate() {
@@ -86,28 +89,41 @@ public class DbLiberate {
 
     private LiberateResult doLiberate() {
         var fromTable = Stream.of(Stream.of(defaultSchema), Arrays.stream(schemas))
-                .flatMap(it -> it)
-                .map(it -> it.getTable(configuration.getOldTable()))
-                .filter(Table::exists)
-                .findFirst()
-                .orElse(null);
+                              .flatMap(it -> it)
+                              .map(it -> it.getTable(configuration.getOldTable()))
+                              .filter(Table::exists)
+                              .findFirst()
+                              .orElse(null);
         if (fromTable == null) {
             throw new MigrateDbException("The table " + configuration.getOldTable() +
-                    " was not found in any schema");
+                                         " was not found in any schema");
         }
-        if (!schemaHistory.exists()) {
-            schemaHistory.create(false);
-        } else if (schemaHistory.hasAppliedMigrations()) {
-            throw new MigrateDbException("Cannot convert old schema history since target table " +
-                    schemaHistory.getTable() + " already has applied migrations");
-        }
-        var changes = database.getMainConnection().lock(schemaHistory.getTable(),
-                () -> convertToMigrateDb(fromTable));
-        return CommandResultFactory.createLiberateResult(configuration,
-                database,
-                schemaHistory.getTable().getSchema().getName(),
-                schemaHistory.getTable().getName(),
-                changes);
+        return database.getMainConnection().lock(fromTable, () -> {
+            if (!schemaHistory.exists()) {
+                schemaHistory.create(false);
+            } else if (schemaHistory.hasAppliedMigrations()) {
+                var message = "Cannot convert old schema history since target table " +
+                              schemaHistory.getTable() + " already has applied migrations";
+                if (failOnNonEmptySchemaHistoryTable) {
+                    throw new MigrateDbException(message);
+                }
+                return CommandResultFactory.createLiberateResult(
+                        configuration,
+                        database,
+                        schemaHistory.getTable().getSchema().getName(),
+                        schemaHistory.getTable().getName(),
+                        List.of(new LiberateAction(LiberateAction.TYPE_ABORTED, message))
+                );
+            }
+            var changes = database.getMainConnection().lock(schemaHistory.getTable(),
+                                                            () -> convertToMigrateDb(fromTable));
+            return CommandResultFactory.createLiberateResult(
+                    configuration,
+                    database,
+                    schemaHistory.getTable().getSchema().getName(),
+                    schemaHistory.getTable().getName(),
+                    changes);
+        });
     }
 
     private List<LiberateAction> convertToMigrateDb(Table<?, ?> fromTable) {
@@ -129,25 +145,22 @@ public class DbLiberate {
         for (var row : rows) {
             if (row.isUndo) {
                 output.add(new LiberateAction("skipped_undo_migration",
-                        "Skipped undo migration: " + row));
+                                              "Skipped undo migration: " + row));
                 removeUndoneMigration(oldSchemaHistory, row, output);
                 continue;
             } else if (row.isTableMarker) {
-                output.add(new LiberateAction("skipped_table_marker",
-                        "Skipped table creation marker: " + row));
+                output.add(new LiberateAction("skipped_table_marker", "Skipped table creation marker: " + row));
                 continue;
             }
             assert row.type != null;
             var rowType = row.type.name().toLowerCase(Locale.ROOT);
             if (row.type.equals(MigrationType.DELETED)) {
-                output.add(new LiberateAction("skipped_" + rowType + "_migration",
-                        "Skipped deleted migration: " + row));
+                output.add(new LiberateAction("skipped_" + rowType + "_migration", "Skipped deleted migration: " + row));
                 removeDeletedMigration(oldSchemaHistory, row);
                 continue;
             }
             if (row.type.equals(MigrationType.SCHEMA)) {
-                output.add(new LiberateAction("skipped_" + rowType + "_marker",
-                        "Skipped schema creation marker: " + row));
+                output.add(new LiberateAction("skipped_" + rowType + "_marker", "Skipped schema creation marker: " + row));
                 continue;
             }
             oldSchemaHistory.add(row);
@@ -174,7 +187,7 @@ public class DbLiberate {
                 if (Objects.equals(undoRow.version, next.version) && undoRow.installedRank > next.installedRank) {
                     iter.remove();
                     output.add(new LiberateAction("skipped_undone_migration",
-                            "Skipped undone migration: " + next));
+                                                  "Skipped undone migration: " + next));
                 }
             }
         }
@@ -191,17 +204,17 @@ public class DbLiberate {
             Object versionObj = versionStr == null ? JdbcNullTypes.StringNull : versionStr;
             Object checksumObj = JdbcNullTypes.StringNull;
             jdbcTemplate.update(database.getInsertStatement(schemaHistory.getTable()),
-                    row.installedRank,
-                    versionObj,
-                    description,
-                    row.type.name(),
-                    row.script,
-                    checksumObj,
-                    row.installedBy,
-                    row.executionTime,
-                    row.success);
+                                row.installedRank,
+                                versionObj,
+                                description,
+                                row.type.name(),
+                                row.script,
+                                checksumObj,
+                                row.installedBy,
+                                row.executionTime,
+                                row.success);
             output.add(new LiberateAction("copied_" + row.type.toString().toLowerCase(Locale.ROOT) + "_migration",
-                    "Copied to MigrateDB schema history: " + row));
+                                          "Copied to MigrateDB schema history: " + row));
             LOG.info("Copied " + row + " to MigrateDB Schema History");
         }
     }
@@ -246,8 +259,7 @@ public class DbLiberate {
         );
     }
 
-
-    private static class OldSchemaHistoryRow {
+    private static final class OldSchemaHistoryRow {
         public final int installedRank;
         public final String description;
         public final @Nullable Version version;
@@ -336,7 +348,7 @@ public class DbLiberate {
             Integer position = columnPositions.get(lowerCaseLabel);
             if (position == null) {
                 throw new MigrateDbException("Conversion failed: Column '" + lowerCaseLabel +
-                        "' not present in old schema history table");
+                                             "' not present in old schema history table");
             }
             return position;
         }

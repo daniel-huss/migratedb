@@ -19,6 +19,7 @@ package migratedb.core.internal.util;
 import migratedb.core.api.Location;
 import migratedb.core.api.Location.FileSystemLocation;
 import migratedb.core.api.logging.Log;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -47,7 +48,7 @@ public class Locations {
      *
      * @param rawLocations The locations to process.
      */
-    public Locations(List<String> rawLocations, ClassLoader classLoader) {
+    public Locations(List<String> rawLocations, @Nullable ClassLoader classLoader) {
         this.locations = processLocations(rawLocations.stream()
                 .map(it -> Location.parse(it, classLoader))
                 .collect(Collectors.toUnmodifiableList()));
@@ -64,7 +65,7 @@ public class Locations {
             if (location instanceof FileSystemLocation) {
                 Location parentLocation = getParentLocationIfExists((FileSystemLocation) location, processed);
                 if (parentLocation != null) {
-                    LOG.warn("Discarding location '" + location + "' as it is a sublocation of '" + parentLocation + "'");
+                    LOG.warn("Discarding location '" + location + "' as it is a sub-location of '" + parentLocation + "'");
                     continue;
                 }
             }
@@ -87,7 +88,7 @@ public class Locations {
      * @param otherLocations The list to search.
      * @return The parent location. {@code null} if none.
      */
-    private static Location getParentLocationIfExists(FileSystemLocation location, Collection<Location> otherLocations) {
+    private static @Nullable Location getParentLocationIfExists(FileSystemLocation location, Collection<Location> otherLocations) {
         for (var otherLocation : otherLocations) {
             if (otherLocation instanceof FileSystemLocation &&
                     isParent(((FileSystemLocation) otherLocation), location)) {

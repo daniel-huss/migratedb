@@ -16,6 +16,8 @@
  */
 package migratedb.core.api.output;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class MigrateResult extends OperationResult {
     public String schemaName;
     public List<MigrateOutput> migrations;
     public int migrationsExecuted;
+    public @Nullable LiberateResult liberateResult;
 
     public MigrateResult(String migratedbVersion,
                          String database,

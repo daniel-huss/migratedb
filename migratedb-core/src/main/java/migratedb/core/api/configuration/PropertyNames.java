@@ -138,6 +138,8 @@ public class PropertyNames {
     public static final String FAIL_ON_MISSING_LOCATIONS = "migratedb.failOnMissingLocations";
     @Info(typeHint = Class.class, acceptsStringConstantsIn = LogSystems.class, commaSeparated = true)
     public static final String LOGGER = "migratedb.logger";
+    @Info(typeHint = Boolean.class)
+    public static final String LIBERATE_ON_MIGRATE = "migratedb.createSchemas";
 
     public @interface ErrorOverrideString {}
 
