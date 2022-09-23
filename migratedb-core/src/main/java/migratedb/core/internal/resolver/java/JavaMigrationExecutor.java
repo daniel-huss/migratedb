@@ -17,13 +17,18 @@
 package migratedb.core.internal.resolver.java;
 
 import migratedb.core.api.MigrateDbException;
+import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.configuration.Configuration;
 import migratedb.core.api.executor.Context;
 import migratedb.core.api.executor.MigrationExecutor;
 import migratedb.core.api.internal.database.DatabaseExecutionStrategy;
 import migratedb.core.api.internal.database.base.DatabaseType;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.migration.JavaMigration;
+import migratedb.core.internal.resource.ReaderResource;
 
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -31,18 +36,16 @@ import java.sql.SQLException;
  * Adapter for executing migrations implementing JavaMigration.
  */
 public class JavaMigrationExecutor implements MigrationExecutor {
-    /**
-     * The JavaMigration to execute.
-     */
     private final JavaMigration javaMigration;
+    private final SqlScriptFactory sqlScriptFactory;
+    private final SqlScriptExecutorFactory sqlScriptExecutorFactory;
 
-    /**
-     * Creates a new JavaMigrationExecutor.
-     *
-     * @param javaMigration The JavaMigration to execute.
-     */
-    JavaMigrationExecutor(JavaMigration javaMigration) {
+    JavaMigrationExecutor(JavaMigration javaMigration,
+                          SqlScriptFactory sqlScriptFactory,
+                          SqlScriptExecutorFactory sqlScriptExecutorFactory) {
         this.javaMigration = javaMigration;
+        this.sqlScriptFactory = sqlScriptFactory;
+        this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
     }
 
     @Override
@@ -69,6 +72,14 @@ public class JavaMigrationExecutor implements MigrationExecutor {
                 @Override
                 public Connection getConnection() {
                     return context.getConnection();
+                }
+
+                @Override
+                public void runScript(Reader script) {
+                    var resource = new ReaderResource("script", script);
+                    var sqlScript = sqlScriptFactory.createSqlScript(resource, context.getConfiguration().isMixed(), ResourceProvider.noResources());
+                    sqlScriptExecutorFactory.createSqlScriptExecutor(getConnection(), getConfiguration().isOutputQueryResults())
+                                            .execute(sqlScript);
                 }
             });
         } catch (SQLException e) {

@@ -35,8 +35,9 @@ abstract class AbstractRunWithConfigSpec(private val databaseContext: DatabaseCo
         }.toTypedArray()
     }
 
-    final override fun withConfig(classLoader: ClassLoader?, block: (FluentConfiguration).() -> Unit) {
-        config = newConfig(classLoader).apply(block)
+    final override fun <T> withConfig(classLoader: ClassLoader?, block: (FluentConfiguration).() -> T): T {
+        config = newConfig(classLoader)
+        return block(config)
     }
 
     protected fun <T> execute(block: (config: FluentConfiguration) -> T): T {

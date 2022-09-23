@@ -58,14 +58,16 @@ public class DefaultMigrationResolver implements MigrationResolver {
     ) {
         if (!configuration.isSkipDefaultResolvers()) {
             migrationResolvers.add(new SqlMigrationResolver(resourceProvider,
-                    sqlScriptExecutorFactory,
-                    sqlScriptFactory,
-                    configuration,
-                    parsingContext));
-            migrationResolvers.add(new JavaMigrationResolver(classProvider));
+                                                            sqlScriptExecutorFactory,
+                                                            sqlScriptFactory,
+                                                            configuration,
+                                                            parsingContext));
+            migrationResolvers.add(new JavaMigrationResolver(classProvider, sqlScriptFactory, sqlScriptExecutorFactory));
 
         }
-        migrationResolvers.add(new FixedJavaMigrationResolver(configuration.getJavaMigrations()));
+        migrationResolvers.add(new FixedJavaMigrationResolver(sqlScriptFactory,
+                                                              sqlScriptExecutorFactory,
+                                                              configuration.getJavaMigrations()));
 
         migrationResolvers.addAll(Arrays.asList(customMigrationResolvers));
     }
@@ -129,14 +131,14 @@ public class DefaultMigrationResolver implements MigrationResolver {
                 if (current.getVersion() != null) {
                     throw new MigrateDbException(
                             "Found more than one migration with version " + current.getVersion() + "\nOffenders:\n-> " +
-                                    current.getLocationDescription() + " (" + current.getType() + ")\n-> " +
-                                    next.getLocationDescription() + " (" + next.getType() + ")",
+                            current.getLocationDescription() + " (" + current.getType() + ")\n-> " +
+                            next.getLocationDescription() + " (" + next.getType() + ")",
                             ErrorCode.DUPLICATE_VERSIONED_MIGRATION);
                 }
                 throw new MigrateDbException(
                         "Found more than one repeatable migration with description " + current.getDescription() +
-                                "\nOffenders:\n-> " + current.getLocationDescription() + " (" + current.getType() + ")\n-> " +
-                                next.getLocationDescription() + " (" + next.getType() + ")",
+                        "\nOffenders:\n-> " + current.getLocationDescription() + " (" + current.getType() + ")\n-> " +
+                        next.getLocationDescription() + " (" + next.getType() + ")",
                         ErrorCode.DUPLICATE_REPEATABLE_MIGRATION);
             }
         }

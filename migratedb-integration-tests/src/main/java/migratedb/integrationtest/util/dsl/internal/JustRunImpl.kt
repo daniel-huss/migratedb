@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-package migratedb.integrationtest.util.dsl
+package migratedb.integrationtest.util.dsl.internal
 
-import migratedb.core.api.configuration.FluentConfiguration
-import migratedb.core.api.migration.JavaMigration
+import migratedb.integrationtest.util.dsl.JustRun
 
-interface RunWithConfigSpec {
-    fun <T> withConfig(classLoader: ClassLoader? = null, block: (FluentConfiguration).() -> T): T
-
-    /**
-     * Converts migration names to arbitrary succeeding java migrations. The names can use shortened syntax (e.g. "V1").
-     */
-    fun createMigrations(names: Collection<String>): Array<JavaMigration>
+class JustRunImpl(databaseContext: DatabaseContext) : JustRun, AbstractRunWithConfigSpec(databaseContext) {
 }

@@ -121,6 +121,7 @@ object ConfigSetters {
     val sqlMigrationSuffixes = Setter("setSqlMigrationSuffixes", String.any().ofLength(1..10).array(String::class))
     val table = Setter("setTable", anySchemaObjectName())
     val oldTable = Setter("setOldTable", anySchemaObjectName())
+    val liberateOnMigrate = Setter("setLiberateOnMigrate", Boolean.any())
     val tablespace = Setter("setTablespace", anySchemaObjectName())
     val target = Setter("setTarget", anyTargetVersion())
     val targetAsString = Setter("setTargetAsString", anyTargetVersionString())
@@ -179,6 +180,7 @@ object ConfigSetters {
         private val setterFunction = when {
             signature.isEmpty() -> setterFunctions.getValue(name).singleOrNull()
                 ?: throw IllegalArgumentException("There are multiple signatures for setter $name")
+
             else -> setterFunctions.getValue(name).singleOrNull { it.matches(signature) }
                 ?: throw IllegalArgumentException("No setter named $name matches signature ${signature.map { it.simpleName }}")
         }

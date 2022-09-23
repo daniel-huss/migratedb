@@ -21,6 +21,7 @@ import migratedb.core.api.Location;
 import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.resource.Resource;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -80,7 +81,7 @@ public final class LocationScanner<T> implements ClassProvider<T>, ResourceProvi
     }
 
     @Override
-    public Resource getResource(String name) {
+    public @Nullable Resource getResource(String name) {
         for (var provider : resourceProviders) {
             var resource = provider.getResource(name);
             if (resource != null) return resource;

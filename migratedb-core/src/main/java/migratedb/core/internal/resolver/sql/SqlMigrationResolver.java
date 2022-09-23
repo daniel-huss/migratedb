@@ -26,7 +26,6 @@ import migratedb.core.api.internal.resource.ResourceName;
 import migratedb.core.api.internal.sqlscript.SqlScript;
 import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
 import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
-import migratedb.core.api.logging.Log;
 import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
 import migratedb.core.api.resolver.ResolvedMigration;
@@ -47,15 +46,16 @@ import java.util.List;
  * Migration resolver for SQL file resources.
  */
 public class SqlMigrationResolver implements MigrationResolver {
-    private static final Log LOG = Log.getLog(SqlMigrationResolver.class);
     private final SqlScriptExecutorFactory sqlScriptExecutorFactory;
     private final ResourceProvider resourceProvider;
     private final SqlScriptFactory sqlScriptFactory;
     private final Configuration configuration;
     private final ParsingContext parsingContext;
 
-    public SqlMigrationResolver(ResourceProvider resourceProvider, SqlScriptExecutorFactory sqlScriptExecutorFactory,
-                                SqlScriptFactory sqlScriptFactory, Configuration configuration,
+    public SqlMigrationResolver(ResourceProvider resourceProvider,
+                                SqlScriptExecutorFactory sqlScriptExecutorFactory,
+                                SqlScriptFactory sqlScriptFactory,
+                                Configuration configuration,
                                 ParsingContext parsingContext) {
         this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
         this.resourceProvider = resourceProvider;
@@ -145,14 +145,14 @@ public class SqlMigrationResolver implements MigrationResolver {
 
             var isBaseline = filename.startsWith(configuration.getBaselineMigrationPrefix());
             migrations.add(new ResolvedMigrationImpl(
-                resourceName.getVersion(),
-                resourceName.getDescription(),
-                resource.getLastNameComponent(),
-                checksum,
-                equivalentChecksum,
-                isBaseline ? MigrationType.SQL_BASELINE : MigrationType.SQL,
-                resource.describeLocation(),
-                new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript)) {
+                    resourceName.getVersion(),
+                    resourceName.getDescription(),
+                    resource.getLastNameComponent(),
+                    checksum,
+                    equivalentChecksum,
+                    isBaseline ? MigrationType.SQL_BASELINE : MigrationType.SQL,
+                    resource.describeLocation(),
+                    new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript)) {
             });
         }
     }

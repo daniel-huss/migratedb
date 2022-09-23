@@ -149,7 +149,7 @@ final class MigrateDbExecutor {
 
         try (var database = databaseType.createDatabase(configuration, !dbConnectionInfoPrinted, jdbcConnectionFactory)) {
             dbConnectionInfoPrinted = true;
-            LOG.debug("DDL Transactions Supported: " + database.supportsDdlTransactions());
+            LOG.debug("DDL transactions supported: " + database.supportsDdlTransactions());
 
             var schemas = SchemaHistoryFactory.scanSchemas(configuration, database);
 

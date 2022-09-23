@@ -17,6 +17,7 @@
 package migratedb.core.api;
 
 import migratedb.core.api.resource.Resource;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +32,7 @@ public interface ResourceProvider {
      * @param name The name of the resource.
      * @return The resource or {@code null} if not found.
      */
-    Resource getResource(String name);
+    @Nullable Resource getResource(String name);
 
     /**
      * Retrieve all resources whose last name component begins with this prefix and ends with any of these suffixes.
@@ -42,7 +43,6 @@ public interface ResourceProvider {
      */
     Collection<Resource> getResources(String prefix, String... suffixes);
 
-
     /**
      * @return Instance that never provides any resoures.
      */
@@ -50,7 +50,7 @@ public interface ResourceProvider {
         return new ResourceProvider() {
 
             @Override
-            public Resource getResource(String name) {
+            public @Nullable Resource getResource(String name) {
                 return null;
             }
 

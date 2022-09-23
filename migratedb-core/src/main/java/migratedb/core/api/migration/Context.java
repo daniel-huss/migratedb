@@ -18,6 +18,7 @@ package migratedb.core.api.migration;
 
 import migratedb.core.api.configuration.Configuration;
 
+import java.io.Reader;
 import java.sql.Connection;
 
 /**
@@ -35,4 +36,9 @@ public interface Context {
      * rolled back afterwards, unless the canExecuteInTransaction method has been implemented to return false.
      */
     Connection getConnection();
+
+    /**
+     * Executes a script on the connection returned by {@link #getConnection()}.
+     */
+    void runScript(Reader script);
 }

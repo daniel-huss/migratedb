@@ -16,6 +16,8 @@
  */
 package migratedb.core.internal.resolver.java;
 
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
@@ -35,13 +37,14 @@ public class FixedJavaMigrationResolver implements MigrationResolver {
      * The JavaMigration instances to use.
      */
     private final JavaMigration[] javaMigrations;
+    private final SqlScriptFactory sqlScriptFactory;
+    private final SqlScriptExecutorFactory sqlScriptExecutorFactory;
 
-    /**
-     * Creates a new instance.
-     *
-     * @param javaMigrations The JavaMigration instances to use.
-     */
-    public FixedJavaMigrationResolver(JavaMigration... javaMigrations) {
+    public FixedJavaMigrationResolver(SqlScriptFactory sqlScriptFactory,
+                                      SqlScriptExecutorFactory sqlScriptExecutorFactory,
+                                      JavaMigration... javaMigrations) {
+        this.sqlScriptFactory = sqlScriptFactory;
+        this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
         this.javaMigrations = javaMigrations;
     }
 
@@ -50,7 +53,11 @@ public class FixedJavaMigrationResolver implements MigrationResolver {
         List<ResolvedMigration> migrations = new ArrayList<>();
 
         for (JavaMigration javaMigration : javaMigrations) {
-            migrations.add(newResolvedJavaMigration(javaMigration, context.getConfiguration()));
+            migrations.add(newResolvedJavaMigration(javaMigration,
+                                                    context.getConfiguration(),
+                                                    sqlScriptFactory,
+                                                    sqlScriptExecutorFactory
+            ));
         }
 
         migrations.sort(new ResolvedMigrationComparator());

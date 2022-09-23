@@ -55,7 +55,6 @@ public interface JavaMigration {
 
     /**
      * @return The checksum of this migration.
-     *
      * @deprecated Implement {@link #getChecksum(Configuration)} instead.
      */
     @Deprecated(forRemoval = true)
@@ -64,7 +63,7 @@ public interface JavaMigration {
     }
 
     /**
-     * @return The checksum of this migration.
+     * @return The checksum of this migration, {@code null} to disable checksum verification.
      */
     default @Nullable Checksum getChecksum(Configuration configuration) {
         var oldChecksum = getChecksum();
@@ -95,7 +94,6 @@ public interface JavaMigration {
      *
      * @param context The context relevant for this migration, containing things like the JDBC connection to use and the
      *                current MigrateDB configuration.
-     *
      * @throws Exception when the migration failed.
      */
     void migrate(Context context) throws Exception;

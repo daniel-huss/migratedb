@@ -20,6 +20,7 @@ import migratedb.core.api.MigrateDbException;
 import migratedb.core.api.ResourceProvider;
 import migratedb.core.api.resource.Resource;
 import migratedb.core.internal.util.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -39,7 +40,7 @@ public class FileSystemResourceProvider implements ResourceProvider {
     }
 
     @Override
-    public Resource getResource(String name) {
+    public @Nullable Resource getResource(String name) {
         var file = baseDir.resolve(name);
         if (Files.exists(file)) {
             return new FileSystemResource(baseDir.resolve(name), baseDir);

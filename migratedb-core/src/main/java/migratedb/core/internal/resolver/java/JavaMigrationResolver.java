@@ -19,6 +19,8 @@ package migratedb.core.internal.resolver.java;
 import migratedb.core.api.ClassProvider;
 import migratedb.core.api.MigrationType;
 import migratedb.core.api.configuration.Configuration;
+import migratedb.core.api.internal.sqlscript.SqlScriptExecutorFactory;
+import migratedb.core.api.internal.sqlscript.SqlScriptFactory;
 import migratedb.core.api.migration.JavaMigration;
 import migratedb.core.api.resolver.Context;
 import migratedb.core.api.resolver.MigrationResolver;
@@ -37,16 +39,19 @@ public class JavaMigrationResolver implements MigrationResolver {
     /**
      * Creates a new ResolvedJavaMigration based on a {@link JavaMigration}.
      */
-    public static ResolvedMigration newResolvedJavaMigration(JavaMigration javaMigration, Configuration configuration) {
+    public static ResolvedMigration newResolvedJavaMigration(JavaMigration javaMigration,
+                                                             Configuration configuration,
+                                                             SqlScriptFactory sqlScriptFactory,
+                                                             SqlScriptExecutorFactory sqlScriptExecutorFactory) {
         return new ResolvedMigrationImpl(javaMigration.getVersion(),
                                          javaMigration.getDescription(),
                                          javaMigration.getClass().getName(),
                                          javaMigration.getChecksum(configuration),
                                          null,
                                          javaMigration.isBaselineMigration() ? MigrationType.JDBC_BASELINE
-                                                                             : MigrationType.JDBC,
+                                                 : MigrationType.JDBC,
                                          String.valueOf(ClassUtils.guessLocationOnDisk(javaMigration.getClass())),
-                                         new JavaMigrationExecutor(javaMigration)
+                                         new JavaMigrationExecutor(javaMigration, sqlScriptFactory, sqlScriptExecutorFactory)
         );
     }
 
@@ -54,14 +59,20 @@ public class JavaMigrationResolver implements MigrationResolver {
      * The Scanner to use.
      */
     private final ClassProvider<JavaMigration> classProvider;
+    private final SqlScriptFactory sqlScriptFactory;
+    private final SqlScriptExecutorFactory sqlScriptExecutorFactory;
 
     /**
      * Creates a new instance.
      *
      * @param classProvider The class provider.
      */
-    public JavaMigrationResolver(ClassProvider<JavaMigration> classProvider) {
+    public JavaMigrationResolver(ClassProvider<JavaMigration> classProvider,
+                                 SqlScriptFactory sqlScriptFactory,
+                                 SqlScriptExecutorFactory sqlScriptExecutorFactory) {
         this.classProvider = classProvider;
+        this.sqlScriptFactory = sqlScriptFactory;
+        this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
     }
 
     @Override
@@ -71,7 +82,7 @@ public class JavaMigrationResolver implements MigrationResolver {
         for (Class<?> clazz : classProvider.getClasses()) {
             JavaMigration javaMigration = ClassUtils.instantiate(clazz.getName(),
                                                                  context.getConfiguration().getClassLoader());
-            migrations.add(newResolvedJavaMigration(javaMigration, context.getConfiguration()));
+            migrations.add(newResolvedJavaMigration(javaMigration, context.getConfiguration(), sqlScriptFactory, sqlScriptExecutorFactory));
         }
 
         migrations.sort(new ResolvedMigrationComparator());

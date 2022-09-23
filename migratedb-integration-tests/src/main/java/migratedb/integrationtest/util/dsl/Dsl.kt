@@ -53,7 +53,7 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
         fun MigrationInfo.migrationName() = when {
             isRepeatable -> "R__" + description.spaceToUnderscore()
             else -> (if (type.isBaselineMigration) "B" else "V") +
-                    version?.dotToUnderscrore() + "__" + description.spaceToUnderscore()
+                    version?.dotToUnderscore() + "__" + description.spaceToUnderscore()
         }
 
         /**
@@ -68,7 +68,7 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
             }
             .build()
 
-        private fun Version.dotToUnderscrore() = toString().replace('.', '_')
+        private fun Version.dotToUnderscore() = toString().replace('.', '_')
         private fun String.spaceToUnderscore() = replace(' ', '_')
 
         /**
@@ -142,6 +142,8 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
     }
 
     interface WhenStep<G> : AfterGiven<G> {
+        fun <T> justRun(block: JustRun.() -> T): T
+
         fun baseline(block: RunBaselineSpec.() -> Unit): BaselineResult
 
         fun migrate(block: RunMigrateSpec.() -> Unit): MigrateResult
@@ -166,7 +168,7 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
 
         fun IndependentDatabaseMutation.shouldBeApplied() {
             withConnection {
-                it.dataSource.connection.apply {
+                it.dataSource!!.connection.apply {
                     isApplied(this).shouldBeTrue()
                 }
             }

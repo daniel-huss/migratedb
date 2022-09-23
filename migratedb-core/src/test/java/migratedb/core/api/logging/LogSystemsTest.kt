@@ -89,7 +89,7 @@ internal class LogSystemsTest {
     }
 
     @Test
-    fun `fromStrings() supports silienced logging`() {
+    fun `fromStrings() supports silenced logging`() {
         LogSystems.fromStrings(setOf(LogSystems.NONE), defaultClassLoader(), null)
             .shouldBeInstanceOf<NoLogSystem>()
     }
