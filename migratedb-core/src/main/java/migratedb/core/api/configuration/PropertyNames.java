@@ -17,6 +17,7 @@
 package migratedb.core.api.configuration;
 
 import migratedb.core.api.Location;
+import migratedb.core.api.TargetVersion;
 import migratedb.core.api.Version;
 import migratedb.core.api.logging.LogSystems;
 import migratedb.core.api.pattern.ValidatePattern;
@@ -120,7 +121,7 @@ public class PropertyNames {
     public static final String OLD_TABLE = "migratedb.oldTable";
     @Info(typeHint = String.class)
     public static final String TABLESPACE = "migratedb.tablespace";
-    @Info(typeHint = Version.class)
+    @Info(typeHint = TargetVersion.class)
     public static final String TARGET = "migratedb.target";
     @Info(typeHint = Version.class, commaSeparated = true)
     public static final String CHERRY_PICK = "migratedb.cherryPick";
@@ -141,9 +142,11 @@ public class PropertyNames {
     @Info(typeHint = Boolean.class)
     public static final String LIBERATE_ON_MIGRATE = "migratedb.createSchemas";
 
-    public @interface ErrorOverrideString {}
+    public @interface ErrorOverrideString {
+    }
 
-    public @interface JdbcUrlString {}
+    public @interface JdbcUrlString {
+    }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)

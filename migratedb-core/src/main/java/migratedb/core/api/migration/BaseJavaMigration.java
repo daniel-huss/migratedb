@@ -45,7 +45,6 @@ import migratedb.core.internal.resolver.MigrationInfoHelper;
  */
 public abstract class BaseJavaMigration implements JavaMigration {
     private final boolean isBaseline;
-    private final boolean isRepeatable;
     private final Version version;
     private final String description;
 
@@ -56,7 +55,7 @@ public abstract class BaseJavaMigration implements JavaMigration {
         String shortName = getClass().getSimpleName();
         String prefix = null;
 
-        isRepeatable = shortName.startsWith("R");
+        boolean isRepeatable = shortName.startsWith("R");
         isBaseline = shortName.startsWith("B");
 
         if (shortName.startsWith("V") || isBaseline || isRepeatable) {
@@ -65,9 +64,7 @@ public abstract class BaseJavaMigration implements JavaMigration {
         if (prefix == null) {
             throw new MigrateDbException("Invalid Java-based migration class name: " + getClass().getName() +
                                          " => ensure it starts with V, R, B" +
-
-                                         " or implement JavaMigration directly for " +
-                                         "non-default naming");
+                                         " or implement JavaMigration directly for non-default naming");
         }
 
         var info = MigrationInfoHelper.extractVersionAndDescription(shortName, prefix, "__", isRepeatable);

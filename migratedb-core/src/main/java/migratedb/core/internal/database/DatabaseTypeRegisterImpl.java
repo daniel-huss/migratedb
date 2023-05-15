@@ -86,7 +86,7 @@ public class DatabaseTypeRegisterImpl implements DatabaseTypeRegister {
     private List<DatabaseType> getDatabaseTypesForUrl(String url) {
         List<DatabaseType> typesAcceptingUrl = new ArrayList<>();
         for (DatabaseType type : getDatabaseTypes()) {
-            if (type.handlesJDBCUrl(url)) {
+            if (type.handlesJdbcUrl(url)) {
                 typesAcceptingUrl.add(type);
             }
         }
@@ -101,7 +101,7 @@ public class DatabaseTypeRegisterImpl implements DatabaseTypeRegister {
             url = redactJdbcUrl(url, BaseDatabaseType.getDefaultJDBCCredentialsPattern());
         } else {
             for (DatabaseType type : types) {
-                Pattern dbPattern = type.getJDBCCredentialsPattern();
+                Pattern dbPattern = type.getJdbcCredentialsPattern();
                 if (dbPattern != null) {
                     url = redactJdbcUrl(url, dbPattern);
                 }

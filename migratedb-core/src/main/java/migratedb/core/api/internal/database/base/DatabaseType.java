@@ -53,7 +53,7 @@ public interface DatabaseType {
      * @param url The JDBC url.
      * @return {@code true} if this handles the JDBC url, {@code false} if not.
      */
-    boolean handlesJDBCUrl(String url);
+    boolean handlesJdbcUrl(String url);
 
     /**
      * When identifying database types, the priority with which this type will be used. High numbers indicate that this
@@ -67,7 +67,7 @@ public interface DatabaseType {
      *
      * @return The URL regex.
      */
-    Pattern getJDBCCredentialsPattern();
+    Pattern getJdbcCredentialsPattern();
 
     /**
      * Get the driver class used to handle this JDBC url. This will only be called if {@code matchesJDBCUrl} previously
@@ -103,16 +103,15 @@ public interface DatabaseType {
                                                  Connection connection);
 
     /**
-     * Initializes the Database class, and optionally prints some information.
+     * Initializes the Database, and optionally prints some information.
      *
      * @param configuration         The MigrateDB configuration.
      * @param jdbcConnectionFactory The current connection factory.
      * @param printInfo             Where the DB info should be printed in the logs.
-     * @return The appropriate Database class.
      */
-    Database<?> createDatabase(Configuration configuration,
-                               boolean printInfo,
-                               JdbcConnectionFactory jdbcConnectionFactory);
+    Database2 createDatabase(Configuration configuration,
+                             boolean printInfo,
+                             JdbcConnectionFactory jdbcConnectionFactory);
 
     /**
      * Initializes the Database used by this Database Type.
@@ -121,8 +120,8 @@ public interface DatabaseType {
      * @param jdbcConnectionFactory The current connection factory.
      * @return The Database.
      */
-    Database<?> createDatabase(Configuration configuration,
-                               JdbcConnectionFactory jdbcConnectionFactory);
+    Database2 createDatabase(Configuration configuration,
+                             JdbcConnectionFactory jdbcConnectionFactory);
 
     /**
      * Initializes the Parser used by this Database Type.
@@ -165,8 +164,8 @@ public interface DatabaseType {
     ExecutionTemplate createTransactionalExecutionTemplate(Connection connection, boolean rollbackOnException);
 
     /**
-     * Changes the default connection properties for this database. These can be overridden by {@code
-     * modifyConfigConnectionProps} and {@code modifyOverridingConnectionProps}
+     * Changes the default connection properties for this database. These can be overridden by
+     * {@code modifyConfigConnectionProps} and {@code modifyOverridingConnectionProps}
      *
      * @param url         The JDBC url.
      * @param props       The properties to write to.
@@ -175,8 +174,8 @@ public interface DatabaseType {
     void modifyDefaultConnectionProps(String url, Properties props, ClassLoader classLoader);
 
     /**
-     * Changes any necessary connection properties based on MigrateDB's configuration. These can be overridden by {@code
-     * modifyOverridingConnectionProps}
+     * Changes any necessary connection properties based on MigrateDB's configuration. These can be overridden by
+     * {@code modifyOverridingConnectionProps}
      *
      * @param config      The MigrateDB configuration to read properties from
      * @param props       The properties to write to.
@@ -185,8 +184,9 @@ public interface DatabaseType {
     void modifyConfigConnectionProps(Configuration config, Properties props, ClassLoader classLoader);
 
     /**
-     * Changes any overriding connection properties. These will override anything set by {@code setDefaultConnectionProps}
-     * and {@code modifyConfigConnectionProps} and should only be used if neither of those can satisfy your requirement.
+     * Changes any overriding connection properties. These will override anything set by
+     * {@code setDefaultConnectionProps} and {@code modifyConfigConnectionProps} and should only be used if neither of
+     * those can satisfy your requirement.
      *
      * @param props The properties to write to.
      */
@@ -219,7 +219,7 @@ public interface DatabaseType {
     boolean detectPasswordRequiredByUrl(String url);
 
     /**
-     * Detects whether or not external authentication is required.
+     * Detects whether external authentication is required.
      *
      * @return true if external authentication is required, else false.
      */

@@ -37,7 +37,7 @@ public class TestContainersDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:tc:") || url.startsWith("jdbc:p6spy:tc:");
     }
 

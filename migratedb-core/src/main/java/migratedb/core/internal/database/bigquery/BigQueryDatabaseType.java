@@ -54,12 +54,12 @@ public class BigQueryDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Pattern getJDBCCredentialsPattern() {
+    public Pattern getJdbcCredentialsPattern() {
         return OAUTH_CREDENTIALS_PATTERN;
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:bigquery:");
     }
 

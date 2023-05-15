@@ -50,7 +50,7 @@
         </dependency>
 
         <dependency>
-            <!-- To test compatibilty -->
+            <!-- To test compatibility -->
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>${version.flyway}</version>

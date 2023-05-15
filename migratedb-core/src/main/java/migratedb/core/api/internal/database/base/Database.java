@@ -27,7 +27,8 @@ import java.sql.DatabaseMetaData;
 
 public interface Database<C extends Connection<?>> extends Closeable {
     /**
-     * Ensure MigrateDB supports this version of this database.
+     * Ensure MigrateDB supports this version of this database. Throws a runtime exception if this database is not
+     * supported.
      */
     void ensureSupported();
 

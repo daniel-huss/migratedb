@@ -40,7 +40,7 @@ public class SQLiteDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:sqlite:") || url.startsWith("jdbc:sqldroid:") ||
                url.startsWith("jdbc:p6spy:sqlite:") || url.startsWith("jdbc:p6spy:sqldroid:");
     }

@@ -17,17 +17,15 @@
 
 package migratedb.core.api.internal.database.base;
 
-public interface Table<D extends Database<?>, S extends Schema<?, ?>> extends SchemaObject<D, S> {
+public interface Schema2 {
+    String getName();
+
     boolean exists();
 
-    /**
-     * Locks this table in this schema using a read/write pessimistic lock until the end of the current transaction.
-     * Note that {@code unlock()} still needs to be called even if your database unlocks the table implicitly.
-     */
-    void lock();
+    boolean isEmpty();
 
     /**
-     * For databases that require an explicit unlocking, not an implicit end-of-transaction one.
+     * Creates this schema in the database.
      */
-    void unlock();
+    void create();
 }

@@ -50,7 +50,7 @@ public class RedshiftDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:redshift:") || url.startsWith("jdbc:p6spy:redshift:");
     }
 

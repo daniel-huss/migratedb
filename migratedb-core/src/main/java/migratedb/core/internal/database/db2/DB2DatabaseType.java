@@ -40,7 +40,7 @@ public class DB2DatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:db2:") || url.startsWith("jdbc:p6spy:db2:");
     }
 

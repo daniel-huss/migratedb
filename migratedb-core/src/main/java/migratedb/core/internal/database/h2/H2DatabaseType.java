@@ -40,7 +40,7 @@ public class H2DatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:h2:") || url.startsWith("jdbc:p6spy:h2:");
     }
 

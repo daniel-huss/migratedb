@@ -46,7 +46,7 @@ public class MySQLDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:mysql:") || url.startsWith("jdbc:google:") ||
                url.startsWith("jdbc:p6spy:mysql:") || url.startsWith("jdbc:p6spy:google:");
     }

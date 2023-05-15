@@ -77,7 +77,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
      * Whether this database type should handle the given JDBC url.
      */
     @Override
-    public abstract boolean handlesJDBCUrl(String url);
+    public abstract boolean handlesJdbcUrl(String url);
 
     /**
      * When identifying database types, the priority with which this type will be used. High numbers indicate that this
@@ -95,7 +95,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
      * @return The URL regex.
      */
     @Override
-    public Pattern getJDBCCredentialsPattern() {
+    public Pattern getJdbcCredentialsPattern() {
         return defaultJdbcCredentialsPattern;
     }
 

@@ -39,7 +39,7 @@ public class InformixDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:informix-sqli:") || url.startsWith("jdbc:p6spy:informix-sqli:");
     }
 

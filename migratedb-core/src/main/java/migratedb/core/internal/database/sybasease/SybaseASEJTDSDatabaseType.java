@@ -40,7 +40,7 @@ public class SybaseASEJTDSDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:jtds:") || url.startsWith("jdbc:p6spy:jtds:");
     }
 

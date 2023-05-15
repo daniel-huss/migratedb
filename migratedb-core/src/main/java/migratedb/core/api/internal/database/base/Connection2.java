@@ -17,17 +17,22 @@
 
 package migratedb.core.api.internal.database.base;
 
-public interface Table<D extends Database<?>, S extends Schema<?, ?>> extends SchemaObject<D, S> {
-    boolean exists();
+import migratedb.core.api.internal.jdbc.JdbcTemplate;
+
+public interface Connection2 extends AutoCloseable {
+    Schema2 getCurrentSchema();
+
+    void setCurrentSchema(Schema2 schema);
 
     /**
-     * Locks this table in this schema using a read/write pessimistic lock until the end of the current transaction.
-     * Note that {@code unlock()} still needs to be called even if your database unlocks the table implicitly.
+     * Retrieves the schema with this name in the database.
      */
-    void lock();
+    Schema2 getSchema(String name);
 
-    /**
-     * For databases that require an explicit unlocking, not an implicit end-of-transaction one.
-     */
-    void unlock();
+    JdbcTemplate getJdbcTemplate();
+
+    Store getStore(Schema2 schema);
+
+    @Override
+    void close();
 }

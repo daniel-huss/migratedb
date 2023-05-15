@@ -11,9 +11,19 @@ NOTE: 🔥 = Breaking Change
 This is an early access 0.x release, which means *everything* is subject to change.
 Feedback is very welcome!
 
+=== Added
+
+* ScriptMigration as a replacement for .sql files when you'd rather use a text block in code.
+* liberateOnMigrate config parameter.
+* Automatic conversion of old schema history the first time you `migrate()`.
+
 === Changed
 
 * Updated dependencies.
+
+=== Removed
+
+* Test artifacts are no longer uploaded to Maven Central.
 
 == https://search.maven.org/artifact/de.unentscheidbar/migratedb-core/0.2.0/jar[0.2.0]
 

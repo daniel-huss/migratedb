@@ -40,7 +40,7 @@ public class SybaseASEJConnectDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:sybase:") || url.startsWith("jdbc:p6spy:sybase:");
     }
 

@@ -53,12 +53,12 @@ public class OracleDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:oracle") || url.startsWith("jdbc:p6spy:oracle");
     }
 
     @Override
-    public Pattern getJDBCCredentialsPattern() {
+    public Pattern getJdbcCredentialsPattern() {
         return usernamePasswordPattern;
     }
 

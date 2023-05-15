@@ -21,6 +21,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.maps.shouldBeEmpty
 import migratedb.core.api.Location
 import migratedb.core.api.MigrateDbException
+import migratedb.core.api.TargetVersion
 import migratedb.core.api.Version
 import migratedb.core.api.configuration.PropertyNames.*
 import migratedb.core.api.pattern.ValidatePattern
@@ -103,7 +104,8 @@ internal class ClassicConfigurationTest {
         }
 
         fun sampleProperties(): Map<String, String> = withArbitrariesOutsideOfProperty {
-            val info = field.getAnnotation(Info::class.java) ?: throw IllegalStateException("$field not annotated with @${Info::class.java}")
+            val info = field.getAnnotation(Info::class.java)
+                ?: throw IllegalStateException("$field not annotated with @${Info::class.java}")
             val generator = info.generator()
             val key = field.get(null).toString()
             when {
@@ -111,6 +113,7 @@ internal class ClassicConfigurationTest {
                     String.any().ofLength(1..10).alpha().map { key + it },
                     generator
                 ).ofSize(5).fixGenSize(1).sample()
+
                 else -> mapOf(key to generator.sample())
             }
         }
@@ -138,7 +141,8 @@ internal class ClassicConfigurationTest {
                 File::class.java -> String.any().alpha().ofLength(1..10).map { "target/$it" }
                 Integer::class.java -> Int.any(1..Integer.MAX_VALUE).map { it.toString() }
                 java.lang.Boolean::class.java -> Boolean.any().map { it.toString() }
-                Version::class.java -> anyTargetVersionString()
+                Version::class.java -> anyMigrationVersionString()
+                TargetVersion::class.java -> anyTargetVersionString()
                 ValidatePattern::class.java -> anyValidatePattern().map { it.pattern() }
                 Class::class.java -> just(UniversalDummy::class.java.name)
                 else -> throw IllegalStateException("Field type not implemented: $type")

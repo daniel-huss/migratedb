@@ -43,7 +43,7 @@ public class PostgreSQLDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:postgresql:") || url.startsWith("jdbc:p6spy:postgresql:");
     }
 

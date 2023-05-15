@@ -49,7 +49,7 @@ public class IgniteThinDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public boolean handlesJDBCUrl(String url) {
+    public boolean handlesJdbcUrl(String url) {
         return url.startsWith("jdbc:ignite:thin:");
     }
 
