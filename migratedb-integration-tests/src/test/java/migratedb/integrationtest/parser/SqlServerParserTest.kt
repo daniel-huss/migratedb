@@ -16,7 +16,8 @@ internal class SqlServerParserTest : IntegrationTest() {
         }.`when` {
             migrate {
                 fromScript(
-                    "V1", """
+                    "V1",
+                    """
                     /* Single line comment */
                     CREATE TABLE Customers (
                     CustomerId smallint identity(1,1),

@@ -19,8 +19,8 @@ class ProcessEngineTestCase(val dbSystem: DbSystem, val skipDrop: Boolean = fals
 
         companion object {
             fun inOrder(action: ActionCategory) = when (action) {
-                ActionCategory.Create -> values()
-                ActionCategory.Drop -> values().apply { reverse() }
+                ActionCategory.Create -> entries
+                ActionCategory.Drop -> entries.asReversed()
             }
         }
     }
@@ -53,7 +53,7 @@ class ProcessEngineTestCase(val dbSystem: DbSystem, val skipDrop: Boolean = fals
                     createThenDropAllComponents()
                 }
             }.then {
-                val expectedMigrationCount = ComponentCategory.values().size * when (skipDrop) {
+                val expectedMigrationCount = ComponentCategory.entries.size * when (skipDrop) {
                     true -> 1
                     false -> 2
                 }

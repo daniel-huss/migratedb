@@ -23,12 +23,11 @@ import migratedb.core.internal.database.sqlite.SQLiteDatabaseType
 import migratedb.core.internal.jdbc.DriverDataSource
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.database.mutation.SqliteCreateTableMutation
+import migratedb.dependency_downloader.MavenCentralToLocal
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 import migratedb.integrationtest.util.container.SharedResources
-import migratedb.testing.util.dependencies.DependencyResolver
-import migratedb.testing.util.dependencies.DependencyResolver.toClassLoader
 import migratedb.testing.util.io.newTempDir
 import java.nio.file.Path
 import javax.sql.DataSource
@@ -77,7 +76,7 @@ enum class Sqlite : DbSystem {
 
     private val driverCoordinates = "org.xerial:sqlite-jdbc:${name.drop(1).replace('_', '.')}"
     private val classLoader: ClassLoader by lazy(Sqlite::class) {
-        DependencyResolver.resolve(driverCoordinates).toClassLoader().also {
+        MavenCentralToLocal.classLoaderFor(driverCoordinates).also {
             synchronized(Sqlite::class.java) {
                 // This JDBC driver extracts native libraries (ugh!) to the directory specified by the system property
                 // "org.sqlite.tmpdir". Since we want to use multiple versions of the library, each one has to extract its

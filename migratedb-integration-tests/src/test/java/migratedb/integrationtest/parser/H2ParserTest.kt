@@ -17,7 +17,8 @@ internal class H2ParserTest : IntegrationTest() {
         }.`when` {
             migrate {
                 fromScript(
-                    "V1", """
+                    "V1",
+                    """
                 /* Single line comment */
                 CREATE TABLE test_data (
                     name VARCHAR(50) NOT NULL PRIMARY KEY

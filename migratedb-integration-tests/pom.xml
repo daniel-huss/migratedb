@@ -24,7 +24,7 @@
     <name>MigrateDB - Integration Tests</name>
 
     <properties>
-        <version.flyway>8.5.12</version.flyway>
+        <version.flyway>8.5.13</version.flyway>
     </properties>
 
     <dependencies>
@@ -50,7 +50,7 @@
         </dependency>
 
         <dependency>
-            <!-- To test compatibilty -->
+            <!-- To test compatibility -->
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>${version.flyway}</version>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.25</version>
+            <version>42.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>

@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.testing.util.dependencies
+package migratedb.dependency_downloader
 
-import org.apache.commons.io.FileUtils
-import org.apache.maven.repository.internal.MavenRepositorySystemUtils
-import org.eclipse.aether.DefaultRepositorySystemSession
+import org.apache.maven.repository.internal.*
 import org.eclipse.aether.RepositorySystem
 import org.eclipse.aether.RepositorySystemSession
 import org.eclipse.aether.RequestTrace
@@ -25,7 +23,7 @@ import org.eclipse.aether.artifact.DefaultArtifact
 import org.eclipse.aether.collection.CollectRequest
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory
 import org.eclipse.aether.graph.Dependency
-import org.eclipse.aether.impl.DefaultServiceLocator
+import org.eclipse.aether.impl.*
 import org.eclipse.aether.repository.LocalRepository
 import org.eclipse.aether.repository.RemoteRepository
 import org.eclipse.aether.resolution.ArtifactResult
@@ -35,22 +33,29 @@ import org.eclipse.aether.spi.connector.transport.TransporterFactory
 import org.eclipse.aether.transport.file.FileTransporterFactory
 import org.eclipse.aether.transport.http.HttpTransporterFactory
 import java.io.File
-import java.net.URLClassLoader
 
 /**
- * Resolves Maven artifacts from local / Maven Central repository.
+ * Resolves Maven artifacts from remote repository, downloads into local repository.
  */
-object DependencyResolver {
-    fun Collection<Dependency>.toClassLoader(): URLClassLoader {
-        val urls = map { it.artifact.file.toPath().toUri().toURL() }.toTypedArray()
-        return URLClassLoader(urls, Thread.currentThread().contextClassLoader)
-    }
+class DependencyResolver(
+    private val localRepository: File,
+    remoteRepositoryUrl: String,
+    remoteRepositoryId: String
+) : AutoCloseable {
+    private val repositorySystem = newRepositorySystem()
+    private val session = newSession()
+    private val remoteRepository: RemoteRepository = RemoteRepository.Builder(
+        remoteRepositoryId,
+        "default",
+        remoteRepositoryUrl
+    ).build()
 
-    fun resolve(vararg coordinates: String): List<Dependency> {
+    @JvmName("resolveCoordinates")
+    fun resolve(coordinates: Collection<String>): List<Dependency> {
         return resolve(coordinates.map { Dependency(DefaultArtifact(it), null) })
     }
 
-    fun resolve(dependencies: List<Dependency>): List<Dependency> {
+    fun resolve(dependencies: Collection<Dependency>): List<Dependency> {
         val result = DependencyResolutionResult()
         val depRequest = createDependencyRequest(dependencies)
         addToResult(result, repositorySystem.resolveDependencies(session, depRequest).artifactResults)
@@ -63,11 +68,11 @@ object DependencyResolver {
         return result.resolvedDependencies.toList()
     }
 
-    private fun createDependencyRequest(dependencies: List<Dependency>): DependencyRequest {
+    private fun createDependencyRequest(dependencies: Collection<Dependency>): DependencyRequest {
         val collect = CollectRequest()
-        collect.requestContext = "integration-test"
-        collect.dependencies = dependencies
-        collect.addRepository(mavenCentral)
+        collect.requestContext = "none"
+        collect.dependencies = (dependencies as? List) ?: dependencies.toList()
+        collect.addRepository(remoteRepository)
         val trace = RequestTrace.newChild(null, collect)
         val dependencyRequest = DependencyRequest(collect, null)
         dependencyRequest.trace = trace
@@ -87,30 +92,28 @@ object DependencyResolver {
         }
     }
 
-    private val repositorySystem = newRepositorySystem()
-    private val session = newSession()
-    private val mavenCentral: RemoteRepository = RemoteRepository.Builder(
-        "central",
-        "default",
-        "https://repo1.maven.org/maven2/"
-    ).build()
-
     private fun newSession(): RepositorySystemSession {
-        val session: DefaultRepositorySystemSession = MavenRepositorySystemUtils.newSession()
-        val localRepo = LocalRepository(FileUtils.getUserDirectory().resolve(".m2", "repository"))
+        val session = MavenRepositorySystemUtils.newSession()
+        val localRepo = LocalRepository(localRepository)
         session.localRepositoryManager = repositorySystem.newLocalRepositoryManager(session, localRepo)
         return session
     }
 
     private fun newRepositorySystem(): RepositorySystem {
-        val locator: DefaultServiceLocator = MavenRepositorySystemUtils.newServiceLocator()
+        @Suppress("DEPRECATION") val locator = DefaultServiceLocator()
+        locator.addService(ArtifactDescriptorReader::class.java, DefaultArtifactDescriptorReader::class.java)
+        locator.addService(VersionResolver::class.java, DefaultVersionResolver::class.java)
+        locator.addService(VersionRangeResolver::class.java, DefaultVersionRangeResolver::class.java)
+        locator.addService(MetadataGeneratorFactory::class.java, SnapshotMetadataGeneratorFactory::class.java)
+        locator.addService(MetadataGeneratorFactory::class.java, VersionsMetadataGeneratorFactory::class.java)
+        locator.addService(ModelCacheFactory::class.java, DefaultModelCacheFactory::class.java)
         locator.addService(RepositoryConnectorFactory::class.java, BasicRepositoryConnectorFactory::class.java)
         locator.addService(TransporterFactory::class.java, FileTransporterFactory::class.java)
         locator.addService(TransporterFactory::class.java, HttpTransporterFactory::class.java)
         return locator.getService(RepositorySystem::class.java)
     }
 
-    private fun File.resolve(vararg paths: String): File {
-        return paths.fold(this) { f, p -> File(f, p) }
+    override fun close() {
+        repositorySystem.shutdown()
     }
 }

@@ -34,9 +34,9 @@ import java.util.concurrent.Semaphore
 import javax.sql.DataSource
 
 enum class CockroachDb(image: String) : DbSystem {
-    V22_1_1("cockroachdb/cockroach:v22.1.1"),
-    V21_2_12("cockroachdb/cockroach:v21.2.12"),
-    // Bug: MigrateDB tries to SET ROLE but this version doesn't support that feature! V20_2_0("cockroachdb/cockroach:v20.2.0"),
+    V23_1_5("cockroachdb/cockroach:v23.1.5"),
+    V22_2_11("cockroachdb/cockroach:v22.2.11"),
+    V21_2_17("cockroachdb/cockroach:v21.2.17"),
     // Lower versions are EOL, should we test them?
     ;
 
@@ -61,7 +61,6 @@ enum class CockroachDb(image: String) : DbSystem {
                 it.user = adminUser
                 it.portNumbers = intArrayOf(getMappedPort(port))
                 it.applicationName = "MigrateDB Integration Test"
-                it.loggerLevel = "OFF"
                 it.serverNames = arrayOf(host)
                 it.databaseName = databaseName
                 it.currentSchema = currentSchema

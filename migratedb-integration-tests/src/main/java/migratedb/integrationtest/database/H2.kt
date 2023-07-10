@@ -21,17 +21,17 @@ import migratedb.core.api.internal.database.base.DatabaseType
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl
 import migratedb.core.internal.database.h2.H2DatabaseType
 import migratedb.core.internal.jdbc.DriverDataSource
+import migratedb.dependency_downloader.MavenCentralToLocal
 import migratedb.integrationtest.database.mutation.BasicCreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.SharedResources
-import migratedb.testing.util.dependencies.DependencyResolver
-import migratedb.testing.util.dependencies.DependencyResolver.toClassLoader
 import javax.sql.DataSource
 
 enum class H2 : DbSystem {
+    V2_2_220,
     V2_1_210,
     V1_4_200,
     ;
@@ -56,7 +56,7 @@ enum class H2 : DbSystem {
 
     private val driverCoordinates = "com.h2database:h2:${name.drop(1).replace('_', '.')}"
     private val classLoader: ClassLoader by lazy {
-        DependencyResolver.resolve(driverCoordinates).toClassLoader()
+        MavenCentralToLocal.classLoaderFor(driverCoordinates)
     }
 
     override fun toString() = "H2 ${name.replace('_', '.')}"

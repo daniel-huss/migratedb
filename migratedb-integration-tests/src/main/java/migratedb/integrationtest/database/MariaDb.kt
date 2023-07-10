@@ -38,6 +38,11 @@ enum class MariaDb(image: String) : DbSystem {
     V10_5("mariadb:10.5"),
     V10_6("mariadb:10.6"),
     V10_7("mariadb:10.7"),
+    V10_8("mariadb:10.8"),
+    V10_9("mariadb:10.9"),
+    V10_10("mariadb:10.10"),
+    V10_11("mariadb:10.11"),
+    V11_0("mariadb:11.0"),
     ;
 
     // Relevant idiosyncrasies:

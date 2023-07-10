@@ -19,12 +19,12 @@
 # Dereference softlinks
 THIS="$0"
  while [ -h "$THIS" ] ; do
-  ls=`ls -ld "$THIS"`
-  softlink=`expr "$ls" : '.*-> \(.*\)$'`
-  if expr "$softlink" : '/.*' > /dev/null; then THIS="$softlink"; else THIS=`dirname "$THIS"`/"$softlink"; fi
+  ls=$(ls -ld "$THIS")
+  softlink=$(expr "$ls" : '.*-> \(.*\)$')
+  if expr "$softlink" : '/.*' > /dev/null; then THIS="$softlink"; else THIS=$(dirname "$THIS")/"$softlink"; fi
  done
 # Detect the installation directory
-INSTALLDIR=`dirname "$THIS"`
+INSTALLDIR=$(dirname "$THIS")
 
 if [ -x "$INSTALLDIR/jre/bin/java" ]; then
  JAVA_CMD=$INSTALLDIR/jre/bin/java
@@ -35,8 +35,5 @@ fi
 
 CP="$CLASSPATH:$INSTALLDIR/lib/*:$INSTALLDIR/drivers/*"
 
-if `command -v cygpath > /dev/null`; then CP=`cygpath -pw "$CP"`; fi
-"$JAVA_CMD" $JAVA_ARGS -cp "$CP" migratedb.commandline.Main "-baseDirectory=$INSTALLDIR" "$@"
-
-# Exit using the same code returned from Java
-exit $?
+if $(command -v cygpath > /dev/null); then CP=$(cygpath -pw "$CP"); fi
+exec "$JAVA_CMD" "$JAVA_ARGS" -cp "$CP" migratedb.commandline.Main "-baseDirectory=$INSTALLDIR" "$@"

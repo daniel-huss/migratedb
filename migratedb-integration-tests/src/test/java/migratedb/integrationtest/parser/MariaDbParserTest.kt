@@ -1,7 +1,6 @@
 package migratedb.integrationtest.parser
 
 import io.kotest.matchers.shouldBe
-import migratedb.integrationtest.database.Db2
 import migratedb.integrationtest.database.DbSystem
 import migratedb.integrationtest.database.MariaDb
 import migratedb.integrationtest.util.base.IntegrationTest
@@ -18,7 +17,8 @@ internal class MariaDbParserTest : IntegrationTest() {
         }.`when` {
             migrate {
                 fromScript(
-                    "V1", """
+                    "V1",
+                    """
                     /* Single line comment */
                     CREATE TABLE test_data (
                      value VARCHAR(25) NOT NULL,

@@ -20,10 +20,10 @@ import java.io.File
 
 /**
  * Represents the JAR file that is generated during the build and contains the migrations in
- * `migratedb.commandline.testing.migration` (+ a class index so they are found when using the classpath: location).
+ * `migratedb.commandline.testing.migration` (+ a class index, so they are found when using the classpath: location).
  */
 object TestMigrationsJar {
-    private const val resourceName = "/test-resources/the-test-migrations-jar.jar" // see generation in pom.xml
+    private const val resourceName = "/test-resources/test-migrations-jar.jar" // see generation in pom.xml
 
     fun copyTo(file: File) {
         file.parentFile.mkdirs()

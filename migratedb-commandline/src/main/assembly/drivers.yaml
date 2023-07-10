@@ -6,8 +6,8 @@
 #
 properties:
   version.protobuf: '3.11.4'
-  version.hsqldb: '2.6.1'
-  version.h2: '2.1.214'
+  version.hsqldb: '2.7.2'
+  version.h2: '2.2.220'
   version.derby: '10.15.2.0'
   version.gcs: '1.113.13'
   version.db2: '11.5.7.0'
@@ -21,7 +21,7 @@ properties:
   version.mssql: '10.2.0.jre11'
   version.mysql: '8.0.27'
   version.oracle: '19.13.0.0.1'
-  version.postgresql: '42.4.0'
+  version.postgresql: '42.6.0'
   version.redshift: '1.2.10.1009'
   version.snowflake: '3.13.1'
   version.spanner: '2.2.6'
@@ -64,7 +64,7 @@ drivers:
     alias: postgresql
     artifacts:
       - m2: org.postgresql:postgresql:${version.postgresql}
-        sha256: 'fe25b9c0a2c59458504ec88862853df522ee87f8a02564835d537c29ae4cb125'
+        sha256: 'b817c67a40c94249fd59d4e686e3327ed0d3d3fae426b20da0f1e75652cfc461'
   - name: Apache Derby ${version.derby}
     alias: derby
     artifacts:
@@ -80,7 +80,7 @@ drivers:
     alias: hsqldb
     artifacts:
       - m2: org.hsqldb:hsqldb:${version.hsqldb}
-        sha256: 'e3f9e9d472d985b95ee5c10ed40d03496c3a26b950590ae0a49ce608626dcbe8'
+        sha256: 'aa455133e664f6a7e6f30cd0cd4f8ad83dfbd94eb717c438548e446784614a92'
   - name: DB2 ${version.db2}
     alias: db2
     artifacts:
@@ -90,7 +90,7 @@ drivers:
     alias: h2
     artifacts:
       - m2: com.h2database:h2:${version.h2}
-        sha256: 'd623cdc0f61d218cf549a8d09f1c391ff91096116b22e2475475fce4fbe72bd0'
+        sha256: '978ab863018d3f965e38880571c36293ea8b10a8086194159c4d5d20b50f0a57'
   - name: Firebird ${version.jaybird}
     alias: firebird
     artifacts:

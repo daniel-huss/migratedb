@@ -39,6 +39,8 @@ enum class Postgres(image: String) : DbSystem {
     V12("postgres:12-alpine"),
     V13("postgres:13-alpine"),
     V14("postgres:14-alpine"),
+    V15("postgres:15-alpine"),
+    V16_BETA("postgres:16beta2-alpine"),
     ;
 
     // Relevant idiosyncrasies:

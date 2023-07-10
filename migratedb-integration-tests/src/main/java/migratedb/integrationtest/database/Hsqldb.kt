@@ -21,17 +21,17 @@ import migratedb.core.api.internal.database.base.DatabaseType
 import migratedb.core.internal.database.DatabaseTypeRegisterImpl
 import migratedb.core.internal.database.hsqldb.HSQLDBDatabaseType
 import migratedb.core.internal.jdbc.DriverDataSource
+import migratedb.dependency_downloader.MavenCentralToLocal
 import migratedb.integrationtest.database.mutation.BasicCreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.SharedResources
-import migratedb.testing.util.dependencies.DependencyResolver
-import migratedb.testing.util.dependencies.DependencyResolver.toClassLoader
 import javax.sql.DataSource
 
 enum class Hsqldb : DbSystem {
+    V2_7_2,
     V2_6_1,
     V2_5_2,
     V2_4_1,
@@ -58,7 +58,7 @@ enum class Hsqldb : DbSystem {
 
     private val driverCoordinates = "org.hsqldb:hsqldb:${name.drop(1).replace('_', '.')}"
     private val classLoader: ClassLoader by lazy {
-        DependencyResolver.resolve(driverCoordinates).toClassLoader()
+        MavenCentralToLocal.classLoaderFor(driverCoordinates)
     }
 
     override fun toString() = "HSQLDB ${name.replace('_', '.')}"

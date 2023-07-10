@@ -102,7 +102,7 @@ public class H2Database extends BaseDatabase<H2Connection> {
     @Override
     public final void ensureSupported() {
         ensureDatabaseIsRecentEnough("1.2.137");
-        recommendMigrateDbUpgradeIfNecessary("2.1.210");
+        recommendMigrateDbUpgradeIfNecessary("2.2.220");
         supportsDropSchemaCascade = getVersion().isAtLeast("1.4.200");
     }
 

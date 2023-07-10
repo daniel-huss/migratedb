@@ -39,11 +39,6 @@ public abstract class ScriptMigration extends BaseJavaMigration {
     protected abstract Object script();
 
     @Override
-    public final boolean canExecuteInTransaction() {
-        return true;
-    }
-
-    @Override
     public Checksum getChecksum(Configuration configuration) {
         var checksum = Checksum.builder();
         withScript(configuration, checksum::addLines);
@@ -59,9 +54,9 @@ public abstract class ScriptMigration extends BaseJavaMigration {
         var script = script();
         try (var reader = script instanceof Reader ? (Reader) script : new StringReader(script.toString());
              var placeholderReplacingReader = new PlaceholderReplacingReader(configuration.getPlaceholderPrefix(),
-                                                                             configuration.getPlaceholderSuffix(),
-                                                                             configuration.getPlaceholders(),
-                                                                             reader)) {
+                     configuration.getPlaceholderSuffix(),
+                     configuration.getPlaceholders(),
+                     reader)) {
             consumer.accept(placeholderReplacingReader);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -49,8 +49,7 @@ object Exec {
                 it()
             } catch (t: Exception) {
                 if (t is InterruptedException) Thread.currentThread().interrupt()
-                if (thrown == null) thrown = t
-                else if (t != thrown) thrown!!.addSuppressed(t)
+                if (thrown == null) thrown = t else thrown!!.addSuppressed(t)
             }
         }
         thrown?.let { throw it }
@@ -88,7 +87,7 @@ object Exec {
                 block()
             } catch (e: InterruptedException) {
                 Thread.currentThread().interrupt()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
             }
         }
     }

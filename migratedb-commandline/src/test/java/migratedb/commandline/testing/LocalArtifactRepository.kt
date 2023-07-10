@@ -18,7 +18,7 @@ package migratedb.commandline.testing
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import migratedb.testing.util.dependencies.DependencyResolver
+import migratedb.dependency_downloader.MavenCentralToLocal
 import org.eclipse.jetty.server.Request
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.handler.AbstractHandler
@@ -34,6 +34,8 @@ import java.util.*
  */
 object LocalArtifactRepository {
     private val binding = InetSocketAddress(InetAddress.getLoopbackAddress(), 0)
+    private val dependencyResolver = MavenCentralToLocal.resolver
+
     private val server = Server(binding).also { srv ->
         srv.handler = object : AbstractHandler() {
             override fun handle(
@@ -43,7 +45,7 @@ object LocalArtifactRepository {
                 response: HttpServletResponse
             ) {
                 val coordinates = toCoordinates(baseRequest.httpURI.decodedPath)
-                val file = DependencyResolver.resolve(coordinates)
+                val file = dependencyResolver.resolve(listOf(coordinates))
                     .single { "${it.artifact.groupId}:${it.artifact.artifactId}:${it.artifact.version}" == coordinates }
                     .artifact.file
                 response.status = 200

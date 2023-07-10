@@ -16,7 +16,8 @@ internal class InformixParserTest : IntegrationTest() {
         }.`when` {
             migrate {
                 fromScript(
-                    "V1", """
+                    "V1",
+                    """
                 /* Single line comment */
                 CREATE SEQUENCE seq_2
                    INCREMENT BY 1 START WITH 1

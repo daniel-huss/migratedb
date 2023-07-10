@@ -2,23 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on https://keepachangelog.com/en/1.0.0/[Keep a Changelog], and this project adheres to https://semver.org/spec/v2.0.0.html[Semantic Versioning].
+The format is based on https://keepachangelog.com/en/1.1.0/[Keep a Changelog], and this project adheres to https://semver.org/spec/v2.0.0.html[Semantic Versioning].
 
 NOTE: 🔥 = Breaking Change
 
-== https://search.maven.org/artifact/de.unentscheidbar/migratedb-core/0.3.0/jar[0.3.0] (unreleased)
+== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.3.0[0.3.0] (unreleased)
+
+Probably the last version before 1.0.
 
 This is an early access 0.x release, which means *everything* is subject to change.
 Feedback is very welcome!
+
+=== Added
+
+* Tests for CockroachDB v23.1.5, HSQLDB v2.7.2, H2 v2.2.220, PostgreSQL v15 and v16 (Beta), MariaDB 10.8 up to 11.0, MS SQL Server 2022.
+* `ScriptMigration`, which makes it easier to embed migration scripts in code.
+* `liberateOnMigrate` configuration option.
+This option controls whether the `liberate` command is executed together with `migrate` when there is no MigrateDB state table, but an old schema history table from Flyway exists.
+It is `true` by default.
+This makes it easy to switch to MigrateDB: Just deploy the next version of your software using MigrateDB as your schema versioning tool.
 
 === Changed
 
 * Updated dependencies.
+* Extracted dependency downloader into own Maven module.
 
-== https://search.maven.org/artifact/de.unentscheidbar/migratedb-core/0.2.0/jar[0.2.0]
-
-This is an early access 0.x release, which means *everything* is subject to change.
-Feedback is very welcome!
+== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.2.0[0.2.0] - 2022-07-17
 
 === Added
 
@@ -34,13 +43,10 @@ Feedback is very welcome!
 * JdbcTableSchemaHistory.create() no longer ignores being interrupted.
 * Bugs from Flyway 8.x up to commit 8c38d8ee.
 
-== https://search.maven.org/artifact/de.unentscheidbar/migratedb-core/0.1.0/jar[0.1.0]
+== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.1.0[0.1.0] - 2022-07-10
 
 This is the initial release after forking from Flyway 7.15 (the "community" version, obviously) and applying all 8.x bug fixes up to commit 77bb799. Since the forked project has never published any test sources, test coverage may seem a little underwhelming.
 It will get better with every following release.
-
-This is an early access 0.x release, which means *everything* is subject to change.
-Feedback is very welcome!
 
 === Added
 
@@ -54,11 +60,13 @@ Feedback is very welcome!
 * Unit tests for most changed/refactored code, especially configuration-related stuff.
 * A few integration tests for databases where a docker container is publicly available.
 * Instead of re-distributing JDBC drivers, the command line tool can help you download them from Maven Central via the new `download-drivers` subcommand.
-* Command that converts an existing schema history table to MigrateDB.
+* `liberate` command, which takes an existing Flyway schema history table and copies its migration info into the new MigrateDB state table.
+The name of the old schema history table is set via the `oldTable` configuration option.
+Note: This command will never modify the old schema history table.
 
 === Changed
 
-* 🔥 Renamed ALL occurrences of "Flyway" to "MigrateDb" (and "flyway" to "migratedb") in both code and config.
+* 🔥 Renamed ALL occurrences of "Flyway" to "MigrateDb" (and "flyway" to "migratedb", "FLYWAY" to "MIGRATEDB") in both code and config.
 * 🔥 Changed package name from org.flywaydb to migratedb.
 * 🔥 The minimum JRE version is 11 (previous LTS).
 * 🔥 Runtime class path scanning replaced with build-time scanning.

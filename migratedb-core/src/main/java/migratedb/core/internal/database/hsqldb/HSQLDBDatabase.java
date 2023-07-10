@@ -44,7 +44,7 @@ public class HSQLDBDatabase extends BaseDatabase<HSQLDBConnection> {
     @Override
     public final void ensureSupported() {
         ensureDatabaseIsRecentEnough("1.8");
-        recommendMigrateDbUpgradeIfNecessary("2.6");
+        recommendMigrateDbUpgradeIfNecessary("2.7.2");
     }
 
     @Override
@@ -59,13 +59,13 @@ public class HSQLDBDatabase extends BaseDatabase<HSQLDBConnection> {
                 "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
                 "    \"installed_on\" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
                 "    \"execution_time\" INT NOT NULL,\n" +
-               "    \"success\" BIT NOT NULL\n" +
-               ");\n" +
-               (baseline ? getBaselineStatement(table) + ";\n" : "") +
-               "ALTER TABLE " + table + " ADD CONSTRAINT \"" + table.getName() +
-               "_pk\" PRIMARY KEY (\"installed_rank\");\n" +
-               "CREATE INDEX \"" + table.getSchema().getName() + "\".\"" + table.getName() + "_s_idx\" ON " + table +
-               " (\"success\");";
+                "    \"success\" BIT NOT NULL\n" +
+                ");\n" +
+                (baseline ? getBaselineStatement(table) + ";\n" : "") +
+                "ALTER TABLE " + table + " ADD CONSTRAINT \"" + table.getName() +
+                "_pk\" PRIMARY KEY (\"installed_rank\");\n" +
+                "CREATE INDEX \"" + table.getSchema().getName() + "\".\"" + table.getName() + "_s_idx\" ON " + table +
+                " (\"success\");";
     }
 
     @Override

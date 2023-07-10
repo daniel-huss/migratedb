@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.testing.util.dependencies
+package migratedb.dependency_downloader
 
 import org.eclipse.aether.graph.Dependency
 

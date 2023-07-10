@@ -23,12 +23,11 @@ import migratedb.core.internal.database.derby.DerbyDatabaseType
 import migratedb.core.internal.jdbc.DriverDataSource
 import migratedb.integrationtest.database.mutation.DerbyCreateTableMutation
 import migratedb.integrationtest.database.mutation.IndependentDatabaseMutation
+import migratedb.dependency_downloader.MavenCentralToLocal
 import migratedb.integrationtest.util.base.Names
 import migratedb.integrationtest.util.base.SafeIdentifier
 import migratedb.integrationtest.util.base.work
 import migratedb.integrationtest.util.container.SharedResources
-import migratedb.testing.util.dependencies.DependencyResolver
-import migratedb.testing.util.dependencies.DependencyResolver.toClassLoader
 import migratedb.testing.util.io.newTempDir
 import java.lang.management.ManagementFactory
 import java.nio.file.Path
@@ -94,7 +93,7 @@ enum class Derby : DbSystem {
 
     private val driverCoordinates = "org.apache.derby:derby:${name.drop(1).replace('_', '.')}"
     private val classLoader: ClassLoader by lazy {
-        DependencyResolver.resolve(driverCoordinates).toClassLoader()
+        MavenCentralToLocal.classLoaderFor(driverCoordinates)
     }
     private val driverClass = ServiceLoader.load(Driver::class.java, classLoader)
         .stream().asSequence()

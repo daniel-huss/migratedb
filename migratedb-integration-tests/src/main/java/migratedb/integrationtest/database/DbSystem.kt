@@ -23,8 +23,8 @@ import migratedb.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdenti
 import migratedb.integrationtest.util.container.SharedResources
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
-import java.util.*
 import java.util.stream.Stream
 import javax.sql.DataSource
 
@@ -77,19 +77,19 @@ interface DbSystem {
 
     class All : ArgumentsProvider {
         override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(
-            CockroachDb.values(),
-            Db2.values(),
-            Derby.values(),
-            Firebird.values(),
-            H2.values(),
-            Hsqldb.values(),
-            Informix.values(),
-            MariaDb.values(),
-            MySql.values(),
-            Oracle.values(),
-            Postgres.values(),
-            SqlServer.values(),
-            Sqlite.values(),
-        ).flatMap { Arrays.stream(it) }.map { Arguments.arguments(it) }
+            CockroachDb.entries,
+            Db2.entries,
+            Derby.entries,
+            Firebird.entries,
+            H2.entries,
+            Hsqldb.entries,
+            Informix.entries,
+            MariaDb.entries,
+            MySql.entries,
+            Oracle.entries,
+            Postgres.entries,
+            SqlServer.entries,
+            Sqlite.entries,
+        ).flatMap { it.stream() }.map { arguments(it) }
     }
 }

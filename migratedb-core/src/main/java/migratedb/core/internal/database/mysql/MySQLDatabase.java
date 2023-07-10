@@ -227,7 +227,7 @@ public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
         }
         ensureDatabaseIsRecentEnough("5.1");
         if (databaseType instanceof MariaDBDatabaseType) {
-            recommendMigrateDbUpgradeIfNecessary("10.7");
+            recommendMigrateDbUpgradeIfNecessary("11.0");
         } else {
             recommendMigrateDbUpgradeIfNecessary("8.0");
         }

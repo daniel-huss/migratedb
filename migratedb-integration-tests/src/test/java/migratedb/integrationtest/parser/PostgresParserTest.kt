@@ -1,9 +1,7 @@
 package migratedb.integrationtest.parser
 
 import io.kotest.matchers.shouldBe
-import migratedb.integrationtest.database.Db2
 import migratedb.integrationtest.database.DbSystem
-import migratedb.integrationtest.database.MariaDb
 import migratedb.integrationtest.database.Postgres
 import migratedb.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.params.ParameterizedTest
@@ -19,7 +17,8 @@ internal class PostgresParserTest : IntegrationTest() {
         }.`when` {
             migrate {
                 fromScript(
-                    "V1", """
+                    "V1",
+                    """
                 /* Single line comment */
                 CREATE TABLE test_data (
                  value VARCHAR(25) NOT NULL PRIMARY KEY

@@ -17,7 +17,8 @@ internal class Db2ParserTest : IntegrationTest() {
         }.`when` {
             migrate {
                 fromScript(
-                    "V1", """
+                    "V1",
+                    """
                     /* Single line comment */
                     CREATE TABLE usertable (
                      name VARCHAR(25) NOT NULL,

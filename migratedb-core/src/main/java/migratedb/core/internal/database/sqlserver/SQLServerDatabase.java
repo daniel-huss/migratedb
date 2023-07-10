@@ -47,10 +47,10 @@ public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
     public final void ensureSupported() {
         if (isAzure()) {
             ensureDatabaseIsRecentEnough("11.0");
-            recommendMigrateDbUpgradeIfNecessary("13.0");
+            recommendMigrateDbUpgradeIfNecessary("16.0");
         } else {
             ensureDatabaseIsRecentEnough("10.0");
-            recommendMigrateDbUpgradeIfNecessary("15.0");
+            recommendMigrateDbUpgradeIfNecessary("16.0");
         }
     }
 

@@ -19,7 +19,8 @@ internal class SqliteParserTest : IntegrationTest() {
         }.`when` {
             migrate {
                 fromScript(
-                    "V1", """
+                    "V1",
+                    """
                 /* Single line comment */
                 CREATE TABLE test_data (
                   value VARCHAR(25) NOT NULL PRIMARY KEY

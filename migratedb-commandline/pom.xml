@@ -46,6 +46,11 @@
             <artifactId>migratedb-scanner</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.unentscheidbar</groupId>
+            <artifactId>migratedb-dependency-downloader</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -176,6 +181,22 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>create-test-migrations-jar</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>process-test-classes</phase>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/test-migrations-jar.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <outputDirectory>${project.build.testOutputDirectory}/test-resources</outputDirectory>
+                            <attach>false</attach>
+                            <finalName>test-migrations-jar</finalName>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>nojre-assembly</id>
                         <phase>package</phase>
                         <goals>
@@ -192,30 +213,6 @@
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>create-test-migrations-jar</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <phase>process-test-classes</phase>
-                        <configuration>
-                            <classifier>test-migrations-jar</classifier>
-                            <classesDirectory>${project.build.testOutputDirectory}</classesDirectory>
-                            <includes>
-                                <include>migratedb/commandline/testing/migration/**</include>
-                                <include>db/migration/migratedb-classes.index</include>
-                            </includes>
-                            <outputDirectory>${project.build.testOutputDirectory}/test-resources</outputDirectory>
-                            <finalName>the</finalName><!-- This is prepended to the classifier, so keep it short -->
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
