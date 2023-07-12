@@ -26,12 +26,10 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldBeSingleton
 import io.kotest.matchers.nulls.shouldNotBeNull
-import io.kotest.matchers.result.shouldBeFailureOfType
-import io.kotest.matchers.result.shouldNotBeFailureOfType
+import io.kotest.matchers.result.shouldNotBeFailure
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEqualIgnoringCase
 import migratedb.core.api.MigrateDbException
-import migratedb.core.api.MigrateDbValidateException
 import migratedb.core.api.MigrationType
 import migratedb.core.api.Version
 import migratedb.core.api.configuration.ClassicConfiguration
@@ -155,8 +153,7 @@ internal class MigrateTest : IntegrationTest() {
             }
         }.then { actual ->
             actual.asClue {
-                actual.shouldBeFailureOfType<MigrateDbException>()
-                actual.shouldNotBeFailureOfType<MigrateDbValidateException>()
+                actual.shouldNotBeFailure()
                 schemaHistory {
                     forOne {
                         it.version.shouldBe(Version.parse("1"))

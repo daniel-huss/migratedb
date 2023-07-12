@@ -139,7 +139,7 @@ internal class RepairTest : IntegrationTest() {
                     }
                 }
             }.then { actual ->
-                withClue(lazy { actual.print().value }) {
+                withClue({ actual.print().value }) {
                     actual.migrationsDeleted.shouldBeEmpty()
                     actual.migrationsRemoved.shouldBeEmpty()
                     actual.migrationsRemoved.shouldBeEmpty()
