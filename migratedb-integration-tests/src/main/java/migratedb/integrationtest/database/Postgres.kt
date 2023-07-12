@@ -65,7 +65,6 @@ enum class Postgres(image: String) : DbSystem {
                 it.password = password
                 it.portNumbers = intArrayOf(getMappedPort(port))
                 it.applicationName = "MigrateDB Integration Test"
-                it.loggerLevel = "OFF"
                 it.serverNames = arrayOf(host)
                 it.databaseName = databaseName
                 it.currentSchema = currentSchema
