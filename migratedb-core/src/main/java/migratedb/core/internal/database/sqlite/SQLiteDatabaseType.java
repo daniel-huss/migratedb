@@ -23,7 +23,6 @@ import migratedb.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.core.api.internal.parser.ParsingContext;
 import migratedb.core.internal.database.base.BaseDatabaseType;
 import migratedb.core.internal.parser.BaseParser;
-import migratedb.core.internal.util.FeatureDetector;
 
 import java.sql.Connection;
 import java.sql.Types;
@@ -42,7 +41,7 @@ public class SQLiteDatabaseType extends BaseDatabaseType {
     @Override
     public boolean handlesJDBCUrl(String url) {
         return url.startsWith("jdbc:sqlite:") || url.startsWith("jdbc:sqldroid:") ||
-               url.startsWith("jdbc:p6spy:sqlite:") || url.startsWith("jdbc:p6spy:sqldroid:");
+                url.startsWith("jdbc:p6spy:sqlite:") || url.startsWith("jdbc:p6spy:sqldroid:");
     }
 
     @Override
@@ -51,9 +50,6 @@ public class SQLiteDatabaseType extends BaseDatabaseType {
             return "com.p6spy.engine.spy.P6SpyDriver";
         }
         if (url.startsWith("jdbc:sqldroid:")) {
-            return "org.sqldroid.SQLDroidDriver";
-        }
-        if (new FeatureDetector(classLoader).isAndroidAvailable()) {
             return "org.sqldroid.SQLDroidDriver";
         }
         return "org.sqlite.JDBC";

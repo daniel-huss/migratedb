@@ -27,6 +27,10 @@ This makes it easy to switch to MigrateDB: Just deploy the next version of your 
 * Updated dependencies.
 * Extracted dependency downloader into own Maven module.
 
+=== Removed
+
+* 🔥 Android log system.
+
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.2.0[0.2.0] - 2022-07-17
 
 === Added

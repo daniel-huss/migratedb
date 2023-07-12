@@ -31,15 +31,11 @@ import java.util.Set;
  */
 public final class LogSystems {
     /**
-     * Android log system.
-     */
-    public static final String ANDROID = "android";
-    /**
      * {@code org.apache.commons.logging} system.
      */
     public static final String APACHE_COMMONS = "apache-commons";
     /**
-     * Auto-detect based on on environment. See {@link #autoDetect(ClassLoader, LogSystem)}.
+     * Auto-detect based on environment. See {@link #autoDetect(ClassLoader, LogSystem)}.
      */
     public static final String AUTO_DETECT = "auto";
     /**
@@ -69,7 +65,6 @@ public final class LogSystems {
      * @param classLoader    Used to instantiate classes by name
      * @param fallback       Used for {@link #AUTO_DETECT} and {@link #CONSOLE} (the latter being a direct alias for
      *                       it)
-     *
      * @return Log system that delegates to all log systems identified by {@code logSystemNames}.
      */
     public static LogSystem fromStrings(Set<String> logSystemNames, ClassLoader classLoader,
@@ -77,9 +72,6 @@ public final class LogSystems {
         var logSystems = new LinkedHashSet<LogSystem>();
         for (var logSystemName : logSystemNames) {
             switch (logSystemName.toLowerCase(Locale.ROOT)) {
-                case ANDROID:
-                    logSystems.add(AndroidLogSystem.INSTANCE);
-                    break;
                 case APACHE_COMMONS:
                     logSystems.add(ApacheCommonsLogSystem.INSTANCE);
                     break;
@@ -119,7 +111,6 @@ public final class LogSystems {
      *
      * @param className   Fully qualified name of class to instantiate. Class must have a public no-arg constructor.
      * @param classLoader Class loader to use.
-     *
      * @return The custom log system.
      */
     public static LogSystem custom(String className, ClassLoader classLoader) {
@@ -129,7 +120,6 @@ public final class LogSystems {
     /**
      * Auto-detects the "best" available log system and returns an instance of it. The order of precedence is:
      * <ol>
-     *     <li>If we're on Android, use its log system.</li>
      *     <li>If one of the supported logging libraries is found via {@code classLoader}, use it.</li>
      *     <li>If {@code fallback} is non-null, use that.</li>
      *     <li>Use {@code java.util.logging}.</li>
@@ -137,14 +127,10 @@ public final class LogSystems {
      *
      * @param classLoader Used to check for the presence of supported logging libraries.
      * @param fallback    Log system to use over {@code java.util.logging}
-     *
      * @return Auto-detected log system.
      */
     public static LogSystem autoDetect(ClassLoader classLoader, @Nullable LogSystem fallback) {
         FeatureDetector featureDetector = new FeatureDetector(classLoader);
-        if (featureDetector.isAndroidAvailable()) {
-            return AndroidLogSystem.INSTANCE;
-        }
         if (featureDetector.isSlf4jAvailable()) {
             return Slf4jLogSystem.INSTANCE;
         }

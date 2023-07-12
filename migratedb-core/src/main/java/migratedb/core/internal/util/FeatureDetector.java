@@ -27,7 +27,6 @@ public final class FeatureDetector {
     private Boolean jbossVFSv2Available;
     private Boolean jbossVFSv3Available;
     private Boolean osgiFrameworkAvailable;
-    private Boolean androidAvailable;
 
     public FeatureDetector(ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -47,7 +46,7 @@ public final class FeatureDetector {
             // provide any implementation, causing SLF4J to drop what we want to be console output on the floor.
             // Versions up to 1.7 have a StaticLoggerBinder
             slf4jAvailable = ClassUtils.isPresent("org.slf4j.Logger", classLoader)
-                             && ClassUtils.isPresent("org.slf4j.impl.StaticLoggerBinder", classLoader);
+                    && ClassUtils.isPresent("org.slf4j.impl.StaticLoggerBinder", classLoader);
             // Versions 1.8 and later use a ServiceLocator to bind to the implementation
             slf4jAvailable |= ClassUtils.isImplementationPresent("org.slf4j.spi.SLF4JServiceProvider", classLoader);
         }
@@ -82,13 +81,5 @@ public final class FeatureDetector {
         }
 
         return osgiFrameworkAvailable;
-    }
-
-    public boolean isAndroidAvailable() {
-        if (androidAvailable == null) {
-            androidAvailable = "Android Runtime".equals(System.getProperty("java.runtime.name"));
-        }
-
-        return androidAvailable;
     }
 }

@@ -53,12 +53,6 @@ internal class LogSystemsTest {
     }
 
     @Test
-    fun `fromStrings() supports Android`() {
-        LogSystems.fromStrings(setOf(LogSystems.ANDROID), defaultClassLoader(), null)
-            .shouldBeInstanceOf<AndroidLogSystem>()
-    }
-
-    @Test
     fun `fromStrings() supports Apache Commons`() {
         LogSystems.fromStrings(setOf(LogSystems.APACHE_COMMONS), defaultClassLoader(), null)
             .shouldBeInstanceOf<ApacheCommonsLogSystem>()
@@ -98,7 +92,6 @@ internal class LogSystemsTest {
     fun `fromStrings() supports combinations of the string constants`() {
         LogSystems.fromStrings(
             setOf(
-                LogSystems.ANDROID,
                 LogSystems.NONE,
                 LogSystems.SLF4J,
                 LogSystems.JAVA_UTIL,

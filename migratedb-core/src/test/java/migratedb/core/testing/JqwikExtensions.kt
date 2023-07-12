@@ -55,7 +55,6 @@ fun anyValidatePattern(): Arbitrary<ValidatePattern> {
 
 fun anyLogSystemAsString(): Arbitrary<String> {
     return Arbitraries.of(
-        LogSystems.ANDROID,
         LogSystems.APACHE_COMMONS,
         LogSystems.AUTO_DETECT,
         LogSystems.CONSOLE,

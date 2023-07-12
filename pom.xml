@@ -82,7 +82,6 @@
         <project.build.generatedSources.directory>${project.build.directory}/generated-sources/codegen
         </project.build.generatedSources.directory>
 
-        <version.android>4.1.1.4</version.android>
         <version.apiguardian>1.1.2</version.apiguardian>
         <version.checkerframework>3.35.0</version.checkerframework>
         <version.commons-codec>1.15</version.commons-codec>
@@ -144,11 +143,6 @@
                 <groupId>org.apache.groovy</groupId>
                 <artifactId>groovy-ant</artifactId>
                 <version>${version.groovy}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.android</groupId>
-                <artifactId>android</artifactId>
-                <version>${version.android}</version>
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>
@@ -394,7 +388,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.5.0</version>
                     <configuration>
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <breakiterator>true</breakiterator>
