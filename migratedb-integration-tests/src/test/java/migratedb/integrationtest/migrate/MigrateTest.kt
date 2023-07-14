@@ -26,7 +26,7 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldBeSingleton
 import io.kotest.matchers.nulls.shouldNotBeNull
-import io.kotest.matchers.result.shouldNotBeFailure
+import io.kotest.matchers.result.shouldBeFailure
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEqualIgnoringCase
 import migratedb.core.api.MigrateDbException
@@ -57,9 +57,9 @@ internal class MigrateTest : IntegrationTest() {
         }.`when` {
             migrate {
                 withConfig { liberateOnMigrate(true) }
-                fromCode("V1__Foo", arbitraryMutation())
-                fromCode("V2__Bar", arbitraryMutation())
-                fromCode("V3__Baz", arbitraryMutation())
+                usingCode("V1__Foo", arbitraryMutation())
+                usingCode("V2__Bar", arbitraryMutation())
+                usingCode("V3__Baz", arbitraryMutation())
             }
         }.then { actual ->
             withClue(actual.print().value) {
@@ -104,7 +104,7 @@ internal class MigrateTest : IntegrationTest() {
             Migrations(v1 = independentDbMutation())
         }.`when` {
             migrate {
-                fromCode("V1", given.v1)
+                usingCode("V1", given.v1)
             }
         }.then { actual ->
             withClue(actual.print().value) {
@@ -147,13 +147,13 @@ internal class MigrateTest : IntegrationTest() {
                     withConfig {
                         ignoreMissingMigrations(true)
                     }
-                    fromCode("V2", given.v2)
-                    fromCode("V3", given.v3)
+                    usingCode("V2", given.v2)
+                    usingCode("V3", given.v3)
                 }
             }
         }.then { actual ->
             actual.asClue {
-                actual.shouldNotBeFailure()
+                actual.shouldBeFailure<MigrateDbException>()
                 schemaHistory {
                     forOne {
                         it.version.shouldBe(Version.parse("1"))

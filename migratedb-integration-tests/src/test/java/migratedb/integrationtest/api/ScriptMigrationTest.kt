@@ -59,7 +59,7 @@ class ScriptMigrationTest : IntegrationTest() {
                     placeholderSuffix("}")
                     placeholders(mapOf("placeholder" to "value"))
                 }
-                fromCode("V001_Test", V001__Test())
+                usingCode("V001_Test", V001__Test())
             }
         }.then {
             it.migrationsExecuted.shouldBe(1)
@@ -77,7 +77,7 @@ class ScriptMigrationTest : IntegrationTest() {
             database {}
         }.`when` {
             migrate {
-                fromCode("V002_Test", migration)
+                usingCode("V002_Test", migration)
             }
         }.then {
             migration.closed.apply {

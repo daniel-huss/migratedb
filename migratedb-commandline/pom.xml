@@ -30,9 +30,15 @@
     </properties>
 
     <dependencies>
+        <!-- Static analysis annotations -->
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apiguardian</groupId>
+            <artifactId>apiguardian-api</artifactId>
             <scope>provided</scope>
         </dependency>
 

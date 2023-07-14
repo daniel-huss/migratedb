@@ -17,48 +17,27 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.unentscheidbar</groupId>
-        <artifactId>migratedb</artifactId>
+        <artifactId>migratedb-spring-boot-v2</artifactId>
         <version>0.3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>migratedb-scanner</artifactId>
-    <name>MigrateDB - Build Time Resource Scanner</name>
+    <artifactId>migratedb-spring-boot-v2-starter</artifactId>
+    <name>MigrateDB - Spring Boot v2.x Starter</name>
 
     <dependencies>
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-        </dependency>
-        <dependency>
             <groupId>de.unentscheidbar</groupId>
-            <artifactId>migratedb-core</artifactId>
+            <artifactId>migratedb-spring-boot-v2-autoconfig</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apiguardian</groupId>
-            <artifactId>apiguardian-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>9.2</version>
-        </dependency>
-
-        <!-- Test scope -->
-        <dependency>
-            <groupId>de.unentscheidbar</groupId>
-            <artifactId>migratedb-testlib</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>3.0.2</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -77,7 +56,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Automatic-Module-Name>migratedb.scanner</Automatic-Module-Name>
+                            <Automatic-Module-Name>migratedb.spring.boot.v2.starter</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>

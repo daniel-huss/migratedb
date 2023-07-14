@@ -135,6 +135,13 @@ public class ClassicConfiguration implements Configuration {
         configure(configuration);
     }
 
+    /**
+     * @return Fluent configuration that delegates to this configuration instance.
+     */
+    public FluentConfiguration asFluentConfiguration() {
+        return new FluentConfiguration(this);
+    }
+
     @Override
     public Location[] getLocations() {
         return locations.getLocations().toArray(new Location[0]);
@@ -610,8 +617,8 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setIgnoreMigrationPatterns(String... ignoreMigrationPatterns) {
         this.ignoreMigrationPatterns = Arrays.stream(ignoreMigrationPatterns)
-                                             .map(ValidatePattern::fromPattern)
-                                             .toArray(ValidatePattern[]::new);
+                .map(ValidatePattern::fromPattern)
+                .toArray(ValidatePattern[]::new);
     }
 
     /**
@@ -834,8 +841,8 @@ public class ClassicConfiguration implements Configuration {
      */
     public void setCherryPick(String... cherryPickAsString) {
         this.cherryPick = Arrays.stream(cherryPickAsString)
-                                .map(MigrationPattern::new)
-                                .toArray(MigrationPattern[]::new);
+                .map(MigrationPattern::new)
+                .toArray(MigrationPattern[]::new);
     }
 
     /**
@@ -1028,7 +1035,7 @@ public class ClassicConfiguration implements Configuration {
     public void setConnectRetries(int connectRetries) {
         if (connectRetries < 0) {
             throw new MigrateDbException("Invalid number of connectRetries (must be 0 or greater): " + connectRetries,
-                                         ErrorCode.CONFIGURATION);
+                    ErrorCode.CONFIGURATION);
         }
         this.connectRetries = connectRetries;
     }
@@ -1266,7 +1273,6 @@ public class ClassicConfiguration implements Configuration {
      * Configure with the same values as this existing configuration.
      * <p>To use a custom ClassLoader, it must be passed to the constructor prior to calling this method.</p>
      */
-    @SuppressWarnings("deprecation")
     public void configure(Configuration configuration) {
         extensionConfig.clear();
         extensionConfig.putAll(configuration.getExtensionConfig());
@@ -1597,21 +1603,21 @@ public class ClassicConfiguration implements Configuration {
 
         // Must be done last, so that any driver-specific config has been done at this point.
         if (StringUtils.hasText(url) && (StringUtils.hasText(urlProp) ||
-                                         StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
-                                         StringUtils.hasText(passwordProp))) {
+                StringUtils.hasText(driverProp) || StringUtils.hasText(userProp) ||
+                StringUtils.hasText(passwordProp))) {
             putPropertiesUnderNamespace(
                     props,
                     getPlaceholders(),
                     PropertyNames.JDBC_PROPERTIES_PREFIX);
 
             setDataSource(new DriverDataSource(classLoader,
-                                               driver,
-                                               url,
-                                               user,
-                                               password,
-                                               this,
-                                               jdbcProperties,
-                                               databaseTypeRegister));
+                    driver,
+                    url,
+                    user,
+                    password,
+                    this,
+                    jdbcProperties,
+                    databaseTypeRegister));
         }
 
         ConfigUtils.reportUnrecognisedProperties(props, "migratedb.");

@@ -16,7 +16,7 @@ internal class Db2ParserTest : IntegrationTest() {
             database { }
         }.`when` {
             migrate {
-                fromScript(
+                usingScript(
                     "V1",
                     """
                     /* Single line comment */

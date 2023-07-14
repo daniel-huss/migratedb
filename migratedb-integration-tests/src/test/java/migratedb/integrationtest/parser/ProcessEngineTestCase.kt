@@ -75,7 +75,7 @@ class ProcessEngineTestCase(val dbSystem: DbSystem, val skipDrop: Boolean = fals
                 val scriptResource = this::class.java.getResource(scriptResourceName)
                     ?: throw IllegalStateException("No such resource: $scriptResourceName")
                 migrationCount++
-                fromScript("V${migrationCount}__$description", scriptResource.readText())
+                usingScript("V${migrationCount}__$description", scriptResource.readText())
             }
         }
     }

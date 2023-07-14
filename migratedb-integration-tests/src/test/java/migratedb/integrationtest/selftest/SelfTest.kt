@@ -40,8 +40,8 @@ class SelfTest : IntegrationTest() {
                     table(normalize("migratedb"))
                     ignoreMissingMigrations(true)
                 }
-                fromScript("V002__Foo", "-- This script does nothing")
-                fromCode("V003__Bar", arbitraryMutation()::apply)
+                usingScript("V002__Foo", "-- This script does nothing")
+                usingCode("V003__Bar", arbitraryMutation()::apply)
             }
         }.then {
             withConnection { sql ->

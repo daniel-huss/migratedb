@@ -2,8 +2,6 @@ package migratedb.integrationtest.parser
 
 import io.kotest.matchers.shouldBe
 import migratedb.integrationtest.database.DbSystem
-import migratedb.integrationtest.database.MariaDb
-import migratedb.integrationtest.database.Postgres
 import migratedb.integrationtest.database.Sqlite
 import migratedb.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.params.ParameterizedTest
@@ -18,7 +16,7 @@ internal class SqliteParserTest : IntegrationTest() {
             database { }
         }.`when` {
             migrate {
-                fromScript(
+                usingScript(
                     "V1",
                     """
                 /* Single line comment */

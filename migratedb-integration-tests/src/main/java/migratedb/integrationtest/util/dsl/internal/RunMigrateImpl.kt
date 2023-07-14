@@ -26,19 +26,19 @@ class RunMigrateImpl(private val databaseContext: DatabaseContext) : AbstractRun
     private val scriptMigrations = mutableListOf<ScriptMigration>()
     private val codeMigrations = mutableListOf<CodeMigration>()
 
-    override fun fromScript(name: String, sql: String) {
+    override fun usingScript(name: String, sql: String) {
         scriptMigrations.add(ScriptMigration(name, sql))
     }
 
-    override fun fromCode(name: String, code: (Connection) -> Unit) {
+    override fun usingCode(name: String, code: (Connection) -> Unit) {
         codeMigrations.add(CodeMigration(name, SimpleJavaMigration(name, code)))
     }
 
-    override fun fromCode(name: String, code: JavaMigration) {
+    override fun usingCode(name: String, code: JavaMigration) {
         codeMigrations.add(CodeMigration(name, code))
     }
 
-    override fun fromCode(name: String) = fromCode(name) {
+    override fun usingCode(name: String) = usingCode(name) {
         databaseContext.databaseHandle.nextMutation(databaseContext.schemaName).apply(it)
     }
 

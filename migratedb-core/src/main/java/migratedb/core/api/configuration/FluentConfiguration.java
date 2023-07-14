@@ -39,15 +39,19 @@ public class FluentConfiguration implements Configuration {
     private final ClassicConfiguration config;
 
     public FluentConfiguration() {
-        config = new ClassicConfiguration();
+        this(new ClassicConfiguration());
     }
 
     /**
      * @param classLoader The ClassLoader to use for loading migrations, resolvers, etc from the classpath. (default:
      *                    same as {@link ClassUtils#defaultClassLoader()} )
      */
-    public FluentConfiguration(ClassLoader classLoader) {
-        config = new ClassicConfiguration(classLoader);
+    public FluentConfiguration(@Nullable ClassLoader classLoader) {
+        this(new ClassicConfiguration(classLoader));
+    }
+
+    FluentConfiguration(ClassicConfiguration config) {
+        this.config = Objects.requireNonNull(config);
     }
 
     /**

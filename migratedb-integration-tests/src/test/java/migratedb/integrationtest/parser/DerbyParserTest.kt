@@ -16,7 +16,7 @@ internal class DerbyParserTest : IntegrationTest() {
             database { }
         }.`when` {
             migrate {
-                fromScript(
+                usingScript(
                     "V1",
                     """
                 /* Single line comment */

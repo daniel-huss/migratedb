@@ -66,9 +66,9 @@ public interface Configuration {
     /**
      * Retrieves the dataSource to use to access the database. Must have the necessary privileges to execute DDL.
      *
-     * @return The dataSource to use to access the database. Must have the necessary privileges to execute DDL.
+     * @return The dataSource to use to access the database.
      */
-    DataSource getDataSource();
+    @Nullable DataSource getDataSource();
 
     /**
      * The maximum number of retries when attempting to connect to the database. After each failed attempt, MigrateDB
