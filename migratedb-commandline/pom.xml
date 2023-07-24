@@ -30,6 +30,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service-annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Static analysis annotations -->
         <dependency>
             <groupId>org.checkerframework</groupId>
@@ -139,11 +145,6 @@
             <artifactId>flyway-core</artifactId>
             <version>${version.flyway}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

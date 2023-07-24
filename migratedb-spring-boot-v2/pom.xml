@@ -28,10 +28,31 @@
     <properties>
         <base-pom-dir>../..</base-pom-dir>
         <version.spring-boot>2.7.13</version.spring-boot>
+        <version.spring-framework>5.3.29</version.spring-framework>
     </properties>
 
     <modules>
         <module>migratedb-spring-boot-v2-autoconfig</module>
         <module>migratedb-spring-boot-v2-starter</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-autoconfigure</artifactId>
+                <version>${version.spring-boot}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-test</artifactId>
+                <version>${version.spring-boot}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${version.spring-framework}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

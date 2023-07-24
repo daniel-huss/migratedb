@@ -8,14 +8,12 @@ NOTE: 🔥 = Breaking Change
 
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.3.0[0.3.0] (unreleased)
 
-Probably the last version before 1.0.
-
-This is an early access 0.x release, which means *everything* is subject to change.
+NOTE: This is an early access 0.x release, which means *everything* is subject to change.
 Feedback is very welcome!
 
 === Added
 
-* Tests for CockroachDB v23.1.5, HSQLDB v2.7.2, H2 v2.2.220, PostgreSQL v15 and v16 (Beta), MariaDB 10.8 up to 11.0, MS SQL Server 2022.
+* Support and tests for CockroachDB v23.1.5, HSQLDB v2.7.2, H2 v2.2.220, PostgreSQL v15 and v16, MariaDB 10.8 up to 11.0, MS SQL Server 2022.
 * `ScriptMigration`, which makes it easier to embed migration scripts in code.
 * `liberateOnMigrate` configuration option.
 This option controls whether the `liberate` command is executed together with `migrate` when there is no MigrateDB state table, but an old schema history table from Flyway exists.
@@ -25,11 +23,17 @@ This makes it easy to switch to MigrateDB: Just deploy the next version of your 
 === Changed
 
 * Updated dependencies.
-* Extracted dependency downloader into own Maven module.
+* Extracted dependency downloader into separate Maven module.
+* 🔥 Made major version part of package name for forward compatibility, so the common prefix is now `migratedb.v1`.
+* 🔥 The `Configration` now returns `List` instead of arrays.
+* 🔥 Renamed `ClassicConfigration` to `DefaultConfiguration`.
 
 === Removed
 
 * 🔥 Android log system.
+* 🔥 Oracle proxy session support. (Just configure your data source accordingly, I guess?
+* 🔥 The destructive "clean" command.
+* 🔥 The "error overrides" configuration option, which had no effect anyway.
 
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.2.0[0.2.0] - 2022-07-17
 

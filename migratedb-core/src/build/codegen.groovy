@@ -27,13 +27,12 @@ static File findLicenseHeaderFile(Object startDir) {
     return licenseFile
 }
 
-String lineSeparator = "\n"
 String sourceEncoding = project.properties["project.build.sourceEncoding"]?.toString() ?: "UTF-8"
-String targetPackage = "migratedb.core.internal.info"
+String targetPackage = "migratedb.v1.core.internal.info"
 String licenseHeader = findLicenseHeaderFile(project.basedir)
         .readLines(sourceEncoding)
-        .collect { "* $it" }
-        .with { "/*$lineSeparator${it.join(lineSeparator)}$lineSeparator */" }
+        .collect { " * $it" }
+        .with { "/*\\n${it.join("\n")}\\n */" }
 String sourceCode = """
 $licenseHeader
 package $targetPackage;
@@ -44,7 +43,7 @@ public final class BuildInfo {
     public static final Instant TIMESTAMP = Instant.parse("${sanitize(project.properties["project.build.outputTimestamp"] ?: Instant.now())}");
     public static final String VERSION = "${sanitize(project.version)}";
 }
-""".trim()
+""".stripLeading()
 
 File sourceRoot = new File(project.properties["project.build.generatedSources.directory"]?.toString() ?: ".")
 project.addCompileSourceRoot(sourceRoot.absolutePath)

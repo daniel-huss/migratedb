@@ -26,7 +26,7 @@
         <fileSet>
             <directory>${project.build.testOutputDirectory}</directory>
             <includes>
-                <include>migratedb/commandline/testing/migration/**</include>
+                <include>migratedb/**/testing/migration/**</include>
                 <include>db/migration/migratedb-classes.index</include>
             </includes>
             <outputDirectory>./</outputDirectory>

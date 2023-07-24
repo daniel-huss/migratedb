@@ -36,7 +36,7 @@ if "%JAVA_ARGS%"=="" (
   set JAVA_ARGS=
 )
 
-%JAVA_CMD% -Djava.library.path="%INSTALLDIR%\native" %JAVA_ARGS% -cp "%CLASSPATH%;%INSTALLDIR%\lib\*;%INSTALLDIR%\drivers\*" migratedb.commandline.Main "-baseDirectory=%INSTALLDIR%" %*
+%JAVA_CMD% -Djava.library.path="%INSTALLDIR%\native" %JAVA_ARGS% -cp "%CLASSPATH%;%INSTALLDIR%\lib\*;%INSTALLDIR%\drivers\*" migratedb.v1.commandline.Main "-baseDirectory=%INSTALLDIR%" %*
 
 @REM Exit using the same code returned from Java
 EXIT /B %ERRORLEVEL%

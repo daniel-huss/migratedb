@@ -25,7 +25,7 @@ gradlePlugin {
             id = 'de.unentscheidbar.migratedb'
             displayName = 'MigrateDB Plugin'
             description = 'Performs build-time class path scanning.'
-            implementationClass = 'migratedb.gradle.MigrateDbPlugin'
+            implementationClass = 'migratedb.v1.gradle.MigrateDbPlugin'
         }
     }
 }

@@ -52,12 +52,6 @@
 
         <!-- Test scope -->
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <!-- If we used test scope here, then IDEA would complain that "Kotlin is not configured"  -->
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>de.unentscheidbar</groupId>
             <artifactId>migratedb-testlib</artifactId>
             <version>${project.version}</version>
@@ -122,11 +116,11 @@
                     <instructions>
                         <_removeheaders>Bnd-LastModified,Tool</_removeheaders>
                         <_reproducible>true</_reproducible>
-                        <Automatic-Module-Name>migratedb.core</Automatic-Module-Name>
-                        <Bundle-SymbolicName>migratedb.core</Bundle-SymbolicName>
+                        <Automatic-Module-Name>migratedb.v1.core</Automatic-Module-Name>
+                        <Bundle-SymbolicName>migratedb.v1.core</Bundle-SymbolicName>
                         <Export-Package>
-                            migratedb.core;version=${project.version},
-                            migratedb.core.api.*;version=${project.version}
+                            migratedb.v1.core;version=${project.version},
+                            migratedb.v1.core.api.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             javax.sql,
