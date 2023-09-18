@@ -45,7 +45,7 @@ MIGRATEDB_IGNORE_PENDING_MIGRATIONS=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .ignorePendingMigrations(true)
     .load()
 ```

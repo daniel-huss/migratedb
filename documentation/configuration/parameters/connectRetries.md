@@ -41,7 +41,7 @@ MIGRATEDB_CONNECT_RETRIES=10
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .connectRetries(10)
     .load()
 ```

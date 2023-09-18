@@ -46,7 +46,7 @@ MIGRATEDB_TABLE=my_schema_history_table
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .table("my_schema_history_table")
     .load()
 ```

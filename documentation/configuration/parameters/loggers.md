@@ -49,7 +49,7 @@ MIGRATEDB_LOGGERS=auto
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .loggers("auto")
     .load()
 ```

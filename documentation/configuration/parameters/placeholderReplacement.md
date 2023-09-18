@@ -39,7 +39,7 @@ MIGRATEDB_PLACEHOLDER_REPLACEMENT=false
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .placeholderReplacement(false)
     .load()
 ```

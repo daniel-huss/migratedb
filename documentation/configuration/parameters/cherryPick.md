@@ -48,7 +48,7 @@ MIGRATEDB_CHERRY_PICK=2.0
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .cherryPick("2.0")
     .load()
 ```

@@ -42,7 +42,7 @@ MIGRATEDB_VALIDATE_MIGRATION_NAMING=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .validateMigrationNaming(true)
     .load()
 ```

@@ -22,7 +22,7 @@ environment variables (e.g. `MIGRATEDB_URL=jdbc:h2:mem:migratedb`).
 ### API
 
 If using the API, config parameters can be set via calling methods on the configuration object returned
-by `MigrateDB.configure()` (e.g. `MigrateDB.configure().url("jdbc:h2:mem:migratedb").load()`)
+by `MigrateDb.configure()` (e.g. `MigrateDb.configure().url("jdbc:h2:mem:migratedb").load()`)
 , [configuration files](/migratedb/documentation/configuration/configfile).
 
 ## Parameters

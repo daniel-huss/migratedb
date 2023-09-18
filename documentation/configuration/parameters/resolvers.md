@@ -40,7 +40,7 @@ MIGRATEDB_RESOLVERS=my.resolver.MigrationResolver
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .resolvers("my.resolver.MigrationResolver")
     .load()
 ```

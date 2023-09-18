@@ -42,7 +42,7 @@ MIGRATEDB_REPEATABLE_SQL_MIGRATION_PREFIX=A
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .repeatableSqlMigrationPrefix("A")
     .load()
 ```

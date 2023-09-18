@@ -38,7 +38,7 @@ MIGRATEDB_TABLESPACE=xyz
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .tablespace("xyz")
     .load()
 ```

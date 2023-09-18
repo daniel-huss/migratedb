@@ -46,7 +46,7 @@ MIGRATEDB_BASELINE_ON_MIGRATE=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .baselineOnMigrate(true)
     .load()
 ```

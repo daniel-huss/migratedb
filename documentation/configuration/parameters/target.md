@@ -52,7 +52,7 @@ MIGRATEDB_TARGET=2.0
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .target("2.0")
     .load()
 ```

@@ -39,7 +39,7 @@ MIGRATEDB_VALIDATE_ON_MIGRATE=false
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .validateOnMigrate(false)
     .load()
 ```

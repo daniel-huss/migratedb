@@ -45,7 +45,7 @@ MIGRATEDB_DEFAULT_SCHEMA=schema2
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .defaultSchema("schema2")
     .load()
 ```

@@ -50,7 +50,7 @@ MIGRATEDB_LOCATIONS=filesystem:./sql
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .locations("filesystem:./sql")
     .load()
 ```

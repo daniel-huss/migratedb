@@ -37,7 +37,7 @@ MIGRATEDB_ORACLE_KERBEROS_CACHE_FILE=/temp/krb5cc_123
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .extensionConfig(OracleConfig.class, new OracleConfig()
             .kerberosCacheFile("/temp/krb5cc_123"))
     .load()

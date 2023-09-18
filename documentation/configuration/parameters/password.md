@@ -18,6 +18,8 @@ through another means.
 
 ## Usage
 
+This configuration parameter will only be used in the command line version of MigrateDB.
+
 ### Command line
 
 ```powershell
@@ -34,12 +36,4 @@ migratedb.password=mysecretpassword
 
 ```properties
 MIGRATEDB_PASSWORD=mysecretpassword
-```
-
-### API
-
-```java
-MigrateDB.configure()
-    .password("mysecretpassword")
-    .load()
 ```

@@ -40,7 +40,7 @@ MIGRATEDB_SKIP_DEFAULT_RESOLVERS=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .skipDefaultResolvers(true)
     .load()
 ```

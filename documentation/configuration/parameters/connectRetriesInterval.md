@@ -39,7 +39,7 @@ MIGRATEDB_CONNECT_RETRIES_INTERVAL=60
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .connectRetriesInterval(60)
     .load()
 ```

@@ -51,7 +51,7 @@ MIGRATEDB_SKIP_EXECUTING_MIGRATIONS=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .skipExecutingMigrations(true)
     .load()
 ```

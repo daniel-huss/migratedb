@@ -47,7 +47,7 @@ MIGRATEDB_MIXED=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .mixed(true)
     .load()
 ```

@@ -39,7 +39,7 @@ MIGRATEDB_PLACEHOLDER_SUFFIX=$$
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .placeholderSuffix("$$")
     .load()
 ```

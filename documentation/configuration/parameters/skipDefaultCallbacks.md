@@ -40,7 +40,7 @@ MIGRATEDB_SKIP_DEFAULT_CALLBACKS=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .skipDefaultCallbacks(true)
     .load()
 ```

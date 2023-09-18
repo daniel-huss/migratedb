@@ -40,7 +40,7 @@ MIGRATEDB_CREATE_SCHEMAS=false
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .createSchemas(false)
     .load()
 ```

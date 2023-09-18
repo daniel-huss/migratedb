@@ -52,7 +52,7 @@ Map<String, String> placeholders=new HashMap<>();
     placeholders.put("key1","value1");
     placeholders.put("key2","value2");
 
-    MigrateDB.configure()
+    MigrateDb.configure()
     .placeholders(placeholders)
     .load()
 ```

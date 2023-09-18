@@ -36,7 +36,7 @@ MIGRATEDB_ORACLE_KERBEROS_CONFIG_FILE=/etc/krb5.conf
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .extensionConfig(OracleConfig.class, new OracleConfig()
             .kerberosConfigFile("/etc/krb5.conf"))
     .load()

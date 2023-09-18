@@ -39,7 +39,7 @@ MIGRATEDB_BASELINE_DESCRIPTION=Baseline
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .baselineDescription("Baseline")
     .load()
 ```

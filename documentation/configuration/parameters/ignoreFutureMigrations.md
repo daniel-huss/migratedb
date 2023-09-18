@@ -46,7 +46,7 @@ MIGRATEDB_IGNORE_FUTURE_MIGRATIONS=false
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .ignoreFutureMigrations(false)
     .load()
 ```

@@ -85,7 +85,7 @@ MIGRATEDB_IGNORE_MIGRATION_PATTERNS="repeatable:missing"
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .ignoreMigrationPatterns("repeatable:missing")
     .load()
 ```

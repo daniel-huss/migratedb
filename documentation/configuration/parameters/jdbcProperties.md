@@ -17,6 +17,8 @@ For example to supply a property `property1` with the value `value1`, you can se
 
 ## Usage
 
+This configuration parameter will only be used in the command line version of MigrateDB.
+
 ### Command line
 
 ```powershell
@@ -33,17 +35,6 @@ migratedb.jdbcProperties.accessToken=my-access-token
 
 ```properties
 MIGRATEDB_JDBC_PROPERTIES_accessToken=access-token
-```
-
-### API
-
-```java
-Map<String, String> properties=new HashMap<>();
-    properties.put("accessToken","access-token");
-
-    MigrateDB.configure()
-    .jdbcProperties(properties)
-    .load()
 ```
 
 ## Use Cases

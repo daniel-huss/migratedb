@@ -45,7 +45,7 @@ MIGRATEDB_DRIVER=com.microsoft.sqlserver.jdbc.SQLServerDriver
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .driver("com.microsoft.sqlserver.jdbc.SQLServerDriver")
     .load()
 ```

@@ -39,7 +39,7 @@ MIGRATEDB_OUTPUT_QUERY_RESULTS=false
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .outputQueryResults(false)
     .load()
 ```

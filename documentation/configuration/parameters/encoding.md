@@ -52,7 +52,7 @@ MIGRATEDB_ENCODING=UTF-16
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .encoding("UTF-16")
     .load()
 ```

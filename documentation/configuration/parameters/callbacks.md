@@ -47,7 +47,7 @@ MIGRATEDB_CALLBACKS=my.callback.MigrateDBCallback
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .callbacks("my.callback.MigrateDBCallback")
     .load()
 ```

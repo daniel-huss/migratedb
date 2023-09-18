@@ -39,7 +39,7 @@ MIGRATEDB_INSTALLED_BY=ci-pipeline
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .installedBy("ci-pipeline")
     .load()
 ```

@@ -51,7 +51,7 @@ MIGRATEDB_IGNORE_IGNORED_MIGRATIONS=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .ignoreIgnoredMigrations(true)
     .load()
 ```

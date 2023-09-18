@@ -39,7 +39,7 @@ MIGRATEDB_BASELINE_VERSION=0.0
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .baselineVersion("0.0")
     .load()
 ```

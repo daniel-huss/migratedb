@@ -39,7 +39,7 @@ MIGRATEDB_FAIL_ON_MISSING_LOCATIONS=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .failOnMissingLocations(true)
     .load()
 ```

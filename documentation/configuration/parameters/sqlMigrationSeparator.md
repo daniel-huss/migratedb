@@ -42,7 +42,7 @@ MIGRATEDB_SQL_MIGRATION_SEPARATOR=-
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .sqlMigrationSeparator("-")
     .load()
 ```

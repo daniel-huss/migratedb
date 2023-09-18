@@ -45,7 +45,7 @@ MIGRATEDB_SQL_MIGRATION_SUFFIXES=.sql,.pkg,.pkb
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .sqlMigrationSuffixes(".sql,.pkg,.pkb")
     .load()
 ```

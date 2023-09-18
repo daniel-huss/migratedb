@@ -42,7 +42,7 @@ MIGRATEDB_OUT_OF_ORDER=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .outOfOrder(true)
     .load()
 ```

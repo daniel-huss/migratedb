@@ -42,7 +42,7 @@ MIGRATEDB_SQL_MIGRATION_PREFIX=M
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .sqlMigrationPrefix("M")
     .load()
 ```

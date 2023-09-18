@@ -40,7 +40,7 @@ MIGRATEDB_ORACLE_SQLPLUS=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .extensionConfig(OracleConfig.class, new OracleConfig()
             .sqlplus(true))
     .load()

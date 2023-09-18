@@ -42,7 +42,7 @@ import org.springframework.context.ApplicationContext;
 ...
 ApplicationContext applicationContext = ...; // obtain a reference to Spring's ApplicationContext.
 
-MigrateDB migratedb = MigrateDB.configure()
+MigrateDB migratedb = MigrateDb.configure()
     .dataSource(url, user, password)
     // Add all Spring-instantiated JavaMigration beans
     .javaMigrations(applicationContext.getBeansOfType(JavaMigration.class).values().toArray(new JavaMigration[0]))

@@ -40,7 +40,7 @@ MIGRATEDB_GROUP=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .group(true)
     .load()
 ```

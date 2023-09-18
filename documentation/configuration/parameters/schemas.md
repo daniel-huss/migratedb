@@ -42,7 +42,7 @@ MIGRATEDB_SCHEMAS=schema1,schema2
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .schemas("schema1","schema2")
     .load()
 ```

@@ -46,7 +46,7 @@ MIGRATEDB_CLEAN_ON_VALIDATION_ERROR=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .cleanOnValidationError(true)
     .load()
 ```

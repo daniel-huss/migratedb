@@ -39,7 +39,7 @@ MIGRATEDB_PLACEHOLDER_PREFIX=$$
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .placeholderPrefix("$$")
     .load()
 ```

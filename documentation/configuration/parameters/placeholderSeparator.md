@@ -39,7 +39,7 @@ MIGRATEDB_PLACEHOLDER_SEPARATOR=_
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .placeholderSeparator("_")
     .load()
 ```

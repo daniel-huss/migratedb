@@ -48,7 +48,7 @@ MIGRATEDB_BATCH=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .batch(true)
     .load()
 ```

@@ -39,7 +39,7 @@ MIGRATEDB_ORACLE_WALLET_LOCATION=/User/db/my_wallet
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .extensionConfig(OracleConfig.class, new OracleConfig()
             .walletLocation("/User/db/my_wallet"))
     .load()

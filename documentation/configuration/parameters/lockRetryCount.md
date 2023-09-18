@@ -42,7 +42,7 @@ MIGRATEDB_LOCK_RETRY_COUNT=10
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .lockRetryCount(10)
     .load()
 ```

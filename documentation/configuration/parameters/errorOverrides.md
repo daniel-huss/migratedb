@@ -63,7 +63,7 @@ MIGRATEDB_ERROR_OVERRIDES=STATE:12345:W
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .errorOverrides("STATE:12345:W")
     .load()
 ```

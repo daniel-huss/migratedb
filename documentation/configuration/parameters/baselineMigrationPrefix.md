@@ -44,7 +44,7 @@ MIGRATEDB_BASELINE_MIGRATION_PREFIX=IB
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .baselineMigrationPrefix("IB")
     .load()
 ```

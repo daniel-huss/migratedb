@@ -40,7 +40,7 @@ MIGRATEDB_CLEAN_DISABLED=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .cleanDisabled(true)
     .load()
 ```

@@ -52,7 +52,7 @@ MIGRATEDB_IGNORE_MISSING_MIGRATIONS=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .ignoreMissingMigrations(true)
     .load()
 ```

@@ -38,7 +38,7 @@ MIGRATEDB_INIT_SQL=ALTER SESSION SET NLS_LANGUAGE='ENGLISH';
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .initSql("ALTER SESSION SET NLS_LANGUAGE='ENGLISH';")
     .load()
 ```

@@ -41,7 +41,7 @@ MIGRATEDB_ORACLE_SQLPLUS_WARN=true
 ### API
 
 ```java
-MigrateDB.configure()
+MigrateDb.configure()
     .extensionConfig(OracleConfig.class, new OracleConfig()
         .sqlplusWarn(true))
     .load()

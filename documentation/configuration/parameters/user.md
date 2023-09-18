@@ -17,6 +17,7 @@ See [Sql Server](/migratedb/documentation/database/sqlserver#windows-authenticat
 
 ## Usage
 
+This configuration parameter will only be used in the command line version of MigrateDB.
 ### Command line
 
 ```powershell
@@ -33,12 +34,4 @@ migratedb.user=myuser
 
 ```properties
 MIGRATEDB_USER=myuser
-```
-
-### API
-
-```java
-MigrateDB.configure()
-    .user("myuser")
-    .load()
 ```
