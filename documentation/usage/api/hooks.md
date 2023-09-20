@@ -10,7 +10,7 @@ There are three ways you can hook into the MigrateDB API.
 
 ## Java-based Migrations
 
-The first one is the the most common
+The first one is the most common
 one: [Java-based Migrations](/migratedb/documentation/concepts/migrations#java-based-migrations)
 when you need more power than SQL can offer you. This is great to for dealing with LOBs or performing advanced
 data transformations.
@@ -26,7 +26,7 @@ the description from the class name.
 
 ### Java-based migrations as Spring Beans
 
-By default Java-based migrations discovered through classpath scanning and instantiated by MigrateDB. In a dependency
+By default, Java-based migrations discovered through classpath scanning and instantiated by MigrateDB. In a dependency
 injection container it is sometimes useful to let the container instantiate the class and wire up its dependencies for
 you.
 
@@ -35,8 +35,8 @@ The MigrateDB API lets you pass pre-instantiated Java-based migrations using the
 Spring users can use this to automatically use all `JavaMigration` Spring beans with MigrateDB:
 
 ```java
-import migratedb.core.MigrateDB;
-import migratedb.core.api.migration.JavaMigration;
+import migratedb.{{site.migratedbApiMajorVersion}}.core.MigrateDB;
+import migratedb.{{site.migratedbApiMajorVersion}}.core.api.migration.JavaMigration;
 import org.springframework.context.ApplicationContext;
 
 ...

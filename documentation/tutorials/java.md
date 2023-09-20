@@ -36,7 +36,7 @@ Start by
         <dependency>
             <groupId>de.unentscheidbar</groupId>
             <artifactId>migratedb-core</artifactId>
-            <version>{{ site.migratedbVersion }}</version>
+            <version>{{ site.migratedbReleaseVersion }}</version>
         </dependency>
         ...
     </dependencies>
@@ -62,8 +62,8 @@ Followed by a first migration called `src/main/java/db/migration/V3__Anonymize.j
 ```java
 package db.migration;
 
-import migratedb.core.api.migration.BaseJavaMigration;
-import migratedb.core.api.migration.Context;
+import migratedb.{{ site.migratedbApiMajorVersion }}.core.api.migration.BaseJavaMigration;
+import migratedb.{{ site.migratedbApiMajorVersion }}.core.api.migration.Context;
 
 import java.sql.ResultSet;
 import java.sql.Statement;

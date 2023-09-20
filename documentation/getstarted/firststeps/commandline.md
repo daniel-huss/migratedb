@@ -34,7 +34,7 @@ INFO    Successfully downloaded 15 drivers
 
 Let's now jump into our new directory created from downloading MigrateDB:
 
-<pre class="console">cd migratedb-{{ site.migratedbVersion }}</pre>
+<pre class="console">cd migratedb-{{ site.migratedbReleaseVersion }}</pre>
 
 Configure MigrateDB by editing `/conf/migratedb.conf`, like this:
 
@@ -80,7 +80,7 @@ insert into PERSON (ID, NAME) values (3, 'Ms. Bar');</pre>
 
 and execute it by issuing:
 
-<pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>migrate</strong></pre>
+<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb <strong>migrate</strong></pre>
 
 You now get:
 

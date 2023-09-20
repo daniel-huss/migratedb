@@ -284,8 +284,8 @@ stored and validated for changes.
 ```java
 package db.migration;
 
-import migratedb.core.api.migration.BaseJavaMigration;
-import migratedb.core.api.migration.Context;
+import migratedb.{{ site.migratedbApiMajorVersion }}.core.api.migration.BaseJavaMigration;
+import migratedb.{{ site.migratedbApiMajorVersion }}.core.api.migration.Context;
 
 import java.sql.PreparedStatement;
 
@@ -315,8 +315,8 @@ If your application already uses Spring and you do not want to use JDBC directly
 ```java
 package db.migration;
 
-import migratedb.core.api.migration.BaseJavaMigration;
-import migratedb.core.api.migration.Context;
+import migratedb.{{ site.migratedbApiMajorVersion }}.core.api.migration.BaseJavaMigration;
+import migratedb.{{ site.migratedbApiMajorVersion }}.core.api.migration.Context;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 

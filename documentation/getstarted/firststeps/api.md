@@ -43,7 +43,7 @@ Let's add MigrateDB and H2 to our new `pom.xml`:
         <dependency>
             <groupId>de.unentscheidbar</groupId>
             <artifactId>migratedb-core</artifactId>
-            <version>{{ site.migratedbVersion }}</version>
+            <version>{{ site.migratedbReleaseVersion }}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -57,7 +57,7 @@ Let's add MigrateDB and H2 to our new `pom.xml`:
         <plugin>
             <groupId>de.unentscheidbar</groupId>
             <artifactId>migratedb-maven-plugin</artifactId>
-            <version>{{ site.migratedbVersion }}</version>
+            <version>{{ site.migratedbReleaseVersion }}</version>
             <executions>
                 <execution>
                     <goals>
@@ -78,7 +78,7 @@ Now it's time to integrate MigrateDB into `src/main/java/foobar/App.java` and po
 ```java
 package foobar;
 
-import migratedb.core.MigrateDB;
+import migratedb.{{site.migratedbApiMajorVersion}}.core.MigrateDB;
 
 public class App {
     public static void main(String[] args) {

@@ -43,7 +43,7 @@ configuration:
 
 MigrateDB itself should start. Since MigrateDB doesn’t yet support your database you should see a message like:
 
-`migratedb.core.api.MigrateDBException: Unable to autodetect JDBC driver for url: jdbc:mydatabase://<host>:<port>/<databasename>`
+`migratedb.{{ site.migratedbApiMajorVersion }}.core.api.MigrateDBException: Unable to autodetect JDBC driver for url: jdbc:mydatabase://<host>:<port>/<databasename>`
 
 You’re now ready to start adding that database support. We’re going to assume your database platform is called **FooDb**
 . Change the obvious naming conventions to suit your database.

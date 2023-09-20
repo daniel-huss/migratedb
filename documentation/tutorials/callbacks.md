@@ -36,7 +36,7 @@ They are typically used for
 After having completed the [First Steps: Command-line](/migratedb/documentation/getstarted/firststeps/commandline), you can now
 execute
 
-<pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>info</strong></pre>
+<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb <strong>info</strong></pre>
 
 This should give you the following status:
 
@@ -66,7 +66,7 @@ To trigger the execution of the callback, we'll clean and migrate the database a
 
 So go ahead and invoke
 
-<pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb clean <strong>migrate</strong></pre>
+<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb clean <strong>migrate</strong></pre>
 
 This will give you the following result:
 

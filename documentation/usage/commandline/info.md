@@ -54,7 +54,7 @@ migratedb.jdbcProperties.myProperty=value
 
 <pre class="console">&gt; migratedb info
 
-MigrateDB {{ site.migratedbVersion }} 
+MigrateDB {{ site.migratedbReleaseVersion }} 
 
 Database: jdbc:h2:file:migratedb.db (H2 1.3)
 
@@ -98,7 +98,7 @@ Database: jdbc:h2:file:migratedb.db (H2 1.3)
     }
   ],
   "allSchemasEmpty": false,
-  "migratedbVersion": "{{ site.migratedbVersion }}",
+  "migratedbReleaseVersion": "{{ site.migratedbReleaseVersion }}",
   "database": "testdb",
   "warnings": [],
   "operation": "info"

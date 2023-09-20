@@ -35,7 +35,7 @@ They are typically used for
 After having completed the [First Steps: Command-line](/migratedb/documentation/getstarted/firststeps/commandline), you can now
 execute
 
-<pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>info</strong></pre>
+<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb <strong>info</strong></pre>
 
 This should give you the following status:
 
@@ -64,7 +64,7 @@ CREATE OR REPLACE VIEW people AS
 
 This is now the status
 
-<pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>info</strong>
+<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb <strong>info</strong>
 
 Database: jdbc:h2:file:./foobardb (H2 1.4)
                      
@@ -84,7 +84,7 @@ It's time to execute our new migration.
 
 So go ahead and invoke
 
-<pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>migrate</strong></pre>
+<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb <strong>migrate</strong></pre>
 
 This will give you the following result:
 
@@ -96,7 +96,7 @@ Successfully applied 1 migration to schema "PUBLIC" (execution time 00:00.023s)<
 
 And you can check that this is indeed the new status:
 
-<pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>info</strong>
+<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb <strong>info</strong>
 
 Database: jdbc:h2:file:./foobardb (H2 1.4)
                      
@@ -123,7 +123,7 @@ CREATE OR REPLACE VIEW people AS
 
 And check the status again:
 
-<pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>info</strong>
+<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb <strong>info</strong>
 
 Database: jdbc:h2:file:./foobardb (H2 1.4)
                      
@@ -141,7 +141,7 @@ now marked as pending again, ready to be reapplied.
 
 So let's do exactly that:
 
-<pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>migrate</strong>
+<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb <strong>migrate</strong>
 
 Database: jdbc:h2:file:./foobardb (H2 1.4)
 Successfully validated 4 migrations (execution time 00:00.019s)
@@ -151,7 +151,7 @@ Successfully applied 1 migration to schema "PUBLIC" (execution time 00:00.027s)<
 
 And the status is now
 
-<pre class="console"><span>migratedb-{{ site.migratedbVersion }}&gt;</span> migratedb <strong>info</strong>
+<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb <strong>info</strong>
 
 Database: jdbc:h2:file:./foobardb (H2 1.4)
 

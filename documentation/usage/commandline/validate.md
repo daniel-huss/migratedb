@@ -68,7 +68,7 @@ migratedb.jdbcProperties.myProperty=value
 
 <pre class="console">&gt; migratedb validate
 
-MigrateDB {{ site.migratedbVersion }} 
+MigrateDB {{ site.migratedbReleaseVersion }} 
 
 No migrations applied yet. No validation necessary.</pre>
 
@@ -81,7 +81,7 @@ No migrations applied yet. No validation necessary.</pre>
   "invalidMigrations": [],
   "validationSuccessful": true,
   "validateCount": 2,
-  "migratedbVersion": "{{ site.migratedbVersion }}",
+  "migratedbReleaseVersion": "{{ site.migratedbReleaseVersion }}",
   "database": "testdb",
   "warnings": [],
   "operation": "validate"

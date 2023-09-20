@@ -20,7 +20,7 @@ be migrated to a state the rest of the code can work with.
 ## The MigrateDb Class
 
 The central piece of MigrateDB's database migration infrastructure is the
-**`migratedb.core.MigrateDb`**
+**`migratedb.{{ site.migratedbApiMajorVersion }}.core.MigrateDb`**
 class. It is your **one-stop shop** for working with MigrateDB programmatically. It serves both as a
 **configuration** and a **launching** point for all of MigrateDB's functions.
 
@@ -29,7 +29,7 @@ class. It is your **one-stop shop** for working with MigrateDB programmatically.
 MigrateDB is super easy to use programmatically:
 
 ```java
-import migratedb.core.MigrateDb;
+import migratedb.{{site.migratedbApiMajorVersion}}.core.MigrateDb;
 
 ...
 MigrateDb migratedb = MigrateDb.configure().dataSource(url, user, password).load();
@@ -45,7 +45,7 @@ See [configuration](/migratedb/documentation/configuration/parameters) for a ful
 
 You will need to include the relevant JDBC driver for your chosen database as a dependency in your Java project.
 For instance in your `pom.xml` for a Maven project. The version of the JDBC driver supported for each database is
-specified in the 'Supported Databases' list in the left hand side navigation menu.
+specified in the 'Supported Databases' list on the left hand side navigation menu.
 
 ### Spring Configuration
 
@@ -53,12 +53,14 @@ As an alternative to the programmatic configuration, here is how you can configu
 Spring application using XML bean configuration:
 
 ```xml
-<bean id="migratedbConfig" class="migratedb.core.api.configuration.ClassicConfiguration">
+
+<bean id="migratedbConfig"
+      class="migratedb.{{ site.migratedbApiMajorVersion }}.core.api.configuration.ClassicConfiguration">
     <property name="dataSource" ref="..."/>
     ...
 </bean>
 
-<bean id="migratedb" class="migratedb.core.MigrateDB" init-method="migrate">
+<bean id="migratedb" class="migratedb.{{ site.migratedbApiMajorVersion }}.core.MigrateDB" init-method="migrate">
     <constructor-arg ref="migratedbConfig"/>
 </bean>
 

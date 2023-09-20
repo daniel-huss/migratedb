@@ -43,7 +43,7 @@ migratedb.jdbcProperties.myProperty=value
 
 <pre class="console">&gt; migratedb baseline
 
-MigrateDB {{ site.migratedbVersion }} 
+MigrateDB {{ site.migratedbReleaseVersion }} 
 
 Creating schema history table: "PUBLIC"."migratedb_state"
 Schema baselined with version: 1</pre>
@@ -55,7 +55,7 @@ Schema baselined with version: 1</pre>
 {
   "successfullyBaselined": true,
   "baselineVersion": "1",
-  "migratedbVersion": "{{ site.migratedbVersion }}",
+  "migratedbReleaseVersion": "{{ site.migratedbReleaseVersion }}",
   "database": "testdb",
   "warnings": [],
   "operation": "baseline"

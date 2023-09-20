@@ -65,7 +65,7 @@ Other build tools may use the scanner API directly.
 <dependency>
     <groupId>de.unentscheidbar</groupId>
     <artifactId>migratedb-scanner</artifactId>
-    <version>{{ site.migratedbVersion }}</version>
+    <version>{{ site.migratedbReleaseVersion }}</version>
 </dependency>
 ````
 Then execute during build:

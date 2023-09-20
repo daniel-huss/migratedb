@@ -20,7 +20,7 @@ install a build tool.
 The MigrateDB download, once extracted, now becomes a directory with the following structure:
 
 <pre class="filetree">
-📂 migratedb-{{site.migratedbVersion}}
+📂 migratedb-{{site.migratedbReleaseVersion}}
   📂 conf
     📄 migratedb.conf    <i>configuration file</i>
  📁 drivers              <i>JDBC drivers</i>
@@ -267,7 +267,7 @@ folder and any configuration in the MigrateDB root folder.
 For example, if you wished to use Logback with the MigrateDB command line, you would achieve this by placing the Logback JAR files and the corresponding configuration file `logback.xml` like this:
 
 <pre class="filetree">
-  📂 migratedb-{{site.migratedbVersion}}
+  📂 migratedb-{{site.migratedbReleaseVersion}}
   📁 conf
   📁 drivers
   📁 jars

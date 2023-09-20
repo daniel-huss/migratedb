@@ -19,7 +19,7 @@ Add the plugin to your `plugins` section:
 
 ```groovy
 plugins {
-    id 'de.unentscheidbar.migratedb' version '{{ migratedbVersion }}'
+    id 'de.unentscheidbar.migratedb' version '{{ migratedbReleaseVersion }}'
 }
 ```
 

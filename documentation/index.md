@@ -24,7 +24,6 @@ title: Documentation
 
 <p>It is based around just 6 basic commands:
     <a href="/migratedb/documentation/command/migrate">Migrate</a>,
-    <a href="/migratedb/documentation/command/clean">Clean</a>,
     <a href="/migratedb/documentation/command/info">Info</a>,
     <a href="/migratedb/documentation/command/validate">Validate</a>,
     <a href="/migratedb/documentation/command/baseline">Baseline</a> and

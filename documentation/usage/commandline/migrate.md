@@ -75,7 +75,7 @@ migratedb.jdbcProperties.myProperty=value
 
 <pre class="console">&gt; migratedb migrate
 
-MigrateDB {{ site.migratedbVersion }} 
+MigrateDB {{ site.migratedbReleaseVersion }} 
 
 Database: jdbc:h2:file:migratedb.db (H2 1.3)
 Successfully validated 5 migrations (execution time 00:00.010s)
@@ -112,7 +112,7 @@ Successfully applied 2 migrations to schema "PUBLIC" (execution time 00:00.030s)
     }
   ],
   "migrationsExecuted": 2,
-  "migratedbVersion": "{{ site.migratedbVersion }}",
+  "migratedbReleaseVersion": "{{ site.migratedbReleaseVersion }}",
   "database": "testdb",
   "warnings": [],
   "operation": "migrate"

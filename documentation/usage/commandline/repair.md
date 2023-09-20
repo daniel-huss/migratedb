@@ -56,7 +56,7 @@ migratedb.jdbcProperties.myProperty=value
 
 <pre class="console">&gt; migratedb repair
 
-MigrateDB {{ site.migratedbVersion }} 
+MigrateDB {{ site.migratedbReleaseVersion }} 
 
 Repair not necessary. No failed migration detected.</pre>
 
@@ -77,7 +77,7 @@ Repair not necessary. No failed migration detected.</pre>
       "filepath": "C:\\migratedb\\sql\\V1__first.sql"
     }
   ],
-  "migratedbVersion": "{{ site.migratedbVersion }}",
+  "migratedbReleaseVersion": "{{ site.migratedbReleaseVersion }}",
   "database": "testdb",
   "warnings": [],
   "operation": "repair"
