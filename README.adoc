@@ -1,7 +1,8 @@
 = https://daniel-huss.github.io/migratedb[MigrateDB]
+:released_version 0.2.0
 
 image:https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat[License,link=http://www.apache.org/licenses/LICENSE-2.0]
-image:https://img.shields.io/maven-central/v/de.unentscheidbar/migratedb-core.svg?label=Maven%20Central&style=flat[Maven Central,link=https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.2.0]
+image:https://img.shields.io/maven-central/v/de.unentscheidbar/migratedb-core.svg?label=Maven%20Central&style=flat[Maven Central,link=https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/{released_version}]
 
 == Database Migrations, Easy and Free
 
@@ -29,11 +30,13 @@ https://daniel-huss.github.io/migratedb[Website],
 xref:CHANGELOG.adoc[Changelog],
 https://daniel-huss.github.io/migratedb/documentation/contribute[How to contribute]
 
+xref:migratedb-spring-boot-v3/README.adoc[See here if you're using Spring Boot]
+
 == Support
 
 The main priority of this project is to provide a bloat-free library for database migrations.
 Bugs will be fixed, and new software versions will be supported as long as the changes are testable.
-New features must fit reasonably within the scope of a database schema migration _library_, and have to be requested by
+New features must fit reasonably within the scope of a database schema migration _library_, and have to be useful to
 a large number (>1) of users 😉
 
 === Build Prerequisites

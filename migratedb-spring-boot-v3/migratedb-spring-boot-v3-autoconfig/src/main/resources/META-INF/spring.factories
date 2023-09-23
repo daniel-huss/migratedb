@@ -1,2 +1,2 @@
 org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
-migratedb.v1.spring.boot.v2.autoconfig.MigrateDbInitializerDetector
+migratedb.v1.spring.boot.v3.autoconfig.MigrateDbInitializerDetector

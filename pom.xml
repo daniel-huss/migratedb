@@ -54,7 +54,6 @@
         <module>migratedb-maven-plugin</module>
         <module>migratedb-gradle-plugin</module>
         <module>migratedb-test-report-aggregator</module>
-        <module>migratedb-spring-boot-v2</module>
         <module>migratedb-spring-boot-v3</module>
     </modules>
 

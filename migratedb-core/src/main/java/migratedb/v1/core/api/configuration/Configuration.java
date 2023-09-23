@@ -43,7 +43,7 @@ public interface Configuration {
 
     /**
      * @return The maximum number of retries when attempting to connect to the database. After each failed attempt,
-     * MigrateDB * will wait 1 second before attempting to connect again, up to the maximum number of times specified by
+     * MigrateDB will wait 1 second before attempting to connect again, up to the maximum number of times specified by
      * * connectRetries. The interval between retries doubles with each subsequent attempt. (default: 0)
      */
     int getConnectRetries();
@@ -96,7 +96,7 @@ public interface Configuration {
 
     /**
      * @return The file name prefix for versioned SQL migrations. Versioned SQL migrations have the following file name
-     * * structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to
+     * structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to
      * V1.1__My_description.sql. (default: V)
      */
     String getSqlMigrationPrefix();
@@ -105,7 +105,7 @@ public interface Configuration {
      * @return The file name prefix for baseline migrations. Baseline migrations represent all migrations with
      * {@code version <= current baseline migration version} while keeping older migrations if needed for upgrading
      * older deployments. They have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which
-     * using the defaults translates to SB.1__My_description.sql. (default: B)
+     * using the defaults translates to B1.1__My_description.sql. (default: B)
      */
     String getBaselineMigrationPrefix();
 
@@ -118,7 +118,7 @@ public interface Configuration {
 
     /**
      * @return The file name separator for SQL migrations. SQL migrations have the following file name structure:
-     * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to V1_1__My_description.sql.
+     * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to V1.1__My_description.sql.
      * (default: __)
      */
     String getSqlMigrationSeparator();
@@ -256,7 +256,7 @@ public interface Configuration {
      * @return The locations to scan recursively for migrations. The location type is determined by its prefix.
      * Unprefixed locations or locations starting with {@code classpath:} point to a package on the classpath and may
      * contain both SQL and Java-based migrations. Locations starting with {@code filesystem:} point to a directory on
-     * the filesystem, may only contain SQL migrations and are only scanned recursively down non-hidden directories..
+     * the filesystem, may only contain SQL migrations and are only scanned recursively down non-hidden directories.
      * (default: classpath:db/migration)
      */
     List<Location> getLocations();
@@ -372,7 +372,7 @@ public interface Configuration {
 
     /**
      * @return Whether to group all pending migrations together in the same transaction when applying them (only
-     * recommended for *databases with support for DDL transactions). {@code true} if migrations should be grouped.
+     * recommended for databases with support for DDL transactions). {@code true} if migrations should be grouped.
      * {@code false} if they should be applied individually instead. (default: {@code false})
      */
     boolean isGroup();
@@ -390,13 +390,13 @@ public interface Configuration {
     boolean isOutputQueryResults();
 
     /**
-     * @return The custom ResourceProvider to be used to look up resources. If not set, the default strategy will be *
+     * @return The custom ResourceProvider to be used to look up resources. If not set, the default strategy will be
      * used. (default: null)
      */
     ResourceProvider getResourceProvider();
 
     /**
-     * @return The custom ClassProvider to be used to look up {@link JavaMigration} classes. If not set, the default *
+     * @return The custom ClassProvider to be used to look up {@link JavaMigration} classes. If not set, the default
      * strategy will be used. (default: null)
      */
     ClassProvider<JavaMigration> getJavaMigrationClassProvider();

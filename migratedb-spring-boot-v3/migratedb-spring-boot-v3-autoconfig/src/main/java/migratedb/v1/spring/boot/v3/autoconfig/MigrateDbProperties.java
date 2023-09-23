@@ -35,7 +35,7 @@ import java.util.Map;
  *
  * @author Daniel Huss
  */
-@ConfigurationProperties(prefix = "spring.migratedb")
+@ConfigurationProperties(prefix = "migratedb")
 public class MigrateDbProperties {
     /**
      * Whether to enable MigrateDB.
@@ -72,7 +72,7 @@ public class MigrateDbProperties {
      */
     private @Nullable Map<String, String> extensionConfig;
 
-    // Everything below this line is a copied from the MigrateDB configuration class, except that arrays are lists.
+    // Everything below this line is a copied from the MigrateDB configuration class
 
     /**
      * The maximum number of retries when attempting to connect to the database. After each failed attempt, MigrateDB
@@ -116,16 +116,16 @@ public class MigrateDbProperties {
 
     /**
      * The file name prefix for versioned SQL migrations. Versioned SQL migrations have the following file name
-     * structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to *
+     * structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to
      * V1.1__My_description.sql (default: V)
      */
     private @Nullable String sqlMigrationPrefix;
 
     /**
-     * * The file name prefix for baseline migrations. Baseline migrations represent all migrations with *
-     * {@code version <= current baseline migration version} while keeping older migrations if needed for upgrading *
-     * older deployments. They have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which *
-     * using the defaults translates to SB.1__My_description.sql. (default: B)
+     * The file name prefix for baseline migrations. Baseline migrations represent all migrations with
+     * {@code version <= current baseline migration version} while keeping older migrations if needed for upgrading
+     * older deployments. They have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which
+     * using the defaults translates to B1.1__My_description.sql. (default: B)
      */
     private @Nullable String baselineMigrationPrefix;
 
@@ -268,7 +268,7 @@ public class MigrateDbProperties {
      * The locations to scan recursively for migrations. The location type is determined by its prefix. Unprefixed
      * locations or locations starting with {@code classpath:} point to a package on the classpath and may contain both
      * SQL and Java-based migrations. Locations starting with {@code filesystem:} point to a directory on the
-     * filesystem, may only contain SQL migrations and are only scanned recursively down non-hidden directories..
+     * filesystem, may only contain SQL migrations and are only scanned recursively down non-hidden directories.
      * (default: classpath:db/migration)
      */
     private @Nullable List<String> locations;
@@ -383,7 +383,7 @@ public class MigrateDbProperties {
 
     /**
      * Whether to group all pending migrations together in the same transaction when applying them (only recommended for
-     * *databases with support for DDL transactions). {@code true} if migrations should be grouped. {@code false} if
+     * databases with support for DDL transactions). {@code true} if migrations should be grouped. {@code false} if
      * they should be applied individually instead. (default: {@code false})
      */
     private @Nullable Boolean group;

@@ -1,0 +1,405 @@
+= MigrateDB Spring Boot Integration
+:released_version: 0.2.0
+
+Add this dependency to enable automatic database migrations on startup of your Spring Boot application:
+
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>de.unentscheidbar</groupId>
+    <artifactId>migratedb-spring-boot-v3-starter</artifactId>
+    <version>{released_version}</version>
+</dependency>
+----
+
+This will also add a single bean of type `MigrateDb` to your application context, which can be injected into dependent beans.
+
+== Configuration
+
+This artifact lets you configure MigrateDB via the configuration mechanism used by Spring Boot.
+Beans that depend on database initialization, such as JPA EntityManager instances, will implicitly depend on successful schema migration.
+
+NOTE: Autoconfiguration is only active if your application context does not already define a bean of type `MigrateDb`.
+
+=== Database Connection
+
+Here's the main difference between using the MigrateDB core API and using MigrateDB with Spring:
+In the core API, you'd set a DataSource via `DefaultConfiguration::setDataSource`.
+In a Spring-managed application, you have to choose *one* of the following options, instead:
+
+1. If your application has a *unique/primary* DataSource bean, you don't have to do anything, and this data source will be used to run schema migrations.
+This is probably the most common case.
++
+[source,yaml]
+----
+spring:
+  datasource:
+    user: my-user
+    password: ${env.DB_PASSWORD}
+    url: "jdbc:postgresql://localhost:5432/my-database"
+----
+
+** You can also re-use the primary data source, but provide different credentials for scenarios where migrations need to be run with elevated privileges.
+To do so, the properties `migratedb.user` and `migratedb.password` must be set.
++
+[source,yaml]
+----
+spring:
+  datasource:
+    user: my-user
+    password: ${secrets.db-usage-password}
+    url: "jdbc:postgresql://localhost:5432/my-database"
+migratedb:
+  user: superadmin
+  password: ${secrets.db-admin-password}
+----
+
+2. If you have *multiple* DataSource beans, you can annotate one of them with `@MigrateDbDataSource` to mark it as the data source to use for schema migrations.
++
+[source,java]
+----
+@Configuration
+public class DatabaseConfig {
+    @Bean
+    @Primary
+    public DataSource primaryDataSource() {
+        // ...
+    }
+
+    @Bean
+    @MigrateDbDataSource
+    public DataSource migrationDataSource() {
+        // ...
+    }
+
+    @Bean
+    public DataSource backupDataSource() {
+       // ...
+    }
+}
+----
+
+3. You can configure a separate data source to be used for schema migrations via `migratedb.datasource.*`.
++
+[source,yaml]
+----
+migratedb:
+  datasource:
+    user: my-user
+    password: ${secrets.db-usage-password}
+    url: "jdbc:postgresql://localhost:5432/my-database"
+----
+
+NOTE: If there are multiple conflicting migration data source declarations in your configuration, automatic creation of the MigrateDB bean will fail with an exception.
+
+=== Schema Migrations Beans
+
+Beans that implement the `JavaMigration` interface will be auto-detected.
+This includes subclasses of `ScriptMigration`, so you can skip class path indexing and still have SQL migration scripts in your Spring Boot application, given that all your migrations are Spring beans.
+
+=== Callbacks
+
+Beans that implement `Callback` are automatically added to the MigrateDB configuration.
+
+=== Extensions
+
+Beans that implement `MigrateDbExtension` are automatically loaded into the MigrateDB configuration.
+
+=== Configuration Customization
+
+For full control over the used `Configuration`, you can define one or more beans that implement `MigrateDbConfigurationCustomizer`. During the final step of autoconfiguration, all configuration customizer beans get a chance to modify the properties of the MigrateDB configuration.
+
+=== Configuration Property Reference
+
+migratedb.baseline-description (java.lang.String)::
+The description to tag an existing schema with when executing baseline.
+(default: << MigrateDB Baseline >>)
+migratedb.baseline-migration-prefix (java.lang.String)::
+The file name prefix for baseline migrations. Baseline migrations
+represent all migrations with
+`version <= current baseline migration version` while keeping older
+migrations if needed for upgrading older deployments. They have the
+following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix,
+which using the defaults translates to B1.1__My_description.sql.
+(default: B)
+migratedb.baseline-on-migrate (java.lang.Boolean)::
+Whether to automatically call baseline when migrate is executed against
+a non-empty schema with no schema history table. This schema will then
+be initialized with the `baselineVersion` before executing the
+migrations. Only migrations above `baselineVersion` will then be
+applied.
++
+This is useful for initial MigrateDB production deployments on projects
+with an existing DB.
++
+Be careful when enabling this as it removes the safety net that ensures
+MigrateDB does not migrate the wrong database in case of a configuration
+mistake! (default: `false`)
+migratedb.baseline-version (java.lang.String)::
+The version to tag an existing schema with when executing baseline.
+migratedb.cherry-pick (java.util.List<java.lang.String>)::
+The migrations that MigrateDb should consider when migrating. Leave
+empty to consider all available migrations. Migrations not in this list
+will be ignored.
+migratedb.connect-retries (java.lang.Integer)::
+The maximum number of retries when attempting to connect to the
+database. After each failed attempt, MigrateDB will wait 1 second before
+attempting to connect again, up to the maximum number of times specified
+by connectRetries. The interval between retries doubles with each
+subsequent attempt.
+migratedb.connect-retries-interval (java.time.Duration)::
+The maximum time between retries when attempting to connect to the
+database in seconds. This will cap the interval between connect retry to
+the value provided.
+migratedb.create-schemas (java.lang.Boolean)::
+Whether MigrateDB should attempt to create the schemas specified in the
+`schemas` property. (default: `true`)
+migratedb.data-source (org.springframework.boot.autoconfigure.jdbc.DataSourceProperties)::
+If set, database migrations will use this data source instead of the
+application data source.
+migratedb.default-schema (java.lang.String)::
+The default schema managed by MigrateDB. This schema name is
+case-sensitive. If not specified, but _schemas_ is, MigrateDB uses the
+first schema in that list. If that is also not specified, MigrateDb uses
+the default schema for the database connection.
++
+Consequences:
++
+* This schema will be the one containing the schema history table.
+* This schema will be the default for the database connection (provided
+the database supports this concept) .
++
+(default: The first schema specified in getSchemas(), and failing that
+the default schema for the database connection)
+migratedb.enabled (java.lang.Boolean)::
+Whether to enable MigrateDB.
+migratedb.encoding (java.nio.charset.Charset)::
+The encoding of SQL migrations. (default: UTF-8)
+migratedb.extension-config (java.util.Map<java.lang.String,java.lang.String>)::
+Extension-specific properties. In addition, Spring beans that implement
+`ExtensionConfig` are auto-detected.
+migratedb.fail-on-missing-locations (java.lang.Boolean)::
+Whether to fail if a location specified in the `migratedb.locations`
+option doesn't exist. (default: `false`)
+migratedb.fail-on-missing-target (java.lang.Boolean)::
+Whether to fail if no migration with the configured target version
+exists (default: `true`)
+migratedb.group (java.lang.Boolean)::
+Whether to group all pending migrations together in the same transaction
+when applying them (only recommended for databases with support for DDL
+transactions). `true` if migrations should be grouped. `false` if they
+should be applied individually instead. (default: `false`)
+migratedb.ignore-future-migrations (java.lang.Boolean)::
+Ignore future migrations when reading the schema history table. These
+are migrations that were performed by a newer deployment of the
+application that are not yet available in this version. For example: we
+have migrations available on the classpath up to version 3.0. The schema
+history table indicates that a migration to version 4.0 (unknown to us)
+has already been applied. Instead of bombing out (fail fast) with an
+exception, a warning is logged and MigrateDB continues normally. This is
+useful for situations where one must be able to redeploy an older
+version of the application after the database has been migrated by a
+newer one. `true` to continue normally and log a warning, `false` to
+fail fast with an exception. (default: `true`)
+migratedb.ignore-ignored-migrations (java.lang.Boolean)::
+Ignore ignored migrations when reading the schema history table. These
+are migrations that were added in between already migrated migrations in
+this version. For example: we have migrations available on the classpath
+with versions from 1.0 to 3.0. The schema history table indicates that
+version 1 was finished on 1.0.15, and the next one was 2.0.0. But with
+the next release a new migration was added to version 1: 1.0.16. Such
+scenario is ignored by migrate command, but by default is rejected by
+validate. When ignoreIgnoredMigrations is enabled, such case will not be
+reported by validate command. This is useful for situations where one
+must be able to deliver complete set of migrations in a delivery package
+for multiple versions of the product, and allows for further development
+of older versions. `true` to continue normally, `false` to fail fast
+with an exception. (default: `false`)
+migratedb.ignore-migration-patterns (java.util.List<migratedb.v1.core.api.pattern.ValidatePattern>)::
+Patterns of ignored migrations. Each pattern is of the form
+`<migration_type>:<migration_state>`. See
+https://daniel-huss.github.io/migratedb/documentation/configuration/parameters/ignoreMigrationPatterns[the
+website] for full details.
++
+Example: repeatable:missing,versioned:pending,*:failed
++
+(default: none)
+migratedb.ignore-missing-migrations (java.lang.Boolean)::
+Ignore missing migrations when reading the schema history table. These
+are migrations that were performed by an older deployment of the
+application that are no longer available in this version. For example:
+we have migrations available on the classpath with versions 1.0 and 3.0.
+The schema history table indicates that a migration with version 2.0
+(unknown to us) has also been applied. Instead of bombing out (fail
+fast) with an exception, a warning is logged and MigrateDB continues
+normally. This is useful for situations where one must be able to deploy
+a newer version of the application even though it doesn't contain
+migrations included with an older one anymore. Note that if the most
+recently applied migration is removed, MigrateDb has no way to know it
+is missing and will mark it as future instead. `true` to continue
+normally and log a warning, `false` to fail fast with an exception.
+(default: `false`)
+migratedb.ignore-pending-migrations (java.lang.Boolean)::
+Ignore pending migrations when reading the schema history table. These
+are migrations that are available but have not yet been applied. This
+can be useful for verifying that in-development migration changes don't
+contain any validation-breaking changes of migrations that have already
+been applied to a production environment, e.g. as part of a CI/CD
+process, without failing because of the existence of new migration
+versions. `true` to continue normally, `false` to fail fast with an
+exception. (default: `false`)
+migratedb.init-sql (java.lang.String)::
+The SQL statements to run to initialize a new database connection
+immediately after opening it.
+migratedb.installed-by (java.lang.String)::
+The username that will be recorded in the schema history table as having
+applied the migration, or `null` for the current database user of the
+connection (default: `null`).
+migratedb.liberate-on-migrate (java.lang.Boolean)::
+Whether the `liberate` command is automatically executed on `migrate` if
+the schema history table does not exist, but `oldTable` exists.
+(Default: `true`)
+migratedb.locations (java.util.List<java.lang.String>)::
+The locations to scan recursively for migrations. The location type is
+determined by its prefix. Unprefixed locations or locations starting
+with `classpath:` point to a package on the classpath and may contain
+both SQL and Java-based migrations. Locations starting with
+`filesystem:` point to a directory on the filesystem, may only contain
+SQL migrations and are only scanned recursively down non-hidden
+directories. (default: classpath:db/migration)
+migratedb.lock-retry-count (java.lang.Integer)::
+The maximum number of retries when trying to obtain a lock. -1 indicates
+attempting to repeat indefinitely.
+migratedb.mixed (java.lang.Boolean)::
+Whether to allow mixing transactional and non-transactional statements
+within the same migration. Enabling this automatically causes the entire
+affected migration to be run without a transaction.
++
+Note that this is only applicable for PostgreSQL, Aurora PostgreSQL, SQL
+Server and SQLite which all have statements that do not run at all
+within a transaction. This is not to be confused with implicit
+transaction, as they occur in MySQL or Oracle, where even though a DDL
+statement was run within a transaction, the database will issue an
+implicit commit before and after its execution. `true` if mixed
+migrations should be allowed. `false` if an error should be thrown
+instead. (default: `false`)
+migratedb.old-table (java.lang.String)::
+The old table to convert into the format used by MigrateDB. Only used
+for the "liberate" command.
+migratedb.out-of-order (java.lang.Boolean)::
+Whether migrations are allowed to be run "out of order". If you already
+have versions 1 and 3 applied, and now a version 2 is found, it will be
+applied too instead of being ignored. (default: `false`)
+migratedb.output-query-results (java.lang.Boolean)::
+Whether MigrateDB should output a table with the results of queries when
+executing migrations. `true` to output the results table (default:
+`true`)
+migratedb.password (java.lang.String)::
+If set, database migrations will use a data source that is derived from
+the application data source, but uses different credentials.
+migratedb.placeholder-prefix (java.lang.String)::
+The prefix of every placeholder. (default: $\{ )
+migratedb.placeholder-replacement (java.lang.Boolean)::
+Whether placeholders should be replaced. (default: true)
+migratedb.placeholder-suffix (java.lang.String)::
+The suffix of every placeholder. (default: } )
+migratedb.placeholders (java.util.Map<java.lang.String,java.lang.String>)::
+The map of <placeholder, replacementValue> to apply to sql migration
+scripts.
+migratedb.repeatable-sql-migration-prefix (java.lang.String)::
+The file name prefix for repeatable sql migrations. Repeatable SQL
+migrations have the following file name structure:
+prefixSeparatorDESCRIPTIONsuffix, which using the defaults translates to
+R__My_description.sql. (default: R)
+migratedb.schemas (java.util.List<java.lang.String>)::
+The schemas managed by MigrateDB. These schema names are case-sensitive.
+If not specified, MigrateDB uses the default schema for the database
+connection. If _defaultSchemaName_ is not specified, then the first of
+this list also acts as default schema.
++
+Consequences:
++
+* MigrateDB will automatically attempt to create all these schemas,
+unless they already exist.
++
+(default: The default schema for the database connection)
+migratedb.script-placeholder-prefix (java.lang.String)::
+The prefix of every script placeholder. (default: FP__ )
+migratedb.script-placeholder-suffix (java.lang.String)::
+The suffix of every script placeholder. (default: __ )
+migratedb.skip-default-callbacks (java.lang.Boolean)::
+Whether default built-in callbacks should be skipped. If true, only
+custom callbacks are used. (default: false)
+migratedb.skip-default-resolvers (java.lang.Boolean)::
+Whether default built-in resolvers should be skipped. If true, only
+custom resolvers are used. (default: false)
+migratedb.skip-executing-migrations (java.lang.Boolean)::
+Whether MigrateDB should skip actually executing the contents of the
+migrations and only update the schema history table. This should be used
+when you have applied a migration manually (via executing the sql
+yourself, or via an ide), and just want the schema history table to
+reflect this.
++
+Use in conjunction with `cherryPick` to skip specific migrations instead
+of all pending ones. (default: `false`)
+migratedb.sql-migration-prefix (java.lang.String)::
+The file name prefix for versioned SQL migrations. Versioned SQL
+migrations have the following file name structure:
+prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults
+translates to V1.1__My_description.sql (default: V)
+migratedb.sql-migration-separator (java.lang.String)::
+The file name separator for sql migrations. SQL migrations have the
+following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix,
+which using the defaults translates to V1_1__My_description.sql.
+(default: __)
+migratedb.sql-migration-suffixes (java.util.List<java.lang.String>)::
+The file name suffixes for SQL migrations. SQL migrations have the
+following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix,
+which using the defaults translates to V1_1__My_description.sql Multiple
+suffixes (like .sql,.pkg,.pkb) can be specified for easier compatibility
+with other tools such as editors with specific file associations.
+(default: .sql)
+migratedb.table (java.lang.String)::
+The name of the schema history table that will be used by MigrateDB. By
+default, (single-schema mode) the schema history table is placed in the
+default schema for the connection provided by the datasource. When the
+_migratedb.schemas_ property is set (multi-schema mode), the schema
+history table is placed in the first schema of the list. (default:
+migratedb_state)
+migratedb.tablespace (java.lang.String)::
+The tablespace where to create the schema history table that will be
+used by MigrateDB. If not specified, MigrateDB uses the default
+tablespace for the database connection. This setting is only relevant
+for databases that do support the notion of tablespaces. Its value is
+simply ignored for all others.
+migratedb.target (java.lang.String)::
+The target version up to which MigrateDB should consider migrations.
+Migrations with a higher version number will be ignored. Special values:
++
+* `current`: Designates the current version of the schema
+* `latest`: The latest version of the schema, as defined by the
+migration with the highest version
+* <version>? (end with a '?'): Instructs MigrateDB not to fail if the
+target version doesn't exist. In this case, MigrateDB will go up to but
+not beyond the specified target (default: fail if the target version
+doesn't exist)
++
+Defaults to `latest`
+migratedb.use-service-loader (java.lang.Boolean)::
+Whether the autoconfiguration should also load extensions from the
+`java.util.ServiceLoader` facility. Disabled by default, so only beans
+that implement `migratedb.v1.core.api.MigrateDbExtension` will be
+loaded.
+migratedb.user (java.lang.String)::
+If set, database migrations will use a data source that is derived from
+the application data source, but uses different credentials.
+migratedb.validate-migration-naming (java.lang.Boolean)::
+Whether to validate migrations and callbacks whose scripts do not obey
+the correct naming convention. A failure can be useful to check that
+errors such as case sensitivity in migration prefixes have been
+corrected. `false` to continue normally, `true` to fail fast with an
+exception. (default: `false`)
+migratedb.validate-on-migrate (java.lang.Boolean)::
+Whether to automatically call validate or not when running migrate.
+`true` if validate should be called. `false` if not. (default: `true`)
+

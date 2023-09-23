@@ -22,7 +22,7 @@
         <version>0.3.0-SNAPSHOT</version>
     </parent>
     <artifactId>migratedb-spring-boot-v3</artifactId>
-    <name>MigrateDB - Spring Boot 3.x Integration</name>
+    <name>MigrateDB - Spring Boot v3.x Integration</name>
     <packaging>pom</packaging>
 
     <properties>

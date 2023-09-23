@@ -102,7 +102,7 @@ internal class MigrateDbAutoConfigurationTest {
 
     @Test
     fun `Setting migratedb_dataSource_url is enough to define a properties-based data source`() {
-        contextRunner.withPropertyValues("spring.migratedb.dataSource.url=" + DataSources.newMigrationDataSourceUrl())
+        contextRunner.withPropertyValues("migratedb.dataSource.url=" + DataSources.newMigrationDataSourceUrl())
             .run { context ->
                 assertThat(context).singleBean<MigrateDb>().extracting { it.configuration.dataSource }.isNotNull()
             }
@@ -111,7 +111,7 @@ internal class MigrateDbAutoConfigurationTest {
     @Test
     fun `Uses the migration DataSource if both application DataSource and a migration DataSource from migratedb_dataSource_url are present`() {
         contextRunner.withUserConfiguration(MultipleUsersApplicationDataSourceConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.dataSource.url=" + DataSources.newMigrationDataSourceUrl())
+            .withPropertyValues("migratedb.dataSource.url=" + DataSources.newMigrationDataSourceUrl())
             .run { context ->
                 assertThat(context).singleBean<MigrateDb>().isUsingMigrationDataSource()
             }
@@ -121,8 +121,8 @@ internal class MigrateDbAutoConfigurationTest {
     fun `Uses the derived DataSource if both application DataSource and a derived DataSource are present`() {
         contextRunner.withUserConfiguration(MultipleUsersApplicationDataSourceConfiguration::class.java)
             .withPropertyValues(
-                "spring.migratedb.user=${MultipleUsersApplicationDataSourceConfiguration.USER_1}",
-                "spring.migratedb.password=${MultipleUsersApplicationDataSourceConfiguration.PASSWORD_1}"
+                "migratedb.user=${MultipleUsersApplicationDataSourceConfiguration.USER_1}",
+                "migratedb.password=${MultipleUsersApplicationDataSourceConfiguration.PASSWORD_1}"
             ).run { context ->
                 assertThat(context).singleBean<MigrateDb>()
                     .isUsingDataSourceWithUser(MultipleUsersApplicationDataSourceConfiguration.USER_1)
@@ -140,7 +140,7 @@ internal class MigrateDbAutoConfigurationTest {
     @Test
     fun `Fails if a @MigrationDataSource bean and derived DataSource are present`() {
         contextRunner.withUserConfiguration(ApplicationAndMigrationDataSourcesConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.user=migration_user") // = "Use a derived DS where the user is different"
+            .withPropertyValues("migratedb.user=migration_user") // = "Use a derived DS where the user is different"
             .run { context ->
                 assertThat(context).hasFailed()
                 assertThat(context).failure.rootCause().isInstanceOf(ConflictingDataSourcesException::class.java)
@@ -150,7 +150,7 @@ internal class MigrateDbAutoConfigurationTest {
     @Test
     fun `Fails if a migration DataSource from migratedb_dataSource_url and a derived DataSource are present`() {
         contextRunner.withUserConfiguration(ApplicationAndMigrationDataSourcesConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.user=migration_user") // "Use a derived DS where the user is different"
+            .withPropertyValues("migratedb.user=migration_user") // "Use a derived DS where the user is different"
             .run { context ->
                 assertThat(context).hasFailed()
                 assertThat(context).failure.rootCause().isInstanceOf(ConflictingDataSourcesException::class.java)
@@ -160,7 +160,7 @@ internal class MigrateDbAutoConfigurationTest {
     @Test
     fun `Fails if a @MigrationDataSource bean and a migration DataSource from migratedb_dataSource_url are present`() {
         contextRunner.withUserConfiguration(ApplicationAndMigrationDataSourcesConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.data-source.url=" + DataSources.newMigrationDataSourceUrl())
+            .withPropertyValues("migratedb.data-source.url=" + DataSources.newMigrationDataSourceUrl())
             .run { context ->
                 assertThat(context).hasFailed()
                 assertThat(context).failure.rootCause().isInstanceOf(ConflictingDataSourcesException::class.java)
@@ -202,7 +202,7 @@ internal class MigrateDbAutoConfigurationTest {
     @Test
     fun `Can override locations via spring_migratedb_locations`() {
         contextRunner.withUserConfiguration(MultipleUsersApplicationDataSourceConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.locations=classpath:db/changelog,classpath:db/migration")
+            .withPropertyValues("migratedb.locations=classpath:db/changelog,classpath:db/migration")
             .run { context ->
                 assertThat(context).singleBean<MigrateDb>().all { actual ->
                     actual.configuration.locations.shouldForAll { it.shouldBeInstanceOf<ClassPathLocation>() }
@@ -215,7 +215,7 @@ internal class MigrateDbAutoConfigurationTest {
     @Test
     fun `Can override schemas via spring_migratedb_schemas`() {
         contextRunner.withUserConfiguration(MultipleUsersApplicationDataSourceConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.schemas=foobar").run { context ->
+            .withPropertyValues("migratedb.schemas=foobar").run { context ->
                 assertThat(context).singleBean<MigrateDb>().all { actual ->
                     actual.configuration.schemas.shouldContainOnly("foobar")
                 }
@@ -228,8 +228,8 @@ internal class MigrateDbAutoConfigurationTest {
     )
     fun `Can validate class locations via spring_migratedb_fail-on-missing-locations`(missingLocations: String) {
         contextRunner.withUserConfiguration(MultipleUsersApplicationDataSourceConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.fail-on-missing-locations=true")
-            .withPropertyValues("spring.migratedb.locations=$missingLocations").run { context ->
+            .withPropertyValues("migratedb.fail-on-missing-locations=true")
+            .withPropertyValues("migratedb.locations=$missingLocations").run { context ->
                 assertThat(context).hasFailed()
                 assertThat(context).failure.isInstanceOf(BeanCreationException::class.java)
                     .hasCauseInstanceOf(MigrateDbException::class.java)
@@ -242,8 +242,8 @@ internal class MigrateDbAutoConfigurationTest {
     )
     fun `Location validation does not fail if the locations exist`(existingLocations: String) {
         contextRunner.withUserConfiguration(MultipleUsersApplicationDataSourceConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.fail-on-missing-locations=true")
-            .withPropertyValues("spring.migratedb.locations=$existingLocations")
+            .withPropertyValues("migratedb.fail-on-missing-locations=true")
+            .withPropertyValues("migratedb.locations=$existingLocations")
             .run { context -> assertThat(context).hasNotFailed() }
     }
 
@@ -318,7 +318,7 @@ internal class MigrateDbAutoConfigurationTest {
     @ValueSource(strings = ["0", "1", "5"])
     fun `Can change the baseline version via config properties`(baselineVersion: String) {
         contextRunner.withUserConfiguration(MultipleUsersApplicationDataSourceConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.baseline-version=$baselineVersion").run { context ->
+            .withPropertyValues("migratedb.baseline-version=$baselineVersion").run { context ->
                 assertThat(context).singleBean<MigrateDb>().all { actual ->
                     actual.configuration.baselineVersion.shouldBeEqual(Version.parse(baselineVersion))
                 }
@@ -375,7 +375,7 @@ internal class MigrateDbAutoConfigurationTest {
     fun `Can configure SQL to run on new MigrateDB connections`() {
         val initSql = "SELECT 1 FROM (VALUES(0)); SELECT 2 FROM (VALUES(0))"
         contextRunner.withUserConfiguration(MultipleUsersApplicationDataSourceConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.init-sql=$initSql").run { context ->
+            .withPropertyValues("migratedb.init-sql=$initSql").run { context ->
                 assertThat(context).singleBean<MigrateDb>().extracting { it.configuration.initSql }.isEqualTo(initSql)
             }
     }
@@ -383,7 +383,7 @@ internal class MigrateDbAutoConfigurationTest {
     @Test
     fun `CherryPick parameter is correctly mapped`() {
         contextRunner.withUserConfiguration(MultipleUsersApplicationDataSourceConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.cherry-pick=1.1").run { context ->
+            .withPropertyValues("migratedb.cherry-pick=1.1").run { context ->
                 assertThat(context).singleBean<MigrateDb>().all { actual ->
                     actual.configuration.cherryPick.shouldContainExactly(MigrationPattern("1.1"))
                 }
@@ -429,7 +429,7 @@ internal class MigrateDbAutoConfigurationTest {
     @Test
     fun `ScriptPlaceholderPrefix parameter is correctly mapped`() {
         contextRunner.withUserConfiguration(MultipleUsersApplicationDataSourceConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.script-placeholder-prefix=SPP").run { context ->
+            .withPropertyValues("migratedb.script-placeholder-prefix=SPP").run { context ->
                 assertThat(context.bean<MigrateDb>().configuration.scriptPlaceholderPrefix).isEqualTo("SPP")
             }
     }
@@ -437,7 +437,7 @@ internal class MigrateDbAutoConfigurationTest {
     @Test
     fun `ScriptPlaceholderSuffix parameter is correctly mapped`() {
         contextRunner.withUserConfiguration(MultipleUsersApplicationDataSourceConfiguration::class.java)
-            .withPropertyValues("spring.migratedb.script-placeholder-suffix=SPS").run { context ->
+            .withPropertyValues("migratedb.script-placeholder-suffix=SPS").run { context ->
                 assertThat(context.bean<MigrateDb>().configuration.scriptPlaceholderSuffix).isEqualTo("SPS")
             }
     }

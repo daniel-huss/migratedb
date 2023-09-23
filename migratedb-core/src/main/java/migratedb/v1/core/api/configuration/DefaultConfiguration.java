@@ -832,7 +832,7 @@ public class DefaultConfiguration implements Configuration {
 
     /**
      * Sets the file name prefix for baseline migrations. They have the following file name structure:
-     * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to SB.1__My_description.sql
+     * prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults translates to B1__My_description.sql
      */
     public void setBaselineMigrationPrefix(String baselineMigrationPrefix) {
         this.baselineMigrationPrefix = baselineMigrationPrefix;

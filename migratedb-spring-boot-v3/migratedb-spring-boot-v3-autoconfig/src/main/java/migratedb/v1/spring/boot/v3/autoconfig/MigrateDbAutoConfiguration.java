@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 @Import(DatabaseInitializationDependencyConfigurer.class)
 @ConditionalOnClass(MigrateDb.class)
 @Conditional(MigrateDbAutoConfiguration.MigrateDbDataSourceCondition.class)
-@ConditionalOnProperty(prefix = "spring.migratedb", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "migratedb", name = "enabled", matchIfMissing = true)
 public class MigrateDbAutoConfiguration {
 
     static final class MigrateDbDataSourceCondition extends AnyNestedCondition {
@@ -68,7 +68,7 @@ public class MigrateDbAutoConfiguration {
         static final class DataSourceBeanCondition {
         }
 
-        @ConditionalOnProperty(prefix = "spring.migratedb.data-source", name = "url")
+        @ConditionalOnProperty(prefix = "migratedb.data-source", name = "url")
         static final class UrlCondition {
         }
     }
@@ -291,7 +291,7 @@ public class MigrateDbAutoConfiguration {
                                                  .map(MigrateDbProperties::getDataSource)
                                                  .map(DataSourceProperties::initializeDataSourceBuilder)
                                                  .orElse(null);
-        dataSourcesByName.put("Spring properties data source [spring.migratedb.data-source]",
+        dataSourcesByName.put("Spring properties data source [migratedb.data-source]",
                               asDataSourceSupplier(springPropertiesDataSource));
 
         if (properties != null && properties.getUser() != null) {
@@ -300,7 +300,7 @@ public class MigrateDbAutoConfiguration {
             }
             var derivedDataSource = new DerivedDataSource(applicationDataSource, properties.getUser(), properties.getPassword());
             dataSourcesByName.put("Data source derived from application data source using credentials" +
-                                  " [spring.migratedb.(user,password)]",
+                                  " [migratedb.(user,password)]",
                                   asDataSourceSupplier(derivedDataSource));
         }
 
