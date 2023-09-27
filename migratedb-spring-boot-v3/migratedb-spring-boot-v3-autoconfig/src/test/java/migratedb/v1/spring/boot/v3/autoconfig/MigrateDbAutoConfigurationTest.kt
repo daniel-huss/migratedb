@@ -22,11 +22,8 @@ import io.kotest.matchers.collections.*
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.types.shouldBeInstanceOf
 import migratedb.v1.core.MigrateDb
-import migratedb.v1.core.api.Checksum
+import migratedb.v1.core.api.*
 import migratedb.v1.core.api.Location.ClassPathLocation
-import migratedb.v1.core.api.MigrateDbException
-import migratedb.v1.core.api.MigrationPattern
-import migratedb.v1.core.api.Version
 import migratedb.v1.core.api.callback.Callback
 import migratedb.v1.core.api.callback.Event
 import migratedb.v1.core.api.migration.Context
@@ -361,6 +358,20 @@ internal class MigrateDbAutoConfigurationTest {
     }
 
     @Test
+    fun `Beans implementing MigrateDbExtension are loaded`() {
+        contextRunner.withUserConfiguration(
+            MultipleUsersApplicationDataSourceConfiguration::class.java,
+            ExtensionConfiguration::class.java
+        ).run { context ->
+            assertThat(context).singleBean<MigrateDb>().all { actual ->
+                actual.configuration.loadedExtensions
+                    .map { it.description }
+                    .shouldContainAll("Extension 1", "Extension 2")
+            }
+        }
+    }
+
+    @Test
     fun `Uses the class loader provided by the Spring ResourceLoader`() {
         contextRunner.withUserConfiguration(
             MultipleUsersApplicationDataSourceConfiguration::class.java, ResourceLoaderConfiguration::class.java
@@ -451,6 +462,15 @@ internal class MigrateDbAutoConfigurationTest {
             const val USER_1 = "another_user"
             const val PASSWORD_1 = "some_secret"
         }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    internal class ExtensionConfiguration {
+        @Bean
+        fun extension1() = MigrateDbExtension { "Extension 1" }
+
+        @Bean
+        fun extension2() = MigrateDbExtension { "Extension 2" }
     }
 
     @Configuration(proxyBeanMethods = false)

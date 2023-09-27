@@ -230,6 +230,9 @@
                     <artifactId>kotlin-maven-plugin</artifactId>
                     <groupId>org.jetbrains.kotlin</groupId>
                     <version>${version.kotlin}</version>
+                    <configuration>
+                        <jvmTarget>${version.java}</jvmTarget>
+                    </configuration>
                     <executions>
                         <execution>
                             <inherited>true</inherited>

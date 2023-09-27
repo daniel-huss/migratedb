@@ -1,0 +1,8 @@
+spring:
+  data-source:
+    url: jdbc:h2:mem:testapp;DB_CLOSE_DELAY=-1
+    user: sa
+migratedb:
+  data-source:
+    url: jdbc:h2:mem:testapp;DB_CLOSE_DELAY=-1
+    user: sa

@@ -123,7 +123,7 @@ public class MigrateDbProperties {
 
     /**
      * The file name prefix for baseline migrations. Baseline migrations represent all migrations with
-     * {@code version <= current baseline migration version} while keeping older migrations if needed for upgrading
+     * {@code version ≤ current baseline migration version} while keeping older migrations if needed for upgrading
      * older deployments. They have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which
      * using the defaults translates to B1.1__My_description.sql. (default: B)
      */
