@@ -6,7 +6,7 @@ The format is based on https://keepachangelog.com/en/1.1.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
-== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.3.0[0.3.0] (unreleased)
+== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.3.0[0.3.0]
 
 NOTE: This is an early access 0.x release, which means *everything* is subject to change.
 Feedback is very welcome!
