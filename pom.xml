@@ -18,7 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.unentscheidbar</groupId>
     <artifactId>migratedb</artifactId>
-    <version>0.3.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>MigrateDB</name>
     <description>MigrateDB: Database Migrations, Easy and Free.</description>
@@ -81,7 +81,7 @@
 
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.outputTimestamp>2023-09-27T12:32:31Z</project.build.outputTimestamp><!-- for reproducible builds -->
+        <project.build.outputTimestamp>2023-09-27T12:43:00Z</project.build.outputTimestamp><!-- for reproducible builds -->
         <project.build.generatedSources.directory>${project.build.directory}/generated-sources/codegen
         </project.build.generatedSources.directory>
 
