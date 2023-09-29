@@ -37,11 +37,11 @@ will be a temporary 'scratch' area for testing. Use this copy to set up the foll
 You can now set up a run configuration in your IDE that will compile MigrateDB and run using your newly created
 configuration:
 
-* Main class: `migratedb.commandline.Main`
+* Main class: `migratedb.v{{ site.migratedbApiMajorVersion }}.commandline.Main`
 * Program arguments: `info -X -configFiles=<scratch location>\migratedb.conf`
 * Classpath of module: `migratedb-commandline`
 
-MigrateDB itself should start. Since MigrateDB doesn’t yet support your database you should see a message like:
+MigrateDB itself should start. Since MigrateDB doesn't yet support your database you should see a message like:
 
 `migratedb.{{ site.migratedbApiMajorVersion }}.core.api.MigrateDBException: Unable to autodetect JDBC driver for url: jdbc:mydatabase://<host>:<port>/<databasename>`
 
@@ -52,7 +52,8 @@ You’re now ready to start adding that database support. We’re going to assum
 
 Here are all the changes and additions you'll need to make:
 
-1. Document the format of the JDBC connection url for your database. This is not necessary to make MigrateDB work but it
+1. Document the format of the JDBC connection url for your database. This is not necessary to make MigrateDB work, but
+   it
    will help adoption of your database!
 1. Create a new folder `foo` in `migratedb.internal.database` to contain your new classes.
 1. In the folder create classes `FooDatabase` (subclassed from BaseDatabase), `FooSchema` (subclassed from BaseSchema),

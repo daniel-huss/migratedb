@@ -13,7 +13,7 @@ install a build tool.
 
 ## Download and installation
 
-[Download from Maven Central](/migratedb/download).
+[Download from GitHub](/migratedb/download).
 
 ## Directory structure
 

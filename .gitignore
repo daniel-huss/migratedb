@@ -1,5 +1,5 @@
 target
-/migratedb-*/
+/documentation/usage/maven/site/apidocs
 
 *.iml
 *.ipr
