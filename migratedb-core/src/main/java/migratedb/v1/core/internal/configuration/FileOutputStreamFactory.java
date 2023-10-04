@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public final class FileOutputStreamFactory implements Supplier<OutputStream> {
-
     private final Path file;
 
     public FileOutputStreamFactory(Path file) {

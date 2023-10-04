@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -193,11 +193,6 @@ public class SQLServerDatabase extends BaseDatabase {
     @Override
     public SQLServerSession getMainConnection() {
         return (SQLServerSession) super.getMainConnection();
-    }
-
-    boolean supportsTemporalTables() {
-        // SQL Server 2016+, or Azure (which has different versioning)
-        return isAzure() || getVersion().isAtLeast("13.0");
     }
 
     protected boolean supportsPartitions() {

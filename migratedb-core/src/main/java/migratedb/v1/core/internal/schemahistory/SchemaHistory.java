@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import migratedb.v1.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.v1.core.api.output.RepairResult;
 import migratedb.v1.core.api.resolver.ResolvedMigration;
 import migratedb.v1.core.internal.util.AbbreviationUtils;
-import migratedb.v1.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
@@ -137,12 +136,12 @@ public abstract class SchemaHistory {
      */
     public final void addSchemasMarker(Schema[] schemas) {
         addAppliedMigration(null,
-                "<< MigrateDB Schema Creation >>",
-                MigrationType.SCHEMA,
-                StringUtils.arrayToCommaDelimitedString(schemas),
-                null,
-                0,
-                true);
+                            "<< MigrateDB Schema Creation >>",
+                            MigrationType.SCHEMA,
+                            Arrays.stream(schemas).map(Schema::toString).collect(Collectors.joining(",")),
+                            null,
+                            0,
+                            true);
     }
 
     /**
@@ -208,14 +207,14 @@ public abstract class SchemaHistory {
                                           boolean success) {
         int installedRank = type == MigrationType.SCHEMA ? 0 : calculateInstalledRank();
         addAppliedMigration(
-            installedRank,
-            version,
-            AbbreviationUtils.abbreviateDescription(description),
-            type,
-            AbbreviationUtils.abbreviateScript(script),
-            checksum,
-            executionTime,
-            success);
+                installedRank,
+                version,
+                AbbreviationUtils.abbreviateDescription(description),
+                type,
+                AbbreviationUtils.abbreviateScript(script),
+                checksum,
+                executionTime,
+                success);
     }
 
     /**

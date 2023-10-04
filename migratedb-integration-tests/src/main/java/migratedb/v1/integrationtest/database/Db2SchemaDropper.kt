@@ -19,6 +19,20 @@ internal class Db2SchemaDropper(
         jdbcTemplate.execute("DROP SCHEMA " + database.quote(schema.name) + " RESTRICT")
     }
 
+    private fun allFunctions(): List<String> {
+        return jdbcTemplate.queryForStringList(
+            "select SPECIFICNAME from SYSCAT.ROUTINES where" // Functions only
+                    + " ROUTINETYPE='F'" // That aren't system-generated or built-in
+                    + " AND ORIGIN IN ("
+                    + "'E', " // User-defined, external
+                    + "'M', " // Template function
+                    + "'Q', " // SQL-bodied
+                    + "'U')" // User-defined, based on a source
+                    + " and ROUTINESCHEMA = ?",
+            schema.name
+        )
+    }
+
     private fun dropContent() {
         // MQTs are dropped when the backing views or tables are dropped
         // Indexes in DB2 are dropped when the corresponding table is dropped
@@ -72,8 +86,8 @@ internal class Db2SchemaDropper(
         for (dropStatement in generateDropStatementsForModules()) {
             jdbcTemplate.execute(dropStatement)
         }
-        for (function in schema.allFunctions()) {
-            dropFunction(function.toString())
+        for (function in allFunctions()) {
+            dropFunction(function)
         }
         for (type in allTypes()) {
             dropType(type)

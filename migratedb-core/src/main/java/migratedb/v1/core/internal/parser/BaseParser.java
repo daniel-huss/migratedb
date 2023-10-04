@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import migratedb.v1.core.api.resource.Resource;
 import migratedb.v1.core.internal.resource.ResourceNameParser;
 import migratedb.v1.core.internal.sqlscript.ParsedSqlStatement;
 import migratedb.v1.core.internal.util.BomStrippingReader;
-import migratedb.v1.core.internal.util.IOUtils;
 import migratedb.v1.core.internal.util.WebsiteLinks;
 
 import java.io.BufferedReader;
@@ -62,6 +61,15 @@ public abstract class BaseParser implements Parser {
         this.alternativeStringLiteralQuote = getAlternativeStringLiteralQuote();
         this.validKeywords = getValidKeywords();
         this.parsingContext = parsingContext;
+    }
+
+    public static void closeAndAddSuppressed(AutoCloseable c, Exception context) {
+        try {
+            c.close();
+        } catch (Exception suppressed) {
+            if (suppressed instanceof InterruptedException) Thread.currentThread().interrupt();
+            if (!suppressed.equals(context)) context.addSuppressed(suppressed);
+        }
     }
 
     @Override
@@ -134,7 +142,7 @@ public abstract class BaseParser implements Parser {
 
             return new ParserSqlStatementIterator(peekingReader, resource, recorder, tracker, context);
         } catch (RuntimeException e) {
-            IOUtils.closeAndAddSuppressed(reader, e);
+            closeAndAddSuppressed(reader, e);
             throw e;
         }
     }
@@ -308,7 +316,7 @@ public abstract class BaseParser implements Parser {
                 }
             } while (true);
         } catch (IOException | RuntimeException e) {
-            IOUtils.closeAndAddSuppressed(reader, e);
+            closeAndAddSuppressed(reader, e);
             throw new MigrateDbException(
                 "Unable to parse statement in " + resource.getName() + " at line " + statementLine + " col " +
                 statementCol + ". See " + WebsiteLinks.KNOWN_PARSER_LIMITATIONS + " for more information: " +

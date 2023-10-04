@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -426,7 +426,7 @@ class MigrateDbCommand {
             }
         }
 
-        config.put(PropertyNames.LOCATIONS, StringUtils.arrayToCommaDelimitedString(locations));
+        config.put(PropertyNames.LOCATIONS, String.join(",", locations));
     }
 
     private Map<String, String> overrideConfiguration(Map<String, String> existingConfiguration,

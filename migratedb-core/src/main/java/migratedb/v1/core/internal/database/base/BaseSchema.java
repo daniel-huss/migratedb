@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package migratedb.v1.core.internal.database.base;
 
 import migratedb.v1.core.api.internal.database.base.Database;
-import migratedb.v1.core.api.internal.database.base.DatabaseFunction;
 import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
@@ -117,31 +116,6 @@ public abstract class BaseSchema implements Schema {
      * @throws SQLException when the retrieval failed.
      */
     protected abstract List<? extends Table> doAllTables() throws SQLException;
-
-    @Override
-    public DatabaseFunction getFunction(String functionName, String... args) {
-        throw new UnsupportedOperationException("getFunction()");
-    }
-
-    /**
-     * Retrieves all the functions in this schema.
-     */
-    public final List<? extends DatabaseFunction> allFunctions() {
-        try {
-            return doAllFunctions();
-        } catch (SQLException e) {
-            throw new MigrateDbSqlException("Unable to retrieve all functions in schema " + this, e);
-        }
-    }
-
-    /**
-     * Retrieves all the functions in this schema.
-     *
-     * @throws SQLException when the retrieval failed.
-     */
-    protected List<? extends DatabaseFunction> doAllFunctions() throws SQLException {
-        return List.of();
-    }
 
     /**
      * @return The quoted name of this schema.

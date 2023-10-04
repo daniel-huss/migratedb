@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.resource.ResourceName;
 import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.api.resource.Resource;
-import migratedb.v1.core.internal.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,15 +52,14 @@ public class ResourceNameValidator {
 
         if (!errorsFound.isEmpty()) {
             if (configuration.isValidateMigrationNaming()) {
-                throw new MigrateDbException(
-                    "Invalid SQL filenames found:\n" + StringUtils.collectionToDelimitedString(errorsFound, "\n"));
+                throw new MigrateDbException("Invalid SQL filenames found:\n" + String.join("\n", errorsFound));
             } else {
                 LOG.info(errorsFound.size() +
                          " SQL migrations were detected but not run because they did not follow the filename " +
                          "convention.");
                 LOG.info(
-                    "If this is in error, enable debug logging or 'validateMigrationNaming' to fail fast and see a " +
-                    "list of the invalid file names.");
+                        "If this is in error, enable debug logging or 'validateMigrationNaming' to fail fast and see a " +
+                        "list of the invalid file names.");
             }
         }
     }

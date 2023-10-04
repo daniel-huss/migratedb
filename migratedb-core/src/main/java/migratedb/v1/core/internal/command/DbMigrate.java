@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import migratedb.v1.core.internal.util.StopWatch;
 import migratedb.v1.core.internal.util.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -363,7 +364,7 @@ public class DbMigrate {
             }
 
             @Override
-            public java.sql.Connection getConnection() {
+            public Connection getConnection() {
                 return connectionUserObjects.getJdbcConnection();
             }
         };

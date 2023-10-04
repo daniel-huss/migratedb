@@ -58,24 +58,6 @@ public interface DriverSupport {
     }
 
     /**
-     * Detects whether external authentication is required.
-     *
-     * @return true if external authentication is required, else false.
-     */
-    default boolean externalAuthPropertiesRequired(String url, @Nullable String username, @Nullable String password) {
-        return false;
-    }
-
-    /**
-     * @param url      The JDBC url.
-     * @param username The username for the connection.
-     * @return Authentication properties from database specific locations (e.g. pgpass)
-     */
-    default Map<String, String> getExternalAuthProperties( @Nullable String url,  @Nullable String username) {
-        return Map.of();
-    }
-
-    /**
      * A regex that identifies credentials in the JDBC URL, where they conform to a pattern specific to this database.
      * The first captured group must represent the password text, so that it can be redacted if necessary.
      *
@@ -127,8 +109,8 @@ public interface DriverSupport {
     }
 
     /**
-     * Set the default connection properties. These can be overridden by {@code
-     * setConfigConnectionProps} and {@code setOverridingConnectionProps}.
+     * Set the default connection properties. These can be overridden by {@code setConfigConnectionProps} and
+     * {@code setOverridingConnectionProps}.
      *
      * @param url         The JDBC url.
      * @param props       The properties to write to.
@@ -138,8 +120,8 @@ public interface DriverSupport {
     }
 
     /**
-     * Set any necessary connection properties based on MigrateDB's configuration. These can be overridden by {@code
-     * setOverridingConnectionProps}.
+     * Set any necessary connection properties based on MigrateDB's configuration. These can be overridden by
+     * {@code setOverridingConnectionProps}.
      *
      * @param config      The MigrateDB configuration to read properties from.
      * @param props       The properties to write to.

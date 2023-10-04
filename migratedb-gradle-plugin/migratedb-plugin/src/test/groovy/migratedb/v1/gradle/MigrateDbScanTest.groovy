@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,19 +136,23 @@ class MigrateDbScanTest {
     static class Params implements ArgumentsProvider {
         @Override
         Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-            def gradleVersions = ['7.4', '7.3', '7.2', '7.1', '7.0']
+            def gradleVersions = [
+                '8.3',
+                '8.2.1', '8.1.1', '8.0.2',
+                '7.6.2', '7.5.1', '7.4.2',
+                '7.3', '7.2', '7.1', '7.0']
             def compilingPlugins = [
-                    "id 'java'",
-                    "id 'java-library'",
-                    "id 'application'",
-                    "id 'org.jetbrains.kotlin.jvm' version '1.6.10'"
+                "id 'java'",
+                "id 'java-library'",
+                "id 'application'",
+                "id 'org.jetbrains.kotlin.jvm' version '1.6.10'"
             ]
             return gradleVersions.stream()
-                    .flatMap { v ->
-                        compilingPlugins.stream()
-                                .map { p -> new P(p, v) }
-                    }
-                    .map(Arguments::arguments)
+                .flatMap { v ->
+                    compilingPlugins.stream()
+                        .map { p -> new P(p, v) }
+                }
+                .map(Arguments::arguments)
         }
     }
 
@@ -186,11 +190,11 @@ class MigrateDbScanTest {
         resources.each { createResource(it) }
 
         def runner = GradleRunner.create()
-                .withGradleVersion(args['gradleVersion']?.toString() ?: '7.4')
-                .withDebug(true)
-                .withProjectDir(testProjectDir)
-                .withArguments(args['task']?.toString() ?: 'build')
-                .withPluginClasspath()
+            .withGradleVersion(args['gradleVersion']?.toString() ?: '7.4')
+            .withDebug(true)
+            .withProjectDir(testProjectDir)
+            .withArguments(args['task']?.toString() ?: 'build')
+            .withPluginClasspath()
         return args['expectFailure'] ? runner.buildAndFail() : runner.build()
     }
 }

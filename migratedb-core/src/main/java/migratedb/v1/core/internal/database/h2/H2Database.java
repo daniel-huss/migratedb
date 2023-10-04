@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Locale;
+import java.util.Objects;
 
 public class H2Database extends BaseDatabase {
     /**
@@ -128,7 +129,7 @@ public class H2Database extends BaseDatabase {
     public String getRawCreateScript(Table table, boolean baseline) {
         // In Oracle mode, empty strings in the marker row would be converted to NULLs. As the script column is
         // defined as NOT NULL, we insert a dummy value when required.
-        String script = (compatibilityMode == CompatibilityMode.Oracle)
+        String script = Objects.equals(compatibilityMode, CompatibilityMode.Oracle)
                 ? DUMMY_SCRIPT_NAME : "";
 
         return "CREATE TABLE IF NOT EXISTS " + table + " (\n" +
@@ -175,12 +176,12 @@ public class H2Database extends BaseDatabase {
     protected String doGetCurrentUser() throws SQLException {
         try {
             String user = getMainConnection().getJdbcTemplate().queryForString("SELECT USER()");
-            if (compatibilityMode == CompatibilityMode.Oracle && (user == null || user.isEmpty())) {
+            if (Objects.equals(compatibilityMode, CompatibilityMode.Oracle) && (user == null || user.isEmpty())) {
                 user = DEFAULT_USER;
             }
             return user;
         } catch (RuntimeException e) {
-            if (compatibilityMode == CompatibilityMode.Oracle) {
+            if (Objects.equals(compatibilityMode, CompatibilityMode.Oracle)) {
                 return DEFAULT_USER;
             }
             throw e;

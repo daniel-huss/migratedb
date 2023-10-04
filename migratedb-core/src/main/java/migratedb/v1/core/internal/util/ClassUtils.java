@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package migratedb.v1.core.internal.util;
 import migratedb.v1.core.api.MigrateDbException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -27,7 +26,6 @@ import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.*;
-import java.util.function.Function;
 
 public final class ClassUtils {
     /**
@@ -51,21 +49,6 @@ public final class ClassUtils {
                 }
             }
             throw new MigrateDbException("Unable to instantiate class " + className + " : " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Creates a new instance of {@code clazz}.
-     *
-     * @param <T> The type of the new instance.
-     * @return The new instance.
-     * @throws MigrateDbException Thrown when the instantiation failed.
-     */
-    public static <T> T instantiate(Class<T> clazz) {
-        try {
-            return clazz.cast(clazz.getConstructor().newInstance());
-        } catch (ReflectiveOperationException | RuntimeException e) {
-            throw new MigrateDbException("Unable to instantiate " + clazz + " : " + e.getMessage(), e);
         }
     }
 
@@ -172,39 +155,6 @@ public final class ClassUtils {
     }
 
     /**
-     * Gets the String value of a static field.
-     *
-     * @param className   The fully qualified name of the class to instantiate.
-     * @param classLoader The ClassLoader to use.
-     * @param fieldName   The field name
-     * @return The value of the field.
-     * @throws MigrateDbException If the field value cannot be read.
-     */
-    public static String getStaticFieldValue(String className, String fieldName, ClassLoader classLoader) {
-        try {
-            return getStaticFieldValue(Class.forName(className, true, classLoader), fieldName);
-        } catch (ReflectiveOperationException | RuntimeException e) {
-            throw new MigrateDbException(
-                    "Unable to obtain field value " + className + "." + fieldName + " : " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Gets the String value of a static field.
-     *
-     * @throws MigrateDbException If the field value cannot be read.
-     */
-    public static String getStaticFieldValue(Class<?> clazz, String fieldName) {
-        try {
-            Field field = clazz.getField(fieldName);
-            return (String) field.get(null);
-        } catch (ReflectiveOperationException | RuntimeException e) {
-            throw new MigrateDbException(
-                    "Unable to obtain field value " + clazz.getName() + "." + fieldName + " : " + e.getMessage(), e);
-        }
-    }
-
-    /**
      * @return The first class loader that is non-null:
      * <ol>
      *     <li>Thread context class loader</li>
@@ -222,34 +172,5 @@ public final class ClassUtils {
         }
         assert result != null;
         return result;
-    }
-
-    public static <E extends Exception> Object invoke(Class<?> clazz, String methodName,
-                                                      Object receiver,
-                                                      Class<?>[] paramTypes,
-                                                      Object[] params,
-                                                      Function<? super Throwable, @Nullable E> exceptionMapper)
-            throws E {
-        try {
-            var method = clazz.getMethod(methodName, paramTypes);
-            return method.invoke(receiver, params);
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            throw new MigrateDbException("Cannot invoke " + clazz.getName() + "." + methodName, e);
-        } catch (InvocationTargetException e) {
-            var cause = e.getCause();
-            if (cause instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
-            var thrown = exceptionMapper.apply(e);
-            if (thrown == null) {
-                throw new MigrateDbException("Cannot invoke " + clazz.getName() + "." + methodName, cause);
-            } else {
-                throw thrown;
-            }
-        }
-    }
-
-    public static String getClassName(@Nullable Object obj) {
-        return obj == null ? null : obj.getClass().getName();
     }
 }

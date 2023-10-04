@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import migratedb.v1.core.api.MigrateDbException;
 import migratedb.v1.core.api.MigrateDbValidateException;
 import migratedb.v1.core.api.MigrationInfoService;
 import migratedb.v1.core.api.callback.Event;
-import migratedb.v1.core.api.configuration.DefaultConfiguration;
 import migratedb.v1.core.api.configuration.Configuration;
+import migratedb.v1.core.api.configuration.DefaultConfiguration;
 import migratedb.v1.core.api.configuration.FluentConfiguration;
 import migratedb.v1.core.api.internal.callback.CallbackExecutor;
 import migratedb.v1.core.api.internal.database.base.Database;
@@ -31,11 +31,11 @@ import migratedb.v1.core.api.output.*;
 import migratedb.v1.core.api.resolver.MigrationResolver;
 import migratedb.v1.core.internal.command.*;
 import migratedb.v1.core.internal.schemahistory.SchemaHistory;
-import migratedb.v1.core.internal.util.StringUtils;
 import migratedb.v1.core.internal.util.WebsiteLinks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This is the centre point of MigrateDB, and for most users, the only class they will ever have to deal with.
@@ -182,8 +182,9 @@ public class MigrateDb {
                         // Second check for MySQL which is sometimes flaky otherwise
                         if (!context.schemaHistory.exists()) {
                             throw new MigrateDbException("Found non-empty schema(s) " +
-                                                         StringUtils.collectionToCommaDelimitedString(
-                                                                 nonEmptySchemas) +
+                                                         nonEmptySchemas.stream()
+                                                                        .map(Schema::toString)
+                                                                        .collect(Collectors.joining(",")) +
                                                          " but no schema history table. Use baseline()" +
                                                          " or set baselineOnMigrate to true to initialize the " +
                                                          "schema history table.");

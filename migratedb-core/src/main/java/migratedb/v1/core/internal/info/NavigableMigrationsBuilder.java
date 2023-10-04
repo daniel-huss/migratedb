@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +79,8 @@ class NavigableMigrationsBuilder {
         if (schemaCreationMarker.size() > 1) {
             throw new MigrateDbException("Schema history corrupted: More than one schema creation marker found");
         }
-        return new NavigableMigrations(schemaCreationMarker.isEmpty() ? null : schemaCreationMarker.get(0),
-                                       repeatableInfo,
+        return new NavigableMigrations(
+                repeatableInfo,
                                        new TreeMap<>(versionedInfo));
     }
 
@@ -198,21 +198,6 @@ class NavigableMigrationsBuilder {
                                .collect(toMap(ResolvedMigration::getVersion, identity())));
     }
 
-    private Map<String, Integer> latestRepeatableRuns() {
-        return computeOnce(latestRepeatableRuns, () -> {
-            var result = new HashMap<String, Integer>();
-            for (var applied : appliedRepeatableMigrations()) {
-                String desc = applied.getDescription();
-                int rank = applied.getInstalledRank();
-                var latestRank = result.get(desc);
-                if (latestRank != null || (rank > result.get(desc))) {
-                    result.put(desc, rank);
-                }
-            }
-            return result;
-        });
-    }
-
     private static <T> T computeOnce(Holder<T> holder, Supplier<T> computation) {
         var result = holder.value;
         if (result == null) {
@@ -228,11 +213,9 @@ class NavigableMigrationsBuilder {
 
     // Containers for lazily computed values, do not access them directly!
 
-    private final Holder<Map<String, Integer>> latestRepeatableRuns = new Holder<>();
     private final Holder<List<AppliedMigration>> appliedRepeatableMigrations = new Holder<>();
     private final Holder<List<AppliedMigration>> appliedIncrementalOrBaselineMigrations = new Holder<>();
     private final Holder<Map<String, ResolvedMigration>> resolvedRepeatableMigrations = new Holder<>();
     private final Holder<Map<Version, ResolvedMigration>> resolvedIncrementalMigrations = new Holder<>();
     private final Holder<Map<Version, ResolvedMigration>> resolvedBaselineMigrations = new Holder<>();
-    private final Holder<Optional<ResolvedMigration>> latestResolved = new Holder<>();
 }

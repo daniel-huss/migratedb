@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -149,7 +149,7 @@ public class OracleDatabase extends BaseDatabase {
      *
      * @throws SQLException if the check failed.
      */
-    boolean isPrivOrRoleGranted(String name) throws SQLException {
+    private boolean isPrivOrRoleGranted(String name) throws SQLException {
         return queryReturnsRows("SELECT 1 FROM SESSION_PRIVS WHERE PRIVILEGE = ? UNION ALL " +
                                 "SELECT 1 FROM SESSION_ROLES WHERE ROLE = ?", name, name);
     }
@@ -179,7 +179,7 @@ public class OracleDatabase extends BaseDatabase {
      *
      * @throws SQLException if the check failed.
      */
-    boolean isDataDictViewAccessible(String name) throws SQLException {
+    private boolean isDataDictViewAccessible(String name) throws SQLException {
         return isDataDictViewAccessible("SYS", name);
     }
 
@@ -199,30 +199,6 @@ public class OracleDatabase extends BaseDatabase {
     }
 
     /**
-     * Returns the set of Oracle options available on the target database.
-     *
-     * @return the set of option titles.
-     *
-     * @throws SQLException if retrieving of options failed.
-     */
-    private Set<String> getAvailableOptions() throws SQLException {
-        return new HashSet<>(getMainConnection().getJdbcTemplate()
-                                                .queryForStringList(
-                                                    "SELECT PARAMETER FROM V$OPTION WHERE VALUE = 'TRUE'"));
-    }
-
-    /**
-     * Checks whether Flashback Data Archive option is available or not.
-     *
-     * @return {@code true} if it is available, {@code false} if not.
-     *
-     * @throws SQLException when checking availability of the feature failed.
-     */
-    boolean isFlashbackDataArchiveAvailable() throws SQLException {
-        return getAvailableOptions().contains("Flashback Data Archive");
-    }
-
-    /**
      * Checks whether XDB component is available or not.
      *
      * @return {@code true} if it is available, {@code false} if not.
@@ -231,28 +207,6 @@ public class OracleDatabase extends BaseDatabase {
      */
     boolean isXmlDbAvailable() throws SQLException {
         return isDataDictViewAccessible("ALL_XML_TABLES");
-    }
-
-    /**
-     * Checks whether Data Mining option is available or not.
-     *
-     * @return {@code true} if it is available, {@code false} if not.
-     *
-     * @throws SQLException when checking availability of the feature failed.
-     */
-    boolean isDataMiningAvailable() throws SQLException {
-        return getAvailableOptions().contains("Data Mining");
-    }
-
-    /**
-     * Checks whether Oracle Locator component is available or not.
-     *
-     * @return {@code true} if it is available, {@code false} if not.
-     *
-     * @throws SQLException when checking availability of the component failed.
-     */
-    boolean isLocatorAvailable() throws SQLException {
-        return isDataDictViewAccessible("MDSYS", "ALL_SDO_GEOM_METADATA");
     }
 
     /**

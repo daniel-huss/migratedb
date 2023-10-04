@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,17 +40,6 @@ public final class ExceptionUtils {
         }
 
         return rootCause;
-    }
-
-    /**
-     * Retrieves the exact location where this exception was thrown.
-     */
-    public static String getThrowLocation(Throwable e) {
-        StackTraceElement element = e.getStackTrace()[0];
-        int lineNumber = element.getLineNumber();
-        return element.getClassName() + "." + element.getMethodName()
-                + (lineNumber < 0 ? "" : ":" + lineNumber)
-                + (element.isNativeMethod() ? " [native]" : "");
     }
 
     /**

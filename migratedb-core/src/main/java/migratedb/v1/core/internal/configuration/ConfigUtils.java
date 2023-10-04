@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package migratedb.v1.core.internal.configuration;
 
 import migratedb.v1.core.api.ErrorCode;
 import migratedb.v1.core.api.MigrateDbException;
-import migratedb.v1.core.internal.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,27 +30,24 @@ import java.util.Properties;
 
 import static migratedb.v1.core.internal.sqlscript.SqlScriptMetadataImpl.isMultilineBooleanExpression;
 
-public enum ConfigUtils {
-    ;
-
+public final class ConfigUtils {
     /**
      * Reads the configuration from a Reader.
      *
      * @return The properties from the configuration file. An empty Map if none.
-     *
      * @throws MigrateDbException When the configuration could not be read.
      */
     public static Map<String, String> loadConfiguration(Reader reader) {
         try {
             return tryLoadConfig(reader instanceof BufferedReader ? (BufferedReader) reader
-                                                                  : new BufferedReader(reader));
+                                         : new BufferedReader(reader));
         } catch (IOException e) {
             throw new MigrateDbException("Unable to read config", e);
         }
     }
 
     private static Map<String, String> tryLoadConfig(BufferedReader reader)
-    throws IOException {
+            throws IOException {
         String[] lines = reader.lines().toArray(String[]::new);
 
         StringBuilder confBuilder = new StringBuilder();
@@ -106,43 +102,9 @@ public enum ConfigUtils {
     }
 
     /**
-     * Puts this property in the config if it has been set in any of these values.
-     *
      * @param config The config.
      * @param key    The property name.
-     * @param values The values to try. The first non-null value will be set.
-     */
-    public static void putIfSet(Map<String, String> config, String key, Object... values) {
-        for (Object value : values) {
-            if (value != null) {
-                config.put(key, value.toString());
-                return;
-            }
-        }
-    }
-
-    /**
-     * Puts this property in the config if it has been set in any of these values.
-     *
-     * @param config The config.
-     * @param key    The property name.
-     * @param values The values to try. The first non-null value will be set.
-     */
-    public static void putArrayIfSet(Map<String, String> config, String key, String[]... values) {
-        for (String[] value : values) {
-            if (value != null) {
-                config.put(key, StringUtils.arrayToCommaDelimitedString(value));
-                return;
-            }
-        }
-    }
-
-    /**
-     * @param config The config.
-     * @param key    The property name.
-     *
      * @return The property value as a boolean if it exists, otherwise {@code null}.
-     *
      * @throws MigrateDbException when the property value is not a valid boolean.
      */
     public static Boolean removeBoolean(Map<String, String> config, String key) {
@@ -160,9 +122,7 @@ public enum ConfigUtils {
     /**
      * @param config The config.
      * @param key    The property name.
-     *
      * @return The property value as an integer if it exists, otherwise {@code null}.
-     *
      * @throws MigrateDbException When the property value is not a valid integer.
      */
     public static Integer removeInteger(Map<String, String> config, String key) {
@@ -196,7 +156,7 @@ public enum ConfigUtils {
             String property = (unknownMigrateDbProperties.size() == 1) ? "property" : "properties";
             String message = String.format("Unknown configuration %s: %s",
                                            property,
-                                           StringUtils.arrayToCommaDelimitedString(unknownMigrateDbProperties.toArray()));
+                                           String.join(",", unknownMigrateDbProperties));
             throw new MigrateDbException(message, ErrorCode.CONFIGURATION);
         }
     }

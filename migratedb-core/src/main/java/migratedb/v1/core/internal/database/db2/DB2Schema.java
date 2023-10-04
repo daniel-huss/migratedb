@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  */
 package migratedb.v1.core.internal.database.db2;
 
-import migratedb.v1.core.api.internal.database.base.DatabaseFunction;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.v1.core.internal.database.base.BaseSchema;
@@ -84,35 +83,8 @@ public class DB2Schema extends BaseSchema {
     }
 
     @Override
-    protected List<DatabaseFunction> doAllFunctions() throws SQLException {
-        List<String> functionNames = jdbcTemplate.queryForStringList(
-                "select SPECIFICNAME from SYSCAT.ROUTINES where"
-                // Functions only
-                + " ROUTINETYPE='F'"
-                // That aren't system-generated or built-in
-                + " AND ORIGIN IN ("
-                + "'E', " // User-defined, external
-                + "'M', " // Template function
-                + "'Q', " // SQL-bodied
-                + "'U')"  // User-defined, based on a source
-                + " and ROUTINESCHEMA = ?", name);
-
-        List<DatabaseFunction> functions = new ArrayList<>();
-        for (String functionName : functionNames) {
-            functions.add(getFunction(functionName));
-        }
-
-        return functions;
-    }
-
-    @Override
     public Table getTable(String tableName) {
         return new DB2Table(jdbcTemplate, getDatabase(), this, tableName);
-    }
-
-    @Override
-    public DatabaseFunction getFunction(String functionName, String... args) {
-        return new DB2DatabaseFunction(jdbcTemplate, getDatabase(), this, functionName, args);
     }
 
     @Override

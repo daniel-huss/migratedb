@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The MigrateDB contributors
+ * Copyright 2022-2023 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,12 @@ import java.util.function.Predicate;
  * All migrations except for DELETED markers in a more easily navigable data structure.
  */
 final class NavigableMigrations {
-    @Nullable final AppliedMigration schemaCreationMarker;
     final @Nullable Version baseline;
     final Map<String, RepeatableMigrationEntry> repeatableMigrations;
     final NavigableMap<Version, VersionedMigrationEntry> versionedMigrations;
 
-    NavigableMigrations(@Nullable AppliedMigration schemaCreationMarker,
-                        Map<String, RepeatableMigrationEntry> repeatableMigrations,
+    NavigableMigrations(Map<String, RepeatableMigrationEntry> repeatableMigrations,
                         NavigableMap<Version, VersionedMigrationEntry> versionedMigrations) {
-        this.schemaCreationMarker = schemaCreationMarker;
         this.repeatableMigrations = repeatableMigrations;
         this.versionedMigrations = versionedMigrations;
         this.baseline = versionedMigrations.values()
