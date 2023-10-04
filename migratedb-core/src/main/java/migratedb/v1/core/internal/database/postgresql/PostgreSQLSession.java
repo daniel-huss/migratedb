@@ -20,22 +20,23 @@ import migratedb.v1.core.api.MigrateDbException;
 import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.database.base.Table;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 import migratedb.v1.core.internal.util.StringUtils;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
 /**
  * PostgreSQL connection.
  */
-public class PostgreSQLConnection extends BaseConnection<PostgreSQLDatabase> {
+public class PostgreSQLSession extends BaseSession {
     private final String originalRole;
     private final Configuration configuration;
 
-    protected PostgreSQLConnection(Configuration configuration, PostgreSQLDatabase database,
-                                   java.sql.Connection connection) {
+    protected PostgreSQLSession(Configuration configuration, PostgreSQLDatabase database,
+                                Connection connection) {
         super(database, connection);
         this.configuration = configuration;
 
@@ -53,14 +54,14 @@ public class PostgreSQLConnection extends BaseConnection<PostgreSQLDatabase> {
     }
 
     @Override
-    public Schema<?, ?> doGetCurrentSchema() throws SQLException {
+    public Schema doGetCurrentSchema() throws SQLException {
         String currentSchema = jdbcTemplate.queryForString("SELECT current_schema");
         String searchPath = getCurrentSchemaNameOrSearchPath();
 
         if (!StringUtils.hasText(currentSchema) && !StringUtils.hasText(searchPath)) {
             throw new MigrateDbException("Unable to determine current schema as search_path is empty. " +
-                    "Set the current schema in currentSchema parameter of the JDBC URL or in " +
-                    "MigrateDB's schemas property.");
+                                         "Set the current schema in currentSchema parameter of the JDBC URL or in " +
+                                         "MigrateDB's schemas property.");
         }
 
         String schema = StringUtils.hasText(currentSchema) ? currentSchema : searchPath;
@@ -74,7 +75,7 @@ public class PostgreSQLConnection extends BaseConnection<PostgreSQLDatabase> {
     }
 
     @Override
-    public void changeCurrentSchemaTo(Schema<?, ?> schema) {
+    public void changeCurrentSchemaTo(Schema schema) {
         try {
             if (schema.getName().equals(originalSchemaNameOrSearchPath) || originalSchemaNameOrSearchPath.startsWith(
                     schema.getName() + ",") || !schema.exists()) {
@@ -97,12 +98,17 @@ public class PostgreSQLConnection extends BaseConnection<PostgreSQLDatabase> {
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new PostgreSQLSchema(jdbcTemplate, database, name);
+    public PostgreSQLSchema getSchema(String name) {
+        return new PostgreSQLSchema(jdbcTemplate, getDatabase(), name);
     }
 
     @Override
-    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
+    public PostgreSQLDatabase getDatabase() {
+        return (PostgreSQLDatabase) super.getDatabase();
+    }
+
+    @Override
+    public <T> T lock(Table table, Callable<T> callable) {
         return new PostgreSQLAdvisoryLockTemplate(configuration, jdbcTemplate, table.toString().hashCode()).execute(
                 callable);
     }

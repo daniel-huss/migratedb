@@ -19,17 +19,18 @@ package migratedb.v1.core.internal.database.mysql;
 import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.logging.Log;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 import migratedb.v1.core.internal.util.StringUtils;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-public class MySQLConnection extends BaseConnection<MySQLDatabase> {
-    private static final Log LOG = Log.getLog(MySQLConnection.class);
+public class MySQLSession extends BaseSession {
+    private static final Log LOG = Log.getLog(MySQLSession.class);
 
     private static final String USER_VARIABLES_TABLE_MARIADB = "information_schema.user_variables";
     private static final String USER_VARIABLES_TABLE_MYSQL = "performance_schema.user_variables_by_thread";
@@ -42,7 +43,7 @@ public class MySQLConnection extends BaseConnection<MySQLDatabase> {
     private final int originalForeignKeyChecks;
     private final int originalSqlSafeUpdates;
 
-    public MySQLConnection(MySQLDatabase database, java.sql.Connection connection) {
+    public MySQLSession(MySQLDatabase database, Connection connection) {
         super(database, connection);
 
         userVariablesQuery = "SELECT variable_name FROM "
@@ -70,10 +71,15 @@ public class MySQLConnection extends BaseConnection<MySQLDatabase> {
             return true;
         } catch (SQLException e) {
             LOG.debug("Disabled user variable reset as "
-                      + (database.isMariaDB() ? USER_VARIABLES_TABLE_MARIADB : USER_VARIABLES_TABLE_MYSQL)
+                      + (getDatabase().isMariaDB() ? USER_VARIABLES_TABLE_MARIADB : USER_VARIABLES_TABLE_MYSQL)
                       + "cannot be queried (SQL State: " + e.getSQLState() + ", Error Code: " + e.getErrorCode() + ")");
             return false;
         }
+    }
+
+    @Override
+    public MySQLDatabase getDatabase() {
+        return (MySQLDatabase) super.getDatabase();
     }
 
     @Override
@@ -115,7 +121,7 @@ public class MySQLConnection extends BaseConnection<MySQLDatabase> {
         } else {
             try {
                 // Weird hack to switch back to no database selected...
-                String newDb = database.quote(UUID.randomUUID().toString());
+                String newDb = getDatabase().quote(UUID.randomUUID().toString());
                 jdbcTemplate.execute("CREATE SCHEMA " + newDb);
                 jdbcTemplate.execute("USE " + newDb);
                 jdbcTemplate.execute("DROP SCHEMA " + newDb);
@@ -126,7 +132,7 @@ public class MySQLConnection extends BaseConnection<MySQLDatabase> {
     }
 
     @Override
-    protected Schema<?, ?> doGetCurrentSchema() throws SQLException {
+    protected Schema doGetCurrentSchema() throws SQLException {
         String schemaName = getCurrentSchemaNameOrSearchPath();
 
         // #2206: MySQL and MariaDB can have URLs where no current schema is set, so we must handle this case
@@ -135,12 +141,12 @@ public class MySQLConnection extends BaseConnection<MySQLDatabase> {
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new MySQLSchema(jdbcTemplate, database, name);
+    public Schema getSchema(String name) {
+        return new MySQLSchema(jdbcTemplate, getDatabase(), name);
     }
 
     @Override
-    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
+    public <T> T lock(Table table, Callable<T> callable) {
         if (canUseNamedLockTemplate()) {
             return new MySQLNamedLockTemplate(jdbcTemplate, table.toString().hashCode()).execute(callable);
         }
@@ -148,6 +154,6 @@ public class MySQLConnection extends BaseConnection<MySQLDatabase> {
     }
 
     protected boolean canUseNamedLockTemplate() {
-        return !database.isPxcStrict();
+        return !getDatabase().isPxcStrict();
     }
 }

@@ -25,14 +25,14 @@ import migratedb.v1.core.internal.util.StringUtils;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class PostgreSQLDatabase extends BaseDatabase<PostgreSQLConnection> {
+public class PostgreSQLDatabase extends BaseDatabase {
     public PostgreSQLDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);
     }
 
     @Override
-    protected PostgreSQLConnection doGetConnection(Connection connection) {
-        return new PostgreSQLConnection(configuration, this, connection);
+    protected PostgreSQLSession doGetConnection(Connection connection) {
+        return new PostgreSQLSession(configuration, this, connection);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class PostgreSQLDatabase extends BaseDatabase<PostgreSQLConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         String tablespace = configuration.getTablespace() == null
                 ? ""
                 : " TABLESPACE \"" + configuration.getTablespace() + "\"";
@@ -115,17 +115,17 @@ public class PostgreSQLDatabase extends BaseDatabase<PostgreSQLConnection> {
      * See <a href="https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html">...</a>
      */
     @Override
-    public String getSelectStatement(Table<?, ?> table) {
+    public String getSelectStatement(Table table) {
         return "/*NO LOAD BALANCE*/\n"
-                + "SELECT " + quote("installed_rank")
-                + "," + quote("version")
-                + "," + quote("description")
-                + "," + quote("type")
-                + "," + quote("script")
-                + "," + quote("checksum")
-                + "," + quote("installed_on")
-                + "," + quote("installed_by")
-                + "," + quote("execution_time")
+               + "SELECT " + quote("installed_rank")
+               + "," + quote("version")
+               + "," + quote("description")
+               + "," + quote("type")
+               + "," + quote("script")
+               + "," + quote("checksum")
+               + "," + quote("installed_on")
+               + "," + quote("installed_by")
+               + "," + quote("execution_time")
                + "," + quote("success")
                + " FROM " + table
                + " WHERE " + quote("installed_rank") + " > ?"

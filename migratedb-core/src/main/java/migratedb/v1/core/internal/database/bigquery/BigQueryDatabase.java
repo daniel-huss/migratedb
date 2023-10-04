@@ -25,14 +25,14 @@ import migratedb.v1.core.internal.util.StringUtils;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class BigQueryDatabase extends BaseDatabase<BigQueryConnection> {
+public class BigQueryDatabase extends BaseDatabase {
     public BigQueryDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);
     }
 
     @Override
-    protected BigQueryConnection doGetConnection(Connection connection) {
-        return new BigQueryConnection(this, connection);
+    protected BigQuerySession doGetConnection(Connection connection) {
+        return new BigQuerySession(this, connection);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class BigQueryDatabase extends BaseDatabase<BigQueryConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
                 "    `installed_rank` INT64 NOT NULL,\n" +
                 "    `version` STRING,\n" +
@@ -58,17 +58,17 @@ public class BigQueryDatabase extends BaseDatabase<BigQueryConnection> {
     }
 
     @Override
-    public String getInsertStatement(Table<?, ?> table) {
+    public String getInsertStatement(Table table) {
         // Explicitly set installed_on to CURRENT_TIMESTAMP().
         return "INSERT INTO " + table
-                + " (" + quote("installed_rank")
-                + ", " + quote("version")
-                + ", " + quote("description")
-                + ", " + quote("type")
-                + ", " + quote("script")
-                + ", " + quote("checksum")
-                + ", " + quote("installed_by")
-                + ", " + quote("installed_on")
+               + " (" + quote("installed_rank")
+               + ", " + quote("version")
+               + ", " + quote("description")
+               + ", " + quote("type")
+               + ", " + quote("script")
+               + ", " + quote("checksum")
+               + ", " + quote("installed_by")
+               + ", " + quote("installed_on")
                + ", " + quote("execution_time")
                + ", " + quote("success")
                + ")"

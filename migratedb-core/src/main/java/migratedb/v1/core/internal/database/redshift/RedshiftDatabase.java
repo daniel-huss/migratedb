@@ -28,7 +28,7 @@ import java.sql.SQLException;
 /**
  * Redshift database.
  */
-public class RedshiftDatabase extends BaseDatabase<RedshiftConnection> {
+public class RedshiftDatabase extends BaseDatabase {
     /**
      * Creates a new instance.
      *
@@ -39,8 +39,8 @@ public class RedshiftDatabase extends BaseDatabase<RedshiftConnection> {
     }
 
     @Override
-    protected RedshiftConnection doGetConnection(Connection connection) {
-        return new RedshiftConnection(this, connection);
+    protected RedshiftSession doGetConnection(Connection connection) {
+        return new RedshiftSession(this, connection);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class RedshiftDatabase extends BaseDatabase<RedshiftConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
                 "    \"installed_rank\" INT NOT NULL SORTKEY,\n" +
                 "    \"version\" VARCHAR(50),\n" +

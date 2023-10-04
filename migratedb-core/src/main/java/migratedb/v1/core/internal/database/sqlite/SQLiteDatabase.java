@@ -23,14 +23,14 @@ import migratedb.v1.core.internal.database.base.BaseDatabase;
 
 import java.sql.Connection;
 
-public class SQLiteDatabase extends BaseDatabase<SQLiteConnection> {
+public class SQLiteDatabase extends BaseDatabase {
     public SQLiteDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);
     }
 
     @Override
-    protected SQLiteConnection doGetConnection(Connection connection) {
-        return new SQLiteConnection(this, connection);
+    protected SQLiteSession doGetConnection(Connection connection) {
+        return new SQLiteSession(this, connection);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SQLiteDatabase extends BaseDatabase<SQLiteConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
                 "    \"installed_rank\" INT NOT NULL PRIMARY KEY,\n" +
                 "    \"version\" VARCHAR(50),\n" +

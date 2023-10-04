@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CockroachDBSchema extends BaseSchema<CockroachDBDatabase, CockroachDBTable> {
+public class CockroachDBSchema extends BaseSchema {
     /**
      * Is this CockroachDB 1.x.
      */
@@ -35,7 +35,7 @@ public class CockroachDBSchema extends BaseSchema<CockroachDBDatabase, Cockroach
     public CockroachDBSchema(JdbcTemplate jdbcTemplate, CockroachDBDatabase database, String name) {
         super(jdbcTemplate, database, name);
         cockroachDB1 = !database.getVersion().isAtLeast("2");
-        hasSchemaSupport = database.supportsSchemas();
+        hasSchemaSupport = getDatabase().supportsSchemas();
     }
 
     @Override
@@ -46,14 +46,14 @@ public class CockroachDBSchema extends BaseSchema<CockroachDBDatabase, Cockroach
     private boolean doExistsOnce() throws SQLException {
         if (hasSchemaSupport) {
             return jdbcTemplate.queryForBoolean(
-                "SELECT EXISTS ( SELECT 1 FROM information_schema.schemata WHERE schema_name=? )",
-                name);
+                    "SELECT EXISTS ( SELECT 1 FROM information_schema.schemata WHERE schema_name=? )",
+                    name);
         }
         return jdbcTemplate.queryForBoolean("SELECT EXISTS ( SELECT 1 FROM pg_database WHERE datname=? )", name);
     }
 
     @Override
-    protected boolean doEmpty() throws SQLException {
+    protected boolean doCheckIfEmpty() throws SQLException {
         return new CockroachDBRetryingStrategy().execute(this::doEmptyOnce);
     }
 
@@ -102,118 +102,51 @@ public class CockroachDBSchema extends BaseSchema<CockroachDBDatabase, Cockroach
 
     protected void doCreateOnce() throws SQLException {
         if (hasSchemaSupport) {
-            jdbcTemplate.execute("CREATE SCHEMA IF NOT EXISTS " + database.quote(name));
+            jdbcTemplate.execute("CREATE SCHEMA IF NOT EXISTS " + getDatabase().quote(name));
         } else {
-            jdbcTemplate.execute("CREATE DATABASE IF NOT EXISTS " + database.quote(name));
+            jdbcTemplate.execute("CREATE DATABASE IF NOT EXISTS " + getDatabase().quote(name));
         }
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        new CockroachDBRetryingStrategy().execute((SqlCallable<Integer>) () -> {
-            doDropOnce();
-            return null;
-        });
-    }
-
-    protected void doDropOnce() throws SQLException {
-        if (hasSchemaSupport) {
-            jdbcTemplate.execute("DROP SCHEMA IF EXISTS " + database.quote(name) + " CASCADE");
-        } else {
-            jdbcTemplate.execute("DROP DATABASE IF EXISTS " + database.quote(name));
-        }
-    }
-
-    @Override
-    protected void doClean() throws SQLException {
-        new CockroachDBRetryingStrategy().execute((SqlCallable<Integer>) () -> {
-            doCleanOnce();
-            return null;
-        });
-    }
-
-    protected void doCleanOnce() throws SQLException {
-        for (String statement : generateDropStatementsForViews()) {
-            jdbcTemplate.execute(statement);
-        }
-
-        for (var table : allTables()) {
-            table.drop();
-        }
-
-        for (String statement : generateDropStatementsForSequences()) {
-            jdbcTemplate.execute(statement);
-        }
-    }
-
-    private List<String> generateDropStatementsForViews() throws SQLException {
-        List<String> names = hasSchemaSupport ?
-                             jdbcTemplate.queryForStringList(
-                                 "SELECT table_name FROM information_schema.views" +
-                                 " WHERE table_schema=?", name)
-                                              :
-                             jdbcTemplate.queryForStringList(
-                                 "SELECT table_name FROM information_schema.views" +
-                                 " WHERE table_catalog=? AND table_schema='public'", name);
-        List<String> statements = new ArrayList<>();
-        for (String name : names) {
-            statements.add("DROP VIEW IF EXISTS " + database.quote(this.name, name) + " CASCADE");
-        }
-
-        return statements;
-    }
-
-    private List<String> generateDropStatementsForSequences() throws SQLException {
-        List<String> names = hasSchemaSupport ?
-                             jdbcTemplate.queryForStringList(
-                                 "SELECT sequence_name FROM information_schema.sequences" +
-                                 " WHERE sequence_schema=?", name)
-                                              :
-                             jdbcTemplate.queryForStringList(
-                                 "SELECT sequence_name FROM information_schema.sequences" +
-                                 " WHERE sequence_catalog=? AND sequence_schema='public'", name);
-        List<String> statements = new ArrayList<>();
-        for (String name : names) {
-            statements.add("DROP SEQUENCE IF EXISTS " + database.quote(this.name, name) + " CASCADE");
-        }
-
-        return statements;
-    }
-
-    @Override
-    protected CockroachDBTable[] doAllTables() throws SQLException {
+    protected List<CockroachDBTable> doAllTables() throws SQLException {
         String query;
         if (cockroachDB1 || hasSchemaSupport) {
             query =
-                //Search for all the table names
-                "SELECT table_name FROM information_schema.tables" +
-                //in this schema
-                " WHERE table_schema=?" +
-                //that are real tables (as opposed to views)
-                " AND table_type='BASE TABLE'";
+                    //Search for all the table names
+                    "SELECT table_name FROM information_schema.tables" +
+                    //in this schema
+                    " WHERE table_schema=?" +
+                    //that are real tables (as opposed to views)
+                    " AND table_type='BASE TABLE'";
         } else {
             query =
-                //Search for all the table names
-                "SELECT table_name FROM information_schema.tables" +
-                //in this database
-                " WHERE table_catalog=?" +
-                " AND table_schema='public'" +
-                //that are real tables (as opposed to views)
-                " AND table_type='BASE TABLE'";
+                    //Search for all the table names
+                    "SELECT table_name FROM information_schema.tables" +
+                    //in this database
+                    " WHERE table_catalog=?" +
+                    " AND table_schema='public'" +
+                    //that are real tables (as opposed to views)
+                    " AND table_type='BASE TABLE'";
         }
 
         List<String> tableNames = jdbcTemplate.queryForStringList(query, name);
         //Views and child tables are excluded as they are dropped with the parent table when using cascade.
 
-        CockroachDBTable[] tables = new CockroachDBTable[tableNames.size()];
-        for (int i = 0; i < tableNames.size(); i++) {
-            tables[i] = new CockroachDBTable(jdbcTemplate, database, this, tableNames.get(i));
+        List<CockroachDBTable> tables = new ArrayList<>(tableNames.size());
+        for (var tableName : tableNames) {
+            tables.add(new CockroachDBTable(jdbcTemplate, getDatabase(), this, tableName));
         }
         return tables;
     }
 
     @Override
-    public Table<?, ?> getTable(String tableName) {
-        return new CockroachDBTable(jdbcTemplate, database, this, tableName);
+    public Table getTable(String tableName) {
+        return new CockroachDBTable(jdbcTemplate, getDatabase(), this, tableName);
+    }
+
+    @Override
+    protected CockroachDBDatabase getDatabase() {
+        return (CockroachDBDatabase) super.getDatabase();
     }
 }

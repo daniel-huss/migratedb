@@ -40,23 +40,23 @@ public class ParsingContextImpl implements ParsingContext {
     private static final String TABLE_PLACEHOLDER = "migratedb:table";
 
     private final Map<String, String> placeholders = new HashMap<>();
-    private Database<?> database;
+    private Database database;
 
     @Override
     public Map<String, String> getPlaceholders() {
         return placeholders;
     }
 
-    private void setDatabase(Database<?> database) {
+    private void setDatabase(Database database) {
         this.database = database;
     }
 
     @Override
-    public Database<?> getDatabase() {
+    public Database getDatabase() {
         return database;
     }
 
-    public void populate(Database<?> database, Configuration configuration) {
+    public void populate(Database database, Configuration configuration) {
         setDatabase(database);
 
         var defaultSchemaName = configuration.getDefaultSchema();
@@ -98,7 +98,7 @@ public class ParsingContextImpl implements ParsingContext {
         }
     }
 
-    private Schema<?, ?> getCurrentSchema(Database<?> database) {
+    private Schema getCurrentSchema(Database database) {
         try {
             return database.getMainConnection().getCurrentSchema();
         } catch (MigrateDbException e) {
@@ -107,7 +107,7 @@ public class ParsingContextImpl implements ParsingContext {
         }
     }
 
-    private String getCurrentUser(Database<?> database) {
+    private String getCurrentUser(Database database) {
         try {
             return database.getCurrentUser();
         } catch (MigrateDbException e) {

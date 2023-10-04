@@ -16,17 +16,17 @@
  */
 package migratedb.v1.core.internal.database.informix;
 
-import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.v1.core.internal.database.base.BaseSchema;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Informix implementation of Schema.
  */
-public class InformixSchema extends BaseSchema<InformixDatabase, InformixTable> {
+public class InformixSchema extends BaseSchema {
     /**
      * Creates a new Informix schema.
      *
@@ -44,57 +44,30 @@ public class InformixSchema extends BaseSchema<InformixDatabase, InformixTable> 
     }
 
     @Override
-    protected boolean doEmpty() throws SQLException {
-        return doAllTables().length == 0;
+    protected boolean doCheckIfEmpty() throws SQLException {
+        return doAllTables().isEmpty();
     }
 
     @Override
     protected void doCreate() {
     }
 
-    @Override
-    protected void doDrop() throws SQLException {
-        clean();
-    }
-
-    @Override
-    protected void doClean() throws SQLException {
-        List<String> procedures = jdbcTemplate.queryForStringList(
-            "SELECT t.procname FROM \"informix\".sysprocedures AS t" +
-            " WHERE t.owner=? AND t.mode='O' AND t.externalname IS NULL" +
-            " AND t.procname NOT IN (" +
-            // Exclude Informix TimeSeries procs
-            " 'tscontainerusage', 'tscontainertotalused', 'tscontainertotalpages'," +
-            " 'tscontainernelems', 'tscontainerpctused', 'tsl_flushstatus', 'tsmakenullstamp'" +
-            ")",
-            name);
-        for (String procedure : procedures) {
-            jdbcTemplate.execute("DROP PROCEDURE " + procedure);
-        }
-
-        for (var table : allTables()) {
-            table.drop();
-        }
-
-        List<String> sequences = jdbcTemplate.queryForStringList("SELECT t.tabname FROM \"informix\".systables AS t" +
-                                                                 " WHERE owner=? AND t.tabid > 99 AND t.tabtype='Q'" +
-                                                                 " AND t.tabname NOT IN ('iot_data_seq')", name);
-        for (String sequence : sequences) {
-            jdbcTemplate.execute("DROP SEQUENCE " + sequence);
-        }
-    }
-
-    private InformixTable[] findTables(String sqlQuery, String... params) throws SQLException {
+    private List<InformixTable> findTables(String sqlQuery, String... params) throws SQLException {
         List<String> tableNames = jdbcTemplate.queryForStringList(sqlQuery, params);
-        InformixTable[] tables = new InformixTable[tableNames.size()];
-        for (int i = 0; i < tableNames.size(); i++) {
-            tables[i] = new InformixTable(jdbcTemplate, database, this, tableNames.get(i));
+        List<InformixTable> tables = new ArrayList<>(tableNames.size());
+        for (var tableName : tableNames) {
+            tables.add(new InformixTable(jdbcTemplate, getDatabase(), this, tableName));
         }
         return tables;
     }
 
     @Override
-    protected InformixTable[] doAllTables() throws SQLException {
+    protected InformixDatabase getDatabase() {
+        return (InformixDatabase) super.getDatabase();
+    }
+
+    @Override
+    protected List<InformixTable> doAllTables() throws SQLException {
         return findTables("SELECT t.tabname FROM \"informix\".systables AS t" +
                           " WHERE owner=? AND t.tabid > 99 AND t.tabtype='T'" +
                           " AND t.tabname NOT IN (" +
@@ -106,7 +79,7 @@ public class InformixSchema extends BaseSchema<InformixDatabase, InformixTable> 
     }
 
     @Override
-    public Table<?, ?> getTable(String tableName) {
-        return new InformixTable(jdbcTemplate, database, this, tableName);
+    public InformixTable getTable(String tableName) {
+        return new InformixTable(jdbcTemplate, getDatabase(), this, tableName);
     }
 }

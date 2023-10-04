@@ -17,22 +17,20 @@
 package migratedb.v1.core.internal.database.base;
 
 import migratedb.v1.core.api.internal.database.base.Database;
-import migratedb.v1.core.api.internal.database.base.Function;
+import migratedb.v1.core.api.internal.database.base.DatabaseFunction;
 import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.internal.exception.MigrateDbSqlException;
-import migratedb.v1.core.internal.jdbc.JdbcUtils;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 
-public abstract class BaseSchema<D extends Database<?>, T extends Table<?, ?>> implements Schema<D, T> {
+public abstract class BaseSchema implements Schema {
     private static final Log LOG = Log.getLog(BaseSchema.class);
     protected final JdbcTemplate jdbcTemplate;
-    protected final D database;
+    private final Database database;
     protected final String name;
 
     /**
@@ -40,10 +38,14 @@ public abstract class BaseSchema<D extends Database<?>, T extends Table<?, ?>> i
      * @param database     The database-specific support.
      * @param name         The name of the schema.
      */
-    public BaseSchema(JdbcTemplate jdbcTemplate, D database, String name) {
+    public BaseSchema(JdbcTemplate jdbcTemplate, Database database, String name) {
         this.jdbcTemplate = jdbcTemplate;
         this.database = database;
         this.name = name;
+    }
+
+    protected Database getDatabase() {
+        return database;
     }
 
     @Override
@@ -52,7 +54,7 @@ public abstract class BaseSchema<D extends Database<?>, T extends Table<?, ?>> i
     }
 
     @Override
-    public boolean exists() {
+    public final boolean exists() {
         try {
             return doExists();
         } catch (SQLException e) {
@@ -68,9 +70,9 @@ public abstract class BaseSchema<D extends Database<?>, T extends Table<?, ?>> i
     protected abstract boolean doExists() throws SQLException;
 
     @Override
-    public boolean empty() {
+    public final boolean isEmpty() {
         try {
-            return doEmpty();
+            return doCheckIfEmpty();
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to check whether schema " + this + " is empty", e);
         }
@@ -81,10 +83,10 @@ public abstract class BaseSchema<D extends Database<?>, T extends Table<?, ?>> i
      *
      * @throws SQLException when the check failed.
      */
-    protected abstract boolean doEmpty() throws SQLException;
+    protected abstract boolean doCheckIfEmpty() throws SQLException;
 
     @Override
-    public void create() {
+    public final void create() {
         try {
             LOG.info("Creating schema " + this + " ...");
             doCreate();
@@ -101,39 +103,7 @@ public abstract class BaseSchema<D extends Database<?>, T extends Table<?, ?>> i
     protected abstract void doCreate() throws SQLException;
 
     @Override
-    public void drop() {
-        try {
-            doDrop();
-        } catch (SQLException e) {
-            throw new MigrateDbSqlException("Unable to drop schema " + this, e);
-        }
-    }
-
-    /**
-     * Drops this schema from the database.
-     *
-     * @throws SQLException when the drop failed.
-     */
-    protected abstract void doDrop() throws SQLException;
-
-    @Override
-    public void clean() {
-        try {
-            doClean();
-        } catch (SQLException e) {
-            throw new MigrateDbSqlException("Unable to clean schema " + this, e);
-        }
-    }
-
-    /**
-     * Cleans all the objects in this schema.
-     *
-     * @throws SQLException when the clean failed.
-     */
-    protected abstract void doClean() throws SQLException;
-
-    @Override
-    public T[] allTables() {
+    public final List<? extends Table> allTables() {
         try {
             return doAllTables();
         } catch (SQLException e) {
@@ -146,45 +116,17 @@ public abstract class BaseSchema<D extends Database<?>, T extends Table<?, ?>> i
      *
      * @throws SQLException when the retrieval failed.
      */
-    protected abstract T[] doAllTables() throws SQLException;
-
-    /**
-     * Retrieves all the types in this schema.
-     */
-    protected final Type<?, ?>[] allTypes() {
-        ResultSet resultSet = null;
-        try {
-            resultSet = database.getJdbcMetaData().getUDTs(null, name, null, null);
-
-            var types = new ArrayList<Type<?, ?>>();
-            while (resultSet.next()) {
-                types.add(getType(resultSet.getString("TYPE_NAME")));
-            }
-
-            return types.toArray(Type<?, ?>[]::new);
-        } catch (SQLException e) {
-            throw new MigrateDbSqlException("Unable to retrieve all types in schema " + this, e);
-        } finally {
-            JdbcUtils.closeResultSet(resultSet);
-        }
-    }
-
-    /**
-     * Retrieves the type with this name in this schema.
-     */
-    protected Type<?, ?> getType(String typeName) {
-        return null;
-    }
+    protected abstract List<? extends Table> doAllTables() throws SQLException;
 
     @Override
-    public Function<?, ?> getFunction(String functionName, String... args) {
+    public DatabaseFunction getFunction(String functionName, String... args) {
         throw new UnsupportedOperationException("getFunction()");
     }
 
     /**
      * Retrieves all the functions in this schema.
      */
-    protected final Function<?, ?>[] allFunctions() {
+    public final List<? extends DatabaseFunction> allFunctions() {
         try {
             return doAllFunctions();
         } catch (SQLException e) {
@@ -197,20 +139,20 @@ public abstract class BaseSchema<D extends Database<?>, T extends Table<?, ?>> i
      *
      * @throws SQLException when the retrieval failed.
      */
-    protected Function<?, ?>[] doAllFunctions() throws SQLException {
-        return new Function<?, ?>[0];
+    protected List<? extends DatabaseFunction> doAllFunctions() throws SQLException {
+        return List.of();
     }
 
     /**
      * @return The quoted name of this schema.
      */
     @Override
-    public String toString() {
-        return database.quote(name);
+    public final String toString() {
+        return getDatabase().quote(name);
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -218,12 +160,12 @@ public abstract class BaseSchema<D extends Database<?>, T extends Table<?, ?>> i
             return false;
         }
 
-        BaseSchema<?, ?> schema = (BaseSchema<?, ?>) o;
-        return name.equals(schema.name);
+        BaseSchema other = (BaseSchema) o;
+        return name.equals(other.name);
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return name.hashCode();
     }
 }

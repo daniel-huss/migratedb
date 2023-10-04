@@ -25,7 +25,7 @@ import java.sql.SQLException;
 /**
  * Sybase ASE table.
  */
-public class SybaseASETable extends BaseTable<SybaseASEDatabase, SybaseASESchema> {
+public class SybaseASETable extends BaseTable {
     /**
      * Creates a new SAP ASE table.
      *
@@ -40,7 +40,7 @@ public class SybaseASETable extends BaseTable<SybaseASEDatabase, SybaseASESchema
 
     @Override
     protected boolean doExists() throws SQLException {
-        return jdbcTemplate.queryForString("SELECT object_id('" + name + "')") != null;
+        return jdbcTemplate.queryForString("SELECT object_id('" + getName() + "')") != null;
     }
 
     @Override
@@ -49,14 +49,9 @@ public class SybaseASETable extends BaseTable<SybaseASEDatabase, SybaseASESchema
         // (hence the lack of an 'unlock' method)
         // If multi statement transactions aren't supported, then locking a table makes no sense,
         // since that's the only operation we can do
-        if (database.supportsMultiStatementTransactions()) {
+        if (getDatabase().supportsMultiStatementTransactions()) {
             jdbcTemplate.execute("LOCK TABLE " + this + " IN EXCLUSIVE MODE");
         }
-    }
-
-    @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + getName());
     }
 
     /**
@@ -66,6 +61,6 @@ public class SybaseASETable extends BaseTable<SybaseASEDatabase, SybaseASESchema
      */
     @Override
     public String toString() {
-        return name;
+        return getName();
     }
 }

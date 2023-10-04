@@ -24,7 +24,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL-specific table.
  */
-public class PostgreSQLTable extends BaseTable<PostgreSQLDatabase, PostgreSQLSchema> {
+public class PostgreSQLTable extends BaseTable {
     /**
      * Creates a new PostgreSQL table.
      *
@@ -39,11 +39,6 @@ public class PostgreSQLTable extends BaseTable<PostgreSQLDatabase, PostgreSQLSch
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + database.quote(schema.getName(), name) + " CASCADE");
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
         return jdbcTemplate.queryForBoolean("SELECT EXISTS (\n" +
                                             "  SELECT 1\n" +
@@ -52,7 +47,7 @@ public class PostgreSQLTable extends BaseTable<PostgreSQLDatabase, PostgreSQLSch
                                             "  WHERE  n.nspname = ?\n" +
                                             "  AND    c.relname = ?\n" +
                                             "  AND    c.relkind = 'r'\n" + // only tables
-                                            ")", schema.getName(), name);
+                                            ")", getSchema().getName(), getName());
     }
 
     @Override

@@ -24,7 +24,7 @@ import java.util.Map;
 public interface ParsingContext {
     Map<String, String> getPlaceholders();
 
-    Database<?> getDatabase();
+    Database getDatabase();
 
     void updateFilenamePlaceholder(ResourceName resourceName);
 }

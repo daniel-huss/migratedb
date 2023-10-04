@@ -24,7 +24,7 @@ import java.sql.SQLException;
 /**
  * Db2-specific table.
  */
-public class DB2Table extends BaseTable<DB2Database, DB2Schema> {
+public class DB2Table extends BaseTable {
     /**
      * Creates a new Db2 table.
      *
@@ -38,13 +38,8 @@ public class DB2Table extends BaseTable<DB2Database, DB2Schema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + this);
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
-        return exists(null, schema, name);
+        return exists(null, getSchema(), getName());
     }
 
     @Override

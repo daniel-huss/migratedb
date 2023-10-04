@@ -34,7 +34,7 @@ import java.util.function.Function;
 
 public class CommandResultFactory {
     public static LiberateResult createLiberateResult(Configuration configuration,
-                                                      Database<?> database,
+                                                      Database database,
                                                       String schemaHistorySchema,
                                                       String schemaHistoryTable,
                                                       List<LiberateAction> changes
@@ -48,7 +48,7 @@ public class CommandResultFactory {
     }
 
     public static InfoResult createInfoResult(Configuration configuration,
-                                              Database<?> database,
+                                              Database database,
                                               MigrationInfo[] migrationInfos,
                                               MigrationInfo current,
                                               boolean allSchemasEmpty) {
@@ -102,7 +102,7 @@ public class CommandResultFactory {
                                   warnings);
     }
 
-    public static RepairResult createRepairResult(Configuration configuration, Database<?> database) {
+    public static RepairResult createRepairResult(Configuration configuration, Database database) {
         String migratedbVersion = BuildInfo.VERSION;
         return new RepairResult(migratedbVersion, getDatabaseName(configuration.getDataSource(), database));
     }
@@ -149,7 +149,7 @@ public class CommandResultFactory {
                                 "");
     }
 
-    private static String getDatabaseName(ConnectionProvider connectionProvider, Database<?> database) {
+    private static String getDatabaseName(ConnectionProvider connectionProvider, Database database) {
         try {
             return database.getCatalog();
         } catch (RuntimeException e) {

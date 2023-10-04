@@ -16,21 +16,27 @@
  */
 package migratedb.v1.core.internal.database.sybasease;
 
-import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
+
+import java.sql.Connection;
 
 /**
  * Sybase ASE Connection.
  */
-public class SybaseASEConnection extends BaseConnection<SybaseASEDatabase> {
-    SybaseASEConnection(SybaseASEDatabase database, java.sql.Connection connection) {
+public class SybaseASESession extends BaseSession {
+    SybaseASESession(SybaseASEDatabase database, Connection connection) {
         super(database, connection);
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
+    public SybaseASESchema getSchema(String name) {
         //Sybase does not support schemas, nor changing users on the fly. Always return the same dummy schema.
-        return new SybaseASESchema(jdbcTemplate, database, "dbo");
+        return new SybaseASESchema(jdbcTemplate, getDatabase(), "dbo");
+    }
+
+    @Override
+    public SybaseASEDatabase getDatabase() {
+        return (SybaseASEDatabase) super.getDatabase();
     }
 
     @Override

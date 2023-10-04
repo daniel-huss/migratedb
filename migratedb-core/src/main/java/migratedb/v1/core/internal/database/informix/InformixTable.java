@@ -24,7 +24,7 @@ import java.sql.SQLException;
 /**
  * Informix-specific table.
  */
-public class InformixTable extends BaseTable<InformixDatabase, InformixSchema> {
+public class InformixTable extends BaseTable {
     /**
      * Creates a new Informix table.
      *
@@ -38,13 +38,8 @@ public class InformixTable extends BaseTable<InformixDatabase, InformixSchema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + name);
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
-        return exists(null, schema, name);
+        return exists(null, getSchema(), getName());
     }
 
     @Override
@@ -54,6 +49,6 @@ public class InformixTable extends BaseTable<InformixDatabase, InformixSchema> {
 
     @Override
     public String toString() {
-        return name;
+        return getName();
     }
 }

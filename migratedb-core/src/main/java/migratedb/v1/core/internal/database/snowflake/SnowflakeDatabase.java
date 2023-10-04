@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class SnowflakeDatabase extends BaseDatabase<SnowflakeConnection> {
+public class SnowflakeDatabase extends BaseDatabase {
     private static final Log LOG = Log.getLog(SnowflakeDatabase.class);
 
     /**
@@ -68,8 +68,8 @@ public class SnowflakeDatabase extends BaseDatabase<SnowflakeConnection> {
     }
 
     @Override
-    protected SnowflakeConnection doGetConnection(Connection connection) {
-        return new SnowflakeConnection(this, connection);
+    protected SnowflakeSession doGetConnection(Connection connection) {
+        return new SnowflakeSession(this, connection);
     }
 
     @Override
@@ -79,17 +79,17 @@ public class SnowflakeDatabase extends BaseDatabase<SnowflakeConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         // CAUTION: Quotes are optional around column names without underscores; but without them, Snowflake will
         // uppercase the column name leading to SELECTs failing.
         return "CREATE TABLE " + table + " (\n" +
-                quote("installed_rank") + " NUMBER(38,0) NOT NULL,\n" +
-                quote("version") + " VARCHAR(50),\n" +
-                quote("description") + " VARCHAR(200),\n" +
-                quote("type") + " VARCHAR(20) NOT NULL,\n" +
-                quote("script") + " VARCHAR(1000) NOT NULL,\n" +
-                quote("checksum") + " VARCHAR(100,0),\n" +
-                quote("installed_by") + " VARCHAR(100) NOT NULL,\n" +
+               quote("installed_rank") + " NUMBER(38,0) NOT NULL,\n" +
+               quote("version") + " VARCHAR(50),\n" +
+               quote("description") + " VARCHAR(200),\n" +
+               quote("type") + " VARCHAR(20) NOT NULL,\n" +
+               quote("script") + " VARCHAR(1000) NOT NULL,\n" +
+               quote("checksum") + " VARCHAR(100,0),\n" +
+               quote("installed_by") + " VARCHAR(100) NOT NULL,\n" +
                quote("installed_on") + " TIMESTAMP_LTZ(9) NOT NULL DEFAULT CURRENT_TIMESTAMP(),\n" +
                quote("execution_time") + " NUMBER(38,0) NOT NULL,\n" +
                quote("success") + " BOOLEAN NOT NULL,\n" +
@@ -99,17 +99,17 @@ public class SnowflakeDatabase extends BaseDatabase<SnowflakeConnection> {
     }
 
     @Override
-    public String getSelectStatement(Table<?, ?> table) {
+    public String getSelectStatement(Table table) {
         // CAUTION: Quotes are optional around column names without underscores; but without them, Snowflake will
         // uppercase the column name. In data readers, the column name is case sensitive.
         return "SELECT " + quote("installed_rank")
-                + "," + quote("version")
-                + "," + quote("description")
-                + "," + quote("type")
-                + "," + quote("script")
-                + "," + quote("checksum")
-                + "," + quote("installed_on")
-                + "," + quote("installed_by")
+               + "," + quote("version")
+               + "," + quote("description")
+               + "," + quote("type")
+               + "," + quote("script")
+               + "," + quote("checksum")
+               + "," + quote("installed_on")
+               + "," + quote("installed_by")
                + "," + quote("execution_time")
                + "," + quote("success")
                + " FROM " + table
@@ -118,17 +118,17 @@ public class SnowflakeDatabase extends BaseDatabase<SnowflakeConnection> {
     }
 
     @Override
-    public String getInsertStatement(Table<?, ?> table) {
+    public String getInsertStatement(Table table) {
         // CAUTION: Quotes are optional around column names without underscores; but without them, Snowflake will
         // uppercase the column name.
         return "INSERT INTO " + table
-                + " (" + quote("installed_rank")
-                + ", " + quote("version")
-                + ", " + quote("description")
-                + ", " + quote("type")
-                + ", " + quote("script")
-                + ", " + quote("checksum")
-                + ", " + quote("installed_by")
+               + " (" + quote("installed_rank")
+               + ", " + quote("version")
+               + ", " + quote("description")
+               + ", " + quote("type")
+               + ", " + quote("script")
+               + ", " + quote("checksum")
+               + ", " + quote("installed_by")
                + ", " + quote("execution_time")
                + ", " + quote("success")
                + ")"

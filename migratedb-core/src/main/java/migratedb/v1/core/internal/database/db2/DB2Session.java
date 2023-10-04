@@ -14,33 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.v1.core.internal.database.derby;
+package migratedb.v1.core.internal.database.db2;
 
-import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Derby connection.
+ * DB2 connection.
  */
-public class DerbyConnection extends BaseConnection<DerbyDatabase> {
-    DerbyConnection(DerbyDatabase database, java.sql.Connection connection) {
+public class DB2Session extends BaseSession {
+    DB2Session(DB2Database database, Connection connection) {
         super(database, connection);
     }
 
     @Override
     protected String getCurrentSchemaNameOrSearchPath() throws SQLException {
-        return jdbcTemplate.queryForString("SELECT CURRENT SCHEMA FROM SYSIBM.SYSDUMMY1");
+        return jdbcTemplate.queryForString("select current_schema from sysibm.sysdummy1");
     }
 
     @Override
     public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
-        jdbcTemplate.execute("SET SCHEMA " + database.quote(schema));
+        jdbcTemplate.execute("SET SCHEMA " + getDatabase().quote(schema));
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new DerbySchema(jdbcTemplate, database, name);
+    public DB2Schema getSchema(String name) {
+        return new DB2Schema(jdbcTemplate, getDatabase(), name);
+    }
+
+    @Override
+    public DB2Database getDatabase() {
+        return (DB2Database) super.getDatabase();
     }
 }

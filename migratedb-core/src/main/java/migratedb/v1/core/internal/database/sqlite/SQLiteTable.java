@@ -25,14 +25,8 @@ import java.sql.SQLException;
 /**
  * SQLite-specific table.
  */
-public class SQLiteTable extends BaseTable<SQLiteDatabase, SQLiteSchema> {
+public class SQLiteTable extends BaseTable {
     private static final Log LOG = Log.getLog(SQLiteTable.class);
-
-    /**
-     * SQLite system tables are undroppable.
-     */
-    static final String SQLITE_SEQUENCE = "sqlite_sequence";
-    private final boolean undroppable;
 
     /**
      * Creates a new SQLite table.
@@ -44,28 +38,13 @@ public class SQLiteTable extends BaseTable<SQLiteDatabase, SQLiteSchema> {
      */
     public SQLiteTable(JdbcTemplate jdbcTemplate, SQLiteDatabase database, SQLiteSchema schema, String name) {
         super(jdbcTemplate, database, schema, name);
-        undroppable = SQLITE_SEQUENCE.equals(name);
-    }
-
-    @Override
-    protected void doDrop() throws SQLException {
-        if (undroppable) {
-            LOG.debug("SQLite system table " + this + " cannot be dropped. Ignoring.");
-        } else {
-            String dropSql = "DROP TABLE " + database.quote(schema.getName(), name);
-            if (getSchema().getForeignKeysEnabled()) {
-                // #2417: Disable foreign keys before dropping tables to avoid constraint violation errors
-                dropSql = "PRAGMA foreign_keys = OFF; " + dropSql + "; PRAGMA foreign_keys = ON";
-            }
-            jdbcTemplate.execute(dropSql);
-        }
     }
 
     @Override
     protected boolean doExists() throws SQLException {
         return jdbcTemplate.queryForInt("SELECT count(tbl_name) FROM "
-                                        + database.quote(schema.getName()) +
-                                        ".sqlite_master WHERE type='table' AND tbl_name='" + name + "'") > 0;
+                                        + getDatabase().quote(getSchema().getName()) +
+                                        ".sqlite_master WHERE type='table' AND tbl_name='" + getName() + "'") > 0;
     }
 
     @Override

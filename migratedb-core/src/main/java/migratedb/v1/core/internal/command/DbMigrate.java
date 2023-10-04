@@ -22,7 +22,7 @@ import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.executor.Context;
 import migratedb.v1.core.api.executor.MigrationExecutor;
 import migratedb.v1.core.api.internal.callback.CallbackExecutor;
-import migratedb.v1.core.api.internal.database.base.Connection;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Database;
 import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.logging.Log;
@@ -48,19 +48,19 @@ import static migratedb.v1.core.internal.jdbc.ExecutionTemplateFactory.createExe
 public class DbMigrate {
     private static final Log LOG = Log.getLog(DbMigrate.class);
 
-    private final Database<?> database;
+    private final Database database;
     private final SchemaHistory schemaHistory;
     /**
      * The schema containing the schema history table.
      */
-    private final Schema<?, ?> schema;
+    private final Schema schema;
     private final MigrationResolver migrationResolver;
     private final Configuration configuration;
     private final CallbackExecutor callbackExecutor;
     /**
      * The connection to use to perform the actual database migrations.
      */
-    private final Connection<?> connectionUserObjects;
+    private final Session connectionUserObjects;
     private MigrateResult migrateResult;
     /**
      * This is used to remember the type of migration between calls to migrateGroup().
@@ -68,9 +68,9 @@ public class DbMigrate {
     private boolean isPreviousVersioned;
     private final List<ResolvedMigration> appliedResolvedMigrations = new ArrayList<>();
 
-    public DbMigrate(Database<?> database,
+    public DbMigrate(Database database,
                      SchemaHistory schemaHistory,
-                     Schema<?, ?> schema,
+                     Schema schema,
                      MigrationResolver migrationResolver,
                      Configuration configuration,
                      CallbackExecutor callbackExecutor) {

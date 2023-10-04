@@ -594,11 +594,11 @@ public abstract class BaseParser implements Parser {
     }
 
     protected String readKeyword(PeekingReader reader, Delimiter delimiter, ParserContext context) throws IOException {
-        return "" + (char) reader.read() + reader.readKeywordPart(delimiter, context);
+        return (char) reader.read() + reader.readKeywordPart(delimiter, context);
     }
 
     protected String readIdentifier(PeekingReader reader) throws IOException {
-        return "" + (char) reader.read() + reader.readUntilIncluding(getClosingIdentifierSymbol());
+        return (char) reader.read() + reader.readUntilIncluding(getClosingIdentifierSymbol());
     }
 
     protected Token handleDelimiter(PeekingReader reader, ParserContext context, int pos, int line, int col)
@@ -663,17 +663,6 @@ public abstract class BaseParser implements Parser {
             }
         }
         return result;
-    }
-
-    private List<Token> discardBlankLines(List<Token> tokens) {
-        List<Token> nonBlankLinesTokens = new ArrayList<>(tokens);
-        while (nonBlankLinesTokens.get(0).getType() == TokenType.BLANK_LINES) {
-            nonBlankLinesTokens.remove(0);
-        }
-        while (nonBlankLinesTokens.get(nonBlankLinesTokens.size() - 1).getType() == TokenType.BLANK_LINES) {
-            nonBlankLinesTokens.remove(nonBlankLinesTokens.size() - 1);
-        }
-        return nonBlankLinesTokens;
     }
 
     protected boolean isCommentDirective(String peek) {

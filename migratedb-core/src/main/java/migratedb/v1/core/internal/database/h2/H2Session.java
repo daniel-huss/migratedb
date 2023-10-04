@@ -14,29 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.v1.core.internal.database.firebird;
+package migratedb.v1.core.internal.database.h2;
 
 import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
-public class FirebirdConnection extends BaseConnection<FirebirdDatabase> {
+public class H2Session extends BaseSession {
+    private final boolean requiresV2Metadata;
 
-    private static final String DUMMY_SCHEMA_NAME = "default";
-
-    FirebirdConnection(FirebirdDatabase database, java.sql.Connection connection) {
+    H2Session(H2Database database, Connection connection, boolean requiresV2Metadata) {
         super(database, connection);
+        this.requiresV2Metadata = requiresV2Metadata;
+    }
+
+    @Override
+    public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
+        jdbcTemplate.execute("SET SCHEMA " + getDatabase().quote(schema));
+    }
+
+    @Override
+    public Schema getSchema(String name) {
+        return new H2Schema(jdbcTemplate, getDatabase(), name, requiresV2Metadata);
     }
 
     @Override
     protected String getCurrentSchemaNameOrSearchPath() throws SQLException {
-        return DUMMY_SCHEMA_NAME;
+        return jdbcTemplate.queryForString("CALL SCHEMA()");
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        // database == schema, always return the same dummy schema
-        return new FirebirdSchema(jdbcTemplate, database, DUMMY_SCHEMA_NAME);
+    public H2Database getDatabase() {
+        return (H2Database) super.getDatabase();
     }
 }

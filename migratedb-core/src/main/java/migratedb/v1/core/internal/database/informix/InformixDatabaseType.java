@@ -45,7 +45,7 @@ public class InformixDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         return new InformixDatabase(configuration, jdbcConnectionFactory);
     }
 

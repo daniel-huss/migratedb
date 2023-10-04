@@ -27,7 +27,7 @@ import java.sql.SQLException;
 /**
  * Derby database.
  */
-public class DerbyDatabase extends BaseDatabase<DerbyConnection> {
+public class DerbyDatabase extends BaseDatabase {
     /**
      * Creates a new instance.
      *
@@ -38,8 +38,8 @@ public class DerbyDatabase extends BaseDatabase<DerbyConnection> {
     }
 
     @Override
-    protected DerbyConnection doGetConnection(Connection connection) {
-        return new DerbyConnection(this, connection);
+    protected DerbySession doGetConnection(Connection connection) {
+        return new DerbySession(this, connection);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DerbyDatabase extends BaseDatabase<DerbyConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
                 "    \"installed_rank\" INT NOT NULL,\n" +
                 "    \"version\" VARCHAR(50),\n" +

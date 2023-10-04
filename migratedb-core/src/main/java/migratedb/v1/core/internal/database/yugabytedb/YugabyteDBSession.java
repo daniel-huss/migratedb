@@ -14,28 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.v1.core.internal.database.mysql.tidb;
+package migratedb.v1.core.internal.database.yugabytedb;
 
 import migratedb.v1.core.api.configuration.Configuration;
-import migratedb.v1.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.v1.core.internal.database.mysql.MySQLSession;
-import migratedb.v1.core.internal.database.mysql.MySQLDatabase;
+import migratedb.v1.core.internal.database.postgresql.PostgreSQLSession;
 
 import java.sql.Connection;
 
-public class TiDBDatabase extends MySQLDatabase {
+public class YugabyteDBSession extends PostgreSQLSession {
 
-    public TiDBDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
-        super(configuration, jdbcConnectionFactory);
+    YugabyteDBSession(Configuration configuration, YugabyteDBDatabase database, Connection connection) {
+        super(configuration, database, connection);
     }
 
     @Override
-    protected MySQLSession doGetConnection(Connection connection) {
-        return new TiDBSession(this, connection);
+    public YugabyteDBSchema getSchema(String name) {
+        return new YugabyteDBSchema(jdbcTemplate, getDatabase(), name);
     }
 
     @Override
-    protected boolean isCreateTableAsSelectAllowed() {
-        return false;
+    public YugabyteDBDatabase getDatabase() {
+        return (YugabyteDBDatabase) super.getDatabase();
     }
 }

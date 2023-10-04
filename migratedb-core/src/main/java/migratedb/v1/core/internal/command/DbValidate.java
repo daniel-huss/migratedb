@@ -21,7 +21,7 @@ import migratedb.v1.core.api.ErrorDetails;
 import migratedb.v1.core.api.callback.Event;
 import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.callback.CallbackExecutor;
-import migratedb.v1.core.api.internal.database.base.Connection;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Database;
 import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.logging.Log;
@@ -55,7 +55,7 @@ public class DbValidate {
     /**
      * The schema containing the schema history table.
      */
-    private final Schema<?, ?> schema;
+    private final Schema schema;
 
     /**
      * The migration resolver.
@@ -65,7 +65,7 @@ public class DbValidate {
     /**
      * The connection to use.
      */
-    private final Connection<?> connection;
+    private final Session connection;
 
     /**
      * The current configuration.
@@ -85,7 +85,7 @@ public class DbValidate {
     /**
      * The database-specific support.
      */
-    private final Database<?> database;
+    private final Database database;
 
     /**
      * Creates a new database validator.
@@ -98,9 +98,9 @@ public class DbValidate {
      * @param allowPending      Whether pending migrations are allowed.
      * @param callbackExecutor  The callback executor.
      */
-    public DbValidate(Database<?> database,
+    public DbValidate(Database database,
                       SchemaHistory schemaHistory,
-                      Schema<?, ?> schema,
+                      Schema schema,
                       MigrationResolver migrationResolver,
                       Configuration configuration,
                       boolean allowPending,

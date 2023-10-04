@@ -24,7 +24,7 @@ import java.sql.SQLException;
 /**
  * MySQL-specific table.
  */
-public class MySQLTable extends BaseTable<MySQLDatabase, MySQLSchema> {
+public class MySQLTable extends BaseTable {
     /**
      * Creates a new MySQL table.
      *
@@ -38,13 +38,8 @@ public class MySQLTable extends BaseTable<MySQLDatabase, MySQLSchema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + database.quote(schema.getName(), name));
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
-        return exists(schema, null, name);
+        return exists(getSchema(), null, getName());
     }
 
     @Override

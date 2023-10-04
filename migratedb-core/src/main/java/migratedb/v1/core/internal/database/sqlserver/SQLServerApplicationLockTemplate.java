@@ -30,7 +30,7 @@ import java.util.concurrent.Callable;
 public class SQLServerApplicationLockTemplate {
     private static final Log LOG = Log.getLog(SQLServerApplicationLockTemplate.class);
 
-    private final SQLServerConnection connection;
+    private final SQLServerSession connection;
     private final JdbcTemplate jdbcTemplate;
     private final String databaseName;
     private final String lockName;
@@ -42,7 +42,7 @@ public class SQLServerApplicationLockTemplate {
      * @param jdbcTemplate  The jdbcTemplate for the connection.
      * @param discriminator A number to discriminate between locks.
      */
-    SQLServerApplicationLockTemplate(SQLServerConnection connection, JdbcTemplate jdbcTemplate, String databaseName,
+    SQLServerApplicationLockTemplate(SQLServerSession connection, JdbcTemplate jdbcTemplate, String databaseName,
                                      int discriminator) {
         this.connection = connection;
         this.jdbcTemplate = jdbcTemplate;

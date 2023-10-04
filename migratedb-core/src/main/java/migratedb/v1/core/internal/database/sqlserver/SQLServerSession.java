@@ -16,24 +16,24 @@
  */
 package migratedb.v1.core.internal.database.sqlserver;
 
-import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.database.base.Table;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
 /**
  * SQL Server connection.
  */
-public class SQLServerConnection extends BaseConnection<SQLServerDatabase> {
+public class SQLServerSession extends BaseSession {
     protected final String originalDatabaseName;
     private final String originalAnsiNulls;
     private final boolean azure;
     private final SQLServerEngineEdition engineEdition;
 
-    protected SQLServerConnection(SQLServerDatabase database, java.sql.Connection connection) {
+    protected SQLServerSession(SQLServerDatabase database, Connection connection) {
         super(database, connection);
         try {
             originalDatabaseName = jdbcTemplate.queryForString("SELECT DB_NAME()");
@@ -43,23 +43,23 @@ public class SQLServerConnection extends BaseConnection<SQLServerDatabase> {
 
         try {
             azure = "SQL Azure".equals(getJdbcTemplate().queryForString(
-                "SELECT CAST(SERVERPROPERTY('edition') AS VARCHAR)"));
+                    "SELECT CAST(SERVERPROPERTY('edition') AS VARCHAR)"));
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to determine database edition.'", e);
         }
 
         try {
             engineEdition = SQLServerEngineEdition.fromCode(getJdbcTemplate().queryForInt(
-                "SELECT SERVERPROPERTY('engineedition')"));
+                    "SELECT SERVERPROPERTY('engineedition')"));
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to determine database engine edition.'", e);
         }
 
         try {
             originalAnsiNulls = azure ? null :
-                                jdbcTemplate.queryForString("DECLARE @ANSI_NULLS VARCHAR(3) = 'OFF';\n" +
-                                                            "IF ( (32 & @@OPTIONS) = 32 ) SET @ANSI_NULLS = 'ON';\n" +
-                                                            "SELECT @ANSI_NULLS AS ANSI_NULLS;");
+                    jdbcTemplate.queryForString("DECLARE @ANSI_NULLS VARCHAR(3) = 'OFF';\n" +
+                                                "IF ( (32 & @@OPTIONS) = 32 ) SET @ANSI_NULLS = 'ON';\n" +
+                                                "SELECT @ANSI_NULLS AS ANSI_NULLS;");
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to determine ANSI NULLS state", e);
         }
@@ -67,7 +67,7 @@ public class SQLServerConnection extends BaseConnection<SQLServerDatabase> {
 
     void setCurrentDatabase(String databaseName) throws SQLException {
         if (!azure) {
-            jdbcTemplate.execute("USE " + database.quote(databaseName));
+            jdbcTemplate.execute("USE " + getDatabase().quote(databaseName));
         }
     }
 
@@ -85,16 +85,21 @@ public class SQLServerConnection extends BaseConnection<SQLServerDatabase> {
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new SQLServerSchema(jdbcTemplate, database, originalDatabaseName, name);
+    public SQLServerSchema getSchema(String name) {
+        return new SQLServerSchema(jdbcTemplate, getDatabase(), originalDatabaseName, name);
     }
 
     @Override
-    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
+    public SQLServerDatabase getDatabase() {
+        return (SQLServerDatabase) super.getDatabase();
+    }
+
+    @Override
+    public <T> T lock(Table table, Callable<T> callable) {
         return new SQLServerApplicationLockTemplate(this,
-                jdbcTemplate,
-                originalDatabaseName,
-                table.toString().hashCode()).execute(callable);
+                                                    jdbcTemplate,
+                                                    originalDatabaseName,
+                                                    table.toString().hashCode()).execute(callable);
     }
 
     public Boolean isAzureConnection() {

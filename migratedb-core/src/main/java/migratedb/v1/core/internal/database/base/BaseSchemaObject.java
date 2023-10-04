@@ -20,15 +20,12 @@ import migratedb.v1.core.api.internal.database.base.Database;
 import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.database.base.SchemaObject;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 
-import java.sql.SQLException;
-
-public abstract class BaseSchemaObject<D extends Database<?>, S extends Schema<?, ?>> implements SchemaObject<D, S> {
+public abstract class BaseSchemaObject implements SchemaObject {
     protected final JdbcTemplate jdbcTemplate;
-    protected final D database;
-    protected final S schema;
-    protected final String name;
+    private final Database database;
+    private final Schema schema;
+    private final String name;
 
     /**
      * @param jdbcTemplate The JDBC template to access the DB.
@@ -36,7 +33,7 @@ public abstract class BaseSchemaObject<D extends Database<?>, S extends Schema<?
      * @param schema       The schema the object lives in.
      * @param name         The name of the object.
      */
-    BaseSchemaObject(JdbcTemplate jdbcTemplate, D database, S schema, String name) {
+    BaseSchemaObject(JdbcTemplate jdbcTemplate, Database database, Schema schema, String name) {
         this.name = name;
         this.jdbcTemplate = jdbcTemplate;
         this.database = database;
@@ -44,12 +41,12 @@ public abstract class BaseSchemaObject<D extends Database<?>, S extends Schema<?
     }
 
     @Override
-    public final D getDatabase() {
+    public Database getDatabase() {
         return database;
     }
 
     @Override
-    public final S getSchema() {
+    public Schema getSchema() {
         return schema;
     }
 
@@ -59,21 +56,7 @@ public abstract class BaseSchemaObject<D extends Database<?>, S extends Schema<?
     }
 
     @Override
-    public final void drop() {
-        try {
-            doDrop();
-        } catch (SQLException e) {
-            throw new MigrateDbSqlException("Unable to drop " + this, e);
-        }
-    }
-
-    /**
-     * @throws java.sql.SQLException when the drop failed.
-     */
-    protected abstract void doDrop() throws SQLException;
-
-    @Override
     public String toString() {
-        return database.quote(schema.getName(), name);
+        return getDatabase().quote(getSchema().getName(), name);
     }
 }

@@ -32,7 +32,7 @@ import java.sql.SQLException;
 /**
  * Apache Ignite database.
  */
-public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
+public class IgniteThinDatabase extends BaseDatabase {
 
     /**
      * Creates a new instance.
@@ -44,8 +44,8 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
     }
 
     @Override
-    protected IgniteThinConnection doGetConnection(Connection connection) {
-        return new IgniteThinConnection(this, connection);
+    protected IgniteThinSession doGetConnection(Connection connection) {
+        return new IgniteThinSession(this, connection);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE IF NOT EXISTS " + table + " (\n" +
                 "    \"installed_rank\" INT NOT NULL,\n" +
                 "    \"version\" VARCHAR(50),\n" +
@@ -84,17 +84,17 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
     }
 
     @Override
-    public String getSelectStatement(Table<?, ?> table) {
+    public String getSelectStatement(Table table) {
         return "SELECT " + quote("installed_rank")
-                + "," + quote("version")
-                + "," + quote("description")
-                + "," + quote("type")
-                + "," + quote("script")
-                + "," + quote("checksum")
-                + "," + quote("installed_on")
-                + "," + quote("installed_by")
-                + "," + quote("execution_time")
-                + "," + quote("success")
+               + "," + quote("version")
+               + "," + quote("description")
+               + "," + quote("type")
+               + "," + quote("script")
+               + "," + quote("checksum")
+               + "," + quote("installed_on")
+               + "," + quote("installed_by")
+               + "," + quote("execution_time")
+               + "," + quote("success")
                + " FROM " + table
                // Ignore special table created marker
                + " WHERE " + quote("type") + " != 'TABLE'"
@@ -103,17 +103,17 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
     }
 
     @Override
-    public String getInsertStatement(Table<?, ?> table) {
+    public String getInsertStatement(Table table) {
         return "INSERT INTO " + table
-                + " (" + quote("installed_rank")
-                + ", " + quote("version")
-                + ", " + quote("description")
-                + ", " + quote("type")
-                + ", " + quote("script")
-                + ", " + quote("checksum")
-                + ", " + quote("installed_by")
-                + ", " + quote("installed_on")
-                + ", " + quote("execution_time")
+               + " (" + quote("installed_rank")
+               + ", " + quote("version")
+               + ", " + quote("description")
+               + ", " + quote("type")
+               + ", " + quote("script")
+               + ", " + quote("checksum")
+               + ", " + quote("installed_by")
+               + ", " + quote("installed_on")
+               + ", " + quote("execution_time")
                + ", " + quote("success")
                + ")"
                + " VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?,?)";
@@ -127,7 +127,7 @@ public class IgniteThinDatabase extends BaseDatabase<IgniteThinConnection> {
             connPropsField.setAccessible(true);
             Object connProps = connPropsField.get(getMainConnection().getJdbcConnection());
             userName = (String) connProps.getClass().getMethod("getUsername").invoke(connProps);
-            if (userName == null || userName.equals("")) {
+            if (userName == null || userName.isEmpty()) {
                 return "ignite";
             }
         } catch (NoSuchFieldException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {

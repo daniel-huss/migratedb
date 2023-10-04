@@ -168,9 +168,9 @@ public class MigrateDb {
             }
 
             if (!context.schemaHistory.exists()) {
-                List<Schema<?, ?>> nonEmptySchemas = new ArrayList<>();
+                List<Schema> nonEmptySchemas = new ArrayList<>();
                 for (var schema : context.schemas) {
-                    if (schema.exists() && !schema.empty()) {
+                    if (schema.exists() && !schema.isEmpty()) {
                         nonEmptySchemas.add(schema);
                     }
                 }
@@ -376,10 +376,10 @@ public class MigrateDb {
      * @param callbackExecutor  The callback executor.
      * @param ignorePending     Whether to ignore pending migrations.
      */
-    private ValidateResult doValidate(Database<?> database,
+    private ValidateResult doValidate(Database database,
                                       MigrationResolver migrationResolver,
                                       SchemaHistory schemaHistory,
-                                      Schema<?, ?> defaultSchema,
+                                      Schema defaultSchema,
                                       CallbackExecutor callbackExecutor,
                                       boolean ignorePending) {
         return new DbValidate(database,
@@ -393,7 +393,7 @@ public class MigrateDb {
 
     private BaselineResult doBaseline(SchemaHistory schemaHistory,
                                       CallbackExecutor callbackExecutor,
-                                      Database<?> database) {
+                                      Database database) {
         return new DbBaseline(schemaHistory,
                               configuration.getBaselineVersion(),
                               configuration.getBaselineDescription(),

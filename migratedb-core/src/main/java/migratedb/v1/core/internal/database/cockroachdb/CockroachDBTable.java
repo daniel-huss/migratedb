@@ -17,7 +17,6 @@
 package migratedb.v1.core.internal.database.cockroachdb;
 
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.v1.core.api.internal.util.SqlCallable;
 import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.internal.database.base.BaseTable;
 
@@ -28,23 +27,11 @@ import java.sql.SQLException;
  * <p>
  * Note that CockroachDB doesn't support table locks.
  */
-public class CockroachDBTable extends BaseTable<CockroachDBDatabase, CockroachDBSchema> {
+public class CockroachDBTable extends BaseTable {
     private static final Log LOG = Log.getLog(CockroachDBTable.class);
 
     CockroachDBTable(JdbcTemplate jdbcTemplate, CockroachDBDatabase database, CockroachDBSchema schema, String name) {
         super(jdbcTemplate, database, schema, name);
-    }
-
-    @Override
-    protected void doDrop() throws SQLException {
-        new CockroachDBRetryingStrategy().execute((SqlCallable<Integer>) () -> {
-            doDropOnce();
-            return null;
-        });
-    }
-
-    protected void doDropOnce() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE IF EXISTS " + database.quote(schema.getName(), name) + " CASCADE");
     }
 
     @Override
@@ -53,21 +40,21 @@ public class CockroachDBTable extends BaseTable<CockroachDBDatabase, CockroachDB
     }
 
     protected boolean doExistsOnce() throws SQLException {
-        if (schema.cockroachDB1) {
+        if (getSchema().cockroachDB1) {
             return jdbcTemplate.queryForBoolean("SELECT EXISTS (\n" +
                                                 "   SELECT 1\n" +
                                                 "   FROM   information_schema.tables \n" +
                                                 "   WHERE  table_schema = ?\n" +
                                                 "   AND    table_name = ?\n" +
-                                                ")", schema.getName(), name);
-        } else if (!schema.hasSchemaSupport) {
+                                                ")", getSchema().getName(), getName());
+        } else if (!getSchema().hasSchemaSupport) {
             return jdbcTemplate.queryForBoolean("SELECT EXISTS (\n" +
                                                 "   SELECT 1\n" +
                                                 "   FROM   information_schema.tables \n" +
                                                 "   WHERE  table_catalog = ?\n" +
                                                 "   AND    table_schema = 'public'\n" +
                                                 "   AND    table_name = ?\n" +
-                                                ")", schema.getName(), name);
+                                                ")", getSchema().getName(), getName());
         } else {
             // There is a bug in CockroachDB v20.2.0-beta.* which causes the string equality operator to not work as
             // expected, therefore we apply a workaround using the like operator.
@@ -76,9 +63,9 @@ public class CockroachDBTable extends BaseTable<CockroachDBDatabase, CockroachDB
                          "   SELECT 1\n" +
                          "   FROM   information_schema.tables \n" +
                          "   WHERE  table_schema = ?\n" +
-                         "   AND    table_name like '%" + name + "%' and length(table_name) = length(?)\n" +
+                         "   AND    table_name like '%" + getName() + "%' and length(table_name) = length(?)\n" +
                          ")";
-            return jdbcTemplate.queryForBoolean(sql, schema.getName(), name);
+            return jdbcTemplate.queryForBoolean(sql, getSchema().getName(), getName());
         }
     }
 
@@ -90,5 +77,10 @@ public class CockroachDBTable extends BaseTable<CockroachDBDatabase, CockroachDB
 
     @Override
     protected void doUnlock() {
+    }
+
+    @Override
+    public CockroachDBSchema getSchema() {
+        return (CockroachDBSchema) super.getSchema();
     }
 }

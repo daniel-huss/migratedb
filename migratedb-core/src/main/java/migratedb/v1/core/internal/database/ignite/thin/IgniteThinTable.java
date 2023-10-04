@@ -28,7 +28,7 @@ import java.util.UUID;
 /**
  * Ignite Thin-specific table.
  */
-public class IgniteThinTable extends BaseTable<IgniteThinDatabase, IgniteThinSchema> {
+public class IgniteThinTable extends BaseTable {
     private static final Log LOG = Log.getLog(IgniteThinTable.class);
 
     private final String tableLockString = UUID.randomUUID().toString();
@@ -47,13 +47,8 @@ public class IgniteThinTable extends BaseTable<IgniteThinDatabase, IgniteThinSch
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + database.quote(schema.getName(), name) + " CASCADE");
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
-        return exists(null, schema, name);
+        return exists(null, getSchema(), getName());
     }
 
     @Override
@@ -86,16 +81,16 @@ public class IgniteThinTable extends BaseTable<IgniteThinDatabase, IgniteThinSch
         }
         // Check that there are no other locks in place. This should not happen!
         int competingLocksTaken = jdbcTemplate.queryForInt(
-            "SELECT COUNT(*) FROM " + this + " WHERE " + database.quote("version") + " != '" + tableLockString +
-            "' AND " +
-            database.quote("description") + " = 'migratedb-lock'");
+                "SELECT COUNT(*) FROM " + this + " WHERE " + getDatabase().quote("version") + " != '" + tableLockString +
+                "' AND " +
+                getDatabase().quote("description") + " = 'migratedb-lock'");
         if (competingLocksTaken > 0) {
             throw new MigrateDbException("Internal error: on unlocking, a competing lock was found");
         }
         // Remove the locking row
         jdbcTemplate.executeStatement(
-            "DELETE FROM " + this + " WHERE " + database.quote("version") + " = '" + tableLockString + "' AND " +
-            database.quote("description") + " = 'migratedb-lock'");
+                "DELETE FROM " + this + " WHERE " + getDatabase().quote("version") + " = '" + tableLockString + "' AND " +
+                getDatabase().quote("description") + " = 'migratedb-lock'");
     }
 
     private boolean insertLockingRow() {

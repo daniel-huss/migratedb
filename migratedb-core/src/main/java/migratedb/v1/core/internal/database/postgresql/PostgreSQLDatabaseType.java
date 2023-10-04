@@ -28,6 +28,8 @@ import java.sql.Connection;
 import java.sql.Types;
 
 public class PostgreSQLDatabaseType extends BaseDatabaseType {
+    public static final int PRIORITY = DEFAULT_PRIORITY;
+
     @Override
     public String getName() {
         return "PostgreSQL";
@@ -39,13 +41,18 @@ public class PostgreSQLDatabaseType extends BaseDatabaseType {
     }
 
     @Override
+    public int getPriority() {
+        return PRIORITY;
+    }
+
+    @Override
     public boolean handlesDatabaseProductNameAndVersion(String databaseProductName, String databaseProductVersion,
                                                         Connection connection) {
         return databaseProductName.startsWith("PostgreSQL");
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         return new PostgreSQLDatabase(configuration, jdbcConnectionFactory);
     }
 

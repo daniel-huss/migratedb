@@ -45,6 +45,8 @@ import java.sql.SQLException;
 public abstract class BaseDatabaseType implements DatabaseType {
     private static final Log LOG = Log.getLog(BaseDatabaseType.class);
 
+    public static final int DEFAULT_PRIORITY = 0;
+
     /**
      * @return The human-readable name for this database.
      */
@@ -68,12 +70,13 @@ public abstract class BaseDatabaseType implements DatabaseType {
      */
     @Override
     public int getPriority() {
-        return 0;
+        return DEFAULT_PRIORITY;
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, boolean printInfo,
-                                      JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration,
+                                   boolean printInfo,
+                                   JdbcConnectionFactory jdbcConnectionFactory) {
         String databaseProductName = jdbcConnectionFactory.getProductName();
         if (printInfo) {
             LOG.info("Database: " + jdbcConnectionFactory.getJdbcUrl() + " (" + databaseProductName + ")");
@@ -85,15 +88,15 @@ public abstract class BaseDatabaseType implements DatabaseType {
         String intendedCurrentSchema = configuration.getDefaultSchema();
         if (!database.supportsChangingCurrentSchema() && intendedCurrentSchema != null) {
             LOG.warn(databaseProductName + " does not support setting the schema for the current session. " +
-                    "Default schema will NOT be changed to " + intendedCurrentSchema + " !");
+                     "Default schema will NOT be changed to " + intendedCurrentSchema + " !");
         }
 
         return database;
     }
 
     @Override
-    public abstract Database<?> createDatabase(Configuration configuration,
-                                               JdbcConnectionFactory jdbcConnectionFactory);
+    public abstract Database createDatabase(Configuration configuration,
+                                            JdbcConnectionFactory jdbcConnectionFactory);
 
     @Override
     public abstract BaseParser createParser(Configuration configuration, ResourceProvider resourceProvider,
@@ -103,11 +106,11 @@ public abstract class BaseDatabaseType implements DatabaseType {
     public SqlScriptFactory createSqlScriptFactory(Configuration configuration, ParsingContext parsingContext) {
         return (resource, mixed, resourceProvider) ->
                 new ParserSqlScript(createParser(configuration,
-                        resourceProvider,
-                        parsingContext),
-                        resource,
-                        SqlScriptMetadataImpl.getMetadataResource(resourceProvider, resource),
-                        mixed);
+                                                 resourceProvider,
+                                                 parsingContext),
+                                    resource,
+                                    SqlScriptMetadataImpl.getMetadataResource(resourceProvider, resource),
+                                    mixed);
     }
 
     @Override
@@ -116,12 +119,12 @@ public abstract class BaseDatabaseType implements DatabaseType {
         DatabaseType thisRef = this;
         return (connection, outputQueryResults) ->
                 new DefaultSqlScriptExecutor(new JdbcTemplate(connection, thisRef),
-                        callbackExecutor,
-                        outputQueryResults);
+                                             callbackExecutor,
+                                             outputQueryResults);
     }
 
     @Override
-    public DatabaseExecutionStrategy createExecutionStrategy(java.sql.Connection connection) {
+    public DatabaseExecutionStrategy createExecutionStrategy(Connection connection) {
         return new DefaultExecutionStrategy();
     }
 

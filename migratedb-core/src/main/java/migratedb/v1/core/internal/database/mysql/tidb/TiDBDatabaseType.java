@@ -43,7 +43,7 @@ public class TiDBDatabaseType extends MySQLDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         return new TiDBDatabase(configuration, jdbcConnectionFactory);
     }
 }

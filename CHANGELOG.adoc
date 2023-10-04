@@ -6,7 +6,26 @@ The format is based on https://keepachangelog.com/en/1.1.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
-== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.3.0[0.3.0]
+== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.0.0[1.0.0] - unreleased
+
+=== Added
+
+* Item
+
+=== Changed
+
+* 🔥 Renamed internal `Connection` API to `Session`.
+
+=== Removed
+
+* 🔥 Type parameters from internal `SchemaObject` API and its subclasses.
+* 🔥 Internal database schema model no longer needs to implement dropping schema objects.
+
+=== Fixed
+
+* 🔥 Removed broken and unused constructor in `MigrationState`.
+
+== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.3.0[0.3.0] - 2023-09-27
 
 NOTE: This is an early access 0.x release, which means *everything* is subject to change.
 Feedback is very welcome!

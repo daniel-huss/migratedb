@@ -27,7 +27,7 @@ import java.sql.SQLException;
 /**
  * Informix database.
  */
-public class InformixDatabase extends BaseDatabase<InformixConnection> {
+public class InformixDatabase extends BaseDatabase {
     /**
      * Creates a new instance.
      *
@@ -38,8 +38,8 @@ public class InformixDatabase extends BaseDatabase<InformixConnection> {
     }
 
     @Override
-    protected InformixConnection doGetConnection(Connection connection) {
-        return new InformixConnection(this, connection);
+    protected InformixSession doGetConnection(Connection connection) {
+        return new InformixSession(this, connection);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class InformixDatabase extends BaseDatabase<InformixConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         String tablespace = configuration.getTablespace() == null
                 ? ""
                 : " IN \"" + configuration.getTablespace() + "\"";

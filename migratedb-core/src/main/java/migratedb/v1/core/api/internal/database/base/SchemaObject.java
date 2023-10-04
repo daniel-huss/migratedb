@@ -17,17 +17,15 @@
 
 package migratedb.v1.core.api.internal.database.base;
 
-public interface SchemaObject<D extends Database<?>, S extends Schema<?, ?>> {
+public interface SchemaObject {
     /**
      * @return The schema this object lives in.
      */
-    S getSchema();
+    Schema getSchema();
 
-    D getDatabase();
+    Database getDatabase();
 
     String getName();
-
-    void drop();
 
     /**
      * @return The quoted qualified name of this schema object.

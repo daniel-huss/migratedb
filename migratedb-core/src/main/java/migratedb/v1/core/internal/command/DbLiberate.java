@@ -50,18 +50,18 @@ public class DbLiberate {
 
     private final SchemaHistory schemaHistory;
     private final Configuration configuration;
-    private final Database<?> database;
-    private final Schema<?, ?> defaultSchema;
-    private final Schema<?, ?>[] schemas;
+    private final Database database;
+    private final Schema defaultSchema;
+    private final Schema[] schemas;
     private final CallbackExecutor callbackExecutor;
     private final JdbcTemplate jdbcTemplate;
     private final boolean failOnNonEmptySchemaHistoryTable;
 
     public DbLiberate(SchemaHistory schemaHistory,
                       Configuration configuration,
-                      Database<?> database,
-                      Schema<?, ?> defaultSchema,
-                      Schema<?, ?>[] schemas,
+                      Database database,
+                      Schema defaultSchema,
+                      Schema[] schemas,
                       CallbackExecutor callbackExecutor,
                       boolean failOnNonEmptySchemaHistoryTable) {
         this.schemaHistory = schemaHistory;
@@ -126,7 +126,7 @@ public class DbLiberate {
         });
     }
 
-    private List<LiberateAction> convertToMigrateDb(Table<?, ?> fromTable) {
+    private List<LiberateAction> convertToMigrateDb(Table fromTable) {
         try {
             var output = new ArrayList<LiberateAction>();
             var oldSchemaHistory = collectOldSchemaHistory(fromTable, output);
@@ -137,7 +137,7 @@ public class DbLiberate {
         }
     }
 
-    private List<OldSchemaHistoryRow> collectOldSchemaHistory(Table<?, ?> fromTable,
+    private List<OldSchemaHistoryRow> collectOldSchemaHistory(Table fromTable,
                                                               List<LiberateAction> output) throws SQLException {
         var oldSchemaHistory = new LinkedList<OldSchemaHistoryRow>();
         var rows = new ArrayList<>(jdbcTemplate.query("select * from " + fromTable, this::readOldSchemaHistoryRow));

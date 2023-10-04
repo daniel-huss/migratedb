@@ -26,7 +26,7 @@ import java.sql.Connection;
 /**
  * HSQLDB database.
  */
-public class HSQLDBDatabase extends BaseDatabase<HSQLDBConnection> {
+public class HSQLDBDatabase extends BaseDatabase {
     /**
      * Creates a new instance.
      *
@@ -37,8 +37,8 @@ public class HSQLDBDatabase extends BaseDatabase<HSQLDBConnection> {
     }
 
     @Override
-    protected HSQLDBConnection doGetConnection(Connection connection) {
-        return new HSQLDBConnection(this, connection);
+    protected HSQLDBSession doGetConnection(Connection connection) {
+        return new HSQLDBSession(this, connection);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class HSQLDBDatabase extends BaseDatabase<HSQLDBConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
                 "    \"installed_rank\" INT NOT NULL,\n" +
                 "    \"version\" VARCHAR(50),\n" +

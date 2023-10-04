@@ -18,29 +18,30 @@ package migratedb.v1.core.internal.database.sqlserver.synapse;
 
 import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.database.base.Table;
-import migratedb.v1.core.internal.database.sqlserver.SQLServerConnection;
+import migratedb.v1.core.internal.database.sqlserver.SQLServerSession;
 import migratedb.v1.core.internal.jdbc.ExecutionTemplateFactory;
 
+import java.sql.Connection;
 import java.util.concurrent.Callable;
 
 /**
  * Azure Synapse connection.
  */
-public class SynapseConnection extends SQLServerConnection {
+public class SynapseSession extends SQLServerSession {
 
-    SynapseConnection(SynapseDatabase database, java.sql.Connection connection) {
+    SynapseSession(SynapseDatabase database, Connection connection) {
         super(database, connection);
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new SynapseSchema(jdbcTemplate, database, originalDatabaseName, name);
+    public SynapseSchema getSchema(String name) {
+        return new SynapseSchema(jdbcTemplate, getDatabase(), originalDatabaseName, name);
     }
 
     @Override
-    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
+    public <T> T lock(Table table, Callable<T> callable) {
         return ExecutionTemplateFactory
-                .createTableExclusiveExecutionTemplate(jdbcTemplate.getConnection(), table, database)
+                .createTableExclusiveExecutionTemplate(jdbcTemplate.getConnection(), table, getDatabase())
                 .execute(callable);
     }
 

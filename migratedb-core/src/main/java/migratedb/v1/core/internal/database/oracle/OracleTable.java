@@ -24,7 +24,7 @@ import java.sql.SQLException;
 /**
  * Oracle-specific table.
  */
-public class OracleTable extends BaseTable<OracleDatabase, OracleSchema> {
+public class OracleTable extends BaseTable {
     /**
      * Creates a new Oracle table.
      *
@@ -38,13 +38,8 @@ public class OracleTable extends BaseTable<OracleDatabase, OracleSchema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + database.quote(schema.getName(), name) + " CASCADE CONSTRAINTS PURGE");
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
-        return exists(null, schema, name);
+        return exists(null, getSchema(), getName());
     }
 
     @Override

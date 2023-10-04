@@ -16,17 +16,17 @@
  */
 package migratedb.v1.core.internal.database.sybasease;
 
-import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.v1.core.internal.database.base.BaseSchema;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Sybase ASE schema (database).
  */
-public class SybaseASESchema extends BaseSchema<SybaseASEDatabase, SybaseASETable> {
+public class SybaseASESchema extends BaseSchema {
     SybaseASESchema(JdbcTemplate jdbcTemplate, SybaseASEDatabase database, String name) {
         super(jdbcTemplate, database, name);
     }
@@ -38,12 +38,12 @@ public class SybaseASESchema extends BaseSchema<SybaseASEDatabase, SybaseASETabl
     }
 
     @Override
-    protected boolean doEmpty() throws SQLException {
+    protected boolean doCheckIfEmpty() throws SQLException {
         //There is no schema in SAP ASE, check whether database is empty
         //Check for tables, views stored procs and triggers
         return jdbcTemplate.queryForInt(
-            "select count(*) from sysobjects ob where (ob.type='U' or ob.type = 'V' or ob.type = 'P' or ob.type = " +
-            "'TR') and ob.name != 'sysquerymetrics'") ==
+                "select count(*) from sysobjects ob where (ob.type='U' or ob.type = 'V' or ob.type = 'P' or ob.type = " +
+                "'TR') and ob.name != 'sysquerymetrics'") ==
                0;
     }
 
@@ -53,45 +53,23 @@ public class SybaseASESchema extends BaseSchema<SybaseASEDatabase, SybaseASETabl
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        //There is no schema in Sybase, no schema can be dropped. Clean instead.
-        doClean();
-    }
-
-    /**
-     * This clean method is equivalent to cleaning the whole database.
-     *
-     */
-    @Override
-    protected void doClean() throws SQLException {
-        //Drop view
-        dropObjects("V");
-        //Drop tables
-        dropObjects("U");
-        //Drop stored procs
-        dropObjects("P");
-        //Drop triggers
-        dropObjects("TR");
-    }
-
-    @Override
-    protected SybaseASETable[] doAllTables() throws SQLException {
-        //Retrieving all table names
+    protected List<SybaseASETable> doAllTables() throws SQLException {
         List<String> tableNames = retrieveAllTableNames();
-
-        SybaseASETable[] result = new SybaseASETable[tableNames.size()];
-
-        for (int i = 0; i < tableNames.size(); i++) {
-            String tableName = tableNames.get(i);
-            result[i] = new SybaseASETable(jdbcTemplate, database, this, tableName);
+        List<SybaseASETable> tables = new ArrayList<>(tableNames.size());
+        for (String tableName : tableNames) {
+            tables.add(new SybaseASETable(jdbcTemplate, getDatabase(), this, tableName));
         }
-
-        return result;
+        return tables;
     }
 
     @Override
-    public Table<?, ?> getTable(String tableName) {
-        return new SybaseASETable(jdbcTemplate, database, this, tableName);
+    protected SybaseASEDatabase getDatabase() {
+        return (SybaseASEDatabase) super.getDatabase();
+    }
+
+    @Override
+    public SybaseASETable getTable(String tableName) {
+        return new SybaseASETable(jdbcTemplate, getDatabase(), this, tableName);
     }
 
     /**
@@ -100,32 +78,5 @@ public class SybaseASESchema extends BaseSchema<SybaseASEDatabase, SybaseASETabl
     private List<String> retrieveAllTableNames() throws SQLException {
         return jdbcTemplate.queryForStringList("select ob.name from sysobjects ob where ob.type=? order by ob.name",
                                                "U");
-    }
-
-    private void dropObjects(String sybaseObjType) throws SQLException {
-        //Getting the table names
-        List<String> objNames = jdbcTemplate.queryForStringList(
-            "select ob.name from sysobjects ob where ob.type=? order by ob.name",
-            sybaseObjType);
-
-        //for each table, drop it
-        for (String name : objNames) {
-            String sql;
-
-            if ("U".equals(sybaseObjType)) {
-                sql = "drop table ";
-            } else if ("V".equals(sybaseObjType)) {
-                sql = "drop view ";
-            } else if ("P".equals(sybaseObjType)) {
-                //dropping stored procedure
-                sql = "drop procedure ";
-            } else if ("TR".equals(sybaseObjType)) {
-                sql = "drop trigger ";
-            } else {
-                throw new IllegalArgumentException("Unknown database object type " + sybaseObjType);
-            }
-
-            jdbcTemplate.execute(sql + name);
-        }
     }
 }

@@ -17,16 +17,15 @@
 package migratedb.v1.core.internal.database.snowflake;
 
 import migratedb.v1.core.api.MigrateDbException;
-import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
-public class SnowflakeConnection extends BaseConnection<SnowflakeDatabase> {
-
+public class SnowflakeSession extends BaseSession {
     private final String originalRole;
 
-    SnowflakeConnection(SnowflakeDatabase database, java.sql.Connection connection) {
+    SnowflakeSession(SnowflakeDatabase database, Connection connection) {
         super(database, connection);
         try {
             this.originalRole = jdbcTemplate.queryForString("SELECT CURRENT_ROLE()");
@@ -38,7 +37,7 @@ public class SnowflakeConnection extends BaseConnection<SnowflakeDatabase> {
     @Override
     protected void doRestoreOriginalState() throws SQLException {
         // Reset the role to its original value in case a migration or callback changed it
-        jdbcTemplate.execute("USE ROLE " + database.quote(originalRole));
+        jdbcTemplate.execute("USE ROLE " + getDatabase().quote(originalRole));
     }
 
     @Override
@@ -49,11 +48,16 @@ public class SnowflakeConnection extends BaseConnection<SnowflakeDatabase> {
 
     @Override
     public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
-        jdbcTemplate.execute("USE SCHEMA " + database.quote(schema));
+        jdbcTemplate.execute("USE SCHEMA " + getDatabase().quote(schema));
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new SnowflakeSchema(jdbcTemplate, database, name);
+    public SnowflakeSchema getSchema(String name) {
+        return new SnowflakeSchema(jdbcTemplate, getDatabase(), name);
+    }
+
+    @Override
+    public SnowflakeDatabase getDatabase() {
+        return (SnowflakeDatabase) super.getDatabase();
     }
 }

@@ -70,7 +70,7 @@ public interface DatabaseType {
      * @param printInfo             Where the DB info should be printed in the logs.
      * @return The appropriate Database class.
      */
-    Database<?> createDatabase(Configuration configuration,
+    Database createDatabase(Configuration configuration,
                                boolean printInfo,
                                JdbcConnectionFactory jdbcConnectionFactory);
 
@@ -81,7 +81,7 @@ public interface DatabaseType {
      * @param jdbcConnectionFactory The current connection factory.
      * @return The Database.
      */
-    Database<?> createDatabase(Configuration configuration,
+    Database createDatabase(Configuration configuration,
                                JdbcConnectionFactory jdbcConnectionFactory);
 
     /**

@@ -44,7 +44,6 @@ import migratedb.v1.core.internal.schemahistory.SchemaHistoryFactory;
 import migratedb.v1.core.internal.util.LocationScanner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 final class MigrateDbExecutor {
@@ -53,16 +52,16 @@ final class MigrateDbExecutor {
     static final class CommandContext {
         public final MigrationResolver migrationResolver;
         public final SchemaHistory schemaHistory;
-        public final Database<?> database;
-        public final Schema<?, ?> defaultSchema;
-        public final Schema<?, ?>[] schemas;
+        public final Database database;
+        public final Schema defaultSchema;
+        public final Schema[] schemas;
         public final CallbackExecutor callbackExecutor;
 
         CommandContext(MigrationResolver migrationResolver,
                        SchemaHistory schemaHistory,
-                       Database<?> database,
-                       Schema<?, ?> defaultSchema,
-                       Schema<?, ?>[] schemas,
+                       Database database,
+                       Schema defaultSchema,
+                       Schema[] schemas,
                        CallbackExecutor callbackExecutor) {
             this.migrationResolver = migrationResolver;
             this.schemaHistory = schemaHistory;
@@ -161,12 +160,10 @@ final class MigrateDbExecutor {
                     database,
                     schemas.defaultSchema,
                     prepareCallbacks(
-                            database,
                             resourceProvider,
                             jdbcConnectionFactory,
-                            sqlScriptFactory,
-                            schemas.defaultSchema,
-                            parsingContext));
+                            sqlScriptFactory
+                    ));
 
             var sqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
                     jdbcConnectionFactory,
@@ -242,12 +239,9 @@ final class MigrateDbExecutor {
         return new ResourceAndClassProviders(resourceProvider, classProvider);
     }
 
-    private List<Callback> prepareCallbacks(Database<?> database,
-                                            ResourceProvider resourceProvider,
+    private List<Callback> prepareCallbacks(ResourceProvider resourceProvider,
                                             JdbcConnectionFactory jdbcConnectionFactory,
-                                            SqlScriptFactory sqlScriptFactory,
-                                            Schema<?, ?> schema,
-                                            ParsingContext parsingContext) {
+                                            SqlScriptFactory sqlScriptFactory) {
         List<Callback> effectiveCallbacks = new ArrayList<>(configuration.getCallbacks());
 
         if (!configuration.isSkipDefaultCallbacks()) {

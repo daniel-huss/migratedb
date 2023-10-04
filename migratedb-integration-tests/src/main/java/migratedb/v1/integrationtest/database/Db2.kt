@@ -19,7 +19,9 @@ package migratedb.v1.integrationtest.database
 import com.github.dockerjava.api.model.Capability
 import com.ibm.db2.jcc.DB2SimpleDataSource
 import migratedb.v1.core.api.configuration.FluentConfiguration
+import migratedb.v1.core.internal.database.db2.DB2Database
 import migratedb.v1.core.internal.database.db2.DB2DatabaseType
+import migratedb.v1.core.internal.database.db2.DB2Schema
 import migratedb.v1.core.internal.jdbc.JdbcConnectionFactoryImpl
 import migratedb.v1.integrationtest.database.mutation.Db2CreateTableMutation
 import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
@@ -114,7 +116,7 @@ enum class Db2(image: String) : DbSystem {
             val connectionFactory = JdbcConnectionFactoryImpl(ds::getConnection, it)
             // JdbcConnectionFactoryImpl always opens a connection, creating a leak if not closed...
             connectionFactory.openConnection().use { }
-            type.createDatabase(it, connectionFactory)
+            type.createDatabase(it, connectionFactory) as DB2Database
         }
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
@@ -126,10 +128,11 @@ enum class Db2(image: String) : DbSystem {
         }
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
-            val schema = db.mainConnection.getSchema(namespace.toString())
-            if (schema.exists()) {
-                schema.drop()
-            }
+            Db2SchemaDropper(
+                db.mainConnection.getSchema(namespace.toString()) as DB2Schema,
+                db,
+                db.mainConnection.jdbcTemplate
+            ).drop()
         }
 
         override fun newAdminConnection(namespace: SafeIdentifier): DataSource {

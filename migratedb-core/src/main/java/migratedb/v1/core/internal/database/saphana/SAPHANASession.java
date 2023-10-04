@@ -17,20 +17,21 @@
 package migratedb.v1.core.internal.database.saphana;
 
 import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
-public class SAPHANAConnection extends BaseConnection<SAPHANADatabase> {
+public class SAPHANASession extends BaseSession {
     private final boolean isCloud;
 
-    SAPHANAConnection(SAPHANADatabase database, java.sql.Connection connection) {
+    SAPHANASession(SAPHANADatabase database, Connection connection) {
         super(database, connection);
         try {
             String build = jdbcTemplate.queryForString("SELECT VALUE FROM M_HOST_INFORMATION WHERE KEY='build_branch'");
-            // Cloud databases will be fa/CE<year>.<build> eg. fa/CE2020.48
-            // On-premise will be fa/hana<version>sp<servicepack> eg. fa/hana2sp05
+            // Cloud databases will be fa/CE<year>.<build> e.g. fa/CE2020.48
+            // On-premise will be fa/hana<version>sp<servicepack> e.g. fa/hana2sp05
             isCloud = build.startsWith("fa/CE");
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to determine build edition", e);
@@ -48,11 +49,16 @@ public class SAPHANAConnection extends BaseConnection<SAPHANADatabase> {
 
     @Override
     public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
-        jdbcTemplate.execute("SET SCHEMA " + database.quote(schema));
+        jdbcTemplate.execute("SET SCHEMA " + getDatabase().quote(schema));
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new SAPHANASchema(jdbcTemplate, database, name);
+    public Schema getSchema(String name) {
+        return new SAPHANASchema(jdbcTemplate, getDatabase(), name);
+    }
+
+    @Override
+    public SAPHANADatabase getDatabase() {
+        return (SAPHANADatabase) super.getDatabase();
     }
 }

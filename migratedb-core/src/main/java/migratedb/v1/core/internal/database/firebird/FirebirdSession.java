@@ -14,26 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.v1.core.internal.database.sqlite;
+package migratedb.v1.core.internal.database.firebird;
 
 import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 
-/**
- * SQLite connection.
- */
-public class SQLiteConnection extends BaseConnection<SQLiteDatabase> {
-    SQLiteConnection(SQLiteDatabase database, java.sql.Connection connection) {
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public class FirebirdSession extends BaseSession {
+    private static final String DUMMY_SCHEMA_NAME = "default";
+
+    FirebirdSession(FirebirdDatabase database, Connection connection) {
         super(database, connection);
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new SQLiteSchema(jdbcTemplate, database, name);
+    protected String getCurrentSchemaNameOrSearchPath() throws SQLException {
+        return DUMMY_SCHEMA_NAME;
     }
 
     @Override
-    protected String getCurrentSchemaNameOrSearchPath() {
-        return "main";
+    public Schema getSchema(String name) {
+        // database == schema, always return the same dummy schema
+        return new FirebirdSchema(jdbcTemplate, getDatabase(), DUMMY_SCHEMA_NAME);
+    }
+
+    @Override
+    public FirebirdDatabase getDatabase() {
+        return (FirebirdDatabase) super.getDatabase();
     }
 }

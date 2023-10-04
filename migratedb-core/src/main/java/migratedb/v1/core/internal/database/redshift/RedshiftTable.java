@@ -25,7 +25,7 @@ import java.util.Locale;
 /**
  * Redshift-specific table.
  */
-public class RedshiftTable extends BaseTable<RedshiftDatabase, RedshiftSchema> {
+public class RedshiftTable extends BaseTable {
     /**
      * Creates a new Redshift table.
      *
@@ -39,11 +39,6 @@ public class RedshiftTable extends BaseTable<RedshiftDatabase, RedshiftSchema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + database.quote(schema.getName(), name) + " CASCADE");
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
         return jdbcTemplate.queryForBoolean("SELECT EXISTS (\n" +
                                             "  SELECT 1\n" +
@@ -53,8 +48,8 @@ public class RedshiftTable extends BaseTable<RedshiftDatabase, RedshiftSchema> {
                                             "  AND    c.relname = ?\n" +
                                             "  AND    c.relkind = 'r'\n" + // only tables
                                             ")",
-                                            schema.getName(),
-                name.toLowerCase(Locale.ROOT)
+                                            getSchema().getName(),
+                getName().toLowerCase(Locale.ROOT)
                                             // Redshift table names are case-insensitive and always in lowercase in pg_class.
         );
     }

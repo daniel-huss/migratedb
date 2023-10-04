@@ -17,7 +17,7 @@
 package migratedb.v1.core.internal.schemahistory;
 
 import migratedb.v1.core.api.*;
-import migratedb.v1.core.api.internal.database.base.Connection;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Database;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
@@ -52,12 +52,12 @@ class JdbcTableSchemaHistory extends SchemaHistory {
     /**
      * The database to use.
      */
-    private final Database<?> database;
+    private final Database database;
 
     /**
      * Connection with access to the database.
      */
-    private final Connection<?> connection;
+    private final Session connection;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -73,7 +73,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
      * @param table    The schema history table used by MigrateDB.
      */
     JdbcTableSchemaHistory(SqlScriptExecutorFactory sqlScriptExecutorFactory, SqlScriptFactory sqlScriptFactory,
-                           Database<?> database, Table<?, ?> table) {
+                           Database database, Table table) {
         this.sqlScriptExecutorFactory = sqlScriptExecutorFactory;
         this.sqlScriptFactory = sqlScriptFactory;
         this.table = table;
@@ -210,7 +210,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
             cache.addAll(jdbcTemplate.query(query, rs -> {
                 // Construct a map of lower-cased column names to ordinals. This is useful for databases that
                 // upper-case them - eg Snowflake with QUOTED-IDENTIFIERS-IGNORE-CASE turned on
-                HashMap<String, Integer> columnOrdinalMap = constructColumnOrdinalMap(rs);
+                var columnOrdinalMap = constructColumnOrdinalMap(rs);
 
                 String checksum = rs.getString(columnOrdinalMap.get("checksum"));
                 if (rs.wasNull()) {
@@ -245,7 +245,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
         }
     }
 
-    private HashMap<String, Integer> constructColumnOrdinalMap(ResultSet rs) throws SQLException {
+    private Map<String, Integer> constructColumnOrdinalMap(ResultSet rs) throws SQLException {
         HashMap<String, Integer> columnOrdinalMap = new HashMap<>();
         ResultSetMetaData metadata = rs.getMetaData();
 
@@ -282,13 +282,13 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
             for (AppliedMigration appliedMigration : appliedMigrations) {
                 jdbcTemplate.execute("DELETE FROM " + table +
-                        " WHERE " + database.quote("success") + " = " + database.getBooleanFalse() +
-                        " AND " +
-                        (appliedMigration.getVersion() != null ?
-                                database.quote("version") + " = '" + appliedMigration.getVersion() +
-                                        "'" :
-                                database.quote("description") + " = '" + appliedMigration.getDescription() +
-                                        "'"));
+                                     " WHERE " + database.quote("success") + " = " + database.getBooleanFalse() +
+                                     " AND " +
+                                     (appliedMigration.getVersion() != null ?
+                                             database.quote("version") + " = '" + appliedMigration.getVersion() +
+                                             "'" :
+                                             database.quote("description") + " = '" + appliedMigration.getDescription() +
+                                             "'"));
             }
 
             clearCache();
@@ -343,11 +343,11 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         try {
             jdbcTemplate.update("UPDATE " + table
-                            + " SET "
-                            + database.quote("description") + "=? , "
-                            + database.quote("type") + "=? , "
-                            + database.quote("checksum") + "=?"
-                            + " WHERE " + database.quote("installed_rank") + "=?",
+                                + " SET "
+                                + database.quote("description") + "=? , "
+                                + database.quote("type") + "=? , "
+                                + database.quote("checksum") + "=?"
+                                + " WHERE " + database.quote("installed_rank") + "=?",
                     description, type.name(), checksumObj, appliedMigration.getInstalledRank());
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to repair Schema History table " + table
@@ -372,9 +372,9 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         try {
             jdbcTemplate.update("UPDATE " + table
-                            + " SET "
-                            + database.quote("type") + "=?  "
-                            + " WHERE " + database.quote("installed_rank") + "=?",
+                                + " SET "
+                                + database.quote("type") + "=?  "
+                                + " WHERE " + database.quote("installed_rank") + "=?",
                     "DELETED", appliedMigration.getInstalledRank());
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to repair Schema History table " + table

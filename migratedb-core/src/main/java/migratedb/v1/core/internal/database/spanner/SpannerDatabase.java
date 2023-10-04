@@ -23,14 +23,14 @@ import migratedb.v1.core.internal.database.base.BaseDatabase;
 
 import java.sql.Connection;
 
-public class SpannerDatabase extends BaseDatabase<SpannerConnection> {
+public class SpannerDatabase extends BaseDatabase {
     public SpannerDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);
     }
 
     @Override
-    protected SpannerConnection doGetConnection(Connection connection) {
-        return new SpannerConnection(this, connection);
+    protected SpannerSession doGetConnection(Connection connection) {
+        return new SpannerSession(this, connection);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class SpannerDatabase extends BaseDatabase<SpannerConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         return "" +
                 "CREATE TABLE " + table.getName() + " (\n" +
                 "    installed_rank INT64 NOT NULL,\n" +
@@ -107,17 +107,17 @@ public class SpannerDatabase extends BaseDatabase<SpannerConnection> {
     }
 
     @Override
-    public String getInsertStatement(Table<?, ?> table) {
+    public String getInsertStatement(Table table) {
         return "INSERT INTO " + table
-                + " (" + quote("installed_rank")
-                + ", " + quote("version")
-                + ", " + quote("description")
-                + ", " + quote("type")
-                + ", " + quote("script")
-                + ", " + quote("checksum")
-                + ", " + quote("installed_by")
-                + ", " + quote("installed_on")
-                + ", " + quote("execution_time")
+               + " (" + quote("installed_rank")
+               + ", " + quote("version")
+               + ", " + quote("description")
+               + ", " + quote("type")
+               + ", " + quote("script")
+               + ", " + quote("checksum")
+               + ", " + quote("installed_by")
+               + ", " + quote("installed_on")
+               + ", " + quote("execution_time")
                + ", " + quote("success")
                + ")"
                + " VALUES (?, ?, ?, ?, ?, ?, ?, PENDING_COMMIT_TIMESTAMP(), ?, ?)";

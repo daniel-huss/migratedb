@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class OracleDatabase extends BaseDatabase<OracleConnection> {
+public class OracleDatabase extends BaseDatabase {
     private static final String ORACLE_NET_TNS_ADMIN = "oracle.net.tns_admin";
 
     /**
@@ -48,8 +48,8 @@ public class OracleDatabase extends BaseDatabase<OracleConnection> {
     }
 
     @Override
-    protected OracleConnection doGetConnection(Connection connection) {
-        return new OracleConnection(this, connection);
+    protected OracleSession doGetConnection(Connection connection) {
+        return new OracleSession(this, connection);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class OracleDatabase extends BaseDatabase<OracleConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         String tablespace = configuration.getTablespace() == null
                 ? ""
                 : " TABLESPACE \"" + configuration.getTablespace() + "\"";

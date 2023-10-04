@@ -16,9 +16,7 @@
  */
 package migratedb.v1.core.internal.database.ignite.thin;
 
-import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.internal.database.base.BaseSchema;
 import migratedb.v1.core.internal.util.StringUtils;
 
@@ -29,9 +27,7 @@ import java.util.List;
 /**
  * Apache Ignite implementation of Schema.
  */
-public class IgniteThinSchema extends BaseSchema<IgniteThinDatabase, IgniteThinTable> {
-    private static final Log LOG = Log.getLog(IgniteThinSchema.class);
-
+public class IgniteThinSchema extends BaseSchema {
     /**
      * Creates a new Ignite schema.
      *
@@ -50,101 +46,29 @@ public class IgniteThinSchema extends BaseSchema<IgniteThinDatabase, IgniteThinT
     }
 
     @Override
-    protected boolean doEmpty() {
-        return allTables().length == 0;
+    protected boolean doCheckIfEmpty() {
+        return allTables().isEmpty();
     }
 
     @Override
     protected void doCreate() throws SQLException {
-        jdbcTemplate.execute("CREATE SCHEMA " + database.quote(name)); //Unsupported now by Ignite
+        jdbcTemplate.execute("CREATE SCHEMA " + getDatabase().quote(name)); //Unsupported now by Ignite
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP SCHEMA " + database.quote(name));  //Unsupported now by Ignite
-    }
-
-    @Override
-    protected void doClean() throws SQLException {
-        for (var table : allTables()) {
-            table.drop();
-        }
-
-        List<String> sequenceNames = listObjectNames("SEQUENCE", "IS_GENERATED = false");
-        for (String statement : generateDropStatements("SEQUENCE", sequenceNames)) {
-            jdbcTemplate.execute(statement);
-        }
-
-        List<String> constantNames = listObjectNames("CONSTANT", "");
-        for (String statement : generateDropStatements("CONSTANT", constantNames)) {
-            jdbcTemplate.execute(statement);
-        }
-
-        List<String> aliasNames = jdbcTemplate.queryForStringList(
-            "SELECT ALIAS_NAME FROM INFORMATION_SCHEMA.FUNCTION_ALIASES WHERE ALIAS_SCHEMA = ?", name);
-        for (String statement : generateDropStatements("ALIAS", aliasNames)) {
-            jdbcTemplate.execute(statement);
-        }
-
-        List<String> domainNames = listObjectNames("DOMAIN", "");
-        if (!domainNames.isEmpty()) {
-            if (name.equals(database.getMainConnection().getCurrentSchema().getName())) {
-                for (String statement : generateDropStatementsForCurrentSchema("DOMAIN", domainNames)) {
-                    jdbcTemplate.execute(statement);
-                }
-            } else {
-                LOG.error("Unable to drop DOMAIN objects in schema " + database.quote(name));
-            }
-        }
-    }
-
-    /**
-     * Generate the statements for dropping all the objects of this type in this schema.
-     *
-     * @param objectType  The type of object to drop (Sequence, constant, ...)
-     * @param objectNames The names of the objects to drop.
-     *
-     * @return The list of statements.
-     */
-    private List<String> generateDropStatements(String objectType, List<String> objectNames) {
-        List<String> statements = new ArrayList<>();
-        for (String objectName : objectNames) {
-            String dropStatement =
-                "DROP " + objectType + database.quote(name, objectName);
-
-            statements.add(dropStatement);
-        }
-        return statements;
-    }
-
-    /**
-     * Generate the statements for dropping all the objects of this type in the current schema.
-     *
-     * @param objectType  The type of object to drop (Sequence, constant, ...)
-     * @param objectNames The names of the objects to drop.
-     *
-     * @return The list of statements.
-     */
-    private List<String> generateDropStatementsForCurrentSchema(String objectType, List<String> objectNames) {
-        List<String> statements = new ArrayList<>();
-        for (String objectName : objectNames) {
-            String dropStatement =
-                "DROP " + objectType + database.quote(objectName);
-
-            statements.add(dropStatement);
-        }
-        return statements;
-    }
-
-    @Override
-    protected IgniteThinTable[] doAllTables() throws SQLException {
+    protected List<IgniteThinTable> doAllTables() throws SQLException {
         List<String> tableNames = listObjectNames("TABLE", "TABLE_TYPE = 'TABLE' AND TABLE_NAME !='__T0'");
 
-        IgniteThinTable[] tables = new IgniteThinTable[tableNames.size()];
-        for (int i = 0; i < tableNames.size(); i++) {
-            tables[i] = new IgniteThinTable(jdbcTemplate, database, this, tableNames.get(i));
+        List<IgniteThinTable> tables = new ArrayList<>(tableNames.size());
+        for (var tableName : tableNames) {
+            tables.add(new IgniteThinTable(jdbcTemplate, getDatabase(), this, tableName));
         }
         return tables;
+    }
+
+    @Override
+    protected IgniteThinDatabase getDatabase() {
+        return (IgniteThinDatabase) super.getDatabase();
     }
 
     /**
@@ -152,9 +76,7 @@ public class IgniteThinSchema extends BaseSchema<IgniteThinDatabase, IgniteThinT
      *
      * @param objectType  The type of objects to list (Sequence, constant, ...)
      * @param querySuffix Suffix to append to the query to find the objects to list.
-     *
      * @return The names of the objects.
-     *
      * @throws SQLException when the object names could not be listed.
      */
     private List<String> listObjectNames(String objectType, String querySuffix) throws SQLException {
@@ -168,7 +90,7 @@ public class IgniteThinSchema extends BaseSchema<IgniteThinDatabase, IgniteThinT
     }
 
     @Override
-    public Table<?, ?> getTable(String tableName) {
-        return new IgniteThinTable(jdbcTemplate, database, this, tableName);
+    public IgniteThinTable getTable(String tableName) {
+        return new IgniteThinTable(jdbcTemplate, getDatabase(), this, tableName);
     }
 }

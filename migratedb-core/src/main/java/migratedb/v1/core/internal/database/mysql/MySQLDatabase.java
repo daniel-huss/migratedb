@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
+public class MySQLDatabase extends BaseDatabase {
     // See https://mariadb.com/kb/en/version/
     private static final Pattern MARIADB_VERSION_PATTERN = Pattern.compile(
             "(\\d+\\.\\d+)\\.\\d+(-\\d+)*-MariaDB(-\\w+)*");
@@ -129,7 +129,7 @@ public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         String tablespace =
 
                 configuration.getTablespace() == null
@@ -180,8 +180,8 @@ public class MySQLDatabase extends BaseDatabase<MySQLConnection> {
     }
 
     @Override
-    protected MySQLConnection doGetConnection(Connection connection) {
-        return new MySQLConnection(this, connection);
+    protected MySQLSession doGetConnection(Connection connection) {
+        return new MySQLSession(this, connection);
     }
 
     @Override

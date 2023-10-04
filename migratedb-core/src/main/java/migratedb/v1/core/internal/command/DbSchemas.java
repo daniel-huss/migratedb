@@ -19,7 +19,7 @@ package migratedb.v1.core.internal.command;
 import migratedb.v1.core.api.MigrateDbException;
 import migratedb.v1.core.api.callback.Event;
 import migratedb.v1.core.api.internal.callback.CallbackExecutor;
-import migratedb.v1.core.api.internal.database.base.Connection;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Database;
 import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.logging.Log;
@@ -38,12 +38,12 @@ public class DbSchemas {
     /**
      * The database connection to use for accessing the schema history table.
      */
-    private final Connection<?> connection;
+    private final Session connection;
 
     /**
      * The schemas managed by MigrateDB.
      */
-    private final Schema<?, ?>[] schemas;
+    private final Schema[] schemas;
 
     /**
      * The schema history table.
@@ -53,7 +53,7 @@ public class DbSchemas {
     /**
      * The database.
      */
-    private final Database<?> database;
+    private final Database database;
 
     /**
      * The callback executor.
@@ -67,7 +67,7 @@ public class DbSchemas {
      * @param schemas       The schemas managed by MigrateDB.
      * @param schemaHistory The schema history table.
      */
-    public DbSchemas(Database<?> database, Schema<?, ?>[] schemas, SchemaHistory schemaHistory,
+    public DbSchemas(Database database, Schema[] schemas, SchemaHistory schemaHistory,
                      CallbackExecutor callbackExecutor) {
         this.database = database;
         this.connection = database.getMainConnection();
@@ -88,7 +88,7 @@ public class DbSchemas {
             try {
                 ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(), database)
                         .execute(() -> {
-                            List<Schema<?, ?>> createdSchemas = new ArrayList<>();
+                            List<Schema> createdSchemas = new ArrayList<>();
                             for (var schema : schemas) {
                                 if (!schema.exists()) {
                                     if (schema.getName() == null) {

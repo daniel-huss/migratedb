@@ -49,7 +49,7 @@ public class OracleDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         OracleDatabase.enableTnsnamesOraSupport();
         return new OracleDatabase(configuration, jdbcConnectionFactory);
     }

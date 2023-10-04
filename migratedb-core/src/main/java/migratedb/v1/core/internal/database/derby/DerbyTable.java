@@ -24,7 +24,7 @@ import java.sql.SQLException;
 /**
  * Derby-specific table.
  */
-public class DerbyTable extends BaseTable<DerbyDatabase, DerbySchema> {
+public class DerbyTable extends BaseTable {
     /**
      * Creates a new Derby table.
      *
@@ -38,13 +38,8 @@ public class DerbyTable extends BaseTable<DerbyDatabase, DerbySchema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + database.quote(schema.getName(), name));
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
-        return exists(null, schema, name);
+        return exists(null, getSchema(), getName());
     }
 
     @Override

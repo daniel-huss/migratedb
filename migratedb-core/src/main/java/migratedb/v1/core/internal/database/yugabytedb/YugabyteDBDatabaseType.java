@@ -50,7 +50,7 @@ public class YugabyteDBDatabaseType extends PostgreSQLDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         return new YugabyteDBDatabase(configuration, jdbcConnectionFactory);
     }
 

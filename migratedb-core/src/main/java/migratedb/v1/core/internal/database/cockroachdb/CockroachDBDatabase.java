@@ -28,7 +28,7 @@ import migratedb.v1.core.internal.util.StringUtils;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class CockroachDBDatabase extends BaseDatabase<CockroachDBConnection> {
+public class CockroachDBDatabase extends BaseDatabase {
 
     private final Version determinedVersion;
 
@@ -38,8 +38,8 @@ public class CockroachDBDatabase extends BaseDatabase<CockroachDBConnection> {
     }
 
     @Override
-    protected CockroachDBConnection doGetConnection(Connection connection) {
-        return new CockroachDBConnection(this, connection);
+    protected CockroachDBSession doGetConnection(Connection connection) {
+        return new CockroachDBSession(this, connection);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class CockroachDBDatabase extends BaseDatabase<CockroachDBConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE IF NOT EXISTS " + table + " (\n" +
                 "    \"installed_rank\" INT NOT NULL PRIMARY KEY,\n" +
                 "    \"version\" VARCHAR(50),\n" +
@@ -135,8 +135,4 @@ public class CockroachDBDatabase extends BaseDatabase<CockroachDBConnection> {
         return false;
     }
 
-    @Override
-    public boolean useSingleConnection() {
-        return false;
-    }
 }

@@ -19,29 +19,30 @@ package migratedb.v1.core.internal.database.cockroachdb;
 import migratedb.v1.core.api.MigrateDbException;
 import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.logging.Log;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 import migratedb.v1.core.internal.util.StringUtils;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
-    private static final Log LOG = Log.getLog(CockroachDBConnection.class);
+public class CockroachDBSession extends BaseSession {
+    private static final Log LOG = Log.getLog(CockroachDBSession.class);
 
-    public CockroachDBConnection(CockroachDBDatabase database, java.sql.Connection connection) {
+    public CockroachDBSession(CockroachDBDatabase database, Connection connection) {
         super(database, connection);
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new CockroachDBSchema(jdbcTemplate, database, name);
+    public CockroachDBSchema getSchema(String name) {
+        return new CockroachDBSchema(jdbcTemplate, getDatabase(), name);
     }
 
     @Override
-    public Schema<?, ?> doGetCurrentSchema() throws SQLException {
-        if (database.supportsSchemas()) {
+    public Schema doGetCurrentSchema() throws SQLException {
+        if (getDatabase().supportsSchemas()) {
             String currentSchema = jdbcTemplate.queryForString("SELECT current_schema");
             if (StringUtils.hasText(currentSchema)) {
                 return getSchema(currentSchema);
@@ -51,7 +52,7 @@ public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
             if (!StringUtils.hasText(searchPath)) {
                 throw new MigrateDbException(
                         "Unable to determine current schema as search_path is empty. Set the current schema in " +
-                                "currentSchema parameter of the JDBC URL or in MigrateDB's schemas property.");
+                        "currentSchema parameter of the JDBC URL or in MigrateDB's schemas property.");
             }
         }
         return super.doGetCurrentSchema();
@@ -59,7 +60,7 @@ public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
 
     @Override
     protected String getCurrentSchemaNameOrSearchPath() throws SQLException {
-        if (database.supportsSchemas()) {
+        if (getDatabase().supportsSchemas()) {
             String sp = jdbcTemplate.queryForString("SHOW search_path");
             // Up to Cockroach 20, the default response is "public". In 21, that became "$user,public", but this is
             // illegal in the corresponding SET query.
@@ -76,7 +77,7 @@ public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
     }
 
     @Override
-    public void changeCurrentSchemaTo(Schema<?, ?> schema) {
+    public void changeCurrentSchemaTo(Schema schema) {
         try {
             // Avoid unnecessary schema changes as this trips up CockroachDB
             if (schema.getName().equals(originalSchemaNameOrSearchPath) || !schema.exists()) {
@@ -90,7 +91,7 @@ public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
 
     @Override
     public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
-        if (database.supportsSchemas()) {
+        if (getDatabase().supportsSchemas()) {
             if (!StringUtils.hasLength(schema)) {
                 schema = "public";
             }
@@ -101,5 +102,10 @@ public class CockroachDBConnection extends BaseConnection<CockroachDBDatabase> {
             }
             jdbcTemplate.execute("SET database = " + schema);
         }
+    }
+
+    @Override
+    public CockroachDBDatabase getDatabase() {
+        return (CockroachDBDatabase) super.getDatabase();
     }
 }

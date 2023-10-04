@@ -46,7 +46,7 @@ public class SQLServerDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         return new SQLServerDatabase(configuration, jdbcConnectionFactory);
     }
 

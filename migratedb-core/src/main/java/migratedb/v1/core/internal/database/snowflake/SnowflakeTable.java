@@ -22,23 +22,18 @@ import migratedb.v1.core.internal.database.base.BaseTable;
 import java.sql.SQLException;
 import java.util.List;
 
-public class SnowflakeTable extends BaseTable<SnowflakeDatabase, SnowflakeSchema> {
+public class SnowflakeTable extends BaseTable {
     SnowflakeTable(JdbcTemplate jdbcTemplate, SnowflakeDatabase database, SnowflakeSchema schema, String name) {
         super(jdbcTemplate, database, schema, name);
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + database.quote(schema.getName()) + "." + database.quote(name));
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
-        if (!schema.exists()) {
+        if (!getSchema().exists()) {
             return false;
         }
 
-        String sql = "SHOW TABLES LIKE '" + name + "' IN SCHEMA " + database.quote(schema.getName());
+        String sql = "SHOW TABLES LIKE '" + getName() + "' IN SCHEMA " + getDatabase().quote(getSchema().getName());
         List<Boolean> results = jdbcTemplate.query(sql, rs -> true);
         return !results.isEmpty();
     }

@@ -17,14 +17,16 @@
 package migratedb.v1.core.internal.database.spanner;
 
 import migratedb.v1.core.api.MigrateDbException;
+import migratedb.v1.core.api.internal.database.base.Database;
 import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.database.base.Table;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 
+import java.sql.Connection;
 import java.util.concurrent.Callable;
 
-public class SpannerConnection extends BaseConnection<SpannerDatabase> {
-    protected SpannerConnection(SpannerDatabase database, java.sql.Connection connection) {
+public class SpannerSession extends BaseSession {
+    protected SpannerSession(SpannerDatabase database, Connection connection) {
         super(database, connection);
         this.jdbcTemplate = new SpannerJdbcTemplate(connection, database.getDatabaseType());
     }
@@ -35,12 +37,17 @@ public class SpannerConnection extends BaseConnection<SpannerDatabase> {
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new SpannerSchema(jdbcTemplate, database, name);
+    public SpannerSchema getSchema(String name) {
+        return new SpannerSchema(jdbcTemplate, getDatabase(), name);
     }
 
     @Override
-    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
+    public SpannerDatabase getDatabase() {
+        return (SpannerDatabase) super.getDatabase();
+    }
+
+    @Override
+    public <T> T lock(Table table, Callable<T> callable) {
         try {
             return callable.call();
         } catch (Exception e) {

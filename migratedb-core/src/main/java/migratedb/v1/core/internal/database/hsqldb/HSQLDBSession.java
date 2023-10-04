@@ -17,17 +17,18 @@
 package migratedb.v1.core.internal.database.hsqldb;
 
 import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 import migratedb.v1.core.internal.jdbc.JdbcUtils;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
  * HSQLDB connection.
  */
-public class HSQLDBConnection extends BaseConnection<HSQLDBDatabase> {
-    HSQLDBConnection(HSQLDBDatabase database, java.sql.Connection connection) {
+public class HSQLDBSession extends BaseSession {
+    HSQLDBSession(HSQLDBDatabase database, Connection connection) {
         super(database, connection);
     }
 
@@ -37,7 +38,7 @@ public class HSQLDBConnection extends BaseConnection<HSQLDBDatabase> {
         String schema = null;
 
         try {
-            resultSet = database.getJdbcMetaData().getSchemas();
+            resultSet = getDatabase().getJdbcMetaData().getSchemas();
             while (resultSet.next()) {
                 if (resultSet.getBoolean("IS_DEFAULT")) {
                     schema = resultSet.getString("TABLE_SCHEM");
@@ -53,11 +54,16 @@ public class HSQLDBConnection extends BaseConnection<HSQLDBDatabase> {
 
     @Override
     public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
-        jdbcTemplate.execute("SET SCHEMA " + database.quote(schema));
+        jdbcTemplate.execute("SET SCHEMA " + getDatabase().quote(schema));
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new HSQLDBSchema(jdbcTemplate, database, name);
+    public Schema getSchema(String name) {
+        return new HSQLDBSchema(jdbcTemplate, getDatabase(), name);
+    }
+
+    @Override
+    public HSQLDBDatabase getDatabase() {
+        return (HSQLDBDatabase) super.getDatabase();
     }
 }

@@ -22,19 +22,19 @@ import migratedb.v1.core.api.callback.Error;
 import migratedb.v1.core.api.callback.Statement;
 import migratedb.v1.core.api.callback.Warning;
 import migratedb.v1.core.api.configuration.Configuration;
-import migratedb.v1.core.api.internal.database.base.Connection;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.output.OperationResult;
 
 import java.util.List;
 
 public class SimpleContext implements Context {
     private final Configuration configuration;
-    private final Connection<?> connection;
+    private final Session connection;
     private final MigrationInfo migrationInfo;
     private final Statement statement;
     private final OperationResult operationResult;
 
-    SimpleContext(Configuration configuration, Connection<?> connection, MigrationInfo migrationInfo,
+    SimpleContext(Configuration configuration, Session connection, MigrationInfo migrationInfo,
                   OperationResult operationResult) {
         this.configuration = configuration;
         this.connection = connection;
@@ -43,7 +43,7 @@ public class SimpleContext implements Context {
         this.statement = null;
     }
 
-    public SimpleContext(Configuration configuration, Connection<?> connection, MigrationInfo migrationInfo,
+    public SimpleContext(Configuration configuration, Session connection, MigrationInfo migrationInfo,
                          String sql, List<Warning> warnings, List<Error> errors) {
         this.configuration = configuration;
         this.connection = connection;

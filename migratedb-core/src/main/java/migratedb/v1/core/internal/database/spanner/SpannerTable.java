@@ -24,18 +24,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class SpannerTable extends BaseTable<SpannerDatabase, SpannerSchema> {
-
+public class SpannerTable extends BaseTable {
     public SpannerTable(JdbcTemplate jdbcTemplate, SpannerDatabase database, SpannerSchema schema, String name) {
         super(jdbcTemplate, database, schema, name);
     }
 
     @Override
     protected boolean doExists() throws SQLException {
-        try (Connection c = database.getNewRawConnection()) {
+        try (Connection c = getDatabase().getNewRawConnection()) {
             Statement s = c.createStatement();
             s.close();
-            try (ResultSet tables = c.getMetaData().getTables("", "", name, null)) {
+            try (ResultSet tables = c.getMetaData().getTables("", "", getName(), null)) {
                 return tables.next();
             }
         }
@@ -46,14 +45,12 @@ public class SpannerTable extends BaseTable<SpannerDatabase, SpannerSchema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        try (Statement statement = jdbcTemplate.getConnection().createStatement()) {
-            statement.execute("DROP TABLE " + database.quote(name));
-        }
+    public SpannerDatabase getDatabase() {
+        return (SpannerDatabase) super.getDatabase();
     }
 
     @Override
     public String toString() {
-        return database.quote(name);
+        return getDatabase().quote(getName());
     }
 }

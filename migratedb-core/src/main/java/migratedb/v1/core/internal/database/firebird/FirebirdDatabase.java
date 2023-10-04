@@ -24,7 +24,7 @@ import migratedb.v1.core.internal.database.base.BaseDatabase;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class FirebirdDatabase extends BaseDatabase<FirebirdConnection> {
+public class FirebirdDatabase extends BaseDatabase {
     /**
      * Creates a new FirebirdDatabase instance with this JdbcTemplate.
      *
@@ -35,8 +35,8 @@ public class FirebirdDatabase extends BaseDatabase<FirebirdConnection> {
     }
 
     @Override
-    protected FirebirdConnection doGetConnection(Connection connection) {
-        return new FirebirdConnection(this, connection);
+    protected FirebirdSession doGetConnection(Connection connection) {
+        return new FirebirdSession(this, connection);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class FirebirdDatabase extends BaseDatabase<FirebirdConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         String createScript = "CREATE TABLE " + table + " (\n" +
                 "    \"installed_rank\" INTEGER CONSTRAINT \"" + table.getName() +
                 "_pk\" PRIMARY KEY,\n" +

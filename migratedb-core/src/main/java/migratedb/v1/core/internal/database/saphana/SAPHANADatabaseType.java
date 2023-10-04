@@ -46,7 +46,7 @@ public class SAPHANADatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         return new SAPHANADatabase(configuration, jdbcConnectionFactory);
     }
 

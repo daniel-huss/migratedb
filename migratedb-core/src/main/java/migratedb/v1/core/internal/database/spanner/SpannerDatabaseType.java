@@ -50,7 +50,7 @@ public class SpannerDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         return new SpannerDatabase(configuration, jdbcConnectionFactory);
     }
 

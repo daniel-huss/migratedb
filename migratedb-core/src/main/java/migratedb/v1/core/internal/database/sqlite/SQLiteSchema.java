@@ -16,26 +16,21 @@
  */
 package migratedb.v1.core.internal.database.sqlite;
 
-import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.internal.database.base.BaseSchema;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * SQLite implementation of Schema.
  */
-public class SQLiteSchema extends BaseSchema<SQLiteDatabase, SQLiteTable> {
+public class SQLiteSchema extends BaseSchema {
     private static final Log LOG = Log.getLog(SQLiteSchema.class);
 
-    private static final List<String> IGNORED_SYSTEM_TABLE_NAMES =
-            Arrays.asList("android_metadata", SQLiteTable.SQLITE_SEQUENCE);
-
-    private boolean foreignKeysEnabled;
+    private static final List<String> IGNORED_SYSTEM_TABLE_NAMES = List.of("android_metadata");
 
     /**
      * Creates a new SQLite schema.
@@ -59,16 +54,13 @@ public class SQLiteSchema extends BaseSchema<SQLiteDatabase, SQLiteTable> {
     }
 
     @Override
-    protected boolean doEmpty() {
-        var tables = allTables();
-        List<String> tableNames = new ArrayList<>();
-        for (var table : tables) {
-            String tableName = table.getName();
-            if (!IGNORED_SYSTEM_TABLE_NAMES.contains(tableName)) {
-                tableNames.add(tableName);
+    protected boolean doCheckIfEmpty() {
+        for (var table : allTables()) {
+            if (!IGNORED_SYSTEM_TABLE_NAMES.contains(table.getName())) {
+                return false;
             }
         }
-        return tableNames.isEmpty();
+        return true;
     }
 
     @Override
@@ -77,48 +69,24 @@ public class SQLiteSchema extends BaseSchema<SQLiteDatabase, SQLiteTable> {
     }
 
     @Override
-    protected void doDrop() {
-        LOG.info("SQLite does not support dropping schemas. Schema not dropped: " + name);
-    }
-
-    @Override
-    protected void doClean() throws SQLException {
-        foreignKeysEnabled = jdbcTemplate.queryForBoolean("PRAGMA foreign_keys");
-
-        List<String> viewNames = jdbcTemplate.queryForStringList(
-                "SELECT tbl_name FROM " + database.quote(name) + ".sqlite_master WHERE type='view'");
-
-        for (String viewName : viewNames) {
-            jdbcTemplate.execute("DROP VIEW " + database.quote(name, viewName));
-        }
-
-        for (var table : allTables()) {
-            table.drop();
-        }
-
-        if (getTable(SQLiteTable.SQLITE_SEQUENCE).exists()) {
-            jdbcTemplate.execute("DELETE FROM " + SQLiteTable.SQLITE_SEQUENCE);
-        }
-    }
-
-    @Override
-    protected SQLiteTable[] doAllTables() throws SQLException {
+    protected List<SQLiteTable> doAllTables() throws SQLException {
         List<String> tableNames = jdbcTemplate.queryForStringList(
-                "SELECT tbl_name FROM " + database.quote(name) + ".sqlite_master WHERE type='table'");
+                "SELECT tbl_name FROM " + getDatabase().quote(name) + ".sqlite_master WHERE type='table'");
 
-        SQLiteTable[] tables = new SQLiteTable[tableNames.size()];
-        for (int i = 0; i < tableNames.size(); i++) {
-            tables[i] = new SQLiteTable(jdbcTemplate, database, this, tableNames.get(i));
+        List<SQLiteTable> tables = new ArrayList<>(tableNames.size());
+        for (var tableName : tableNames) {
+            tables.add(new SQLiteTable(jdbcTemplate, getDatabase(), this, tableName));
         }
         return tables;
     }
 
     @Override
-    public Table<?, ?> getTable(String tableName) {
-        return new SQLiteTable(jdbcTemplate, database, this, tableName);
+    public SQLiteTable getTable(String tableName) {
+        return new SQLiteTable(jdbcTemplate, getDatabase(), this, tableName);
     }
 
-    public boolean getForeignKeysEnabled() {
-        return foreignKeysEnabled;
+    @Override
+    protected SQLiteDatabase getDatabase() {
+        return (SQLiteDatabase) super.getDatabase();
     }
 }

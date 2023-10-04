@@ -16,19 +16,13 @@
  */
 package migratedb.v1.core.internal.database.snowflake;
 
-import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.internal.database.base.BaseSchema;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTable> {
-    private static final Log LOG = Log.getLog(SnowflakeSchema.class);
-
+public class SnowflakeSchema extends BaseSchema {
     /**
      * Creates a new Snowflake schema.
      *
@@ -47,7 +41,7 @@ public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTabl
     }
 
     @Override
-    protected boolean doEmpty() throws SQLException {
+    protected boolean doCheckIfEmpty() throws SQLException {
         int objectCount = getObjectCount("TABLE") + getObjectCount("VIEW")
                           + getObjectCount("SEQUENCE");
 
@@ -55,84 +49,30 @@ public class SnowflakeSchema extends BaseSchema<SnowflakeDatabase, SnowflakeTabl
     }
 
     private int getObjectCount(String objectType) throws SQLException {
-        return jdbcTemplate.query("SHOW " + objectType + "S IN SCHEMA " + database.quote(name), rs -> 1).size();
+        return jdbcTemplate.query("SHOW " + objectType + "S IN SCHEMA " + getDatabase().quote(name), rs -> 1).size();
     }
 
     @Override
     protected void doCreate() throws SQLException {
-        jdbcTemplate.execute("CREATE SCHEMA " + database.quote(name));
+        jdbcTemplate.execute("CREATE SCHEMA " + getDatabase().quote(name));
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP SCHEMA " + database.quote(name));
+    protected List<SnowflakeTable> doAllTables() throws SQLException {
+        return jdbcTemplate.query("SHOW TABLES IN SCHEMA " + getDatabase().quote(name),
+                                  rs -> {
+                                      String tableName = rs.getString("name");
+                                      return getTable(tableName);
+                                  });
     }
 
     @Override
-    protected void doClean() throws SQLException {
-        for (String dropStatement : generateDropStatements("VIEW")) {
-            jdbcTemplate.execute(dropStatement);
-        }
-
-        for (String dropStatement : generateDropStatements("TABLE")) {
-            jdbcTemplate.execute(dropStatement);
-        }
-
-        for (String dropStatement : generateDropStatements("SEQUENCE")) {
-            jdbcTemplate.execute(dropStatement);
-        }
-
-        for (var dropStatement : generateDropStatementsWithArgs("USER FUNCTIONS", "FUNCTION")) {
-            var name = dropStatement.getKey();
-            var statement = dropStatement.getValue();
-            try {
-                jdbcTemplate.execute(statement);
-            } catch (SQLException sqlException) {
-                LOG.warn("Unable to drop user function " + name + ": " + sqlException.getMessage());
-            }
-        }
-
-        for (var dropStatement : generateDropStatementsWithArgs("PROCEDURES", "PROCEDURE")) {
-            var name = dropStatement.getKey();
-            var statement = dropStatement.getValue();
-            try {
-                jdbcTemplate.execute(statement);
-            } catch (SQLException sqlException) {
-                LOG.warn("Unable to drop procedure " + name + ": " + sqlException.getMessage());
-            }
-        }
+    public SnowflakeTable getTable(String tableName) {
+        return new SnowflakeTable(jdbcTemplate, getDatabase(), this, tableName);
     }
 
     @Override
-    protected SnowflakeTable[] doAllTables() throws SQLException {
-        List<SnowflakeTable> tables = jdbcTemplate.query("SHOW TABLES IN SCHEMA " + database.quote(name),
-                rs -> {
-                    String tableName = rs.getString("name");
-                    return (SnowflakeTable) getTable(tableName);
-                });
-        return tables.toArray(new SnowflakeTable[0]);
-    }
-
-    @Override
-    public Table<?, ?> getTable(String tableName) {
-        return new SnowflakeTable(jdbcTemplate, database, this, tableName);
-    }
-
-    private List<String> generateDropStatements(String objectType) throws SQLException {
-        return jdbcTemplate.query("SHOW " + objectType + "S IN SCHEMA " + database.quote(name), rs -> {
-            String tableName = rs.getString("name");
-            return "DROP " + objectType + " " + database.quote(name) + "." + database.quote(tableName);
-        });
-    }
-
-    private List<Entry<String,String>> generateDropStatementsWithArgs(String showObjectType, String dropObjectType)
-    throws SQLException {
-        return jdbcTemplate.query("SHOW " + showObjectType + " IN SCHEMA " + database.quote(name),
-                rs -> {
-                    String nameAndArgsList = rs.getString("arguments");
-                    int indexOfEndOfArgs = nameAndArgsList.indexOf(") RETURN ");
-                    String functionName = nameAndArgsList.substring(0, indexOfEndOfArgs + 1);
-                    return Map.entry(functionName, "DROP " + dropObjectType + " " + name + "." + functionName);
-                });
+    protected SnowflakeDatabase getDatabase() {
+        return (SnowflakeDatabase) super.getDatabase();
     }
 }

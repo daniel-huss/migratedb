@@ -14,33 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.v1.core.internal.database.db2;
+package migratedb.v1.core.internal.database.ignite.thin;
 
 import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * DB2 connection.
+ * Apache Ignite Thin connection.
  */
-public class DB2Connection extends BaseConnection<DB2Database> {
-    DB2Connection(DB2Database database, java.sql.Connection connection) {
+public class IgniteThinSession extends BaseSession {
+    IgniteThinSession(IgniteThinDatabase database, Connection connection) {
         super(database, connection);
     }
 
     @Override
-    protected String getCurrentSchemaNameOrSearchPath() throws SQLException {
-        return jdbcTemplate.queryForString("select current_schema from sysibm.sysdummy1");
-    }
-
-    @Override
     public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
-        jdbcTemplate.execute("SET SCHEMA " + database.quote(schema));
+        getJdbcConnection().setSchema(schema);
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new DB2Schema(jdbcTemplate, database, name);
+    public Schema getSchema(String name) {
+        return new IgniteThinSchema(jdbcTemplate, getDatabase(), name);
+    }
+
+    @Override
+    protected String getCurrentSchemaNameOrSearchPath() throws SQLException {
+        return getJdbcConnection().getSchema();
+    }
+
+    @Override
+    public IgniteThinDatabase getDatabase() {
+        return (IgniteThinDatabase) super.getDatabase();
     }
 }

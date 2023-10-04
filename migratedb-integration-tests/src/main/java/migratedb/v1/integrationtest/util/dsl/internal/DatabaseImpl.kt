@@ -46,7 +46,7 @@ class DatabaseImpl(
 ) : DatabaseSpec, AutoCloseable {
     private var namespace: SafeIdentifier = Names.nextNamespace()
     private var schemaHistory: SchemaHistorySpecImpl? = null
-    private var database: Database<*>? = null
+    private var database: Database? = null
     private var schemaHistoryTable: String? = null
     private var initializer: ((Connection) -> Unit)? = null
 
@@ -62,7 +62,7 @@ class DatabaseImpl(
     data class MaterializeResult(
         val namespace: SafeIdentifier,
         val adminDataSource: DataSource,
-        val database: Database<*>,
+        val database: Database,
         val schemaName: SafeIdentifier?,
         val initializer: ((Connection) -> Unit)?
     )
@@ -140,7 +140,7 @@ class DatabaseImpl(
             )
         }
 
-        fun materializeInto(database: Database<*>, configuration: Configuration) {
+        fun materializeInto(database: Database, configuration: Configuration) {
             val schemaHistory = getSchemaHistory(configuration, database)
             schemaHistory.create(false)
             entries.forEach { entry ->
@@ -177,7 +177,7 @@ class DatabaseImpl(
          */
         fun getSchemaHistory(
             configuration: Configuration,
-            database: Database<*>
+            database: Database
         ): SchemaHistory {
             val schema = SchemaHistoryFactory.scanSchemas(configuration, database).defaultSchema
             val sqlScriptExecutorFactory = database.databaseType.createSqlScriptExecutorFactory(

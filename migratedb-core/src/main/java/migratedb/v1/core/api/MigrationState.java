@@ -118,11 +118,6 @@ public enum MigrationState {
         this.categories.addAll(Arrays.asList(categories));
     }
 
-    MigrationState(String displayName, boolean resolved, boolean applied, boolean failed) {
-        this.displayName = displayName;
-        categories = EnumSet.noneOf(Category.class);
-    }
-
     public String getDisplayName() {
         return displayName;
     }

@@ -24,7 +24,7 @@ import java.sql.SQLException;
 /**
  * H2-specific table.
  */
-public class H2Table extends BaseTable<H2Database, H2Schema> {
+public class H2Table extends BaseTable {
     /**
      * Creates a new H2 table.
      *
@@ -38,13 +38,8 @@ public class H2Table extends BaseTable<H2Database, H2Schema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + database.quote(schema.getName(), name) + " CASCADE");
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
-        return exists(null, schema, name);
+        return exists(null, getSchema(), getName());
     }
 
     @Override

@@ -24,7 +24,7 @@ import java.sql.SQLException;
 /**
  * SAP HANA-specific table.
  */
-public class SAPHANATable extends BaseTable<SAPHANADatabase, SAPHANASchema> {
+public class SAPHANATable extends BaseTable {
     /**
      * Creates a new SAP HANA table.
      *
@@ -38,17 +38,17 @@ public class SAPHANATable extends BaseTable<SAPHANADatabase, SAPHANASchema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + database.quote(schema.getName(), name));
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
-        return exists(null, schema, name);
+        return exists(null, getSchema(), getName());
     }
 
     @Override
     protected void doLock() throws SQLException {
         jdbcTemplate.update("lock table " + this + " in exclusive mode");
+    }
+
+    @Override
+    public SAPHANADatabase getDatabase() {
+        return (SAPHANADatabase) super.getDatabase();
     }
 }

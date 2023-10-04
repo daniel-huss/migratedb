@@ -25,8 +25,9 @@ import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Locale;
 
-public class H2Database extends BaseDatabase<H2Connection> {
+public class H2Database extends BaseDatabase {
     /**
      * A dummy user used in Oracle mode, where USER() can return null but nulls can't be inserted into the schema
      * history table
@@ -41,23 +42,40 @@ public class H2Database extends BaseDatabase<H2Connection> {
      * The compatibility modes supported by H2. See
      * <a href="http://h2database.com/html/features.html#compatibility">H2 features</a>
      */
-    private enum CompatibilityMode {
-        REGULAR,
-        STRICT,
-        LEGACY,
-        DB2,
-        Derby,
-        HSQLDB,
-        MSSQLServer,
-        MySQL,
-        Oracle,
-        PostgreSQL,
-        Ignite
+    private static final class CompatibilityMode {
+        static final CompatibilityMode REGULAR = new CompatibilityMode("REGULAR");
+        static final CompatibilityMode Oracle = new CompatibilityMode("Oracle");
+
+        private final String name;
+        private final String lowerName;
+
+        CompatibilityMode(String name) {
+            this.name = name;
+            this.lowerName = name.toLowerCase(Locale.ROOT);
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+
+        @Override
+        public int hashCode() {
+            return lowerName.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof CompatibilityMode)) {
+                return false;
+            }
+            var other = (CompatibilityMode) obj;
+            return other.lowerName.equals(lowerName);
+        }
     }
 
-    boolean supportsDropSchemaCascade;
     private final boolean requiresV2MetadataColumnNames;
-    CompatibilityMode compatibilityMode;
+    private final CompatibilityMode compatibilityMode;
 
     public H2Database(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);
@@ -67,15 +85,15 @@ public class H2Database extends BaseDatabase<H2Connection> {
     }
 
     @Override
-    protected H2Connection doGetConnection(Connection connection) {
-        return new H2Connection(this, connection, requiresV2MetadataColumnNames);
+    protected H2Session doGetConnection(Connection connection) {
+        return new H2Session(this, connection, requiresV2MetadataColumnNames);
     }
 
     @Override
     protected Version determineVersion() {
         String query = requiresV2MetadataColumnNames
-                       ? "SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'info.BUILD_ID'"
-                       : "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'info.BUILD_ID'";
+                ? "SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'info.BUILD_ID'"
+                : "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'info.BUILD_ID'";
         try {
             int buildId = getMainConnection().getJdbcTemplate().queryForInt(query);
             return Version.parse(super.determineVersion() + "." + buildId);
@@ -86,14 +104,14 @@ public class H2Database extends BaseDatabase<H2Connection> {
 
     private CompatibilityMode determineCompatibilityMode() {
         String query = requiresV2MetadataColumnNames
-                       ? "SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'"
-                       : "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'MODE'";
+                ? "SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'"
+                : "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'MODE'";
         try {
             String mode = getMainConnection().getJdbcTemplate().queryForString(query);
-            if (mode == null || "".equals(mode)) {
+            if (mode == null || mode.isEmpty()) {
                 return CompatibilityMode.REGULAR;
             }
-            return CompatibilityMode.valueOf(mode);
+            return new CompatibilityMode(mode);
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to determine H2 compatibility mode", e);
         }
@@ -103,21 +121,21 @@ public class H2Database extends BaseDatabase<H2Connection> {
     public final void ensureSupported() {
         ensureDatabaseIsRecentEnough("1.2.137");
         recommendMigrateDbUpgradeIfNecessary("2.2.220");
-        supportsDropSchemaCascade = getVersion().isAtLeast("1.4.200");
+        getVersion().isAtLeast("1.4.200");
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         // In Oracle mode, empty strings in the marker row would be converted to NULLs. As the script column is
         // defined as NOT NULL, we insert a dummy value when required.
         String script = (compatibilityMode == CompatibilityMode.Oracle)
                 ? DUMMY_SCRIPT_NAME : "";
 
         return "CREATE TABLE IF NOT EXISTS " + table + " (\n" +
-                "    \"installed_rank\" INT NOT NULL,\n" +
-                "    \"version\" VARCHAR(50),\n" +
-                "    \"description\" VARCHAR(200) NOT NULL,\n" +
-                "    \"type\" VARCHAR(20) NOT NULL,\n" +
+               "    \"installed_rank\" INT NOT NULL,\n" +
+               "    \"version\" VARCHAR(50),\n" +
+               "    \"description\" VARCHAR(200) NOT NULL,\n" +
+               "    \"type\" VARCHAR(20) NOT NULL,\n" +
                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
                "    \"checksum\" VARCHAR(100),\n" +
                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
@@ -135,17 +153,17 @@ public class H2Database extends BaseDatabase<H2Connection> {
     }
 
     @Override
-    public String getSelectStatement(Table<?, ?> table) {
+    public String getSelectStatement(Table table) {
         return "SELECT " + quote("installed_rank")
-                + "," + quote("version")
-                + "," + quote("description")
-                + "," + quote("type")
-                + "," + quote("script")
-                + "," + quote("checksum")
-                + "," + quote("installed_on")
-                + "," + quote("installed_by")
-                + "," + quote("execution_time")
-                + "," + quote("success")
+               + "," + quote("version")
+               + "," + quote("description")
+               + "," + quote("type")
+               + "," + quote("script")
+               + "," + quote("checksum")
+               + "," + quote("installed_on")
+               + "," + quote("installed_by")
+               + "," + quote("execution_time")
+               + "," + quote("success")
                + " FROM " + table
                // Ignore special table created marker
                + " WHERE " + quote("type") + " != 'TABLE'"
@@ -157,7 +175,7 @@ public class H2Database extends BaseDatabase<H2Connection> {
     protected String doGetCurrentUser() throws SQLException {
         try {
             String user = getMainConnection().getJdbcTemplate().queryForString("SELECT USER()");
-            if (compatibilityMode == CompatibilityMode.Oracle && (user == null || "".equals(user))) {
+            if (compatibilityMode == CompatibilityMode.Oracle && (user == null || user.isEmpty())) {
                 user = DEFAULT_USER;
             }
             return user;

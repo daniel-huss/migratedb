@@ -14,33 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.v1.core.internal.database.oracle;
+package migratedb.v1.core.internal.database.informix;
 
 import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Oracle connection.
+ * Informix connection.
  */
-public class OracleConnection extends BaseConnection<OracleDatabase> {
-    OracleConnection(OracleDatabase database, java.sql.Connection connection) {
+public class InformixSession extends BaseSession {
+    InformixSession(InformixDatabase database, Connection connection) {
         super(database, connection);
     }
 
     @Override
     protected String getCurrentSchemaNameOrSearchPath() throws SQLException {
-        return jdbcTemplate.queryForString("SELECT SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA') FROM DUAL");
+        return getJdbcConnection().getMetaData().getUserName();
     }
 
     @Override
-    public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
-        jdbcTemplate.execute("ALTER SESSION SET CURRENT_SCHEMA=" + database.quote(schema));
+    public Schema getSchema(String name) {
+        return new InformixSchema(jdbcTemplate, getDatabase(), name);
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new OracleSchema(jdbcTemplate, database, name);
+    public void changeCurrentSchemaTo(Schema schema) {
+        // Informix doesn't support schemas
+    }
+
+    @Override
+    public InformixDatabase getDatabase() {
+        return (InformixDatabase) super.getDatabase();
     }
 }

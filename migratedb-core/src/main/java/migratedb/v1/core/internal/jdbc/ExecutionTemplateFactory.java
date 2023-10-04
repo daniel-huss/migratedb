@@ -45,7 +45,7 @@ public class ExecutionTemplateFactory {
      * @param connection The connection for execution.
      * @param database   The database
      */
-    public static ExecutionTemplate createExecutionTemplate(Connection connection, Database<?> database) {
+    public static ExecutionTemplate createExecutionTemplate(Connection connection, Database database) {
         if (database.supportsMultiStatementTransactions()) {
             return createTransactionalExecutionTemplate(connection, true, database.getDatabaseType());
         }
@@ -60,8 +60,8 @@ public class ExecutionTemplateFactory {
      * @param database   The database
      */
     public static ExecutionTemplate createTableExclusiveExecutionTemplate(Connection connection,
-                                                                          Table<?, ?> table,
-                                                                          Database<?> database) {
+                                                                          Table table,
+                                                                          Database database) {
         if (database.supportsMultiStatementTransactions()) {
             return new TableLockingExecutionTemplate(table,
                     createTransactionalExecutionTemplate(connection,

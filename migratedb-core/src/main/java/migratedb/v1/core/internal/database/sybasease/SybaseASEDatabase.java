@@ -29,7 +29,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class SybaseASEDatabase extends BaseDatabase<SybaseASEConnection> {
+public class SybaseASEDatabase extends BaseDatabase {
     private static final Log LOG = Log.getLog(SybaseASEDatabase.class);
 
     private String databaseName = null;
@@ -40,8 +40,8 @@ public class SybaseASEDatabase extends BaseDatabase<SybaseASEConnection> {
     }
 
     @Override
-    protected SybaseASEConnection doGetConnection(Connection connection) {
-        return new SybaseASEConnection(this, connection);
+    protected SybaseASESession doGetConnection(Connection connection) {
+        return new SybaseASESession(this, connection);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class SybaseASEDatabase extends BaseDatabase<SybaseASEConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table.getName() + " (\n" +
                 "    installed_rank INT NOT NULL,\n" +
                 "    version VARCHAR(50) NULL,\n" +

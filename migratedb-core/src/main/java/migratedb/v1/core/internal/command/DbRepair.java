@@ -24,7 +24,7 @@ import migratedb.v1.core.api.TargetVersion;
 import migratedb.v1.core.api.callback.Event;
 import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.callback.CallbackExecutor;
-import migratedb.v1.core.api.internal.database.base.Connection;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Database;
 import migratedb.v1.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.v1.core.api.logging.Log;
@@ -52,7 +52,7 @@ public class DbRepair {
     /**
      * The database connection to use for accessing the schema history table.
      */
-    private final Connection<?> connection;
+    private final Session connection;
 
     /**
      * The migration infos.
@@ -72,7 +72,7 @@ public class DbRepair {
     /**
      * The database-specific support.
      */
-    private final Database<?> database;
+    private final Database database;
 
     /**
      * The POJO containing the repair result.
@@ -92,7 +92,7 @@ public class DbRepair {
      * @param schemaHistory     The schema history table.
      * @param callbackExecutor  The callback executor.
      */
-    public DbRepair(Database<?> database, MigrationResolver migrationResolver, SchemaHistory schemaHistory,
+    public DbRepair(Database database, MigrationResolver migrationResolver, SchemaHistory schemaHistory,
                     CallbackExecutor callbackExecutor, Configuration configuration) {
         this.database = database;
         this.connection = database.getMainConnection();

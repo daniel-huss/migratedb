@@ -47,7 +47,7 @@ public class FirebirdDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         return new FirebirdDatabase(configuration, jdbcConnectionFactory);
     }
 

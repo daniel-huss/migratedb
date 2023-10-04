@@ -14,31 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.v1.core.internal.database.db2;
+package migratedb.v1.core.internal.database.base;
 
+import migratedb.v1.core.api.internal.database.base.Database;
+import migratedb.v1.core.api.internal.database.base.DatabaseFunction;
+import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.v1.core.internal.database.base.Type;
+import migratedb.v1.core.internal.util.StringUtils;
 
-import java.sql.SQLException;
+public abstract class BaseDatabaseFunction extends BaseSchemaObject implements DatabaseFunction {
+    protected final String[] args;
 
-/**
- * Db2-specific type.
- */
-public class DB2Type extends Type<DB2Database, DB2Schema> {
-    /**
-     * Creates a new Db2 type.
-     *
-     * @param jdbcTemplate The Jdbc Template for communicating with the DB.
-     * @param database     The database-specific support.
-     * @param schema       The schema this type lives in.
-     * @param name         The name of the type.
-     */
-    DB2Type(JdbcTemplate jdbcTemplate, DB2Database database, DB2Schema schema, String name) {
+    public BaseDatabaseFunction(JdbcTemplate jdbcTemplate, Database database, Schema schema, String name, String... args) {
         super(jdbcTemplate, database, schema, name);
+        this.args = args == null ? new String[0] : args;
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TYPE " + database.quote(schema.getName(), name));
+    public String toString() {
+        return super.toString() + "(" + StringUtils.arrayToCommaDelimitedString(args) + ")";
     }
 }

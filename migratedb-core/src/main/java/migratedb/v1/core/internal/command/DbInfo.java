@@ -35,16 +35,16 @@ public class DbInfo {
     private final MigrationResolver migrationResolver;
     private final SchemaHistory schemaHistory;
     private final Configuration configuration;
-    private final Database<?> database;
+    private final Database database;
     private final CallbackExecutor callbackExecutor;
-    private final Schema<?, ?>[] schemas;
+    private final Schema[] schemas;
 
     public DbInfo(MigrationResolver migrationResolver,
                   SchemaHistory schemaHistory,
                   Configuration configuration,
-                  Database<?> database,
+                  Database database,
                   CallbackExecutor callbackExecutor,
-                  Schema<?, ?>[] schemas) {
+                  Schema[] schemas) {
 
         this.migrationResolver = migrationResolver;
         this.schemaHistory = schemaHistory;

@@ -18,7 +18,6 @@ package migratedb.v1.core.internal.database.sqlserver;
 
 import migratedb.v1.core.api.Version;
 import migratedb.v1.core.api.configuration.Configuration;
-import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.v1.core.api.internal.sqlscript.Delimiter;
@@ -27,20 +26,15 @@ import migratedb.v1.core.internal.util.StringUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
+public class SQLServerDatabase extends BaseDatabase {
     public SQLServerDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);
     }
 
     @Override
-    protected SQLServerConnection doGetConnection(Connection connection) {
-        return new SQLServerConnection(this, connection);
+    protected SQLServerSession doGetConnection(Connection connection) {
+        return new SQLServerSession(this, connection);
     }
 
     @Override
@@ -128,7 +122,6 @@ public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
      * Escapes this identifier, so it can be safely used in sql queries.
      *
      * @param identifier The identifier to escaped.
-     *
      * @return The escaped version.
      */
     private String escapeIdentifier(String identifier) {
@@ -166,17 +159,17 @@ public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         String filegroup = isAzure() || configuration.getTablespace() == null ?
                 "" : " ON \"" + configuration.getTablespace() + "\"";
 
         return "CREATE TABLE " + table + " (\n" +
-                "    [installed_rank] INT NOT NULL,\n" +
-                "    [" + "version] NVARCHAR(50),\n" +
-                "    [description] NVARCHAR(200),\n" +
-                "    [type] NVARCHAR(20) NOT NULL,\n" +
-                "    [script] NVARCHAR(1000) NOT NULL,\n" +
-                "    [checksum] NVARCHAR(100),\n" +
+               "    [installed_rank] INT NOT NULL,\n" +
+               "    [" + "version] NVARCHAR(50),\n" +
+               "    [description] NVARCHAR(200),\n" +
+               "    [type] NVARCHAR(20) NOT NULL,\n" +
+               "    [script] NVARCHAR(1000) NOT NULL,\n" +
+               "    [checksum] NVARCHAR(100),\n" +
                "    [installed_by] NVARCHAR(100) NOT NULL,\n" +
                "    [installed_on] DATETIME NOT NULL DEFAULT GETDATE(),\n" +
                "    [execution_time] INT NOT NULL,\n" +
@@ -189,12 +182,17 @@ public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
                "GO\n";
     }
 
-    boolean isAzure() {
+    private boolean isAzure() {
         return getMainConnection().isAzureConnection();
     }
 
-    SQLServerEngineEdition getEngineEdition() {
+    private SQLServerEngineEdition getEngineEdition() {
         return getMainConnection().getEngineEdition();
+    }
+
+    @Override
+    public SQLServerSession getMainConnection() {
+        return (SQLServerSession) super.getMainConnection();
     }
 
     boolean supportsTemporalTables() {
@@ -229,100 +227,5 @@ public class SQLServerDatabase extends BaseDatabase<SQLServerConnection> {
 
     protected boolean supportsAssemblies() {
         return true;
-    }
-
-    /**
-     * Cleans all the objects in this database that need to be cleaned after cleaning schemas.
-     *
-     * @param schemas The list of schemas managed by MigrateDb
-     * @throws SQLException when the clean failed.
-     */
-    @Override
-    protected void doCleanPostSchemas(Schema<?, ?>[] schemas) throws SQLException {
-        if (supportsPartitions()) {
-            for (String statement : cleanPartitionSchemes()) {
-                jdbcTemplate.execute(statement);
-            }
-            for (String statement : cleanPartitionFunctions()) {
-                jdbcTemplate.execute(statement);
-            }
-        }
-
-        if (supportsAssemblies()) {
-            for (String statement : cleanAssemblies()) {
-                jdbcTemplate.execute(statement);
-            }
-        }
-
-        if (supportsTypes()) {
-            for (String statement : cleanTypes(schemas)) {
-                jdbcTemplate.execute(statement);
-            }
-        }
-    }
-
-    /**
-     * @param schemas The list of schemas managed by MigrateDB
-     * @return The drop statements.
-     * @throws SQLException when the clean statements could not be generated.
-     */
-    private List<String> cleanTypes(Schema<?, ?>[] schemas) throws SQLException {
-        List<String> statements = new ArrayList<>();
-        String schemaList = Arrays.stream(schemas).map(s -> "'" + s.getName() + "'").collect(Collectors.joining(","));
-        if (schemaList.isEmpty()) {
-            schemaList = "''";
-        }
-        List<Map<String, String>> typesAndSchemas = jdbcTemplate.queryForList(
-                "SELECT t.name as type_name, s.name as schema_name " +
-                        "FROM sys.types t INNER JOIN sys.schemas s ON t.schema_id = s.schema_id " +
-                        "WHERE t.is_user_defined = 1 AND s.name IN (" + schemaList + ")");
-
-        for (Map<String, String> typeAndSchema : typesAndSchemas) {
-            statements.add("DROP TYPE " + quote(typeAndSchema.get("schema_name"), typeAndSchema.get("type_name")));
-        }
-        return statements;
-    }
-
-    /**
-     * @return The drop statements.
-     *
-     * @throws SQLException when the clean statements could not be generated.
-     */
-    private List<String> cleanPartitionSchemes() throws SQLException {
-        List<String> statements = new ArrayList<>();
-        List<String> partitionSchemeNames = jdbcTemplate.queryForStringList("SELECT name FROM sys.partition_schemes");
-        for (String partitionSchemeName : partitionSchemeNames) {
-            statements.add("DROP PARTITION SCHEME " + quote(partitionSchemeName));
-        }
-        return statements;
-    }
-
-    /**
-     * @return The drop statements.
-     *
-     * @throws SQLException when the clean statements could not be generated.
-     */
-    private List<String> cleanAssemblies() throws SQLException {
-        List<String> statements = new ArrayList<>();
-        List<String> assemblyNames = jdbcTemplate.queryForStringList(
-            "SELECT * FROM sys.assemblies WHERE is_user_defined=1");
-        for (String assemblyName : assemblyNames) {
-            statements.add("DROP ASSEMBLY " + quote(assemblyName));
-        }
-        return statements;
-    }
-
-    /**
-     * @return The drop statements.
-     *
-     * @throws SQLException when the clean statements could not be generated.
-     */
-    private List<String> cleanPartitionFunctions() throws SQLException {
-        List<String> statements = new ArrayList<>();
-        List<String> partitionFunctionNames = jdbcTemplate.queryForStringList("SELECT name FROM sys.partition_functions");
-        for (String partitionFunctionName : partitionFunctionNames) {
-            statements.add("DROP PARTITION FUNCTION " + quote(partitionFunctionName));
-        }
-        return statements;
     }
 }

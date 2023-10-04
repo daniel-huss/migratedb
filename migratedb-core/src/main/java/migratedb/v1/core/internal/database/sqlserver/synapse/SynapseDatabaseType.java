@@ -62,7 +62,7 @@ public class SynapseDatabaseType extends SQLServerDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         return new SynapseDatabase(configuration, jdbcConnectionFactory);
     }
 }

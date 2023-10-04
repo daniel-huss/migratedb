@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * HSQLDB implementation of Schema.
  */
-public class HSQLDBSchema extends BaseSchema<HSQLDBDatabase, HSQLDBTable> {
+public class HSQLDBSchema extends BaseSchema {
     /**
      * Creates a new Hsql schema.
      *
@@ -46,66 +46,36 @@ public class HSQLDBSchema extends BaseSchema<HSQLDBDatabase, HSQLDBTable> {
     }
 
     @Override
-    protected boolean doEmpty() {
-        return allTables().length == 0;
+    protected boolean doCheckIfEmpty() {
+        return allTables().isEmpty();
     }
 
     @Override
     protected void doCreate() throws SQLException {
         String user = jdbcTemplate.queryForString("SELECT USER() FROM (VALUES(0))");
-        jdbcTemplate.execute("CREATE SCHEMA " + database.quote(name) + " AUTHORIZATION " + user);
+        jdbcTemplate.execute("CREATE SCHEMA " + getDatabase().quote(name) + " AUTHORIZATION " + user);
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP SCHEMA " + database.quote(name) + " CASCADE");
-    }
-
-    @Override
-    protected void doClean() throws SQLException {
-        for (var table : allTables()) {
-            table.drop();
-        }
-
-        for (String statement : generateDropStatementsForSequences()) {
-            jdbcTemplate.execute(statement);
-        }
-    }
-
-    /**
-     * Generates the statements to drop the sequences in this schema.
-     *
-     * @return The drop statements.
-     *
-     * @throws SQLException when the drop statements could not be generated.
-     */
-    private List<String> generateDropStatementsForSequences() throws SQLException {
-        List<String> sequenceNames = jdbcTemplate.queryForStringList(
-            "SELECT SEQUENCE_NAME FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES where SEQUENCE_SCHEMA = ?", name);
-
-        List<String> statements = new ArrayList<>();
-        for (String seqName : sequenceNames) {
-            statements.add("DROP SEQUENCE " + database.quote(name, seqName));
-        }
-
-        return statements;
-    }
-
-    @Override
-    protected HSQLDBTable[] doAllTables() throws SQLException {
+    protected List<HSQLDBTable> doAllTables() throws SQLException {
         List<String> tableNames = jdbcTemplate.queryForStringList(
-            "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.SYSTEM_TABLES where TABLE_SCHEM = ? AND TABLE_TYPE = 'TABLE'",
-            name);
+                "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.SYSTEM_TABLES where TABLE_SCHEM = ? AND TABLE_TYPE = 'TABLE'",
+                name);
 
-        HSQLDBTable[] tables = new HSQLDBTable[tableNames.size()];
-        for (int i = 0; i < tableNames.size(); i++) {
-            tables[i] = new HSQLDBTable(jdbcTemplate, database, this, tableNames.get(i));
+        List<HSQLDBTable> tables = new ArrayList<>(tableNames.size());
+        for (var tableName : tableNames) {
+            tables.add(new HSQLDBTable(jdbcTemplate, getDatabase(), this, tableName));
         }
         return tables;
     }
 
     @Override
-    public Table<?, ?> getTable(String tableName) {
-        return new HSQLDBTable(jdbcTemplate, database, this, tableName);
+    protected HSQLDBDatabase getDatabase() {
+        return (HSQLDBDatabase) super.getDatabase();
+    }
+
+    @Override
+    public Table getTable(String tableName) {
+        return new HSQLDBTable(jdbcTemplate, getDatabase(), this, tableName);
     }
 }

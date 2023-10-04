@@ -22,10 +22,10 @@ import migratedb.v1.core.api.internal.jdbc.ExecutionTemplate;
 import java.util.concurrent.Callable;
 
 public class TableLockingExecutionTemplate implements ExecutionTemplate {
-    private final Table<?, ?> table;
+    private final Table table;
     private final ExecutionTemplate executionTemplate;
 
-    TableLockingExecutionTemplate(Table<?, ?> table, ExecutionTemplate executionTemplate) {
+    TableLockingExecutionTemplate(Table table, ExecutionTemplate executionTemplate) {
         this.table = table;
         this.executionTemplate = executionTemplate;
     }

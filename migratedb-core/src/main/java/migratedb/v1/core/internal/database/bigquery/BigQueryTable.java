@@ -22,7 +22,7 @@ import migratedb.v1.core.internal.database.base.BaseTable;
 
 import java.sql.SQLException;
 
-public class BigQueryTable extends BaseTable<BigQueryDatabase, BigQuerySchema> {
+public class BigQueryTable extends BaseTable {
     private static final Log LOG = Log.getLog(BigQueryTable.class);
 
     BigQueryTable(JdbcTemplate jdbcTemplate, BigQueryDatabase database, BigQuerySchema schema, String name) {
@@ -30,18 +30,13 @@ public class BigQueryTable extends BaseTable<BigQueryDatabase, BigQuerySchema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + database.quote(schema.getName(), name));
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
-        if (!schema.exists()) {
+        if (!getSchema().exists()) {
             return false;
         }
         return jdbcTemplate.queryForInt(
-            "SELECT COUNT(table_name) FROM " + database.quote(schema.getName()) +
-            ".INFORMATION_SCHEMA.TABLES WHERE table_type='BASE TABLE' AND table_name=?", name) > 0;
+                "SELECT COUNT(table_name) FROM " + getDatabase().quote(getSchema().getName()) +
+                ".INFORMATION_SCHEMA.TABLES WHERE table_type='BASE TABLE' AND table_name=?", getName()) > 0;
     }
 
     @Override

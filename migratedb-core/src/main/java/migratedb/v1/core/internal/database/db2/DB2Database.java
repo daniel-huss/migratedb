@@ -24,14 +24,14 @@ import migratedb.v1.core.internal.database.base.BaseDatabase;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class DB2Database extends BaseDatabase<DB2Connection> {
+public class DB2Database extends BaseDatabase {
     public DB2Database(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);
     }
 
     @Override
-    protected DB2Connection doGetConnection(Connection connection) {
-        return new DB2Connection(this, connection);
+    protected DB2Session doGetConnection(Connection connection) {
+        return new DB2Session(this, connection);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class DB2Database extends BaseDatabase<DB2Connection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         String tablespace = configuration.getTablespace() == null
                 ? ""
                 : " IN \"" + configuration.getTablespace() + "\"";
@@ -71,7 +71,7 @@ public class DB2Database extends BaseDatabase<DB2Connection> {
     }
 
     @Override
-    public String getSelectStatement(Table<?, ?> table) {
+    public String getSelectStatement(Table table) {
         return super.getSelectStatement(table)
                 // Allow uncommitted reads so info can be invoked while migrate is running
                 + " WITH UR";
@@ -106,10 +106,4 @@ public class DB2Database extends BaseDatabase<DB2Connection> {
     public boolean catalogIsSchema() {
         return false;
     }
-
-    @Override
-    public boolean useSingleConnection() {
-        return false;
-    }
-
 }

@@ -24,7 +24,7 @@ import java.sql.SQLException;
 /**
  * SQLServer-specific table.
  */
-public class SQLServerTable extends BaseTable<SQLServerDatabase, SQLServerSchema> {
+public class SQLServerTable extends BaseTable {
     private final String databaseName;
 
     /**
@@ -43,22 +43,18 @@ public class SQLServerTable extends BaseTable<SQLServerDatabase, SQLServerSchema
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + this);
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
         return jdbcTemplate.queryForBoolean(
-            "SELECT CAST(" +
-            "CASE WHEN EXISTS(" +
-            "  SELECT 1 FROM " + database.doQuote(databaseName) +
-            ".INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=? AND TABLE_NAME=?" +
-            ") " +
-            "THEN 1 ELSE 0 " +
-            "END " +
-            "AS BIT)",
-            schema.getName(), name);
+                "SELECT CAST(" +
+                "CASE WHEN EXISTS(" +
+                "  SELECT 1 FROM " + getDatabase().quote(databaseName) +
+                ".INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=? AND TABLE_NAME=?" +
+                ") " +
+                "THEN 1 ELSE 0 " +
+                "END " +
+                "AS BIT)",
+                getSchema().getName(),
+                getName());
     }
 
     @Override
@@ -66,21 +62,13 @@ public class SQLServerTable extends BaseTable<SQLServerDatabase, SQLServerSchema
         jdbcTemplate.execute("select * from " + this + " WITH (TABLOCKX)");
     }
 
-    /**
-     * Drops system versioning for this table if it is active.
-     */
-    void dropSystemVersioningIfPresent() throws SQLException {
-        /* Column temporal_type only exists in SQL Server 2016+, so the query below won't run in other versions */
-        if (database.supportsTemporalTables()) {
-            if (jdbcTemplate.queryForInt(
-                "SELECT temporal_type FROM sys.tables WHERE object_id = OBJECT_ID('" + this + "', 'U')") == 2) {
-                jdbcTemplate.execute("ALTER TABLE " + this + " SET (SYSTEM_VERSIONING = OFF)");
-            }
-        }
+    @Override
+    public SQLServerDatabase getDatabase() {
+        return (SQLServerDatabase) super.getDatabase();
     }
 
     @Override
     public String toString() {
-        return database.quote(databaseName, schema.getName(), name);
+        return getDatabase().quote(databaseName, getSchema().getName(), getName());
     }
 }

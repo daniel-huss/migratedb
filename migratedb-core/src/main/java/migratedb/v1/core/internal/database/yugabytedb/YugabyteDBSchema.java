@@ -16,7 +16,6 @@
  */
 package migratedb.v1.core.internal.database.yugabytedb;
 
-import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.v1.core.internal.database.postgresql.PostgreSQLSchema;
 
@@ -31,7 +30,12 @@ public class YugabyteDBSchema extends PostgreSQLSchema {
     }
 
     @Override
-    public Table<?, ?> getTable(String tableName) {
-        return new YugabyteDBTable(jdbcTemplate, (YugabyteDBDatabase) database, this, tableName);
+    public YugabyteDBTable getTable(String tableName) {
+        return new YugabyteDBTable(jdbcTemplate, getDatabase(), this, tableName);
+    }
+
+    @Override
+    protected YugabyteDBDatabase getDatabase() {
+        return (YugabyteDBDatabase) super.getDatabase();
     }
 }

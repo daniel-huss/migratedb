@@ -14,34 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.v1.core.internal.database.ignite.thin;
+package migratedb.v1.core.internal.database.derby;
 
 import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Apache Ignite Thin connection.
+ * Derby connection.
  */
-public class IgniteThinConnection extends BaseConnection<IgniteThinDatabase> {
-
-    IgniteThinConnection(IgniteThinDatabase database, java.sql.Connection connection) {
+public class DerbySession extends BaseSession {
+    DerbySession(DerbyDatabase database, Connection connection) {
         super(database, connection);
     }
 
     @Override
-    public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
-        getJdbcConnection().setSchema(schema);
-    }
-
-    @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new IgniteThinSchema(jdbcTemplate, database, name);
-    }
-
-    @Override
     protected String getCurrentSchemaNameOrSearchPath() throws SQLException {
-        return getJdbcConnection().getSchema();
+        return jdbcTemplate.queryForString("SELECT CURRENT SCHEMA FROM SYSIBM.SYSDUMMY1");
+    }
+
+    @Override
+    public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
+        jdbcTemplate.execute("SET SCHEMA " + getDatabase().quote(schema));
+    }
+
+    @Override
+    public Schema getSchema(String name) {
+        return new DerbySchema(jdbcTemplate, getDatabase(), name);
+    }
+
+    @Override
+    public DerbyDatabase getDatabase() {
+        return (DerbyDatabase) super.getDatabase();
     }
 }

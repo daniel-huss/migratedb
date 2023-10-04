@@ -16,26 +16,29 @@
  */
 package migratedb.v1.core.internal.database.base;
 
-import migratedb.v1.core.api.internal.database.base.Connection;
 import migratedb.v1.core.api.internal.database.base.Database;
 import migratedb.v1.core.api.internal.database.base.Schema;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 import migratedb.v1.core.internal.jdbc.ExecutionTemplateFactory;
 import migratedb.v1.core.internal.jdbc.JdbcUtils;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
-public abstract class BaseConnection<D extends Database<?>> implements Connection<D> {
-    protected final D database;
+public abstract class BaseSession implements Session {
     protected JdbcTemplate jdbcTemplate;
-    private final java.sql.Connection jdbcConnection;
-    protected final String originalSchemaNameOrSearchPath;
+
+    private final Database database;
+    private final Connection jdbcConnection;
     private final boolean originalAutoCommit;
 
-    protected BaseConnection(D database, java.sql.Connection connection) {
+    protected final String originalSchemaNameOrSearchPath;
+
+    protected BaseSession(Database database, Connection connection) {
         this.database = database;
 
         try {
@@ -62,7 +65,7 @@ public abstract class BaseConnection<D extends Database<?>> implements Connectio
     protected abstract String getCurrentSchemaNameOrSearchPath() throws SQLException;
 
     @Override
-    public final Schema<?, ?> getCurrentSchema() {
+    public Schema getCurrentSchema() {
         try {
             return doGetCurrentSchema();
         } catch (SQLException e) {
@@ -70,12 +73,12 @@ public abstract class BaseConnection<D extends Database<?>> implements Connectio
         }
     }
 
-    protected Schema<?, ?> doGetCurrentSchema() throws SQLException {
+    protected Schema doGetCurrentSchema() throws SQLException {
         return getSchema(getCurrentSchemaNameOrSearchPath());
     }
 
     @Override
-    public void changeCurrentSchemaTo(Schema<?, ?> schema) {
+    public void changeCurrentSchemaTo(Schema schema) {
         try {
             if (!schema.exists()) {
                 return;
@@ -94,7 +97,7 @@ public abstract class BaseConnection<D extends Database<?>> implements Connectio
     }
 
     @Override
-    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
+    public <T> T lock(Table table, Callable<T> callable) {
         return ExecutionTemplateFactory
                 .createTableExclusiveExecutionTemplate(jdbcTemplate.getConnection(), table, database)
                 .execute(callable);
@@ -148,7 +151,11 @@ public abstract class BaseConnection<D extends Database<?>> implements Connectio
     }
 
     @Override
-    public final java.sql.Connection getJdbcConnection() {
+    public final Connection getJdbcConnection() {
         return jdbcConnection;
+    }
+
+    public Database getDatabase() {
+        return database;
     }
 }

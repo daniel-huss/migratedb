@@ -26,7 +26,6 @@ import migratedb.v1.core.internal.parser.BaseParser;
 
 import java.sql.Connection;
 import java.sql.Types;
-import java.util.Properties;
 
 public class DB2DatabaseType extends BaseDatabaseType {
     @Override
@@ -39,7 +38,6 @@ public class DB2DatabaseType extends BaseDatabaseType {
         return Types.VARCHAR;
     }
 
-
     @Override
     public boolean handlesDatabaseProductNameAndVersion(String databaseProductName, String databaseProductVersion,
                                                         Connection connection) {
@@ -47,7 +45,7 @@ public class DB2DatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         return new DB2Database(configuration, jdbcConnectionFactory);
     }
 

@@ -22,12 +22,12 @@ import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 import migratedb.v1.core.internal.jdbc.JdbcUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public abstract class BaseTable<D extends Database<?>, S extends Schema<?, ?>>
-        extends BaseSchemaObject<D, S> implements Table<D, S> {
+public abstract class BaseTable extends BaseSchemaObject implements Table {
     /**
      * Keeps track of the locks on a table since calls to lock the table can be nested.
      */
@@ -39,12 +39,12 @@ public abstract class BaseTable<D extends Database<?>, S extends Schema<?, ?>>
      * @param schema       The schema this table lives in.
      * @param name         The name of the table.
      */
-    public BaseTable(JdbcTemplate jdbcTemplate, D database, S schema, String name) {
+    public BaseTable(JdbcTemplate jdbcTemplate, Database database, Schema schema, String name) {
         super(jdbcTemplate, database, schema, name);
     }
 
     @Override
-    public boolean exists() {
+    public final boolean exists() {
         try {
             return doExists();
         } catch (SQLException e) {
@@ -68,7 +68,10 @@ public abstract class BaseTable<D extends Database<?>, S extends Schema<?, ?>>
      * @param tableTypes The types of table to look for (e.g. TABLE). (optional)
      * @throws SQLException when the check failed.
      */
-    protected boolean exists(Schema<?, ?> catalog, Schema<?, ?> schema, String table, String... tableTypes) throws SQLException {
+    protected boolean exists(@Nullable Schema catalog,
+                             @Nullable Schema schema,
+                             String table,
+                             String... tableTypes) throws SQLException {
         String[] types = tableTypes;
         if (types.length == 0) {
             types = null;
@@ -77,9 +80,9 @@ public abstract class BaseTable<D extends Database<?>, S extends Schema<?, ?>>
         ResultSet resultSet = null;
         boolean found;
         try {
-            resultSet = database.getJdbcMetaData().getTables(
+            resultSet = getDatabase().getJdbcMetaData().getTables(
                     catalog == null ? null : catalog.getName(),
-                    schema == null ? null : schema.getName(),
+                    schema == null ? null : getSchema().getName(),
                     table,
                     types);
             found = resultSet.next();

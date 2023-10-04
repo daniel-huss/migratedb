@@ -20,7 +20,7 @@ import migratedb.v1.core.api.Version;
 import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.v1.core.internal.database.sqlserver.SQLServerConnection;
+import migratedb.v1.core.internal.database.sqlserver.SQLServerSession;
 import migratedb.v1.core.internal.database.sqlserver.SQLServerDatabase;
 
 import java.sql.Connection;
@@ -33,8 +33,8 @@ public class SynapseDatabase extends SQLServerDatabase {
     }
 
     @Override
-    protected SQLServerConnection doGetConnection(Connection connection) {
-        return new SynapseConnection(this, connection);
+    protected SQLServerSession doGetConnection(Connection connection) {
+        return new SynapseSession(this, connection);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class SynapseDatabase extends SQLServerDatabase {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
 
         return "CREATE TABLE " + table + " (\n" +
                 "    [installed_rank] INT NOT NULL,\n" +
@@ -110,17 +110,17 @@ public class SynapseDatabase extends SQLServerDatabase {
     }
 
     @Override
-    public String getInsertStatement(Table<?, ?> table) {
+    public String getInsertStatement(Table table) {
         String currentDateTime = new java.sql.Timestamp(new Date().getTime()).toString();
         return "INSERT INTO " + table
-                + " (" + quote("installed_rank")
-                + ", " + quote("version")
-                + ", " + quote("description")
-                + ", " + quote("type")
-                + ", " + quote("script")
-                + ", " + quote("checksum")
-                + ", " + quote("installed_by")
-                + ", " + quote("installed_on")
+               + " (" + quote("installed_rank")
+               + ", " + quote("version")
+               + ", " + quote("description")
+               + ", " + quote("type")
+               + ", " + quote("script")
+               + ", " + quote("checksum")
+               + ", " + quote("installed_by")
+               + ", " + quote("installed_on")
                + ", " + quote("execution_time")
                + ", " + quote("success")
                + ")"

@@ -271,50 +271,6 @@ public final class StringUtils {
     }
 
     /**
-     * Splits this string into a collection using this delimiter and this group delimiter.
-     *
-     * @param str                The string to split.
-     * @param delimiterChar      The delimiter to use.
-     * @param groupDelimiterChar The character to use to delimit groups.
-     * @return The resulting array.
-     */
-    public static List<String> tokenizeToStringCollection(String str, char delimiterChar, char groupDelimiterChar) {
-        if (str == null) {
-            return null;
-        }
-        List<String> tokens = new ArrayList<>(str.length() / 5);
-        int start = 0;
-        int end = 0;
-        boolean inGroup = false;
-        for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            if (c == groupDelimiterChar) {
-                inGroup = !inGroup;
-                addToken(tokens, str, start, end);
-                start = i + 1;
-                end = start;
-            } else if (!inGroup && c == delimiterChar) {
-                addToken(tokens, str, start, end);
-                start = i + 1;
-                end = start;
-            } else if (i == start && c == ' ') {
-                start++;
-                end++;
-            } else if (i >= start && c != ' ') {
-                end = i + 1;
-            }
-        }
-        addToken(tokens, str, start, end);
-        return tokens;
-    }
-
-    private static void addToken(List<String> tokens, String str, int start, int end) {
-        if (start < end) {
-            tokens.add(str.substring(start, end));
-        }
-    }
-
-    /**
      * Replace all occurrences of a substring within a string with another string.
      *
      * @param inString   String to examine

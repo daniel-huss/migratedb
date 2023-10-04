@@ -34,8 +34,8 @@ public final class SchemaHistoryFactory {
     public static SchemaHistory getSchemaHistory(Configuration configuration,
                                                  SqlScriptExecutorFactory sqlScriptExecutorFactory,
                                                  SqlScriptFactory sqlScriptFactory,
-                                                 Database<?> database,
-                                                 Schema<?, ?> schema) {
+                                                 Database database,
+                                                 Schema schema) {
         var table = schema.getTable(configuration.getTable());
 
         return new JdbcTableSchemaHistory(sqlScriptExecutorFactory,
@@ -45,30 +45,30 @@ public final class SchemaHistoryFactory {
     }
 
     public static final class SchemasWithDefault {
-        public final List<Schema<?, ?>> all;
-        public final Schema<?, ?> defaultSchema;
+        public final List<Schema> all;
+        public final Schema defaultSchema;
 
-        public SchemasWithDefault(List<Schema<?, ?>> schemas, Schema<?, ?> defaultSchema) {
+        public SchemasWithDefault(List<Schema> schemas, Schema defaultSchema) {
             this.all = schemas;
             this.defaultSchema = defaultSchema;
         }
     }
 
-    public static SchemasWithDefault scanSchemas(Configuration configuration, Database<?> database) {
+    public static SchemasWithDefault scanSchemas(Configuration configuration, Database database) {
         var schemaNames = configuration.getSchemas();
         var defaultSchemaName = configuration.getDefaultSchema();
 
         LOG.debug("Schemas: " + StringUtils.arrayToCommaDelimitedString(schemaNames.toArray()));
         LOG.debug("Default schema: " + defaultSchemaName);
 
-        List<Schema<?, ?>> schemas = new ArrayList<>();
+        List<Schema> schemas = new ArrayList<>();
         for (String schemaName : schemaNames) {
             schemas.add(database.getMainConnection().getSchema(schemaName));
         }
 
         if (defaultSchemaName == null) {
             if (schemaNames.isEmpty()) {
-                Schema<?, ?> currentSchema = database.getMainConnection().getCurrentSchema();
+                Schema currentSchema = database.getMainConnection().getCurrentSchema();
                 if (currentSchema == null || currentSchema.getName() == null) {
                     throw new MigrateDbException(
                             "Unable to determine schema for the schema history table. Set a default schema for the " +
@@ -80,7 +80,7 @@ public final class SchemaHistoryFactory {
             }
         }
 
-        Schema<?, ?> defaultSchema = database.getMainConnection().getSchema(defaultSchemaName);
+        Schema defaultSchema = database.getMainConnection().getSchema(defaultSchemaName);
         if (!schemas.contains(defaultSchema)) {
             schemas.add(0, defaultSchema);
         }

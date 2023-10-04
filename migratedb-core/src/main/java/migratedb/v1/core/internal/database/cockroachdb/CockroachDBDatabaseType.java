@@ -25,6 +25,8 @@ import migratedb.v1.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.v1.core.api.internal.parser.ParsingContext;
 import migratedb.v1.core.internal.database.DefaultExecutionStrategy;
 import migratedb.v1.core.internal.database.base.BaseDatabaseType;
+import migratedb.v1.core.internal.database.postgresql.PostgreSQLDatabase;
+import migratedb.v1.core.internal.database.postgresql.PostgreSQLDatabaseType;
 import migratedb.v1.core.internal.parser.BaseParser;
 
 import java.sql.Connection;
@@ -44,7 +46,7 @@ public class CockroachDBDatabaseType extends BaseDatabaseType {
     @Override
     public int getPriority() {
         // Must be checked ahead of the vanilla PostgreSQLDatabaseType
-        return 1;
+        return PostgreSQLDatabaseType.PRIORITY + 1;
     }
 
     @Override
@@ -59,7 +61,7 @@ public class CockroachDBDatabaseType extends BaseDatabaseType {
     }
 
     @Override
-    public Database<?> createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
+    public Database createDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         return new CockroachDBDatabase(configuration, jdbcConnectionFactory);
     }
 

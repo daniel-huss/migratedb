@@ -17,18 +17,18 @@
 package migratedb.v1.core.internal.database.mysql.tidb;
 
 import migratedb.v1.core.api.internal.database.base.Table;
-import migratedb.v1.core.internal.database.mysql.MySQLConnection;
+import migratedb.v1.core.internal.database.mysql.MySQLSession;
 import migratedb.v1.core.internal.database.mysql.MySQLDatabase;
 import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
-public class TiDBConnection extends MySQLConnection {
-
+public class TiDBSession extends MySQLSession {
     private static final String TIDB_TXN_MODE = "tidb_txn_mode";
 
-    public TiDBConnection(MySQLDatabase database, java.sql.Connection connection) {
+    public TiDBSession(MySQLDatabase database, Connection connection) {
         super(database, connection);
     }
 
@@ -42,7 +42,7 @@ public class TiDBConnection extends MySQLConnection {
     }
 
     @Override
-    public <T> T lock(Table<?, ?> table, Callable<T> callable) {
+    public <T> T lock(Table table, Callable<T> callable) {
         setTidbTxnMode();
         return super.lock(table, callable);
     }

@@ -14,32 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.v1.core.internal.database.postgresql;
+package migratedb.v1.core.internal.database.db2;
 
+import migratedb.v1.core.api.internal.database.base.Database;
+import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.v1.core.internal.database.base.Type;
-
-import java.sql.SQLException;
+import migratedb.v1.core.internal.database.base.BaseDatabaseFunction;
 
 /**
- * PostgreSQL-specific type.
+ * DB2-specific function.
  */
-public class PostgreSQLType extends Type<PostgreSQLDatabase, PostgreSQLSchema> {
+public class DB2DatabaseFunction extends BaseDatabaseFunction {
     /**
-     * Creates a new PostgreSQL type.
+     * Creates a new Db2 function.
      *
      * @param jdbcTemplate The Jdbc Template for communicating with the DB.
      * @param database     The database-specific support.
-     * @param schema       The schema this type lives in.
-     * @param name         The name of the type.
+     * @param schema       The schema this function lives in.
+     * @param name         The name of the function.
+     * @param args         The arguments of the function.
      */
-    public PostgreSQLType(JdbcTemplate jdbcTemplate, PostgreSQLDatabase database, PostgreSQLSchema schema,
-                          String name) {
-        super(jdbcTemplate, database, schema, name);
-    }
-
-    @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TYPE " + database.quote(schema.getName(), name));
+    DB2DatabaseFunction(JdbcTemplate jdbcTemplate, Database database, Schema schema, String name, String... args) {
+        super(jdbcTemplate, database, schema, name, args);
     }
 }

@@ -17,6 +17,7 @@
 package migratedb.v1.core.internal.database.saphana;
 
 import migratedb.v1.core.api.configuration.Configuration;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.v1.core.internal.database.base.BaseDatabase;
@@ -26,7 +27,7 @@ import java.sql.Connection;
 /**
  * SAP HANA database.
  */
-public class SAPHANADatabase extends BaseDatabase<SAPHANAConnection> {
+public class SAPHANADatabase extends BaseDatabase {
     /**
      * Creates a new instance.
      */
@@ -35,8 +36,8 @@ public class SAPHANADatabase extends BaseDatabase<SAPHANAConnection> {
     }
 
     @Override
-    protected SAPHANAConnection doGetConnection(Connection connection) {
-        return new SAPHANAConnection(this, connection);
+    protected SAPHANASession doGetConnection(Connection connection) {
+        return new SAPHANASession(this, connection);
     }
 
     @Override
@@ -49,7 +50,7 @@ public class SAPHANADatabase extends BaseDatabase<SAPHANAConnection> {
     }
 
     @Override
-    public String getRawCreateScript(Table<?, ?> table, boolean baseline) {
+    public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
                 "    \"installed_rank\" INT NOT NULL,\n" +
                 "    \"version\" VARCHAR(50),\n" +
@@ -72,8 +73,13 @@ public class SAPHANADatabase extends BaseDatabase<SAPHANAConnection> {
     /**
      * @return Whether this is a SAP HANA Cloud database.
      */
-    boolean isCloud() {
+    private boolean isCloud() {
         return getMainConnection().isCloudConnection();
+    }
+
+    @Override
+    public SAPHANASession getMainConnection() {
+        return (SAPHANASession) super.getMainConnection();
     }
 
     @Override

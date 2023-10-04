@@ -16,7 +16,6 @@
  */
 package migratedb.v1.core.internal.database.firebird;
 
-import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.v1.core.internal.database.base.BaseSchema;
 
@@ -24,7 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FirebirdSchema extends BaseSchema<FirebirdDatabase, FirebirdTable> {
+public class FirebirdSchema extends BaseSchema {
     /**
      * Creates a new Firebird schema.
      *
@@ -44,7 +43,7 @@ public class FirebirdSchema extends BaseSchema<FirebirdDatabase, FirebirdTable> 
     }
 
     @Override
-    protected boolean doEmpty() throws SQLException {
+    protected boolean doCheckIfEmpty() throws SQLException {
         // database == schema, check content of database
         // Check for all object types except custom collations and roles
         return 0 == jdbcTemplate.queryForInt("select count(*)\n" +
@@ -97,158 +96,16 @@ public class FirebirdSchema extends BaseSchema<FirebirdDatabase, FirebirdTable> 
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        // database == schema, doClean() instead
-        doClean();
-    }
-
-    @Override
-    protected void doClean() throws SQLException {
-        // Dropping everything except custom collations and roles
-        for (String dropPackageStmt : generateDropPackageStatements()) {
-            jdbcTemplate.execute(dropPackageStmt);
-        }
-        for (String dropProcedureStmt : generateDropProcedureStatements()) {
-            jdbcTemplate.execute(dropProcedureStmt);
-        }
-        for (String dropViewStmt : generateDropViewStatements()) {
-            jdbcTemplate.execute(dropViewStmt);
-        }
-
-        for (String dropConstraintStmt : generateDropConstraintStatements()) {
-            jdbcTemplate.execute(dropConstraintStmt);
-        }
-
-        for (Table<?, ?> table : allTables()) {
-            table.drop();
-        }
-        for (String dropTriggerStmt : generateDropTriggerStatements()) {
-            jdbcTemplate.execute(dropTriggerStmt);
-        }
-        for (String dropFunctionStmt : generateDropFunctionStatements()) {
-            jdbcTemplate.execute(dropFunctionStmt);
-        }
-        for (String dropSequenceStmt : generateDropSequenceStatements()) {
-            jdbcTemplate.execute(dropSequenceStmt);
-        }
-        for (String dropExceptionStmt : generateDropExceptionStatements()) {
-            jdbcTemplate.execute(dropExceptionStmt);
-        }
-        for (String dropDomainStmt : generateDropDomainStatements()) {
-            jdbcTemplate.execute(dropDomainStmt);
-        }
-    }
-
-    private List<String> generateDropConstraintStatements() throws SQLException {
-        return jdbcTemplate.query(
-                "select RDB$RELATION_NAME, RDB$CONSTRAINT_NAME\n" +
-                        "from RDB$RELATION_CONSTRAINTS\n" +
-                        "where RDB$RELATION_NAME NOT LIKE 'RDB$%'\n" +
-                        "and RDB$CONSTRAINT_TYPE='FOREIGN KEY'",
-                rs -> {
-                    String tableName = rs.getString(1);
-                    String constraintName = rs.getString(2);
-                    return "ALTER TABLE " + tableName + " DROP CONSTRAINT " + constraintName;
-                });
-    }
-
-    private List<String> generateDropPackageStatements() throws SQLException {
-        List<String> packageNames = jdbcTemplate.queryForStringList(
-            "select RDB$PACKAGE_NAME as packageName\n" +
-            "from RDB$PACKAGES\n" +
-            "where (RDB$SYSTEM_FLAG is null or RDB$SYSTEM_FLAG = 0)");
-
-        return generateDropStatements("package", packageNames);
-    }
-
-    private List<String> generateDropProcedureStatements() throws SQLException {
-        List<String> procedureNames = jdbcTemplate.queryForStringList(
-            "select RDB$PROCEDURE_NAME as procedureName\n" +
-            "from RDB$PROCEDURES\n" +
-            "where (RDB$SYSTEM_FLAG is null or RDB$SYSTEM_FLAG = 0)" +
-            "\nand RDB$PACKAGE_NAME is null");
-
-        return generateDropStatements("procedure", procedureNames);
-    }
-
-    private List<String> generateDropViewStatements() throws SQLException {
-        List<String> viewNames = jdbcTemplate.queryForStringList(
-            "select RDB$RELATION_NAME as viewName\n" +
-            "from RDB$RELATIONS\n" +
-            "where RDB$VIEW_BLR is not null\n" +
-            "and (RDB$SYSTEM_FLAG is null or RDB$SYSTEM_FLAG = 0)");
-
-        return generateDropStatements("view", viewNames);
-    }
-
-    private List<String> generateDropTriggerStatements() throws SQLException {
-        List<String> triggerNames = jdbcTemplate.queryForStringList(
-            "select RDB$TRIGGER_NAME as triggerName\n" +
-            "from RDB$TRIGGERS\n" +
-            "where (RDB$SYSTEM_FLAG is null or RDB$SYSTEM_FLAG = 0)\n");
-
-        return generateDropStatements("trigger", triggerNames);
-    }
-
-    private List<String> generateDropFunctionStatements() throws SQLException {
-        List<String> functionNames = jdbcTemplate.queryForStringList(
-            "select RDB$FUNCTION_NAME as functionName\n" +
-            "from RDB$FUNCTIONS\n" +
-            "where (RDB$SYSTEM_FLAG is null or RDB$SYSTEM_FLAG = 0)");
-
-        String functionTypeName = database.getVersion().isAtLeast("3.0")
-                                  ? "function"
-                                  : "external function";
-        return generateDropStatements(functionTypeName, functionNames);
-    }
-
-    private List<String> generateDropSequenceStatements() throws SQLException {
-        List<String> sequenceNames = jdbcTemplate.queryForStringList(
-            "select RDB$GENERATOR_NAME as sequenceName\n" +
-            "from RDB$GENERATORS\n" +
-            "where (RDB$SYSTEM_FLAG is null or RDB$SYSTEM_FLAG = 0)\n");
-
-        return generateDropStatements("sequence", sequenceNames);
-    }
-
-    private List<String> generateDropExceptionStatements() throws SQLException {
-        List<String> exceptionNames = jdbcTemplate.queryForStringList(
-            "select RDB$EXCEPTION_NAME as exceptionName\n" +
-            "from RDB$EXCEPTIONS\n" +
-            "where (RDB$SYSTEM_FLAG is null or RDB$SYSTEM_FLAG = 0)\n");
-
-        return generateDropStatements("exception", exceptionNames);
-    }
-
-    private List<String> generateDropDomainStatements() throws SQLException {
-        List<String> domainNames = jdbcTemplate.queryForStringList(
-            "select RDB$FIELD_NAME as domainName\n" +
-            "from RDB$FIELDS\n" +
-            "where RDB$FIELD_NAME not starting with 'RDB$'\n" +
-            "and (RDB$SYSTEM_FLAG is null or RDB$SYSTEM_FLAG = 0)\n");
-
-        return generateDropStatements("domain", domainNames);
-    }
-
-    private List<String> generateDropStatements(String objectType, List<String> objectNames) {
-        List<String> statements = new ArrayList<>(objectNames.size());
-        for (String objectName : objectNames) {
-            statements.add("drop " + objectType + " " + database.quote(objectName));
-        }
-        return statements;
-    }
-
-    @Override
-    protected FirebirdTable[] doAllTables() throws SQLException {
+    protected List<FirebirdTable> doAllTables() throws SQLException {
         List<String> tableNames = jdbcTemplate.queryForStringList(
-            "select RDB$RELATION_NAME as tableName\n" +
-            "from RDB$RELATIONS\n" +
-            "where RDB$VIEW_BLR is null\n" +
-            "and (RDB$SYSTEM_FLAG is null or RDB$SYSTEM_FLAG = 0)");
+                "select RDB$RELATION_NAME as tableName\n" +
+                "from RDB$RELATIONS\n" +
+                "where RDB$VIEW_BLR is null\n" +
+                "and (RDB$SYSTEM_FLAG is null or RDB$SYSTEM_FLAG = 0)");
 
-        FirebirdTable[] tables = new FirebirdTable[tableNames.size()];
-        for (int i = 0; i < tableNames.size(); i++) {
-            tables[i] = getTable(tableNames.get(i));
+        List<FirebirdTable> tables = new ArrayList<>(tableNames.size());
+        for (String tableName : tableNames) {
+            tables.add(getTable(tableName));
         }
 
         return tables;
@@ -256,6 +113,11 @@ public class FirebirdSchema extends BaseSchema<FirebirdDatabase, FirebirdTable> 
 
     @Override
     public FirebirdTable getTable(String tableName) {
-        return new FirebirdTable(jdbcTemplate, database, this, tableName);
+        return new FirebirdTable(jdbcTemplate, getDatabase(), this, tableName);
+    }
+
+    @Override
+    protected FirebirdDatabase getDatabase() {
+        return (FirebirdDatabase) super.getDatabase();
     }
 }

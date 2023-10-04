@@ -16,7 +16,6 @@
  */
 package migratedb.v1.core.internal.database.sqlserver.synapse;
 
-import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.v1.core.internal.database.sqlserver.SQLServerDatabase;
 import migratedb.v1.core.internal.database.sqlserver.SQLServerSchema;
@@ -43,21 +42,21 @@ public class SynapseSchema extends SQLServerSchema {
     }
 
     @Override
-    protected SynapseTable[] doAllTables() throws SQLException {
+    protected List<SynapseTable> doAllTables() throws SQLException {
         List<String> tableNames = new ArrayList<>();
         for (DBObject table : queryDBObjects(ObjectType.USER_TABLE)) {
             tableNames.add(table.name);
         }
 
-        SynapseTable[] tables = new SynapseTable[tableNames.size()];
-        for (int i = 0; i < tableNames.size(); i++) {
-            tables[i] = new SynapseTable(jdbcTemplate, database, databaseName, this, tableNames.get(i));
+        List<SynapseTable> tables = new ArrayList<>(tableNames.size());
+        for (String tableName : tableNames) {
+            tables.add(new SynapseTable(jdbcTemplate, getDatabase(), databaseName, this, tableName));
         }
         return tables;
     }
 
     @Override
-    public Table<?, ?> getTable(String tableName) {
-        return new SynapseTable(jdbcTemplate, database, databaseName, this, tableName);
+    public SynapseTable getTable(String tableName) {
+        return new SynapseTable(jdbcTemplate, getDatabase(), databaseName, this, tableName);
     }
 }

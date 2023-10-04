@@ -17,7 +17,6 @@
 package migratedb.v1.core.internal.database.hsqldb;
 
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.internal.database.base.BaseTable;
 
 import java.sql.SQLException;
@@ -25,9 +24,7 @@ import java.sql.SQLException;
 /**
  * HSQLDB-specific table.
  */
-public class HSQLDBTable extends BaseTable<HSQLDBDatabase, HSQLDBSchema> {
-    private static final Log LOG = Log.getLog(HSQLDBTable.class);
-
+public class HSQLDBTable extends BaseTable {
     /**
      * Creates a new Hsql table.
      *
@@ -42,18 +39,12 @@ public class HSQLDBTable extends BaseTable<HSQLDBDatabase, HSQLDBSchema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + database.quote(schema.getName(), name) + " CASCADE");
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
-        return exists(null, schema, name);
+        return exists(null, getSchema(), getName());
     }
 
     @Override
     protected void doLock() throws SQLException {
-
         jdbcTemplate.execute("LOCK TABLE " + this + " WRITE");
     }
 }

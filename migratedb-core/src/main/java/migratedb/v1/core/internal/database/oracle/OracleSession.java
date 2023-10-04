@@ -14,33 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.v1.core.internal.database.h2;
+package migratedb.v1.core.internal.database.oracle;
 
 import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.base.BaseConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
-public class H2Connection extends BaseConnection<H2Database> {
-    private final boolean requiresV2Metadata;
-
-    H2Connection(H2Database database, java.sql.Connection connection, boolean requiresV2Metadata) {
+/**
+ * Oracle connection.
+ */
+public class OracleSession extends BaseSession {
+    OracleSession(OracleDatabase database, Connection connection) {
         super(database, connection);
-        this.requiresV2Metadata = requiresV2Metadata;
-    }
-
-    @Override
-    public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
-        jdbcTemplate.execute("SET SCHEMA " + database.quote(schema));
-    }
-
-    @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new H2Schema(jdbcTemplate, database, name, requiresV2Metadata);
     }
 
     @Override
     protected String getCurrentSchemaNameOrSearchPath() throws SQLException {
-        return jdbcTemplate.queryForString("CALL SCHEMA()");
+        return jdbcTemplate.queryForString("SELECT SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA') FROM DUAL");
+    }
+
+    @Override
+    public void doChangeCurrentSchemaOrSearchPathTo(String schema) throws SQLException {
+        jdbcTemplate.execute("ALTER SESSION SET CURRENT_SCHEMA=" + getDatabase().quote(schema));
+    }
+
+    @Override
+    public Schema getSchema(String name) {
+        return new OracleSchema(jdbcTemplate, getDatabase(), name);
+    }
+
+    @Override
+    public OracleDatabase getDatabase() {
+        return (OracleDatabase) super.getDatabase();
     }
 }

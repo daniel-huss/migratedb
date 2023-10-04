@@ -33,30 +33,37 @@ import migratedb.v1.core.internal.resource.StringResource;
 import migratedb.v1.core.internal.util.AbbreviationUtils;
 import migratedb.v1.core.internal.util.StringUtils;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Abstraction for database-specific functionality.
  */
-public abstract class BaseDatabase<C extends Connection<?>> implements Database<C> {
+public abstract class BaseDatabase implements Database{
     private static final Log LOG = Log.getLog(BaseDatabase.class);
+
+    private final DatabaseMetaData jdbcMetaData;
 
     protected final DatabaseType databaseType;
     protected final Configuration configuration;
     protected final JdbcConnectionFactory jdbcConnectionFactory;
-    protected final DatabaseMetaData jdbcMetaData;
-    protected JdbcTemplate jdbcTemplate;
-    private C migrationConnection;
-    private C mainConnection;
+    protected final JdbcTemplate jdbcTemplate;
+
+    private Session migrationConnection;
+    private Session mainConnection;
+
     /**
      * The main JDBC connection, without any wrapping.
      */
-    protected final java.sql.Connection rawMainJdbcConnection;
+    protected final Connection rawMainJdbcConnection;
+
     /**
      * The 'major.minor' version of this database.
      */
     private Version version;
+
     /**
      * The user who applied the migrations.
      */
@@ -76,16 +83,16 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
     }
 
     /**
-     * Retrieves a MigrateDB Connection for this JDBC connection.
+     * Retrieves a MigrateDB session for this JDBC connection.
      */
-    private C getConnection(java.sql.Connection connection) {
+    private Session getConnection(Connection connection) {
         return doGetConnection(connection);
     }
 
     /**
-     * Retrieves a MigrateDB Connection for this JDBC connection.
+     * Retrieves a MigrateDB session for this JDBC connection.
      */
-    protected abstract C doGetConnection(java.sql.Connection connection);
+    protected abstract Session doGetConnection(Connection connection);
 
     @Override
     public final Version getVersion() {
@@ -119,8 +126,8 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
     private void recommendMigrateDbUpgrade(String newestSupportedVersion) {
         String message =
                 "MigrateDB upgrade recommended: " + databaseType + " " + computeVersionDisplayName(getVersion())
-                        + " is newer than this version of MigrateDB and support has not been tested."
-                        + " The latest supported version of " + databaseType + " is " + newestSupportedVersion + ".";
+                + " is newer than this version of MigrateDB and support has not been tested."
+                + " The latest supported version of " + databaseType + " is " + newestSupportedVersion + ".";
         LOG.warn(message);
     }
 
@@ -202,9 +209,9 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
         String open = getOpenQuote();
         String close = getCloseQuote();
 
-        if (!open.equals("") && !close.equals("") && identifier.startsWith(open) && identifier.endsWith(close)) {
+        if (!open.isEmpty() && !close.isEmpty() && identifier.startsWith(open) && identifier.endsWith(close)) {
             identifier = identifier.substring(open.length(), identifier.length() - close.length());
-            if (!getEscapedQuote().equals("")) {
+            if (!getEscapedQuote().isEmpty()) {
                 identifier = StringUtils.replaceAll(identifier, getEscapedQuote(), close);
             }
         }
@@ -223,7 +230,7 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
     }
 
     @Override
-    public final C getMainConnection() {
+    public Session getMainConnection() {
         if (mainConnection == null) {
             this.mainConnection = getConnection(rawMainJdbcConnection);
         }
@@ -231,7 +238,7 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
     }
 
     @Override
-    public final C getMigrationConnection() {
+    public Session getMigrationConnection() {
         if (migrationConnection == null) {
             if (useSingleConnection()) {
                 this.migrationConnection = getMainConnection();
@@ -247,67 +254,67 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
      */
     protected Version determineVersion() {
         try {
-            return Version.parse(
-                    jdbcMetaData.getDatabaseMajorVersion() + "." + jdbcMetaData.getDatabaseMinorVersion());
+            return Version.parse(jdbcMetaData.getDatabaseMajorVersion() + "." +
+                                 jdbcMetaData.getDatabaseMinorVersion());
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to determine the major version of the database", e);
         }
     }
 
     @Override
-    public final SqlScript getCreateScript(SqlScriptFactory sqlScriptFactory, Table<?, ?> table, boolean baseline) {
+    public final SqlScript getCreateScript(SqlScriptFactory sqlScriptFactory, Table table, boolean baseline) {
         return sqlScriptFactory.createSqlScript(new StringResource("", getRawCreateScript(table, baseline)),
-                false,
-                null);
+                                                false,
+                                                null);
     }
 
     @Override
-    public String getInsertStatement(Table<?, ?> table) {
+    public String getInsertStatement(Table table) {
         return "INSERT INTO " + table
-                + " (" + quote("installed_rank")
-                + ", " + quote("version")
-                + ", " + quote("description")
-                + ", " + quote("type")
-                + ", " + quote("script")
-                + ", " + quote("checksum")
-                + ", " + quote("installed_by")
-                + ", " + quote("execution_time")
-                + ", " + quote("success")
-                + ")"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+               + " (" + quote("installed_rank")
+               + ", " + quote("version")
+               + ", " + quote("description")
+               + ", " + quote("type")
+               + ", " + quote("script")
+               + ", " + quote("checksum")
+               + ", " + quote("installed_by")
+               + ", " + quote("execution_time")
+               + ", " + quote("success")
+               + ")"
+               + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
 
     @Override
-    public final String getBaselineStatement(Table<?, ?> table) {
+    public final String getBaselineStatement(Table table) {
         return String.format(getInsertStatement(table).replace("?", "%s"),
-                1,
-                "'" + configuration.getBaselineVersion() + "'",
-                "'" + AbbreviationUtils.abbreviateDescription(configuration.getBaselineDescription()) +
-                        "'",
-                "'" + MigrationType.BASELINE + "'",
-                "'" + AbbreviationUtils.abbreviateScript(configuration.getBaselineDescription()) + "'",
-                "NULL",
-                "'" + installedBy + "'",
-                0,
-                getBooleanTrue()
+                             1,
+                             "'" + configuration.getBaselineVersion() + "'",
+                             "'" + AbbreviationUtils.abbreviateDescription(configuration.getBaselineDescription()) +
+                             "'",
+                             "'" + MigrationType.BASELINE + "'",
+                             "'" + AbbreviationUtils.abbreviateScript(configuration.getBaselineDescription()) + "'",
+                             "NULL",
+                             "'" + installedBy + "'",
+                             0,
+                             getBooleanTrue()
         );
     }
 
     @Override
-    public String getSelectStatement(Table<?, ?> table) {
+    public String getSelectStatement(Table table) {
         return "SELECT " + quote("installed_rank")
-                + "," + quote("version")
-                + "," + quote("description")
-                + "," + quote("type")
-                + "," + quote("script")
-                + "," + quote("checksum")
-                + "," + quote("installed_on")
-                + "," + quote("installed_by")
-                + "," + quote("execution_time")
-                + "," + quote("success")
-                + " FROM " + table
-                + " WHERE " + quote("installed_rank") + " > ?"
-                + " ORDER BY " + quote("installed_rank");
+               + "," + quote("version")
+               + "," + quote("description")
+               + "," + quote("type")
+               + "," + quote("script")
+               + "," + quote("checksum")
+               + "," + quote("installed_on")
+               + "," + quote("installed_by")
+               + "," + quote("execution_time")
+               + "," + quote("success")
+               + " FROM " + table
+               + " WHERE " + quote("installed_rank") + " > ?"
+               + " ORDER BY " + quote("installed_rank");
     }
 
     @Override
@@ -321,14 +328,20 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
     @Override
     public void close() {
         if (mainConnection == null && migrationConnection == null) {
-            if (rawMainJdbcConnection != null) JdbcUtils.closeConnection(rawMainJdbcConnection);
+            if (rawMainJdbcConnection != null) {
+                JdbcUtils.closeConnection(rawMainJdbcConnection);
+            }
         } else if (mainConnection == migrationConnection) {
             mainConnection.close();
         } else {
             try {
-                if (migrationConnection != null) migrationConnection.close();
+                if (migrationConnection != null) {
+                    migrationConnection.close();
+                }
             } finally {
-                if (mainConnection != null) mainConnection.close();
+                if (mainConnection != null) {
+                    mainConnection.close();
+                }
             }
         }
     }
@@ -349,42 +362,7 @@ public abstract class BaseDatabase<C extends Connection<?>> implements Database<
     }
 
     @Override
-    public void cleanPreSchemas() {
-        try {
-            doCleanPreSchemas();
-        } catch (SQLException e) {
-            throw new MigrateDbSqlException("Unable to clean database " + this, e);
-        }
-    }
-
-    /**
-     * Cleans all the objects in this database that need to be cleaned before each schema.
-     *
-     * @throws SQLException when the clean failed.
-     */
-    protected void doCleanPreSchemas() throws SQLException {
-    }
-
-    @Override
-    public void cleanPostSchemas(Schema<?, ?>[] schemas) {
-        try {
-            doCleanPostSchemas(schemas);
-        } catch (SQLException e) {
-            throw new MigrateDbSqlException("Unable to clean schema " + this, e);
-        }
-    }
-
-    /**
-     * Cleans all the objects in this database that need to be cleaned after each schema.
-     *
-     * @param schemas The list of schemas managed by MigrateDB.
-     * @throws SQLException when the clean failed.
-     */
-    protected void doCleanPostSchemas(Schema<?, ?>[] schemas) throws SQLException {
-    }
-
-    @Override
-    public Schema<?, ?>[] getAllSchemas() {
+    public List<? extends Schema> getAllSchemas() {
         throw new UnsupportedOperationException("Getting all schemas not supported for " + getDatabaseType().getName());
     }
 }

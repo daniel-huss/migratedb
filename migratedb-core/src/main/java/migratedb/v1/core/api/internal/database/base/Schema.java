@@ -17,12 +17,14 @@
 
 package migratedb.v1.core.api.internal.database.base;
 
-public interface Schema<D extends Database<?>, T extends Table<?, ?>> {
+import java.util.List;
+
+public interface Schema {
     String getName();
 
     boolean exists();
 
-    boolean empty();
+    boolean isEmpty();
 
     /**
      * Creates this schema in the database.
@@ -30,27 +32,17 @@ public interface Schema<D extends Database<?>, T extends Table<?, ?>> {
     void create();
 
     /**
-     * Drops this schema from the database.
-     */
-    void drop();
-
-    /**
-     * Cleans all the objects in this schema.
-     */
-    void clean();
-
-    /**
      * Retrieves all the tables in this schema.
      */
-    T[] allTables();
+    List<? extends Table> allTables();
 
     /**
      * Retrieves the table with this name in this schema.
      */
-    Table<?, ?> getTable(String tableName);
+    Table getTable(String tableName);
 
     /**
      * Retrieves the function with this name in this schema.
      */
-    Function<?, ?> getFunction(String functionName, String... args);
+    DatabaseFunction getFunction(String functionName, String... args);
 }

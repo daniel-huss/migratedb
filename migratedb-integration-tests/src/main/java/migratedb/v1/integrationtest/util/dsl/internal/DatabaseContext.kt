@@ -16,15 +16,15 @@
 
 package migratedb.v1.integrationtest.util.dsl.internal
 
+import migratedb.v1.core.api.internal.database.base.Database
 import migratedb.v1.integrationtest.database.DbSystem
 import migratedb.v1.integrationtest.util.base.SafeIdentifier
-import migratedb.v1.core.api.internal.database.base.Database
 import javax.sql.DataSource
 
 data class DatabaseContext(
     val databaseHandle: DbSystem.Handle,
     val adminDataSource: DataSource,
-    val database: Database<*>,
+    val database: Database,
     val namespace: SafeIdentifier,
     val schemaName: SafeIdentifier?,
 )

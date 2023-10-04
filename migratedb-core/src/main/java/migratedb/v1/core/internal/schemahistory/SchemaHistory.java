@@ -45,12 +45,12 @@ public abstract class SchemaHistory {
     /**
      * The schema history table used by MigrateDB. Non-final due to the table name fallback mechanism.
      */
-    protected Table<?, ?> table;
+    protected Table table;
 
     /**
      * @return The schema history table.
      */
-    public Table<?, ?> getTable() {
+    public Table getTable() {
         return table;
     }
 
@@ -135,7 +135,7 @@ public abstract class SchemaHistory {
      *
      * @param schemas The schemas that were created by MigrateDB.
      */
-    public final void addSchemasMarker(Schema<?, ?>[] schemas) {
+    public final void addSchemasMarker(Schema[] schemas) {
         addAppliedMigration(null,
                 "<< MigrateDB Schema Creation >>",
                 MigrationType.SCHEMA,

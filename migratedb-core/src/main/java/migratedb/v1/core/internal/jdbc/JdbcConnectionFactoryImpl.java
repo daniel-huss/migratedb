@@ -20,10 +20,8 @@ import migratedb.v1.core.api.MigrateDbException;
 import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.database.base.DatabaseType;
 import migratedb.v1.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -55,9 +53,9 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
         this.configuration = configuration;
 
         this.firstConnection = JdbcUtils.openConnection(dataSource,
-                connectRetries,
-                connectRetriesInterval,
-                configuration.getDatabaseTypeRegister());
+                                                        connectRetries,
+                                                        connectRetriesInterval,
+                                                        configuration.getDatabaseTypeRegister());
         try {
             this.databaseType = configuration.getDatabaseTypeRegister().getDatabaseTypeForConnection(firstConnection);
 
@@ -100,9 +98,9 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
     @Override
     public Connection openConnection() throws MigrateDbException {
         var connection = firstConnection == null ? JdbcUtils.openConnection(dataSource,
-                connectRetries,
-                connectRetriesInterval,
-                configuration.getDatabaseTypeRegister())
+                                                                            connectRetries,
+                                                                            connectRetriesInterval,
+                                                                            configuration.getDatabaseTypeRegister())
                 : firstConnection;
         firstConnection = null;
         try {
@@ -114,7 +112,9 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
             try {
                 connection.close();
             } catch (RuntimeException | SQLException | Error suppressed) {
-                if (!e.equals(suppressed)) e.addSuppressed(suppressed);
+                if (!e.equals(suppressed)) {
+                    e.addSuppressed(suppressed);
+                }
             }
             throw e;
         }

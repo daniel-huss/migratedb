@@ -17,7 +17,7 @@
 
 package migratedb.v1.core.api.internal.database.base;
 
-public interface Table<D extends Database<?>, S extends Schema<?, ?>> extends SchemaObject<D, S> {
+public interface Table extends SchemaObject {
     boolean exists();
 
     /**

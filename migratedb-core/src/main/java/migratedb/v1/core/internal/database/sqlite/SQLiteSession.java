@@ -14,20 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package migratedb.v1.core.internal.database.yugabytedb;
+package migratedb.v1.core.internal.database.sqlite;
 
-import migratedb.v1.core.api.configuration.Configuration;
-import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.internal.database.postgresql.PostgreSQLConnection;
+import migratedb.v1.core.internal.database.base.BaseSession;
 
-public class YugabyteDBConnection extends PostgreSQLConnection {
+import java.sql.Connection;
 
-    YugabyteDBConnection(Configuration configuration, YugabyteDBDatabase database, java.sql.Connection connection) {
-        super(configuration, database, connection);
+/**
+ * SQLite connection.
+ */
+public class SQLiteSession extends BaseSession {
+    SQLiteSession(SQLiteDatabase database, Connection connection) {
+        super(database, connection);
     }
 
     @Override
-    public Schema<?, ?> getSchema(String name) {
-        return new YugabyteDBSchema(jdbcTemplate, (YugabyteDBDatabase) database, name);
+    public SQLiteSchema getSchema(String name) {
+        return new SQLiteSchema(jdbcTemplate, getDatabase(), name);
+    }
+
+    @Override
+    public SQLiteDatabase getDatabase() {
+        return (SQLiteDatabase) super.getDatabase();
+    }
+
+    @Override
+    protected String getCurrentSchemaNameOrSearchPath() {
+        return "main";
     }
 }

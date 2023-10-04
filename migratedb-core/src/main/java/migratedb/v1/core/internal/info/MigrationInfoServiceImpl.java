@@ -35,7 +35,7 @@ import java.util.function.Predicate;
 public class MigrationInfoServiceImpl extends OperationResult implements MigrationInfoService {
     private final MigrationResolver migrationResolver;
     private final Configuration configuration;
-    private final Database<?> database;
+    private final Database database;
     private final Context context;
     private final SchemaHistory schemaHistory;
     private final TargetVersion target;
@@ -59,7 +59,7 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
      */
     public MigrationInfoServiceImpl(MigrationResolver migrationResolver,
                                     SchemaHistory schemaHistory,
-                                    Database<?> database,
+                                    Database database,
                                     Configuration configuration,
                                     TargetVersion target,
                                     List<MigrationPattern> cherryPick,
@@ -201,8 +201,8 @@ public class MigrationInfoServiceImpl extends OperationResult implements Migrati
         return invalidMigrations;
     }
 
-    public void setAllSchemasEmpty(Schema<?, ?>[] schemas) {
-        allSchemasEmpty = Arrays.stream(schemas).filter(Schema::exists).allMatch(Schema::empty);
+    public void setAllSchemasEmpty(Schema[] schemas) {
+        allSchemasEmpty = Arrays.stream(schemas).filter(Schema::exists).allMatch(Schema::isEmpty);
     }
 
     @Override

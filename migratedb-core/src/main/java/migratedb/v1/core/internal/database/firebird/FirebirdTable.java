@@ -21,7 +21,7 @@ import migratedb.v1.core.internal.database.base.BaseTable;
 
 import java.sql.SQLException;
 
-public class FirebirdTable extends BaseTable<FirebirdDatabase, FirebirdSchema> {
+public class FirebirdTable extends BaseTable {
 
     /**
      * Creates a new Firebird table.
@@ -36,15 +36,10 @@ public class FirebirdTable extends BaseTable<FirebirdDatabase, FirebirdSchema> {
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        jdbcTemplate.execute("DROP TABLE " + this);
-    }
-
-    @Override
     protected boolean doExists() throws SQLException {
         return jdbcTemplate.queryForInt("select count(*) from RDB$RELATIONS\n" +
                                         "where RDB$RELATION_NAME = ?\n" +
-                                        "and RDB$VIEW_BLR is null", name) > 0;
+                                        "and RDB$VIEW_BLR is null", getName()) > 0;
     }
 
     @Override
@@ -68,6 +63,6 @@ public class FirebirdTable extends BaseTable<FirebirdDatabase, FirebirdSchema> {
     @Override
     public String toString() {
         // No schema, only plain table name
-        return database.doQuote(name);
+        return getDatabase().quote(getName());
     }
 }

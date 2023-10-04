@@ -24,8 +24,9 @@ import migratedb.v1.core.api.internal.sqlscript.SqlScriptFactory;
 
 import java.io.Closeable;
 import java.sql.DatabaseMetaData;
+import java.util.List;
 
-public interface Database<C extends Connection<?>> extends Closeable {
+public interface Database extends Closeable {
     /**
      * Ensure MigrateDB supports this version of this database.
      */
@@ -80,14 +81,14 @@ public interface Database<C extends Connection<?>> extends Closeable {
     DatabaseMetaData getJdbcMetaData();
 
     /**
-     * @return The main connection used to manipulate the schema history.
+     * @return The main session used to manipulate the schema history.
      */
-    C getMainConnection();
+    Session getMainConnection();
 
     /**
-     * @return The migration connection used to apply migrations.
+     * @return The migration session used to apply migrations.
      */
-    C getMigrationConnection();
+    Session getMigrationConnection();
 
     /**
      * Retrieves the script used to create the schema history table.
@@ -96,15 +97,15 @@ public interface Database<C extends Connection<?>> extends Closeable {
      * @param table            The table to create.
      * @param baseline         Whether to include the creation of a baseline marker.
      */
-    SqlScript getCreateScript(SqlScriptFactory sqlScriptFactory, Table<?, ?> table, boolean baseline);
+    SqlScript getCreateScript(SqlScriptFactory sqlScriptFactory, Table table, boolean baseline);
 
-    String getRawCreateScript(Table<?, ?> table, boolean baseline);
+    String getRawCreateScript(Table table, boolean baseline);
 
-    String getInsertStatement(Table<?, ?> table);
+    String getInsertStatement(Table table);
 
-    String getBaselineStatement(Table<?, ?> table);
+    String getBaselineStatement(Table table);
 
-    String getSelectStatement(Table<?, ?> table);
+    String getSelectStatement(Table table);
 
     String getInstalledBy();
 
@@ -114,19 +115,7 @@ public interface Database<C extends Connection<?>> extends Closeable {
 
     boolean supportsMultiStatementTransactions();
 
-    /**
-     * Cleans all the objects in this database that need to be cleaned before each schema.
-     */
-    void cleanPreSchemas();
-
-    /**
-     * Cleans all the objects in this database that need to be cleaned after each schema.
-     *
-     * @param schemas The list of schemas managed by MigrateDB.
-     */
-    void cleanPostSchemas(Schema<?, ?>[] schemas);
-
-    Schema<?, ?>[] getAllSchemas();
+    List<? extends Schema> getAllSchemas();
 
     @Override
     void close();

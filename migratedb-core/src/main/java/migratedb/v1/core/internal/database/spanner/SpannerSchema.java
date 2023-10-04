@@ -18,8 +18,6 @@ package migratedb.v1.core.internal.database.spanner;
 
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
-import migratedb.v1.core.api.internal.jdbc.Result;
-import migratedb.v1.core.api.internal.jdbc.Results;
 import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.internal.database.base.BaseSchema;
 
@@ -30,7 +28,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpannerSchema extends BaseSchema<SpannerDatabase, SpannerTable> {
+public class SpannerSchema extends BaseSchema {
     private static final Log LOG = Log.getLog(SpannerSchema.class);
 
     public SpannerSchema(JdbcTemplate jdbcTemplate, SpannerDatabase database, String name) {
@@ -39,13 +37,12 @@ public class SpannerSchema extends BaseSchema<SpannerDatabase, SpannerTable> {
 
     @Override
     protected boolean doExists() {
-        return name.equals("");
+        return name.isEmpty();
     }
 
     @Override
-    protected boolean doEmpty() throws SQLException {
-
-        try (Connection c = database.getNewRawConnection()) {
+    protected boolean doCheckIfEmpty() throws SQLException {
+        try (Connection c = getDatabase().getNewRawConnection()) {
             Statement s = c.createStatement();
             s.close();
             try (ResultSet tables = c.getMetaData().getTables("", "", null, null)) {
@@ -55,94 +52,32 @@ public class SpannerSchema extends BaseSchema<SpannerDatabase, SpannerTable> {
     }
 
     @Override
+    protected SpannerDatabase getDatabase() {
+        return (SpannerDatabase) super.getDatabase();
+    }
+
+    @Override
     protected void doCreate() {
         LOG.info("Spanner does not support creating schemas. Schema not created: " + name);
     }
 
     @Override
-    protected void doDrop() throws SQLException {
-        doClean();
-    }
-
-    @Override
-    protected void doClean() throws SQLException {
-        List<String> statements = new ArrayList<>();
-
-        for (String[] foreignKeyAndTable : doAllForeignKeys()) {
-            String foreignKey = foreignKeyAndTable[0];
-            String table = foreignKeyAndTable[1];
-            statements.add("ALTER TABLE " + table + " DROP CONSTRAINT " + foreignKey);
-        }
-
-        for (String statement : statements) {
-            jdbcTemplate.execute(statement);
-        }
-
-        statements.clear();
-
-        for (var table : doAllTables()) {
-            for (String index : doAllIndexes(table)) {
-                if (!index.equalsIgnoreCase("PRIMARY_KEY")) {
-                    jdbcTemplate.execute("DROP INDEX " + index);
-                }
-            }
-            statements.add("DROP TABLE " + table.toString());
-        }
-
-        for (String statement : statements) {
-            jdbcTemplate.execute(statement);
-        }
-
-    }
-
-    @Override
-    protected SpannerTable[] doAllTables() throws SQLException {
+    protected List<SpannerTable> doAllTables() throws SQLException {
         List<SpannerTable> tablesList = new ArrayList<>();
         Connection c = jdbcTemplate.getConnection();
 
         ResultSet tablesRs = c.getMetaData().getTables("", "", null, null);
         while (tablesRs.next()) {
-            tablesList.add(new SpannerTable(jdbcTemplate, database, this,
+            tablesList.add(new SpannerTable(jdbcTemplate, getDatabase(), this,
                                             tablesRs.getString("TABLE_NAME")));
         }
         tablesRs.close();
 
-        SpannerTable[] tables = new SpannerTable[tablesList.size()];
-        return tablesList.toArray(tables);
-    }
-
-    private List<String[]> doAllForeignKeys() {
-        List<String[]> foreignKeyAndTableList = new ArrayList<>();
-
-        Results foreignKeyRs = jdbcTemplate.executeStatement("SELECT CONSTRAINT_NAME, TABLE_NAME " +
-                                                             "FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS " +
-                                                             "WHERE CONSTRAINT_TYPE='FOREIGN KEY'");
-
-        for (Result result : foreignKeyRs.getResults()) {
-            for (List<String> row : result.getData()) {
-                String[] foreignKeyAndTable = { row.get(0), row.get(1) };
-                foreignKeyAndTableList.add(foreignKeyAndTable);
-            }
-        }
-
-        return foreignKeyAndTableList;
-    }
-
-    private List<String> doAllIndexes(Table<?, ?> table) throws SQLException {
-        List<String> indexList = new ArrayList<>();
-        Connection c = jdbcTemplate.getConnection();
-
-        ResultSet indexRs = c.getMetaData().getIndexInfo("", "", table.getName(), false, false);
-        while (indexRs.next()) {
-            indexList.add(indexRs.getString("INDEX_NAME"));
-        }
-        indexRs.close();
-
-        return indexList;
+        return tablesList;
     }
 
     @Override
-    public Table<?, ?> getTable(String tableName) {
-        return new SpannerTable(jdbcTemplate, database, this, tableName);
+    public Table getTable(String tableName) {
+        return new SpannerTable(jdbcTemplate, getDatabase(), this, tableName);
     }
 }
