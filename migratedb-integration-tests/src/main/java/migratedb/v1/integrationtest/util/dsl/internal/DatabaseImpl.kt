@@ -16,14 +16,6 @@
 
 package migratedb.v1.integrationtest.util.dsl.internal
 
-import migratedb.v1.integrationtest.database.DbSystem
-import migratedb.v1.integrationtest.util.base.Names
-import migratedb.v1.integrationtest.util.base.SafeIdentifier
-import migratedb.v1.integrationtest.util.dsl.DatabaseSpec
-import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.checksum
-import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.toMigrationName
-import migratedb.v1.integrationtest.util.dsl.SchemaHistoryEntry
-import migratedb.v1.integrationtest.util.dsl.SchemaHistorySpec
 import migratedb.v1.core.api.Checksum
 import migratedb.v1.core.api.MigrationType
 import migratedb.v1.core.api.Version
@@ -37,6 +29,14 @@ import migratedb.v1.core.internal.parser.ParsingContextImpl
 import migratedb.v1.core.internal.resolver.MigrationInfoHelper
 import migratedb.v1.core.internal.schemahistory.SchemaHistory
 import migratedb.v1.core.internal.schemahistory.SchemaHistoryFactory
+import migratedb.v1.integrationtest.database.DbSystem
+import migratedb.v1.integrationtest.util.base.Names
+import migratedb.v1.integrationtest.util.base.SafeIdentifier
+import migratedb.v1.integrationtest.util.dsl.DatabaseSpec
+import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.checksum
+import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.toMigrationName
+import migratedb.v1.integrationtest.util.dsl.SchemaHistoryEntry
+import migratedb.v1.integrationtest.util.dsl.SchemaHistorySpec
 import migratedb.v1.testing.util.base.Exec.tryAll
 import java.sql.Connection
 import javax.sql.DataSource
@@ -49,6 +49,7 @@ class DatabaseImpl(
     private var database: Database? = null
     private var schemaHistoryTable: String? = null
     private var initializer: ((Connection) -> Unit)? = null
+    private var connectionFactoryToClose: JdbcConnectionFactoryImpl? = null
 
     override fun schemaHistory(table: String?, block: (SchemaHistorySpec).() -> Unit) {
         this.schemaHistoryTable = table
@@ -74,12 +75,11 @@ class DatabaseImpl(
             if (schemaName != null) it.schemas(schemaName.toString())
             if (schemaHistoryTable != null) it.table(schemaHistoryTable)
         }
-        val connectionFactory = JdbcConnectionFactoryImpl(dataSource::getConnection, configuration)
-        // JdbcConnectionFactoryImpl always opens a connection, creating a leak if not closed...
-        connectionFactory.openConnection().use { }
-
-        val db = databaseHandle.type.createDatabase(configuration, connectionFactory).also {
-            database = it
+        val db = JdbcConnectionFactoryImpl(dataSource::getConnection, configuration).let { connectionFactory ->
+            connectionFactoryToClose = connectionFactory
+            databaseHandle.type.createDatabase(configuration, connectionFactory).also {
+                database = it
+            }
         }
 
         schemaHistory?.materializeInto(db, configuration)
@@ -95,7 +95,8 @@ class DatabaseImpl(
     override fun close() {
         tryAll(
             { database?.close() },
-            { databaseHandle.dropNamespaceIfExists(namespace) }
+            { databaseHandle.dropNamespaceIfExists(namespace) },
+            { connectionFactoryToClose?.close() }
         )
     }
 

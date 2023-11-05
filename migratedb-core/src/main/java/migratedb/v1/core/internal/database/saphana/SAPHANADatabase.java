@@ -17,7 +17,6 @@
 package migratedb.v1.core.internal.database.saphana;
 
 import migratedb.v1.core.api.configuration.Configuration;
-import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcConnectionFactory;
 import migratedb.v1.core.internal.database.base.BaseDatabase;
@@ -36,7 +35,7 @@ public class SAPHANADatabase extends BaseDatabase {
     }
 
     @Override
-    protected SAPHANASession doGetConnection(Connection connection) {
+    protected SAPHANASession doGetSession(Connection connection) {
         return new SAPHANASession(this, connection);
     }
 
@@ -52,15 +51,15 @@ public class SAPHANADatabase extends BaseDatabase {
     @Override
     public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
-                "    \"installed_rank\" INT NOT NULL,\n" +
-                "    \"version\" VARCHAR(50),\n" +
-                "    \"description\" VARCHAR(200) NOT NULL,\n" +
-                "    \"type\" VARCHAR(20) NOT NULL,\n" +
-                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-                "    \"checksum\" VARCHAR(100),\n" +
-                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
-                "    \"installed_on\" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
-                "    \"execution_time\" INT NOT NULL,\n" +
+               "    \"installed_rank\" INT NOT NULL,\n" +
+               "    \"version\" VARCHAR(50),\n" +
+               "    \"description\" VARCHAR(200) NOT NULL,\n" +
+               "    \"type\" VARCHAR(20) NOT NULL,\n" +
+               "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+               "    \"checksum\" VARCHAR(100),\n" +
+               "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
+               "    \"installed_on\" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
+               "    \"execution_time\" INT NOT NULL,\n" +
                "    \"success\" TINYINT NOT NULL\n" +
                ");\n" +
                (baseline ? getBaselineStatement(table) + ";\n" : "") +
@@ -74,12 +73,12 @@ public class SAPHANADatabase extends BaseDatabase {
      * @return Whether this is a SAP HANA Cloud database.
      */
     private boolean isCloud() {
-        return getMainConnection().isCloudConnection();
+        return this.getMainSession().isCloudConnection();
     }
 
     @Override
-    public SAPHANASession getMainConnection() {
-        return (SAPHANASession) super.getMainConnection();
+    public SAPHANASession getMainSession() {
+        return (SAPHANASession) super.getMainSession();
     }
 
     @Override

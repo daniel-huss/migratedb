@@ -24,8 +24,8 @@ import migratedb.v1.core.api.TargetVersion;
 import migratedb.v1.core.api.callback.Event;
 import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.callback.CallbackExecutor;
-import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Database;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.schemahistory.AppliedMigration;
 import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.api.output.CommandResultFactory;
@@ -50,9 +50,9 @@ public class DbRepair {
     private static final Log LOG = Log.getLog(DbRepair.class);
 
     /**
-     * The database connection to use for accessing the schema history table.
+     * The database session to use for accessing the schema history table.
      */
-    private final Session connection;
+    private final Session session;
 
     /**
      * The migration infos.
@@ -95,7 +95,7 @@ public class DbRepair {
     public DbRepair(Database database, MigrationResolver migrationResolver, SchemaHistory schemaHistory,
                     CallbackExecutor callbackExecutor, Configuration configuration) {
         this.database = database;
-        this.connection = database.getMainConnection();
+        this.session = database.getMainSession();
         this.schemaHistory = schemaHistory;
         this.callbackExecutor = callbackExecutor;
         this.configuration = configuration;
@@ -123,7 +123,7 @@ public class DbRepair {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
 
-            repairActions = createExecutionTemplate(connection.getJdbcConnection(), database)
+            repairActions = createExecutionTemplate(session.getJdbcConnection(), database)
                     .execute(() -> {
                         CompletedRepairActions completedActions = new CompletedRepairActions();
 

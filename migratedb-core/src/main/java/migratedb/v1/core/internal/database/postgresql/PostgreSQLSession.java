@@ -28,9 +28,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
-/**
- * PostgreSQL connection.
- */
 public class PostgreSQLSession extends BaseSession {
     private final String originalRole;
     private final Configuration configuration;

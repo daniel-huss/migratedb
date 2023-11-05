@@ -24,9 +24,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
-/**
- * SQL Server connection.
- */
 public class SQLServerSession extends BaseSession {
     protected final String originalDatabaseName;
     private final String originalAnsiNulls;

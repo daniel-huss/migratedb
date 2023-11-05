@@ -530,7 +530,7 @@ internal class MigrateDbAutoConfigurationTest {
     internal class CustomMigrateDbInitializerWithHighestPrecedenceOrder {
         @Bean
         fun customMigrateDbInitializer(migrateDb: MigrateDb): MigrateDbInitializer {
-            val initializer = MigrateDbInitializer(migrateDb, DefaultMigrateDbExecution())
+            val initializer = MigrateDbInitializer(migrateDb, DefaultMigrateDbExecution(null))
             initializer.order = Ordered.HIGHEST_PRECEDENCE
             return initializer
         }
@@ -558,7 +558,7 @@ internal class MigrateDbAutoConfigurationTest {
     internal class CustomMigrateDbMigrationInitializerWithJpaConfiguration {
         @Bean
         fun customMigrateDbMigrationInitializer(migrateDb: MigrateDb): MigrateDbInitializer {
-            return MigrateDbInitializer(migrateDb, DefaultMigrateDbExecution())
+            return MigrateDbInitializer(migrateDb, DefaultMigrateDbExecution(null))
         }
 
         @Bean
@@ -610,7 +610,7 @@ internal class MigrateDbAutoConfigurationTest {
     internal class CustomMigrateDbMigrationInitializerWithJdbcConfiguration(private val dataSource: DataSource) {
         @Bean
         fun customMigrateDbMigrationInitializer(migrateDb: MigrateDb): MigrateDbInitializer {
-            return MigrateDbInitializer(migrateDb, DefaultMigrateDbExecution())
+            return MigrateDbInitializer(migrateDb, DefaultMigrateDbExecution(null))
         }
 
         @Bean

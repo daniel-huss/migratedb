@@ -22,9 +22,6 @@ import migratedb.v1.core.internal.database.base.BaseSession;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * Derby connection.
- */
 public class DerbySession extends BaseSession {
     DerbySession(DerbyDatabase database, Connection connection) {
         super(database, connection);

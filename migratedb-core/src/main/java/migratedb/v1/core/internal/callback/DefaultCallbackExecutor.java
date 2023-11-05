@@ -23,10 +23,9 @@ import migratedb.v1.core.api.callback.Context;
 import migratedb.v1.core.api.callback.Event;
 import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.callback.CallbackExecutor;
-import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Database;
 import migratedb.v1.core.api.internal.database.base.Schema;
-import migratedb.v1.core.api.logging.Log;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.output.OperationResult;
 import migratedb.v1.core.internal.jdbc.ExecutionTemplateFactory;
 
@@ -66,12 +65,12 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
 
     @Override
     public void onEvent(Event event) {
-        execute(event, database.getMainConnection());
+        execute(event, database.getMainSession());
     }
 
     @Override
     public void onMigrateEvent(Event event) {
-        execute(event, database.getMigrationConnection());
+        execute(event, database.getMigrationSession());
     }
 
     @Override
@@ -81,7 +80,7 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
 
     @Override
     public void onEachMigrateEvent(Event event) {
-        Context context = new SimpleContext(configuration, database.getMigrationConnection(), migrationInfo, null);
+        Context context = new SimpleContext(configuration, database.getMigrationSession(), migrationInfo, null);
         for (Callback callback : callbacks) {
             if (callback.supports(event, context)) {
                 callback.handle(event, context);
@@ -92,7 +91,7 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
     @Override
     public void onOperationFinishEvent(Event event, OperationResult operationResult) {
         Context context = new SimpleContext(configuration,
-                                            database.getMigrationConnection(),
+                                            database.getMigrationSession(),
                                             migrationInfo,
                                             operationResult);
         for (Callback callback : callbacks) {
@@ -102,26 +101,26 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
         }
     }
 
-    private void execute(Event event, Session connection) {
-        Context context = new SimpleContext(configuration, connection, null, null);
+    private void execute(Event event, Session session) {
+        Context context = new SimpleContext(configuration, session, null, null);
         for (Callback callback : callbacks) {
             if (callback.supports(event, context)) {
                 if (callback.canHandleInTransaction(event, context)) {
-                    ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(), database).execute(
+                    ExecutionTemplateFactory.createExecutionTemplate(session.getJdbcConnection(), database).execute(
                             (Callable<Void>) () -> {
-                                execute(connection, callback, event, context);
+                                execute(session, callback, event, context);
                                 return null;
                             });
                 } else {
-                    execute(connection, callback, event, context);
+                    execute(session, callback, event, context);
                 }
             }
         }
     }
 
-    private void execute(Session connection, Callback callback, Event event, Context context) {
-        connection.restoreOriginalState();
-        connection.changeCurrentSchemaTo(schema);
+    private void execute(Session session, Callback callback, Event event, Context context) {
+        session.restoreOriginalState();
+        session.changeCurrentSchemaTo(schema);
         handleEvent(callback, event, context);
     }
 

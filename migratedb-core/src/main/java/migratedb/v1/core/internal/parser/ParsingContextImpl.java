@@ -100,7 +100,7 @@ public class ParsingContextImpl implements ParsingContext {
 
     private Schema getCurrentSchema(Database database) {
         try {
-            return database.getMainConnection().getCurrentSchema();
+            return database.getMainSession().getCurrentSchema();
         } catch (MigrateDbException e) {
             LOG.debug("Could not get schema for " + DEFAULT_SCHEMA_PLACEHOLDER + " placeholder.");
             return null;

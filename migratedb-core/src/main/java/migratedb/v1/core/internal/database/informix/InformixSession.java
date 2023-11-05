@@ -22,9 +22,6 @@ import migratedb.v1.core.internal.database.base.BaseSession;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * Informix connection.
- */
 public class InformixSession extends BaseSession {
     InformixSession(InformixDatabase database, Connection connection) {
         super(database, connection);

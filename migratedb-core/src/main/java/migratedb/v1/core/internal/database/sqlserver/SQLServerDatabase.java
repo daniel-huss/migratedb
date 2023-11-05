@@ -33,7 +33,7 @@ public class SQLServerDatabase extends BaseDatabase {
     }
 
     @Override
-    protected SQLServerSession doGetConnection(Connection connection) {
+    protected SQLServerSession doGetSession(Connection connection) {
         return new SQLServerSession(this, connection);
     }
 
@@ -95,7 +95,7 @@ public class SQLServerDatabase extends BaseDatabase {
 
     @Override
     protected String doGetCurrentUser() throws SQLException {
-        return getMainConnection().getJdbcTemplate().queryForString("SELECT SUSER_SNAME()");
+        return this.getMainSession().getJdbcTemplate().queryForString("SELECT SUSER_SNAME()");
     }
 
     @Override
@@ -154,7 +154,7 @@ public class SQLServerDatabase extends BaseDatabase {
     }
 
     @Override
-    public boolean useSingleConnection() {
+    public boolean usesSingleSingle() {
         return true;
     }
 
@@ -183,16 +183,16 @@ public class SQLServerDatabase extends BaseDatabase {
     }
 
     private boolean isAzure() {
-        return getMainConnection().isAzureConnection();
+        return this.getMainSession().isAzureConnection();
     }
 
     private SQLServerEngineEdition getEngineEdition() {
-        return getMainConnection().getEngineEdition();
+        return this.getMainSession().getEngineEdition();
     }
 
     @Override
-    public SQLServerSession getMainConnection() {
-        return (SQLServerSession) super.getMainConnection();
+    public SQLServerSession getMainSession() {
+        return (SQLServerSession) super.getMainSession();
     }
 
     protected boolean supportsPartitions() {

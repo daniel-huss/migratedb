@@ -50,6 +50,12 @@ public class MigrateDbProperties {
     private boolean useServiceLoader = false;
 
     /**
+     * Whether the default execution of MigrateDB should execute the repair command, which makes your deployment
+     * self-healing. If your application provides a custom {@link MigrateDbExecution} bean, this setting has no effect.
+     */
+    private boolean repairOnMigrate = true;
+
+    /**
      * If set, database migrations will use a data source that is derived from the application data source, but uses
      * different credentials.
      */
@@ -123,9 +129,9 @@ public class MigrateDbProperties {
 
     /**
      * The file name prefix for baseline migrations. Baseline migrations represent all migrations with
-     * {@code version ≤ current baseline migration version} while keeping older migrations if needed for upgrading
-     * older deployments. They have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which
-     * using the defaults translates to B1.1__My_description.sql. (default: B)
+     * {@code version ≤ current baseline migration version} while keeping older migrations if needed for upgrading older
+     * deployments. They have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix, which using
+     * the defaults translates to B1.1__My_description.sql. (default: B)
      */
     private @Nullable String baselineMigrationPrefix;
 
@@ -383,8 +389,8 @@ public class MigrateDbProperties {
 
     /**
      * Whether to group all pending migrations together in the same transaction when applying them (only recommended for
-     * databases with support for DDL transactions). {@code true} if migrations should be grouped. {@code false} if
-     * they should be applied individually instead. (default: {@code false})
+     * databases with support for DDL transactions). {@code true} if migrations should be grouped. {@code false} if they
+     * should be applied individually instead. (default: {@code false})
      */
     private @Nullable Boolean group;
 
@@ -831,5 +837,13 @@ public class MigrateDbProperties {
 
     public void setFailOnMissingLocations(@Nullable Boolean failOnMissingLocations) {
         this.failOnMissingLocations = failOnMissingLocations;
+    }
+
+    public boolean isRepairOnMigrate() {
+        return repairOnMigrate;
+    }
+
+    public void setRepairOnMigrate(boolean repairOnMigrate) {
+        this.repairOnMigrate = repairOnMigrate;
     }
 }

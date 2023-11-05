@@ -17,8 +17,8 @@
 package migratedb.v1.core.internal.schemahistory;
 
 import migratedb.v1.core.api.*;
-import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Database;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcTemplate;
 import migratedb.v1.core.api.internal.schemahistory.AppliedMigration;
@@ -54,10 +54,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
      */
     private final Database database;
 
-    /**
-     * Connection with access to the database.
-     */
-    private final Session connection;
+    private final Session session;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -78,8 +75,8 @@ class JdbcTableSchemaHistory extends SchemaHistory {
         this.sqlScriptFactory = sqlScriptFactory;
         this.table = table;
         this.database = database;
-        this.connection = database.getMainConnection();
-        this.jdbcTemplate = connection.getJdbcTemplate();
+        this.session = database.getMainSession();
+        this.jdbcTemplate = session.getJdbcTemplate();
     }
 
     @Override
@@ -89,7 +86,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
     @Override
     public boolean exists() {
-        connection.restoreOriginalState();
+        session.restoreOriginalState();
 
         return table.exists();
     }
@@ -97,7 +94,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
     @SuppressWarnings("BusyWait")
     @Override
     public void create(boolean baseline) {
-        connection.lock(table, () -> {
+        session.lock(table, () -> {
             int retries = 0;
             while (!exists()) {
                 if (retries == 0) {
@@ -105,13 +102,13 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                             "Creating Schema History table " + table + (baseline ? " with baseline" : "") + " ...");
                 }
                 try {
-                    createExecutionTemplate(connection.getJdbcConnection(),
-                            database).execute(() -> {
-                        sqlScriptExecutorFactory.createSqlScriptExecutor(connection.getJdbcConnection(),
-                                        false)
-                                .execute(database.getCreateScript(sqlScriptFactory,
-                                        table,
-                                        baseline));
+                    createExecutionTemplate(session.getJdbcConnection(),
+                                            database).execute(() -> {
+                        sqlScriptExecutorFactory.createSqlScriptExecutor(session.getJdbcConnection(),
+                                                                         false)
+                                                .execute(database.getCreateScript(sqlScriptFactory,
+                                                                                  table,
+                                                                                  baseline));
                         LOG.debug("Created Schema History table " + table + (baseline ? " with baseline" : ""));
                         return null;
                     });
@@ -134,9 +131,9 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
     @Override
     public <T> T withLock(Callable<T> callable) {
-        connection.restoreOriginalState();
+        session.restoreOriginalState();
 
-        return connection.lock(table, callable);
+        return session.lock(table, callable);
     }
 
     @Override
@@ -149,7 +146,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                                     int executionTime,
                                     boolean success) {
         boolean tableIsLocked = false;
-        connection.restoreOriginalState();
+        session.restoreOriginalState();
 
         // Lock again for databases with no clean DDL transactions like Oracle
         // to prevent implicit commits from triggering deadlocks
@@ -170,15 +167,15 @@ class JdbcTableSchemaHistory extends SchemaHistory {
             Object checksumObj = checksum == null ? JdbcNullTypes.StringNull : checksum.toString();
 
             jdbcTemplate.update(database.getInsertStatement(table),
-                    installedRank,
-                    versionObj,
-                    description,
-                    type.name(),
-                    script,
-                    checksumObj,
-                    database.getInstalledBy(),
-                    executionTime,
-                    success);
+                                installedRank,
+                                versionObj,
+                                description,
+                                type.name(),
+                                script,
+                                checksumObj,
+                                database.getInstalledBy(),
+                                executionTime,
+                                success);
 
             LOG.debug("Schema History table " + table + " successfully updated to reflect changes");
         } catch (SQLException e) {
@@ -240,7 +237,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
         } catch (SQLException e) {
             throw new MigrateDbSqlException(
                     "Error while retrieving the list of applied migrations from Schema History table "
-                            + table,
+                    + table,
                     e);
         }
     }
@@ -261,7 +258,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
     public boolean removeFailedMigrations(RepairResult repairResult, List<MigrationPattern> migrationPatternFilter) {
         if (!exists()) {
             LOG.info("Repair of failed migration in Schema History table " + table +
-                    " not necessary as table doesn't exist.");
+                     " not necessary as table doesn't exist.");
             return false;
         }
 
@@ -270,15 +267,15 @@ class JdbcTableSchemaHistory extends SchemaHistory {
         boolean failed = appliedMigrations.stream().anyMatch(am -> !am.isSuccess());
         if (!failed) {
             LOG.info("Repair of failed migration in Schema History table " + table +
-                    " not necessary. No failed migration detected.");
+                     " not necessary. No failed migration detected.");
             return false;
         }
 
         try {
             appliedMigrations.stream()
-                    .filter(am -> !am.isSuccess())
-                    .forEach(am -> repairResult.migrationsRemoved.add(CommandResultFactory.createRepairOutput(
-                            am)));
+                             .filter(am -> !am.isSuccess())
+                             .forEach(am -> repairResult.migrationsRemoved.add(CommandResultFactory.createRepairOutput(
+                                     am)));
 
             for (AppliedMigration appliedMigration : appliedMigrations) {
                 jdbcTemplate.execute("DELETE FROM " + table +
@@ -320,7 +317,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
     @Override
     public void update(AppliedMigration appliedMigration, ResolvedMigration resolvedMigration) {
-        connection.restoreOriginalState();
+        session.restoreOriginalState();
 
         clearCache();
 
@@ -333,7 +330,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                 : resolvedMigration.getType();
 
         LOG.info("Repairing Schema History table for version " + version
-                + " (Description: " + description + ", Type: " + type + ", Checksum: " + checksum + ")  ...");
+                 + " (Description: " + description + ", Type: " + type + ", Checksum: " + checksum + ")  ...");
 
         if (!database.supportsEmptyMigrationDescription() && "".equals(description)) {
             description = NO_DESCRIPTION_MARKER;
@@ -348,16 +345,16 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                                 + database.quote("type") + "=? , "
                                 + database.quote("checksum") + "=?"
                                 + " WHERE " + database.quote("installed_rank") + "=?",
-                    description, type.name(), checksumObj, appliedMigration.getInstalledRank());
+                                description, type.name(), checksumObj, appliedMigration.getInstalledRank());
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to repair Schema History table " + table
-                    + " for version " + version, e);
+                                            + " for version " + version, e);
         }
     }
 
     @Override
     public void delete(AppliedMigration appliedMigration) {
-        connection.restoreOriginalState();
+        session.restoreOriginalState();
 
         clearCache();
 
@@ -365,7 +362,7 @@ class JdbcTableSchemaHistory extends SchemaHistory {
 
         if (version == null) {
             LOG.info("Repairing Schema History table for description \"" + appliedMigration.getDescription() +
-                    "\" (Marking as DELETED)  ...");
+                     "\" (Marking as DELETED)  ...");
         } else {
             LOG.info("Repairing Schema History table for version \"" + version + "\" (Marking as DELETED)  ...");
         }
@@ -375,10 +372,10 @@ class JdbcTableSchemaHistory extends SchemaHistory {
                                 + " SET "
                                 + database.quote("type") + "=?  "
                                 + " WHERE " + database.quote("installed_rank") + "=?",
-                    "DELETED", appliedMigration.getInstalledRank());
+                                "DELETED", appliedMigration.getInstalledRank());
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to repair Schema History table " + table
-                    + " for version " + version, e);
+                                            + " for version " + version, e);
         }
     }
 }

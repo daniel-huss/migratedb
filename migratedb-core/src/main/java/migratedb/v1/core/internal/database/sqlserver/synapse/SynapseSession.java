@@ -16,7 +16,6 @@
  */
 package migratedb.v1.core.internal.database.sqlserver.synapse;
 
-import migratedb.v1.core.api.internal.database.base.Schema;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.internal.database.sqlserver.SQLServerSession;
 import migratedb.v1.core.internal.jdbc.ExecutionTemplateFactory;
@@ -24,9 +23,6 @@ import migratedb.v1.core.internal.jdbc.ExecutionTemplateFactory;
 import java.sql.Connection;
 import java.util.concurrent.Callable;
 
-/**
- * Azure Synapse connection.
- */
 public class SynapseSession extends SQLServerSession {
 
     SynapseSession(SynapseDatabase database, Connection connection) {

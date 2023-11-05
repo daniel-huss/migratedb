@@ -113,8 +113,8 @@ public class MigrateDbAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MigrateDbExecution migrateDbExecution() {
-        return new DefaultMigrateDbExecution();
+    public MigrateDbExecution migrateDbExecution(ObjectProvider<MigrateDbProperties> migrateDbProperties) {
+        return new DefaultMigrateDbExecution(migrateDbProperties.getIfUnique());
     }
 
     private void configureFromProperties(DefaultConfiguration configuration, @Nullable MigrateDbProperties props) {

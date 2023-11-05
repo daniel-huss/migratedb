@@ -25,9 +25,6 @@ import migratedb.v1.core.internal.util.StringUtils;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * Redshift connection.
- */
 public class RedshiftSession extends BaseSession {
     RedshiftSession(RedshiftDatabase database, Connection connection) {
         super(database, connection);

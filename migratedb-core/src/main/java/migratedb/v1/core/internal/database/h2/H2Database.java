@@ -86,7 +86,7 @@ public class H2Database extends BaseDatabase {
     }
 
     @Override
-    protected H2Session doGetConnection(Connection connection) {
+    protected H2Session doGetSession(Connection connection) {
         return new H2Session(this, connection, requiresV2MetadataColumnNames);
     }
 
@@ -96,7 +96,7 @@ public class H2Database extends BaseDatabase {
                 ? "SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'info.BUILD_ID'"
                 : "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'info.BUILD_ID'";
         try {
-            int buildId = getMainConnection().getJdbcTemplate().queryForInt(query);
+            int buildId = getMainSession().getJdbcTemplate().queryForInt(query);
             return Version.parse(super.determineVersion() + "." + buildId);
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to determine H2 build ID", e);
@@ -108,7 +108,7 @@ public class H2Database extends BaseDatabase {
                 ? "SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'"
                 : "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'MODE'";
         try {
-            String mode = getMainConnection().getJdbcTemplate().queryForString(query);
+            String mode = getMainSession().getJdbcTemplate().queryForString(query);
             if (mode == null || mode.isEmpty()) {
                 return CompatibilityMode.REGULAR;
             }
@@ -175,7 +175,7 @@ public class H2Database extends BaseDatabase {
     @Override
     protected String doGetCurrentUser() throws SQLException {
         try {
-            String user = getMainConnection().getJdbcTemplate().queryForString("SELECT USER()");
+            String user = getMainSession().getJdbcTemplate().queryForString("SELECT USER()");
             if (Objects.equals(compatibilityMode, CompatibilityMode.Oracle) && (user == null || user.isEmpty())) {
                 user = DEFAULT_USER;
             }

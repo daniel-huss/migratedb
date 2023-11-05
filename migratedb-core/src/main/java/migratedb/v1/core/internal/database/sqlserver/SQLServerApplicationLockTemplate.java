@@ -30,7 +30,7 @@ import java.util.concurrent.Callable;
 public class SQLServerApplicationLockTemplate {
     private static final Log LOG = Log.getLog(SQLServerApplicationLockTemplate.class);
 
-    private final SQLServerSession connection;
+    private final SQLServerSession session;
     private final JdbcTemplate jdbcTemplate;
     private final String databaseName;
     private final String lockName;
@@ -38,13 +38,13 @@ public class SQLServerApplicationLockTemplate {
     /**
      * Creates a new application lock template for this connection.
      *
-     * @param connection    The connection reference.
+     * @param session       The current session.
      * @param jdbcTemplate  The jdbcTemplate for the connection.
      * @param discriminator A number to discriminate between locks.
      */
-    SQLServerApplicationLockTemplate(SQLServerSession connection, JdbcTemplate jdbcTemplate, String databaseName,
+    SQLServerApplicationLockTemplate(SQLServerSession session, JdbcTemplate jdbcTemplate, String databaseName,
                                      int discriminator) {
-        this.connection = connection;
+        this.session = session;
         this.jdbcTemplate = jdbcTemplate;
         this.databaseName = databaseName;
         lockName = "MigrateDb-" + discriminator;
@@ -54,12 +54,11 @@ public class SQLServerApplicationLockTemplate {
      * Executes this callback with an advisory lock.
      *
      * @param callable The callback to execute.
-     *
      * @return The result of the callable code.
      */
     public <T> T execute(Callable<T> callable) {
         try {
-            connection.setCurrentDatabase(databaseName);
+            session.setCurrentDatabase(databaseName);
             jdbcTemplate.execute("EXEC sp_getapplock @Resource = ?, @LockTimeout='3600000'," +
                                  " @LockMode = 'Exclusive', @LockOwner = 'Session'", lockName);
             return callable.call();
@@ -78,7 +77,7 @@ public class SQLServerApplicationLockTemplate {
             throw rethrow;
         } finally {
             try {
-                connection.setCurrentDatabase(databaseName);
+                session.setCurrentDatabase(databaseName);
                 jdbcTemplate.execute("EXEC sp_releaseapplock @Resource = ?, @LockOwner = 'Session'", lockName);
             } catch (SQLException e) {
                 LOG.error("Unable to release SQL Server application lock", e);

@@ -21,9 +21,6 @@ import migratedb.v1.core.internal.database.base.BaseSession;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * DB2 connection.
- */
 public class DB2Session extends BaseSession {
     DB2Session(DB2Database database, Connection connection) {
         super(database, connection);

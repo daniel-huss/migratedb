@@ -29,7 +29,7 @@ public class YugabyteDBDatabase extends PostgreSQLDatabase {
     }
 
     @Override
-    protected YugabyteDBSession doGetConnection(Connection connection) {
+    protected YugabyteDBSession doGetSession(Connection connection) {
         return new YugabyteDBSession(configuration, this, connection);
     }
 

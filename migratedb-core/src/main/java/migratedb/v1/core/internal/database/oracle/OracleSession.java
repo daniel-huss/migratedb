@@ -22,9 +22,6 @@ import migratedb.v1.core.internal.database.base.BaseSession;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * Oracle connection.
- */
 public class OracleSession extends BaseSession {
     OracleSession(OracleDatabase database, Connection connection) {
         super(database, connection);

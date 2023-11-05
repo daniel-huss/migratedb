@@ -29,24 +29,24 @@ import java.util.List;
 
 public class SimpleContext implements Context {
     private final Configuration configuration;
-    private final Session connection;
+    private final Session session;
     private final MigrationInfo migrationInfo;
     private final Statement statement;
     private final OperationResult operationResult;
 
-    SimpleContext(Configuration configuration, Session connection, MigrationInfo migrationInfo,
+    SimpleContext(Configuration configuration, Session session, MigrationInfo migrationInfo,
                   OperationResult operationResult) {
         this.configuration = configuration;
-        this.connection = connection;
+        this.session = session;
         this.migrationInfo = migrationInfo;
         this.operationResult = operationResult;
         this.statement = null;
     }
 
-    public SimpleContext(Configuration configuration, Session connection, MigrationInfo migrationInfo,
+    public SimpleContext(Configuration configuration, Session session, MigrationInfo migrationInfo,
                          String sql, List<Warning> warnings, List<Error> errors) {
         this.configuration = configuration;
-        this.connection = connection;
+        this.session = session;
         this.migrationInfo = migrationInfo;
         this.operationResult = null;
         this.statement = new SimpleStatement(sql, warnings, errors);
@@ -59,7 +59,7 @@ public class SimpleContext implements Context {
 
     @Override
     public java.sql.Connection getConnection() {
-        return connection.getJdbcConnection();
+        return session.getJdbcConnection();
     }
 
     @Override

@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * Abstraction for database-specific functionality.
  */
-public abstract class BaseDatabase implements Database{
+public abstract class BaseDatabase implements Database {
     private static final Log LOG = Log.getLog(BaseDatabase.class);
 
     private final DatabaseMetaData jdbcMetaData;
@@ -85,14 +85,14 @@ public abstract class BaseDatabase implements Database{
     /**
      * Retrieves a MigrateDB session for this JDBC connection.
      */
-    private Session getConnection(Connection connection) {
-        return doGetConnection(connection);
+    private Session getSession(Connection connection) {
+        return doGetSession(connection);
     }
 
     /**
      * Retrieves a MigrateDB session for this JDBC connection.
      */
-    protected abstract Session doGetConnection(Connection connection);
+    protected abstract Session doGetSession(Connection connection);
 
     @Override
     public final Version getVersion() {
@@ -153,7 +153,7 @@ public abstract class BaseDatabase implements Database{
     }
 
     protected String doGetCatalog() throws SQLException {
-        return getMainConnection().getJdbcConnection().getCatalog();
+        return getMainSession().getJdbcConnection().getCatalog();
     }
 
     @Override
@@ -220,7 +220,7 @@ public abstract class BaseDatabase implements Database{
     }
 
     @Override
-    public boolean useSingleConnection() {
+    public boolean usesSingleSingle() {
         return false;
     }
 
@@ -230,20 +230,20 @@ public abstract class BaseDatabase implements Database{
     }
 
     @Override
-    public Session getMainConnection() {
+    public Session getMainSession() {
         if (mainConnection == null) {
-            this.mainConnection = getConnection(rawMainJdbcConnection);
+            this.mainConnection = getSession(rawMainJdbcConnection);
         }
         return mainConnection;
     }
 
     @Override
-    public Session getMigrationConnection() {
+    public Session getMigrationSession() {
         if (migrationConnection == null) {
-            if (useSingleConnection()) {
-                this.migrationConnection = getMainConnection();
+            if (usesSingleSingle()) {
+                this.migrationConnection = getMainSession();
             } else {
-                this.migrationConnection = getConnection(jdbcConnectionFactory.openConnection());
+                this.migrationConnection = getSession(jdbcConnectionFactory.openConnection());
             }
         }
         return migrationConnection;

@@ -74,21 +74,21 @@ public interface Database extends Closeable {
     String unQuote(String identifier);
 
     /**
-     * @return Whether to use a single connection for both schema history table management and applying migrations.
+     * @return Whether a single session is used for both schema history table management and applying migrations.
      */
-    boolean useSingleConnection();
+    boolean usesSingleSingle();
 
     DatabaseMetaData getJdbcMetaData();
 
     /**
      * @return The main session used to manipulate the schema history.
      */
-    Session getMainConnection();
+    Session getMainSession();
 
     /**
      * @return The migration session used to apply migrations.
      */
-    Session getMigrationConnection();
+    Session getMigrationSession();
 
     /**
      * Retrieves the script used to create the schema history table.

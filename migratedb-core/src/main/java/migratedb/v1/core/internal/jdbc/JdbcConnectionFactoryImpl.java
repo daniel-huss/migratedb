@@ -29,7 +29,7 @@ import java.sql.SQLException;
 /**
  * Utility class for dealing with jdbc connections.
  */
-public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
+public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory, AutoCloseable {
     private final ConnectionProvider dataSource;
     private final int connectRetries;
     private final int connectRetriesInterval;
@@ -42,10 +42,6 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
     private Connection firstConnection;
     private ConnectionInitializer connectionInitializer;
 
-    /**
-     * Creates a new JDBC connection factory. This automatically opens a first connection which can be obtained via a
-     * call to openConnection and which must be closed again to avoid leaking it.
-     */
     public JdbcConnectionFactoryImpl(ConnectionProvider dataSource, Configuration configuration) {
         this.dataSource = dataSource;
         this.connectRetries = configuration.getConnectRetries();
@@ -63,8 +59,6 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
             this.jdbcUrl = getJdbcUrl(databaseMetaData);
             this.driverInfo = getDriverInfo(databaseMetaData);
             this.productName = JdbcUtils.getDatabaseProductName(databaseMetaData);
-
-            databaseType.alterConnectionAsNeeded(firstConnection, configuration);
         } catch (RuntimeException | Error e) {
             JdbcUtils.closeConnection(firstConnection);
             throw e;
@@ -104,10 +98,10 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
                 : firstConnection;
         firstConnection = null;
         try {
+            databaseType.alterConnectionAsNeeded(connection, configuration);
             if (connectionInitializer != null) {
                 connectionInitializer.initialize(this, connection);
             }
-            databaseType.alterConnectionAsNeeded(connection, configuration);
         } catch (RuntimeException | Error e) {
             try {
                 connection.close();
@@ -137,7 +131,7 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
     /**
      * Filter out URL parameters to avoid including passwords etc.
      */
-    static String filterUrl(String url) {
+    private static String filterUrl(String url) {
         int questionMark = url.indexOf("?");
         if (questionMark >= 0 && !url.contains("?databaseName=")) {
             url = url.substring(0, questionMark);
@@ -152,5 +146,10 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory {
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to read database driver info: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void close() {
+        JdbcUtils.closeConnection(firstConnection);
     }
 }

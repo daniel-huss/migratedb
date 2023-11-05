@@ -48,7 +48,7 @@ public class OracleDatabase extends BaseDatabase {
     }
 
     @Override
-    protected OracleSession doGetConnection(Connection connection) {
+    protected OracleSession doGetSession(Connection connection) {
         return new OracleSession(this, connection);
     }
 
@@ -65,11 +65,11 @@ public class OracleDatabase extends BaseDatabase {
                 : " TABLESPACE \"" + configuration.getTablespace() + "\"";
 
         return "CREATE TABLE " + table + " (\n" +
-                "    \"installed_rank\" INT NOT NULL,\n" +
-                "    \"version\" VARCHAR2(50),\n" +
-                "    \"description\" VARCHAR2(200) NOT NULL,\n" +
-                "    \"type\" VARCHAR2(20) NOT NULL,\n" +
-                "    \"script\" VARCHAR2(1000) NOT NULL,\n" +
+               "    \"installed_rank\" INT NOT NULL,\n" +
+               "    \"version\" VARCHAR2(50),\n" +
+               "    \"description\" VARCHAR2(200) NOT NULL,\n" +
+               "    \"type\" VARCHAR2(20) NOT NULL,\n" +
+               "    \"script\" VARCHAR2(1000) NOT NULL,\n" +
                "    \"checksum\" VARCHAR(100),\n" +
                "    \"installed_by\" VARCHAR2(100) NOT NULL,\n" +
                "    \"installed_on\" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
@@ -91,12 +91,12 @@ public class OracleDatabase extends BaseDatabase {
     @Override
     protected String doGetCatalog() throws SQLException {
         // Oracle's JDBC driver returns a hard-coded NULL from getCatalog()
-        return getMainConnection().getJdbcTemplate().queryForString("SELECT GLOBAL_NAME FROM GLOBAL_NAME");
+        return getMainSession().getJdbcTemplate().queryForString("SELECT GLOBAL_NAME FROM GLOBAL_NAME");
     }
 
     @Override
     protected String doGetCurrentUser() throws SQLException {
-        return getMainConnection().getJdbcTemplate().queryForString("SELECT USER FROM DUAL");
+        return getMainSession().getJdbcTemplate().queryForString("SELECT USER FROM DUAL");
     }
 
     @Override
@@ -132,21 +132,18 @@ public class OracleDatabase extends BaseDatabase {
      *
      * @param query  The query to check.
      * @param params The query parameters.
-     *
      * @return {@code true} if the query returns rows, {@code false} if not.
-     *
      * @throws SQLException when the query execution failed.
      */
     boolean queryReturnsRows(String query, String... params) throws SQLException {
-        return getMainConnection().getJdbcTemplate().queryForBoolean(
-            "SELECT CASE WHEN EXISTS(" + query + ") THEN 1 ELSE 0 END FROM DUAL", params);
+        return getMainSession().getJdbcTemplate().queryForBoolean(
+                "SELECT CASE WHEN EXISTS(" + query + ") THEN 1 ELSE 0 END FROM DUAL", params);
     }
 
     /**
      * Checks whether the specified privilege or role is granted to the current user.
      *
      * @return {@code true} if it is granted, {@code false} if not.
-     *
      * @throws SQLException if the check failed.
      */
     private boolean isPrivOrRoleGranted(String name) throws SQLException {
@@ -160,9 +157,7 @@ public class OracleDatabase extends BaseDatabase {
      *
      * @param owner the schema name, unquoted case-sensitive.
      * @param name  the data dictionary view name to check, unquoted case-sensitive.
-     *
      * @return {@code true} if it is accessible, {@code false} if not.
-     *
      * @throws SQLException if the check failed.
      */
     private boolean isDataDictViewAccessible(String owner, String name) throws SQLException {
@@ -174,9 +169,7 @@ public class OracleDatabase extends BaseDatabase {
      * Checks whether the specified SYS view is accessible (directly or through a role) or not.
      *
      * @param name the data dictionary view name to check, unquoted case-sensitive.
-     *
      * @return {@code true} if it is accessible, {@code false} if not.
-     *
      * @throws SQLException if the check failed.
      */
     private boolean isDataDictViewAccessible(String name) throws SQLException {
@@ -187,22 +180,19 @@ public class OracleDatabase extends BaseDatabase {
      * Returns the specified data dictionary view name prefixed with DBA_ or ALL_ depending on its accessibility.
      *
      * @param baseName the data dictionary view base name, unquoted case-sensitive, e.g. OBJECTS, TABLES.
-     *
      * @return the full name of the view with the proper prefix.
-     *
      * @throws SQLException if the check failed.
      */
     String dbaOrAll(String baseName) throws SQLException {
         return isPrivOrRoleGranted("SELECT ANY DICTIONARY") || isDataDictViewAccessible("DBA_" + baseName)
-               ? "DBA_" + baseName
-               : "ALL_" + baseName;
+                ? "DBA_" + baseName
+                : "ALL_" + baseName;
     }
 
     /**
      * Checks whether XDB component is available or not.
      *
      * @return {@code true} if it is available, {@code false} if not.
-     *
      * @throws SQLException when checking availability of the component failed.
      */
     boolean isXmlDbAvailable() throws SQLException {
@@ -221,39 +211,39 @@ public class OracleDatabase extends BaseDatabase {
 
         // The list of known default system schemas
         Set<String> result = new HashSet<>(Arrays.asList(
-            "SYS", "SYSTEM", // Standard system accounts
-            "SYSBACKUP", "SYSDG", "SYSKM", "SYSRAC", "SYS$UMF", // Auxiliary system accounts
-            "DBSNMP", "MGMT_VIEW", "SYSMAN", // Enterprise Manager accounts
-            "OUTLN", // Stored outlines
-            "AUDSYS", // Unified auditing
-            "ORACLE_OCM", // Oracle Configuration Manager
-            "APPQOSSYS", // Oracle Database QoS Management
-            "OJVMSYS", // Oracle JavaVM
-            "DVF", "DVSYS", // Oracle Database Vault
-            "DBSFWUSER", // Database Service Firewall
-            "REMOTE_SCHEDULER_AGENT", // Remote scheduler agent
-            "DIP", // Oracle Directory Integration Platform
-            "APEX_PUBLIC_USER", "FLOWS_FILES", /*"APEX_######", "FLOWS_######",*/ // Oracle Application Express
-            "ANONYMOUS", "XDB", "XS$NULL", // Oracle XML Database
-            "CTXSYS", // Oracle Text
-            "LBACSYS", // Oracle Label Security
-            "EXFSYS", // Oracle Rules Manager and Expression Filter
-            "MDDATA", "MDSYS", "SPATIAL_CSW_ADMIN_USR", "SPATIAL_WFS_ADMIN_USR", // Oracle Locator and Spatial
-            "ORDDATA", "ORDPLUGINS", "ORDSYS", "SI_INFORMTN_SCHEMA", // Oracle Multimedia
-            "WMSYS", // Oracle Workspace Manager
-            "OLAPSYS", // Oracle OLAP catalogs
-            "OWBSYS", "OWBSYS_AUDIT", // Oracle Warehouse Builder
-            "GSMADMIN_INTERNAL", "GSMCATUSER", "GSMUSER", // Global Data Services
-            "GGSYS", // Oracle GoldenGate
-            "WK_TEST", "WKSYS", "WKPROXY", // Oracle Ultra Search
-            "ODM", "ODM_MTR", "DMSYS", // Oracle Data Mining
-            "TSMSYS" // Transparent Session Migration
+                "SYS", "SYSTEM", // Standard system accounts
+                "SYSBACKUP", "SYSDG", "SYSKM", "SYSRAC", "SYS$UMF", // Auxiliary system accounts
+                "DBSNMP", "MGMT_VIEW", "SYSMAN", // Enterprise Manager accounts
+                "OUTLN", // Stored outlines
+                "AUDSYS", // Unified auditing
+                "ORACLE_OCM", // Oracle Configuration Manager
+                "APPQOSSYS", // Oracle Database QoS Management
+                "OJVMSYS", // Oracle JavaVM
+                "DVF", "DVSYS", // Oracle Database Vault
+                "DBSFWUSER", // Database Service Firewall
+                "REMOTE_SCHEDULER_AGENT", // Remote scheduler agent
+                "DIP", // Oracle Directory Integration Platform
+                "APEX_PUBLIC_USER", "FLOWS_FILES", /*"APEX_######", "FLOWS_######",*/ // Oracle Application Express
+                "ANONYMOUS", "XDB", "XS$NULL", // Oracle XML Database
+                "CTXSYS", // Oracle Text
+                "LBACSYS", // Oracle Label Security
+                "EXFSYS", // Oracle Rules Manager and Expression Filter
+                "MDDATA", "MDSYS", "SPATIAL_CSW_ADMIN_USR", "SPATIAL_WFS_ADMIN_USR", // Oracle Locator and Spatial
+                "ORDDATA", "ORDPLUGINS", "ORDSYS", "SI_INFORMTN_SCHEMA", // Oracle Multimedia
+                "WMSYS", // Oracle Workspace Manager
+                "OLAPSYS", // Oracle OLAP catalogs
+                "OWBSYS", "OWBSYS_AUDIT", // Oracle Warehouse Builder
+                "GSMADMIN_INTERNAL", "GSMCATUSER", "GSMUSER", // Global Data Services
+                "GGSYS", // Oracle GoldenGate
+                "WK_TEST", "WKSYS", "WKPROXY", // Oracle Ultra Search
+                "ODM", "ODM_MTR", "DMSYS", // Oracle Data Mining
+                "TSMSYS" // Transparent Session Migration
         ));
 
-        result.addAll(getMainConnection().getJdbcTemplate().queryForStringList("SELECT USERNAME FROM ALL_USERS " +
-                                                                               "WHERE REGEXP_LIKE(USERNAME, '^(APEX|FLOWS)_\\d+$')" +
+        result.addAll(getMainSession().getJdbcTemplate().queryForStringList("SELECT USERNAME FROM ALL_USERS " +
+                                                                            "WHERE REGEXP_LIKE(USERNAME, '^(APEX|FLOWS)_\\d+$')" +
 
-                                                                               " OR ORACLE_MAINTAINED = 'Y'"
+                                                                            " OR ORACLE_MAINTAINED = 'Y'"
 
         ));
 

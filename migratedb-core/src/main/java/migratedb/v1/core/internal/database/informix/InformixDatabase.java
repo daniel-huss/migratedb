@@ -38,7 +38,7 @@ public class InformixDatabase extends BaseDatabase {
     }
 
     @Override
-    protected InformixSession doGetConnection(Connection connection) {
+    protected InformixSession doGetSession(Connection connection) {
         return new InformixSession(this, connection);
     }
 
@@ -55,11 +55,11 @@ public class InformixDatabase extends BaseDatabase {
                 : " IN \"" + configuration.getTablespace() + "\"";
 
         return "CREATE TABLE " + table + " (\n" +
-                "    installed_rank INT NOT NULL,\n" +
-                "    version VARCHAR(50),\n" +
-                "    description VARCHAR(200) NOT NULL,\n" +
-                "    type VARCHAR(20) NOT NULL,\n" +
-                "    script LVARCHAR(1000) NOT NULL,\n" +
+               "    installed_rank INT NOT NULL,\n" +
+               "    version VARCHAR(50),\n" +
+               "    description VARCHAR(200) NOT NULL,\n" +
+               "    type VARCHAR(20) NOT NULL,\n" +
+               "    script LVARCHAR(1000) NOT NULL,\n" +
                "    checksum VARCHAR(100),\n" +
                "    installed_by VARCHAR(100) NOT NULL,\n" +
                "    installed_on DATETIME YEAR TO FRACTION(3) DEFAULT CURRENT YEAR TO FRACTION(3) NOT NULL,\n" +
@@ -115,7 +115,7 @@ public class InformixDatabase extends BaseDatabase {
     }
 
     @Override
-    public boolean useSingleConnection() {
+    public boolean usesSingleSingle() {
         return false;
     }
 }

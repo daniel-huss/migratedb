@@ -1,14 +1,20 @@
 package migratedb.v1.spring.boot.v3.autoconfig;
 
 import migratedb.v1.core.MigrateDb;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/**
- * Invokes {@code repair} before migrating, for self-healing application deployments.
- */
 public class DefaultMigrateDbExecution implements MigrateDbExecution {
+    private final @Nullable MigrateDbProperties migrateDbProperties;
+
+    public DefaultMigrateDbExecution(@Nullable MigrateDbProperties migrateDbProperties) {
+        this.migrateDbProperties = migrateDbProperties;
+    }
+
     @Override
     public void run(MigrateDb migrateDb) {
-        migrateDb.repair();
+        if (migrateDbProperties == null || migrateDbProperties.isRepairOnMigrate()) {
+            migrateDb.repair();
+        }
         migrateDb.migrate();
     }
 }

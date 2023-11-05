@@ -20,9 +20,6 @@ import migratedb.v1.core.internal.database.base.BaseSession;
 
 import java.sql.Connection;
 
-/**
- * SQLite connection.
- */
 public class SQLiteSession extends BaseSession {
     SQLiteSession(SQLiteDatabase database, Connection connection) {
         super(database, connection);

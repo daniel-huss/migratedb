@@ -123,75 +123,76 @@ final class MigrateDbExecutor {
 
         resourceNameValidator.validateSQLMigrationNaming(resourceProvider, configuration);
 
-        var jdbcConnectionFactory = new JdbcConnectionFactoryImpl(configuration.getDataSource(),
-                configuration);
+        try (var jdbcConnectionFactory = new JdbcConnectionFactoryImpl(configuration.getDataSource(),
+                                                                       configuration)) {
 
-        var databaseType = jdbcConnectionFactory.getDatabaseType();
-        var parsingContext = new ParsingContextImpl();
-        var sqlScriptFactory = databaseType.createSqlScriptFactory(configuration, parsingContext);
+            var databaseType = jdbcConnectionFactory.getDatabaseType();
+            var parsingContext = new ParsingContextImpl();
+            var sqlScriptFactory = databaseType.createSqlScriptFactory(configuration, parsingContext);
 
-        var noCallbackSqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
-                jdbcConnectionFactory,
-                NoopCallbackExecutor.INSTANCE
-        );
-
-        jdbcConnectionFactory.setConnectionInitializer((jdbcConnectionFactory1, connection) -> {
-            if (configuration.getInitSql() == null) {
-                return;
-            }
-            StringResource resource = new StringResource("", configuration.getInitSql());
-            SqlScript sqlScript = sqlScriptFactory.createSqlScript(resource, true, resourceProvider);
-            boolean outputQueryResults = configuration.isOutputQueryResults();
-            noCallbackSqlScriptExecutorFactory.createSqlScriptExecutor(connection, outputQueryResults)
-                    .execute(sqlScript);
-        });
-
-        try (var database = databaseType.createDatabase(configuration, !dbConnectionInfoPrinted, jdbcConnectionFactory)) {
-            dbConnectionInfoPrinted = true;
-            LOG.debug("DDL transactions supported: " + database.supportsDdlTransactions());
-
-            var schemas = SchemaHistoryFactory.scanSchemas(configuration, database);
-
-            parsingContext.populate(database, configuration);
-
-            database.ensureSupported();
-
-            var callbackExecutor = new DefaultCallbackExecutor(configuration,
-                    database,
-                    schemas.defaultSchema,
-                    prepareCallbacks(
-                            resourceProvider,
-                            jdbcConnectionFactory,
-                            sqlScriptFactory
-                    ));
-
-            var sqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
+            var noCallbackSqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
                     jdbcConnectionFactory,
-                    callbackExecutor);
-
-            var schemaHistory = SchemaHistoryFactory.getSchemaHistory(
-                    configuration,
-                    noCallbackSqlScriptExecutorFactory,
-                    sqlScriptFactory,
-                    database,
-                    schemas.defaultSchema);
-
-            var commandContext = new CommandContext(
-                    createMigrationResolver(resourceProvider,
-                            classProvider,
-                            sqlScriptExecutorFactory,
-                            sqlScriptFactory,
-                            parsingContext),
-                    schemaHistory,
-                    database,
-                    schemas.defaultSchema,
-                    schemas.all.toArray(new Schema[0]),
-                    callbackExecutor
+                    NoopCallbackExecutor.INSTANCE
             );
 
-            result = command.execute(commandContext);
-        } finally {
-            showMemoryUsage();
+            jdbcConnectionFactory.setConnectionInitializer((jdbcConnectionFactory1, connection) -> {
+                if (configuration.getInitSql() == null) {
+                    return;
+                }
+                StringResource resource = new StringResource("", configuration.getInitSql());
+                SqlScript sqlScript = sqlScriptFactory.createSqlScript(resource, true, resourceProvider);
+                boolean outputQueryResults = configuration.isOutputQueryResults();
+                noCallbackSqlScriptExecutorFactory.createSqlScriptExecutor(connection, outputQueryResults)
+                                                  .execute(sqlScript);
+            });
+
+            try (var database = databaseType.createDatabase(configuration, !dbConnectionInfoPrinted, jdbcConnectionFactory)) {
+                dbConnectionInfoPrinted = true;
+                LOG.debug("DDL transactions supported: " + database.supportsDdlTransactions());
+
+                var schemas = SchemaHistoryFactory.scanSchemas(configuration, database);
+
+                parsingContext.populate(database, configuration);
+
+                database.ensureSupported();
+
+                var callbackExecutor = new DefaultCallbackExecutor(configuration,
+                                                                   database,
+                                                                   schemas.defaultSchema,
+                                                                   prepareCallbacks(
+                                                                           resourceProvider,
+                                                                           jdbcConnectionFactory,
+                                                                           sqlScriptFactory
+                                                                   ));
+
+                var sqlScriptExecutorFactory = databaseType.createSqlScriptExecutorFactory(
+                        jdbcConnectionFactory,
+                        callbackExecutor);
+
+                var schemaHistory = SchemaHistoryFactory.getSchemaHistory(
+                        configuration,
+                        noCallbackSqlScriptExecutorFactory,
+                        sqlScriptFactory,
+                        database,
+                        schemas.defaultSchema);
+
+                var commandContext = new CommandContext(
+                        createMigrationResolver(resourceProvider,
+                                                classProvider,
+                                                sqlScriptExecutorFactory,
+                                                sqlScriptFactory,
+                                                parsingContext),
+                        schemaHistory,
+                        database,
+                        schemas.defaultSchema,
+                        schemas.all.toArray(new Schema[0]),
+                        callbackExecutor
+                );
+
+                result = command.execute(commandContext);
+            } finally {
+                showMemoryUsage();
+            }
         }
         return result;
     }
@@ -248,14 +249,14 @@ final class MigrateDbExecutor {
             // The no-op callback executor here is intentional because we're just interested in
             // SqlScriptCallbackFactory.getCallbacks() and somehow have to satisfy the ctor dependencies.
             var sqlScriptExecutorFactory = jdbcConnectionFactory.getDatabaseType()
-                    .createSqlScriptExecutorFactory(
-                            jdbcConnectionFactory,
-                            NoopCallbackExecutor.INSTANCE);
+                                                                .createSqlScriptExecutorFactory(
+                                                                        jdbcConnectionFactory,
+                                                                        NoopCallbackExecutor.INSTANCE);
 
             effectiveCallbacks.addAll(new SqlScriptCallbackFactory(resourceProvider,
-                    sqlScriptExecutorFactory,
-                    sqlScriptFactory,
-                    configuration).getCallbacks());
+                                                                   sqlScriptExecutorFactory,
+                                                                   sqlScriptFactory,
+                                                                   configuration).getCallbacks());
         }
 
         return effectiveCallbacks;
@@ -276,12 +277,12 @@ final class MigrateDbExecutor {
                                                       SqlScriptFactory sqlScriptFactory,
                                                       ParsingContext parsingContext) {
         return new DefaultMigrationResolver(resourceProvider,
-                classProvider,
-                configuration,
-                sqlScriptExecutorFactory,
-                sqlScriptFactory,
-                parsingContext,
-                configuration.getResolvers());
+                                            classProvider,
+                                            configuration,
+                                            sqlScriptExecutorFactory,
+                                            sqlScriptFactory,
+                                            parsingContext,
+                                            configuration.getResolvers());
     }
 
     private void showMemoryUsage() {

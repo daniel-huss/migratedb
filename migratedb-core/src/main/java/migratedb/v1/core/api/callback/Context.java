@@ -34,7 +34,7 @@ public interface Context {
     /**
      * @return The JDBC connection being used. Transaction are managed by MigrateDB. When the context is passed to the
      * {@link Callback#handle(Event, Context)} method, a transaction will already have been started if required and will
-     * be automatically committed or rolled back afterwards.
+     * be automatically committed or rolled back afterward.
      */
     Connection getConnection();
 

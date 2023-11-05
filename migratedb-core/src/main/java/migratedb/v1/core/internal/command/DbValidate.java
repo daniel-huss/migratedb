@@ -21,9 +21,9 @@ import migratedb.v1.core.api.ErrorDetails;
 import migratedb.v1.core.api.callback.Event;
 import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.callback.CallbackExecutor;
-import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Database;
 import migratedb.v1.core.api.internal.database.base.Schema;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.api.output.CommandResultFactory;
 import migratedb.v1.core.api.output.ValidateOutput;
@@ -63,9 +63,9 @@ public class DbValidate {
     private final MigrationResolver migrationResolver;
 
     /**
-     * The connection to use.
+     * The session to use.
      */
-    private final Session connection;
+    private final Session session;
 
     /**
      * The current configuration.
@@ -106,7 +106,7 @@ public class DbValidate {
                       boolean allowPending,
                       CallbackExecutor callbackExecutor) {
         this.database = database;
-        this.connection = database.getMainConnection();
+        this.session = database.getMainSession();
         this.schemaHistory = schemaHistory;
         this.schema = schema;
         this.migrationResolver = migrationResolver;
@@ -136,12 +136,12 @@ public class DbValidate {
             if (!migrationResolver.resolveMigrations(() -> configuration).isEmpty() && !allowPending) {
                 String validationErrorMessage = "Schema " + schema + " doesn't exist yet";
                 ErrorDetails validationError = new ErrorDetails(ErrorCode.SCHEMA_DOES_NOT_EXIST,
-                        validationErrorMessage);
+                                                                validationErrorMessage);
                 return CommandResultFactory.createValidateResult(database.getCatalog(),
-                        validationError,
-                        0,
-                        null,
-                        new ArrayList<>());
+                                                                 validationError,
+                                                                 0,
+                                                                 null,
+                                                                 new ArrayList<>());
             }
             return CommandResultFactory.createValidateResult(database.getCatalog(), null, 0, null, new ArrayList<>());
         }
@@ -152,9 +152,9 @@ public class DbValidate {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        var result = createExecutionTemplate(connection.getJdbcConnection(), database).execute(() -> {
+        var result = createExecutionTemplate(session.getJdbcConnection(), database).execute(() -> {
             var validationContext = new ValidationContext(configuration)
-                .with(ValidationMatch.PENDING, allowPending);
+                    .with(ValidationMatch.PENDING, allowPending);
             var migrationInfoService = new MigrationInfoServiceImpl(migrationResolver,
                                                                     schemaHistory,
                                                                     database,

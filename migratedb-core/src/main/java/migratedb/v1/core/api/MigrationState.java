@@ -41,7 +41,7 @@ public enum MigrationState {
      */
     BASELINE("Baseline", Category.RESOLVED, Category.APPLIED),
     /**
-     * When using cherryPick, this indicates a migration that was not in the cherry picked list. When not using
+     * When using cherryPick, this indicates a migration that was not in the cherry-picked list. When not using
      * cherryPick, this usually indicates a problem: The migration was ignored because a higher version has already been
      * applied.
      */

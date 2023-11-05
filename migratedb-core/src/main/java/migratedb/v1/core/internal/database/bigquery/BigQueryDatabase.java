@@ -31,7 +31,7 @@ public class BigQueryDatabase extends BaseDatabase {
     }
 
     @Override
-    protected BigQuerySession doGetConnection(Connection connection) {
+    protected BigQuerySession doGetSession(Connection connection) {
         return new BigQuerySession(this, connection);
     }
 
@@ -43,15 +43,15 @@ public class BigQueryDatabase extends BaseDatabase {
     @Override
     public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
-                "    `installed_rank` INT64 NOT NULL,\n" +
-                "    `version` STRING,\n" +
-                "    `description` STRING NOT NULL,\n" +
-                "    `type` STRING NOT NULL,\n" +
-                "    `script` STRING NOT NULL,\n" +
-                "    `checksum` STRING,\n" +
-                "    `installed_by` STRING NOT NULL,\n" +
-                "    `installed_on` TIMESTAMP,\n" + // BigQuery does not support default value
-                "    `execution_time` INT64 NOT NULL,\n" +
+               "    `installed_rank` INT64 NOT NULL,\n" +
+               "    `version` STRING,\n" +
+               "    `description` STRING NOT NULL,\n" +
+               "    `type` STRING NOT NULL,\n" +
+               "    `script` STRING NOT NULL,\n" +
+               "    `checksum` STRING,\n" +
+               "    `installed_by` STRING NOT NULL,\n" +
+               "    `installed_on` TIMESTAMP,\n" + // BigQuery does not support default value
+               "    `execution_time` INT64 NOT NULL,\n" +
                "    `success` BOOL NOT NULL\n" +
                ");\n" +
                (baseline ? getBaselineStatement(table) + ";\n" : "");
@@ -77,7 +77,7 @@ public class BigQueryDatabase extends BaseDatabase {
 
     @Override
     protected String doGetCurrentUser() throws SQLException {
-        return getMainConnection().getJdbcTemplate().queryForString("SELECT SESSION_USER() as user;");
+        return getMainSession().getJdbcTemplate().queryForString("SELECT SESSION_USER() as user;");
     }
 
     @Override
@@ -134,7 +134,7 @@ public class BigQueryDatabase extends BaseDatabase {
     }
 
     @Override
-    public boolean useSingleConnection() {
+    public boolean usesSingleSingle() {
         return true;
     }
 }

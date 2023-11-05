@@ -11,6 +11,7 @@ NOTE: 🔥 = Breaking Change
 === Added
 
 * Tests for Gradle versions up to 8.3.
+* Repair-on-migrate setting when using Spring Boot integration.
 
 === Changed
 
@@ -22,10 +23,10 @@ NOTE: 🔥 = Breaking Change
 * 🔥 Internal database schema model no longer needs to implement dropping schema objects.
 * Unused internal `Statement` class.
 * CLI "external" authentication file detection (e.g. pgpass).
+* 🔥 Broken and unused constructor in `MigrationState`.
 
 === Fixed
 
-* 🔥 Removed broken and unused constructor in `MigrationState`.
 * `RetryStrategy` wasn't treating negative numbers as unlimited retries.
 
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.3.0[0.3.0] - 2023-09-27

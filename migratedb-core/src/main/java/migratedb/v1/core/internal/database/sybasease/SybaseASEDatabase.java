@@ -40,7 +40,7 @@ public class SybaseASEDatabase extends BaseDatabase {
     }
 
     @Override
-    protected SybaseASESession doGetConnection(Connection connection) {
+    protected SybaseASESession doGetSession(Connection connection) {
         return new SybaseASESession(this, connection);
     }
 
@@ -53,15 +53,15 @@ public class SybaseASEDatabase extends BaseDatabase {
     @Override
     public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table.getName() + " (\n" +
-                "    installed_rank INT NOT NULL,\n" +
-                "    version VARCHAR(50) NULL,\n" +
-                "    description VARCHAR(200) NOT NULL,\n" +
-                "    type VARCHAR(20) NOT NULL,\n" +
-                "    script VARCHAR(1000) NOT NULL,\n" +
-                "    checksum VARCHAR(100) NULL,\n" +
-                "    installed_by VARCHAR(100) NOT NULL,\n" +
-                "    installed_on datetime DEFAULT getDate() NOT NULL,\n" +
-                "    execution_time INT NOT NULL,\n" +
+               "    installed_rank INT NOT NULL,\n" +
+               "    version VARCHAR(50) NULL,\n" +
+               "    description VARCHAR(200) NOT NULL,\n" +
+               "    type VARCHAR(20) NOT NULL,\n" +
+               "    script VARCHAR(1000) NOT NULL,\n" +
+               "    checksum VARCHAR(100) NULL,\n" +
+               "    installed_by VARCHAR(100) NOT NULL,\n" +
+               "    installed_on datetime DEFAULT getDate() NOT NULL,\n" +
+               "    execution_time INT NOT NULL,\n" +
                "    success decimal NOT NULL,\n" +
                "    PRIMARY KEY (installed_rank)\n" +
                ")\n" +
@@ -86,7 +86,7 @@ public class SybaseASEDatabase extends BaseDatabase {
 
     @Override
     protected String doGetCurrentUser() throws SQLException {
-        return getMainConnection().getJdbcTemplate().queryForString("SELECT user_name()");
+        return getMainSession().getJdbcTemplate().queryForString("SELECT user_name()");
     }
 
     @Override
@@ -126,10 +126,10 @@ public class SybaseASEDatabase extends BaseDatabase {
 
     /**
      * Multi statement transaction support is dependent on the 'ddl in tran' option being set. However, setting 'ddl in
-     * tran' doesn't necessarily mean that multi-statement transactions are supported. Also, ddl in tran can
-     * change during execution for unknown reasons. Therefore, as a best guess: - When this method is called, check ddl
-     * in tran - If ddl in tran is true, assume support for multi statement transactions forever more - Never check ddl
-     * in tran again - If ddl in tran is false, return false - Check ddl in tran again on the next call
+     * tran' doesn't necessarily mean that multi-statement transactions are supported. Also, ddl in tran can change
+     * during execution for unknown reasons. Therefore, as a best guess: - When this method is called, check ddl in tran
+     * - If ddl in tran is true, assume support for multi statement transactions forever more - Never check ddl in tran
+     * again - If ddl in tran is false, return false - Check ddl in tran again on the next call
      */
     @Override
     public boolean supportsMultiStatementTransactions() {
@@ -156,7 +156,7 @@ public class SybaseASEDatabase extends BaseDatabase {
             // The Sybase driver (v7.07) concatenates "null" to this query and we can't see why. By adding a one-line
             // comment marker we can at least prevent this causing us problems until we get a resolution.
             String getDatabaseMetadataQuery = "sp_helpdb " + databaseName + " -- ";
-            Results results = getMainConnection().getJdbcTemplate().executeStatement(getDatabaseMetadataQuery);
+            Results results = getMainSession().getJdbcTemplate().executeStatement(getDatabaseMetadataQuery);
             for (int resultsIndex = 0; resultsIndex < results.getResults().size(); resultsIndex++) {
                 List<String> columns = results.getResults().get(resultsIndex).getColumns();
                 if (columns != null) {
@@ -184,7 +184,7 @@ public class SybaseASEDatabase extends BaseDatabase {
 
     String getDatabaseName() throws SQLException {
         if (databaseName == null) {
-            databaseName = getMainConnection().getJdbcTemplate().queryForString("select db_name()");
+            databaseName = getMainSession().getJdbcTemplate().queryForString("select db_name()");
         }
         return databaseName;
     }

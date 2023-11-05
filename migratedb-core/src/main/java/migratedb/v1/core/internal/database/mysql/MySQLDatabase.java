@@ -78,8 +78,8 @@ public class MySQLDatabase extends BaseDatabase {
     static boolean isRunningInPerconaXtraDBClusterWithStrictMode(JdbcTemplate jdbcTemplate) {
         try {
             String pcx_strict_mode = jdbcTemplate.queryForString(
-                "select VARIABLE_VALUE from performance_schema.global_variables"
-                + " where variable_name = 'pxc_strict_mode'");
+                    "select VARIABLE_VALUE from performance_schema.global_variables"
+                    + " where variable_name = 'pxc_strict_mode'");
             if ("ENFORCING".equals(pcx_strict_mode) || "MASTER".equals(pcx_strict_mode)) {
                 LOG.debug("Detected Percona XtraDB Cluster in strict mode");
                 return true;
@@ -180,7 +180,7 @@ public class MySQLDatabase extends BaseDatabase {
     }
 
     @Override
-    protected MySQLSession doGetConnection(Connection connection) {
+    protected MySQLSession doGetSession(Connection connection) {
         return new MySQLSession(this, connection);
     }
 
@@ -235,7 +235,7 @@ public class MySQLDatabase extends BaseDatabase {
 
     @Override
     protected String doGetCurrentUser() throws SQLException {
-        return getMainConnection().getJdbcTemplate().queryForString("SELECT SUBSTRING_INDEX(USER(),'@',1)");
+        return getMainSession().getJdbcTemplate().queryForString("SELECT SUBSTRING_INDEX(USER(),'@',1)");
     }
 
     @Override
@@ -274,7 +274,7 @@ public class MySQLDatabase extends BaseDatabase {
     }
 
     @Override
-    public boolean useSingleConnection() {
+    public boolean usesSingleSingle() {
         return !pxcStrict;
     }
 }

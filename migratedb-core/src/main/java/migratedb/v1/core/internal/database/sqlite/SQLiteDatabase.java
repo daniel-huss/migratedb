@@ -29,7 +29,7 @@ public class SQLiteDatabase extends BaseDatabase {
     }
 
     @Override
-    protected SQLiteSession doGetConnection(Connection connection) {
+    protected SQLiteSession doGetSession(Connection connection) {
         return new SQLiteSession(this, connection);
     }
 
@@ -44,15 +44,15 @@ public class SQLiteDatabase extends BaseDatabase {
     @Override
     public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
-                "    \"installed_rank\" INT NOT NULL PRIMARY KEY,\n" +
-                "    \"version\" VARCHAR(50),\n" +
-                "    \"description\" VARCHAR(200) NOT NULL,\n" +
-                "    \"type\" VARCHAR(20) NOT NULL,\n" +
-                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-                "    \"checksum\" VARCHAR(100),\n" +
-                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
-                "    \"installed_on\" TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f','now')),\n" +
-                "    \"execution_time\" INT NOT NULL,\n" +
+               "    \"installed_rank\" INT NOT NULL PRIMARY KEY,\n" +
+               "    \"version\" VARCHAR(50),\n" +
+               "    \"description\" VARCHAR(200) NOT NULL,\n" +
+               "    \"type\" VARCHAR(20) NOT NULL,\n" +
+               "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+               "    \"checksum\" VARCHAR(100),\n" +
+               "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
+               "    \"installed_on\" TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f','now')),\n" +
+               "    \"execution_time\" INT NOT NULL,\n" +
                "    \"success\" BOOLEAN NOT NULL\n" +
                ");\n" +
                (baseline ? getBaselineStatement(table) + ";\n" : "") +
@@ -96,7 +96,7 @@ public class SQLiteDatabase extends BaseDatabase {
     }
 
     @Override
-    public boolean useSingleConnection() {
+    public boolean usesSingleSingle() {
         return true;
     }
 }

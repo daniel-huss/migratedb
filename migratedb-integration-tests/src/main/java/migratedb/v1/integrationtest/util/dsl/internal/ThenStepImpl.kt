@@ -16,11 +16,11 @@
 
 package migratedb.v1.integrationtest.util.dsl.internal
 
-import migratedb.v1.integrationtest.util.base.work
-import migratedb.v1.integrationtest.util.dsl.Dsl
 import migratedb.v1.core.api.configuration.FluentConfiguration
 import migratedb.v1.core.api.internal.schemahistory.AppliedMigration
 import migratedb.v1.core.internal.jdbc.JdbcConnectionFactoryImpl
+import migratedb.v1.integrationtest.util.base.work
+import migratedb.v1.integrationtest.util.dsl.Dsl
 import org.springframework.jdbc.core.JdbcTemplate
 
 class ThenStepImpl<G : Any>(given: G, databaseContext: DatabaseContext) : Dsl.ThenStep<G>,
@@ -37,18 +37,20 @@ class ThenStepImpl<G : Any>(given: G, databaseContext: DatabaseContext) : Dsl.Th
             table?.let(::table)
             databaseContext.schemaName?.let { schemas(it.toString()) }
         }
-        // JdbcConnectionFactoryImpl always opens a connection, creating a leak if not closed...
-        val connectionFactory = JdbcConnectionFactoryImpl(databaseContext.adminDataSource::getConnection, configuration)
-        connectionFactory.openConnection().use { }
 
-        // Do not re-use database from givenInfo because its connection might not observe the effects of previously
-        // committed transactions.
-        databaseContext.database.databaseType.createDatabase(
-            configuration,
-            connectionFactory
-        ).use {
-            val schemaHistory = DatabaseImpl.getSchemaHistory(configuration, databaseContext.database)
-            block(schemaHistory.allAppliedMigrations())
+        JdbcConnectionFactoryImpl(
+            databaseContext.adminDataSource::getConnection,
+            configuration
+        ).use { connectionFactory ->
+            // Do not re-use database from givenInfo because its connection might not observe the effects of previously
+            // committed transactions.
+            databaseContext.database.databaseType.createDatabase(
+                configuration,
+                connectionFactory
+            ).use {
+                val schemaHistory = DatabaseImpl.getSchemaHistory(configuration, databaseContext.database)
+                block(schemaHistory.allAppliedMigrations())
+            }
         }
     }
 }

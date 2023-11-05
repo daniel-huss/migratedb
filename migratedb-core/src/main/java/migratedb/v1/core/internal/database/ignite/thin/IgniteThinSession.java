@@ -22,9 +22,6 @@ import migratedb.v1.core.internal.database.base.BaseSession;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * Apache Ignite Thin connection.
- */
 public class IgniteThinSession extends BaseSession {
     IgniteThinSession(IgniteThinDatabase database, Connection connection) {
         super(database, connection);

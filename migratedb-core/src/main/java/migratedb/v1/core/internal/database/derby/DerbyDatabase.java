@@ -38,7 +38,7 @@ public class DerbyDatabase extends BaseDatabase {
     }
 
     @Override
-    protected DerbySession doGetConnection(Connection connection) {
+    protected DerbySession doGetSession(Connection connection) {
         return new DerbySession(this, connection);
     }
 
@@ -51,15 +51,15 @@ public class DerbyDatabase extends BaseDatabase {
     @Override
     public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE " + table + " (\n" +
-                "    \"installed_rank\" INT NOT NULL,\n" +
-                "    \"version\" VARCHAR(50),\n" +
-                "    \"description\" VARCHAR(200) NOT NULL,\n" +
-                "    \"type\" VARCHAR(20) NOT NULL,\n" +
-                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-                "    \"checksum\" VARCHAR(100),\n" +
-                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
-                "    \"installed_on\" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n" +
-                "    \"execution_time\" INT NOT NULL,\n" +
+               "    \"installed_rank\" INT NOT NULL,\n" +
+               "    \"version\" VARCHAR(50),\n" +
+               "    \"description\" VARCHAR(200) NOT NULL,\n" +
+               "    \"type\" VARCHAR(20) NOT NULL,\n" +
+               "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+               "    \"checksum\" VARCHAR(100),\n" +
+               "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
+               "    \"installed_on\" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n" +
+               "    \"execution_time\" INT NOT NULL,\n" +
                "    \"success\" BOOLEAN NOT NULL\n" +
                ");\n" +
                (baseline ? getBaselineStatement(table) + ";\n" : "") +
@@ -71,7 +71,7 @@ public class DerbyDatabase extends BaseDatabase {
 
     @Override
     protected String doGetCurrentUser() throws SQLException {
-        return getMainConnection().getJdbcTemplate().queryForString("SELECT CURRENT_USER FROM SYSIBM.SYSDUMMY1");
+        return getMainSession().getJdbcTemplate().queryForString("SELECT CURRENT_USER FROM SYSIBM.SYSDUMMY1");
     }
 
     @Override
@@ -100,7 +100,7 @@ public class DerbyDatabase extends BaseDatabase {
     }
 
     @Override
-    public boolean useSingleConnection() {
+    public boolean usesSingleSingle() {
         return true;
     }
 }

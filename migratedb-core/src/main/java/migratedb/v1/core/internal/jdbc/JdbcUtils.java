@@ -23,6 +23,7 @@ import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.internal.exception.MigrateDbSqlException;
 import migratedb.v1.core.internal.strategy.BackoffStrategy;
 import migratedb.v1.core.internal.util.ExceptionUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.*;
 
@@ -58,8 +59,8 @@ public final class JdbcUtils {
                     throw new MigrateDbSqlException("Unable to obtain connection from database", e);
                 } else if (e.getSQLState() == null && e.getMessage().contains("MSAL4J")) {
                     throw new MigrateDbSqlException("Unable to obtain connection from database.\n" +
-                            "You need to install some extra drivers in order for interactive authentication to work.",
-                            e);
+                                                    "You need to install some extra drivers in order for interactive authentication to work.",
+                                                    e);
                 }
 
                 if (++retries > connectRetries) {
@@ -84,7 +85,7 @@ public final class JdbcUtils {
     /**
      * Quietly closes this connection. This method never throws an exception even if closing the connection fails.
      */
-    public static void closeConnection(Connection connection) {
+    public static void closeConnection(@Nullable Connection connection) {
         if (connection == null) {
             return;
         }

@@ -18,8 +18,8 @@ package migratedb.v1.core.internal.database.mysql.tidb;
 
 import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.v1.core.internal.database.mysql.MySQLSession;
 import migratedb.v1.core.internal.database.mysql.MySQLDatabase;
+import migratedb.v1.core.internal.database.mysql.MySQLSession;
 
 import java.sql.Connection;
 
@@ -30,7 +30,7 @@ public class TiDBDatabase extends MySQLDatabase {
     }
 
     @Override
-    protected MySQLSession doGetConnection(Connection connection) {
+    protected MySQLSession doGetSession(Connection connection) {
         return new TiDBSession(this, connection);
     }
 

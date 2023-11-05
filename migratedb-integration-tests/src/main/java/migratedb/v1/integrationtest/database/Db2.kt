@@ -110,17 +110,18 @@ enum class Db2(image: String) : DbSystem {
     private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
         override val type = DB2DatabaseType()
 
-        private val db = FluentConfiguration().let {
+        private val configStub = FluentConfiguration()
+
+        private val connectionFactory: JdbcConnectionFactoryImpl by lazy {
             val ds = container().dataSource()
             ds.awaitConnectivity(Duration.ofMinutes(5)).use { }
-            val connectionFactory = JdbcConnectionFactoryImpl(ds::getConnection, it)
-            // JdbcConnectionFactoryImpl always opens a connection, creating a leak if not closed...
-            connectionFactory.openConnection().use { }
-            type.createDatabase(it, connectionFactory) as DB2Database
+            JdbcConnectionFactoryImpl(ds::getConnection, configStub)
         }
 
+        private val db by lazy { type.createDatabase(configStub, connectionFactory) as DB2Database }
+
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
-            val schema = db.mainConnection.getSchema(namespace.toString())
+            val schema = db.mainSession.getSchema(namespace.toString())
             if (!schema.exists()) {
                 schema.create()
             }
@@ -129,9 +130,9 @@ enum class Db2(image: String) : DbSystem {
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
             Db2SchemaDropper(
-                db.mainConnection.getSchema(namespace.toString()) as DB2Schema,
+                db.mainSession.getSchema(namespace.toString()) as DB2Schema,
                 db,
-                db.mainConnection.jdbcTemplate
+                db.mainSession.jdbcTemplate
             ).drop()
         }
 
@@ -145,7 +146,9 @@ enum class Db2(image: String) : DbSystem {
 
         override fun close() {
             // Do NOT close the container lease!
-            db.use { }
+            db.use {
+                connectionFactory.use { }
+            }
         }
     }
 }

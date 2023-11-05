@@ -71,8 +71,8 @@ public interface DatabaseType {
      * @return The appropriate Database class.
      */
     Database createDatabase(Configuration configuration,
-                               boolean printInfo,
-                               JdbcConnectionFactory jdbcConnectionFactory);
+                            boolean printInfo,
+                            JdbcConnectionFactory jdbcConnectionFactory);
 
     /**
      * Initializes the Database used by this Database Type.
@@ -82,7 +82,7 @@ public interface DatabaseType {
      * @return The Database.
      */
     Database createDatabase(Configuration configuration,
-                               JdbcConnectionFactory jdbcConnectionFactory);
+                            JdbcConnectionFactory jdbcConnectionFactory);
 
     /**
      * Initializes the Parser used by this Database Type.
@@ -115,7 +115,7 @@ public interface DatabaseType {
      *
      * @return The DatabaseExecutionStrategy.
      */
-    DatabaseExecutionStrategy createExecutionStrategy(java.sql.Connection connection);
+    DatabaseExecutionStrategy createExecutionStrategy(Connection connection);
 
     /**
      * Initializes the ExecutionTemplate used by this Database Type.

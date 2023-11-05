@@ -22,9 +22,9 @@ import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.executor.Context;
 import migratedb.v1.core.api.executor.MigrationExecutor;
 import migratedb.v1.core.api.internal.callback.CallbackExecutor;
-import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.internal.database.base.Database;
 import migratedb.v1.core.api.internal.database.base.Schema;
+import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.logging.Log;
 import migratedb.v1.core.api.output.CommandResultFactory;
 import migratedb.v1.core.api.output.MigrateResult;
@@ -59,9 +59,9 @@ public class DbMigrate {
     private final Configuration configuration;
     private final CallbackExecutor callbackExecutor;
     /**
-     * The connection to use to perform the actual database migrations.
+     * The session to use to perform the actual database migrations.
      */
-    private final Session connectionUserObjects;
+    private final Session session;
     private MigrateResult migrateResult;
     /**
      * This is used to remember the type of migration between calls to migrateGroup().
@@ -76,7 +76,7 @@ public class DbMigrate {
                      Configuration configuration,
                      CallbackExecutor callbackExecutor) {
         this.database = database;
-        this.connectionUserObjects = database.getMigrationConnection();
+        this.session = database.getMigrationSession();
         this.schemaHistory = schemaHistory;
         this.schema = schema;
         this.migrationResolver = migrationResolver;
@@ -291,7 +291,7 @@ public class DbMigrate {
         StopWatch stopWatch = new StopWatch();
         try {
             if (executeGroupInTransaction) {
-                createExecutionTemplate(connectionUserObjects.getJdbcConnection(), database)
+                createExecutionTemplate(session.getJdbcConnection(), database)
                         .execute(() -> {
                             doMigrateGroup(group, stopWatch, skipExecutingMigrations, true);
                             return null;
@@ -365,7 +365,7 @@ public class DbMigrate {
 
             @Override
             public Connection getConnection() {
-                return connectionUserObjects.getJdbcConnection();
+                return session.getJdbcConnection();
             }
         };
 
@@ -390,8 +390,8 @@ public class DbMigrate {
             } else {
                 LOG.debug("Starting migration of " + migrationText + " ...");
 
-                connectionUserObjects.restoreOriginalState();
-                connectionUserObjects.changeCurrentSchemaTo(schema);
+                session.restoreOriginalState();
+                session.changeCurrentSchemaTo(schema);
 
                 try {
                     callbackExecutor.setMigrationInfo(migrationInfo);
@@ -402,11 +402,11 @@ public class DbMigrate {
                         // With single connection databases we need to manually disable the transaction for the
                         // migration as it is turned on for schema history changes
                         boolean oldAutoCommit = context.getConnection().getAutoCommit();
-                        if (database.useSingleConnection() && !isExecuteInTransaction) {
+                        if (database.usesSingleSingle() && !isExecuteInTransaction) {
                             context.getConnection().setAutoCommit(true);
                         }
                         resolvedMigration.getExecutor().execute(context);
-                        if (database.useSingleConnection() && !isExecuteInTransaction) {
+                        if (database.usesSingleSingle() && !isExecuteInTransaction) {
                             context.getConnection().setAutoCommit(oldAutoCommit);
                         }
 

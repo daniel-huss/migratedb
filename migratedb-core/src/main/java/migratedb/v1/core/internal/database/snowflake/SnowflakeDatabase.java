@@ -58,7 +58,7 @@ public class SnowflakeDatabase extends BaseDatabase {
         try {
             // Attempt query
             List<Map<String, String>> result = jdbcTemplate.queryForList(
-                "SHOW PARAMETERS LIKE 'QUOTED_IDENTIFIERS_IGNORE_CASE'");
+                    "SHOW PARAMETERS LIKE 'QUOTED_IDENTIFIERS_IGNORE_CASE'");
             Map<String, String> row = result.get(0);
             return "TRUE".equals(row.get("value").toUpperCase(Locale.ENGLISH));
         } catch (SQLException e) {
@@ -68,7 +68,7 @@ public class SnowflakeDatabase extends BaseDatabase {
     }
 
     @Override
-    protected SnowflakeSession doGetConnection(Connection connection) {
+    protected SnowflakeSession doGetSession(Connection connection) {
         return new SnowflakeSession(this, connection);
     }
 

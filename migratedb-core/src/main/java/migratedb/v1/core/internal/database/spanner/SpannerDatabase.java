@@ -29,7 +29,7 @@ public class SpannerDatabase extends BaseDatabase {
     }
 
     @Override
-    protected SpannerSession doGetConnection(Connection connection) {
+    protected SpannerSession doGetSession(Connection connection) {
         return new SpannerSession(this, connection);
     }
 
@@ -83,22 +83,22 @@ public class SpannerDatabase extends BaseDatabase {
     }
 
     @Override
-    public boolean useSingleConnection() {
+    public boolean usesSingleSingle() {
         return false;
     }
 
     @Override
     public String getRawCreateScript(Table table, boolean baseline) {
         return "" +
-                "CREATE TABLE " + table.getName() + " (\n" +
-                "    installed_rank INT64 NOT NULL,\n" +
-                "    version STRING(50),\n" +
-                "    description STRING(200) NOT NULL,\n" +
-                "    type STRING(20) NOT NULL,\n" +
-                "    script STRING(1000) NOT NULL,\n" +
-                "    checksum STRING(100),\n" +
-                "    installed_by STRING(100) NOT NULL,\n" +
-                "    installed_on TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),\n" +
+               "CREATE TABLE " + table.getName() + " (\n" +
+               "    installed_rank INT64 NOT NULL,\n" +
+               "    version STRING(50),\n" +
+               "    description STRING(200) NOT NULL,\n" +
+               "    type STRING(20) NOT NULL,\n" +
+               "    script STRING(1000) NOT NULL,\n" +
+               "    checksum STRING(100),\n" +
+               "    installed_by STRING(100) NOT NULL,\n" +
+               "    installed_on TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true),\n" +
                "    execution_time INT64 NOT NULL,\n" +
                "    success BOOL NOT NULL\n" +
                ") PRIMARY KEY (installed_rank DESC);\n" +

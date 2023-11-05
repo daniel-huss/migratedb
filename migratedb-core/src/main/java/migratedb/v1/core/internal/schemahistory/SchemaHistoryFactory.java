@@ -62,12 +62,12 @@ public final class SchemaHistoryFactory {
 
         List<Schema> schemas = new ArrayList<>();
         for (String schemaName : schemaNames) {
-            schemas.add(database.getMainConnection().getSchema(schemaName));
+            schemas.add(database.getMainSession().getSchema(schemaName));
         }
 
         if (defaultSchemaName == null) {
             if (schemaNames.isEmpty()) {
-                Schema currentSchema = database.getMainConnection().getCurrentSchema();
+                Schema currentSchema = database.getMainSession().getCurrentSchema();
                 if (currentSchema == null || currentSchema.getName() == null) {
                     throw new MigrateDbException(
                             "Unable to determine schema for the schema history table. Set a default schema for the " +
@@ -79,7 +79,7 @@ public final class SchemaHistoryFactory {
             }
         }
 
-        Schema defaultSchema = database.getMainConnection().getSchema(defaultSchemaName);
+        Schema defaultSchema = database.getMainSession().getSchema(defaultSchemaName);
         if (!schemas.contains(defaultSchema)) {
             schemas.add(0, defaultSchema);
         }

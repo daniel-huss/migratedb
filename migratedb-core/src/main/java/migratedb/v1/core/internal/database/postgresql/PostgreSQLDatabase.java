@@ -31,7 +31,7 @@ public class PostgreSQLDatabase extends BaseDatabase {
     }
 
     @Override
-    protected PostgreSQLSession doGetConnection(Connection connection) {
+    protected PostgreSQLSession doGetSession(Connection connection) {
         return new PostgreSQLSession(configuration, this, connection);
     }
 
@@ -48,11 +48,11 @@ public class PostgreSQLDatabase extends BaseDatabase {
                 : " TABLESPACE \"" + configuration.getTablespace() + "\"";
 
         return "CREATE TABLE " + table + " (\n" +
-                "    \"installed_rank\" INT NOT NULL,\n" +
-                "    \"version\" VARCHAR(50),\n" +
-                "    \"description\" VARCHAR(200) NOT NULL,\n" +
-                "    \"type\" VARCHAR(20) NOT NULL,\n" +
-                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+               "    \"installed_rank\" INT NOT NULL,\n" +
+               "    \"version\" VARCHAR(50),\n" +
+               "    \"description\" VARCHAR(200) NOT NULL,\n" +
+               "    \"type\" VARCHAR(20) NOT NULL,\n" +
+               "    \"script\" VARCHAR(1000) NOT NULL,\n" +
                "    \"checksum\" VARCHAR(100),\n" +
                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
                "    \"installed_on\" TIMESTAMP NOT NULL DEFAULT now(),\n" +
@@ -67,7 +67,7 @@ public class PostgreSQLDatabase extends BaseDatabase {
 
     @Override
     protected String doGetCurrentUser() throws SQLException {
-        return getMainConnection().getJdbcTemplate().queryForString("SELECT current_user");
+        return getMainSession().getJdbcTemplate().queryForString("SELECT current_user");
     }
 
     @Override
@@ -107,7 +107,7 @@ public class PostgreSQLDatabase extends BaseDatabase {
     }
 
     @Override
-    public boolean useSingleConnection() {
+    public boolean usesSingleSingle() {
         return true;
     }
 

@@ -70,7 +70,7 @@ public class DbLiberate {
         this.defaultSchema = defaultSchema;
         this.schemas = schemas;
         this.callbackExecutor = callbackExecutor;
-        this.jdbcTemplate = database.getMainConnection().getJdbcTemplate();
+        this.jdbcTemplate = database.getMainSession().getJdbcTemplate();
         this.failOnNonEmptySchemaHistoryTable = failOnNonEmptySchemaHistoryTable;
     }
 
@@ -98,7 +98,7 @@ public class DbLiberate {
             throw new MigrateDbException("The table " + configuration.getOldTable() +
                                          " was not found in any schema");
         }
-        return database.getMainConnection().lock(fromTable, () -> {
+        return database.getMainSession().lock(fromTable, () -> {
             if (!schemaHistory.exists()) {
                 schemaHistory.create(false);
             } else if (schemaHistory.hasAppliedMigrations()) {
@@ -115,8 +115,8 @@ public class DbLiberate {
                         List.of(new LiberateAction(LiberateAction.TYPE_ABORTED, message))
                 );
             }
-            var changes = database.getMainConnection().lock(schemaHistory.getTable(),
-                                                            () -> convertToMigrateDb(fromTable));
+            var changes = database.getMainSession().lock(schemaHistory.getTable(),
+                                                         () -> convertToMigrateDb(fromTable));
             return CommandResultFactory.createLiberateResult(
                     configuration,
                     database,

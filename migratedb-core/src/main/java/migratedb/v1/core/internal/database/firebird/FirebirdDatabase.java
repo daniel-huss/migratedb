@@ -35,7 +35,7 @@ public class FirebirdDatabase extends BaseDatabase {
     }
 
     @Override
-    protected FirebirdSession doGetConnection(Connection connection) {
+    protected FirebirdSession doGetSession(Connection connection) {
         return new FirebirdSession(this, connection);
     }
 
@@ -87,15 +87,15 @@ public class FirebirdDatabase extends BaseDatabase {
     @Override
     public String getRawCreateScript(Table table, boolean baseline) {
         String createScript = "CREATE TABLE " + table + " (\n" +
-                "    \"installed_rank\" INTEGER CONSTRAINT \"" + table.getName() +
-                "_pk\" PRIMARY KEY,\n" +
-                "    \"version\" VARCHAR(50),\n" +
-                "    \"description\" VARCHAR(200) NOT NULL,\n" +
-                "    \"type\" VARCHAR(20) NOT NULL,\n" +
-                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-                "    \"checksum\" VARCHAR(100),\n" +
-                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
-                "    \"installed_on\" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
+                              "    \"installed_rank\" INTEGER CONSTRAINT \"" + table.getName() +
+                              "_pk\" PRIMARY KEY,\n" +
+                              "    \"version\" VARCHAR(50),\n" +
+                              "    \"description\" VARCHAR(200) NOT NULL,\n" +
+                              "    \"type\" VARCHAR(20) NOT NULL,\n" +
+                              "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+                              "    \"checksum\" VARCHAR(100),\n" +
+                              "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
+                              "    \"installed_on\" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n" +
                               "    \"execution_time\" INTEGER NOT NULL,\n" +
                               "    \"success\" SMALLINT NOT NULL\n" +
                               ");\n" +
@@ -116,11 +116,11 @@ public class FirebirdDatabase extends BaseDatabase {
     @Override
     protected String doGetCurrentUser() throws SQLException {
         // JDBC DatabaseMetaData.getUserName() reports original user used for connecting, but this may be remapped
-        return getMainConnection().getJdbcTemplate().queryForString("select CURRENT_USER from RDB$DATABASE");
+        return getMainSession().getJdbcTemplate().queryForString("select CURRENT_USER from RDB$DATABASE");
     }
 
     @Override
-    public boolean useSingleConnection() {
+    public boolean usesSingleSingle() {
         return true;
     }
 }

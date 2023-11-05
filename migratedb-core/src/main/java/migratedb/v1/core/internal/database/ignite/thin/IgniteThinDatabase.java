@@ -44,15 +44,15 @@ public class IgniteThinDatabase extends BaseDatabase {
     }
 
     @Override
-    protected IgniteThinSession doGetConnection(Connection connection) {
+    protected IgniteThinSession doGetSession(Connection connection) {
         return new IgniteThinSession(this, connection);
     }
 
     @Override
     protected Version determineVersion() {
         try {
-            int buildId = getMainConnection().getJdbcTemplate().queryForInt(
-                "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'info.BUILD_ID'");
+            int buildId = getMainSession().getJdbcTemplate().queryForInt(
+                    "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'info.BUILD_ID'");
             return Version.parse(super.determineVersion() + "." + buildId);
         } catch (SQLException e) {
             throw new MigrateDbSqlException("Unable to determine Apache Ignite build ID", e);
@@ -66,15 +66,15 @@ public class IgniteThinDatabase extends BaseDatabase {
     @Override
     public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE IF NOT EXISTS " + table + " (\n" +
-                "    \"installed_rank\" INT NOT NULL,\n" +
-                "    \"version\" VARCHAR(50),\n" +
-                "    \"description\" VARCHAR(200) NOT NULL,\n" +
-                "    \"type\" VARCHAR(20) NOT NULL,\n" +
-                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-                "    \"checksum\" VARCHAR(100),\n" +
-                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
-                "    \"installed_on\" TIMESTAMP NOT NULL,\n" +
-                "    \"execution_time\" INT NOT NULL,\n" +
+               "    \"installed_rank\" INT NOT NULL,\n" +
+               "    \"version\" VARCHAR(50),\n" +
+               "    \"description\" VARCHAR(200) NOT NULL,\n" +
+               "    \"type\" VARCHAR(20) NOT NULL,\n" +
+               "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+               "    \"checksum\" VARCHAR(100),\n" +
+               "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
+               "    \"installed_on\" TIMESTAMP NOT NULL,\n" +
+               "    \"execution_time\" INT NOT NULL,\n" +
                "    \"success\" BOOLEAN NOT NULL,\n" +
                "     PRIMARY KEY (\"installed_rank\")\n" +
                ") WITH \"TEMPLATE=REPLICATED, BACKUPS=1,ATOMICITY=ATOMIC\";\n" +
@@ -123,9 +123,9 @@ public class IgniteThinDatabase extends BaseDatabase {
     protected String doGetCurrentUser() {
         String userName;
         try {
-            Field connPropsField = getMainConnection().getJdbcConnection().getClass().getDeclaredField("connProps");
+            Field connPropsField = getMainSession().getJdbcConnection().getClass().getDeclaredField("connProps");
             connPropsField.setAccessible(true);
-            Object connProps = connPropsField.get(getMainConnection().getJdbcConnection());
+            Object connProps = connPropsField.get(getMainSession().getJdbcConnection());
             userName = (String) connProps.getClass().getMethod("getUsername").invoke(connProps);
             if (userName == null || userName.isEmpty()) {
                 return "ignite";

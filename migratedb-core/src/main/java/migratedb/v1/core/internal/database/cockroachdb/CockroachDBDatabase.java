@@ -38,7 +38,7 @@ public class CockroachDBDatabase extends BaseDatabase {
     }
 
     @Override
-    protected CockroachDBSession doGetConnection(Connection connection) {
+    protected CockroachDBSession doGetSession(Connection connection) {
         return new CockroachDBSession(this, connection);
     }
 
@@ -51,15 +51,15 @@ public class CockroachDBDatabase extends BaseDatabase {
     @Override
     public String getRawCreateScript(Table table, boolean baseline) {
         return "CREATE TABLE IF NOT EXISTS " + table + " (\n" +
-                "    \"installed_rank\" INT NOT NULL PRIMARY KEY,\n" +
-                "    \"version\" VARCHAR(50),\n" +
-                "    \"description\" VARCHAR(200) NOT NULL,\n" +
-                "    \"type\" VARCHAR(20) NOT NULL,\n" +
-                "    \"script\" VARCHAR(1000) NOT NULL,\n" +
-                "    \"checksum\" VARCHAR(100),\n" +
-                "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
-                "    \"installed_on\" TIMESTAMP NOT NULL DEFAULT now(),\n" +
-                "    \"execution_time\" INTEGER NOT NULL,\n" +
+               "    \"installed_rank\" INT NOT NULL PRIMARY KEY,\n" +
+               "    \"version\" VARCHAR(50),\n" +
+               "    \"description\" VARCHAR(200) NOT NULL,\n" +
+               "    \"type\" VARCHAR(20) NOT NULL,\n" +
+               "    \"script\" VARCHAR(1000) NOT NULL,\n" +
+               "    \"checksum\" VARCHAR(100),\n" +
+               "    \"installed_by\" VARCHAR(100) NOT NULL,\n" +
+               "    \"installed_on\" TIMESTAMP NOT NULL DEFAULT now(),\n" +
+               "    \"execution_time\" INTEGER NOT NULL,\n" +
                "    \"success\" BOOLEAN NOT NULL\n" +
                ");\n" +
                (baseline ? getBaselineStatement(table) + ";\n" : "") +
@@ -96,7 +96,7 @@ public class CockroachDBDatabase extends BaseDatabase {
 
     @Override
     protected String doGetCurrentUser() throws SQLException {
-        return getMainConnection().getJdbcTemplate().queryForString("SELECT * FROM [SHOW SESSION_USER]");
+        return getMainSession().getJdbcTemplate().queryForString("SELECT * FROM [SHOW SESSION_USER]");
     }
 
     @Override

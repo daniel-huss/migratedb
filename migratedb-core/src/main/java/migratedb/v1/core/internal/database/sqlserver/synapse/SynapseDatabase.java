@@ -20,8 +20,8 @@ import migratedb.v1.core.api.Version;
 import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.database.base.Table;
 import migratedb.v1.core.api.internal.jdbc.JdbcConnectionFactory;
-import migratedb.v1.core.internal.database.sqlserver.SQLServerSession;
 import migratedb.v1.core.internal.database.sqlserver.SQLServerDatabase;
+import migratedb.v1.core.internal.database.sqlserver.SQLServerSession;
 
 import java.sql.Connection;
 import java.util.Date;
@@ -33,7 +33,7 @@ public class SynapseDatabase extends SQLServerDatabase {
     }
 
     @Override
-    protected SQLServerSession doGetConnection(Connection connection) {
+    protected SQLServerSession doGetSession(Connection connection) {
         return new SynapseSession(this, connection);
     }
 
@@ -91,14 +91,14 @@ public class SynapseDatabase extends SQLServerDatabase {
     public String getRawCreateScript(Table table, boolean baseline) {
 
         return "CREATE TABLE " + table + " (\n" +
-                "    [installed_rank] INT NOT NULL,\n" +
-                "    [" + "version] NVARCHAR(50),\n" +
-                "    [description] NVARCHAR(200),\n" +
-                "    [type] NVARCHAR(20) NOT NULL,\n" +
-                "    [script] NVARCHAR(1000) NOT NULL,\n" +
-                "    [checksum] NVARCHAR(100),\n" +
-                "    [installed_by] NVARCHAR(100) NOT NULL,\n" +
-                "    [installed_on] DATETIME NOT NULL,\n" +
+               "    [installed_rank] INT NOT NULL,\n" +
+               "    [" + "version] NVARCHAR(50),\n" +
+               "    [description] NVARCHAR(200),\n" +
+               "    [type] NVARCHAR(20) NOT NULL,\n" +
+               "    [script] NVARCHAR(1000) NOT NULL,\n" +
+               "    [checksum] NVARCHAR(100),\n" +
+               "    [installed_by] NVARCHAR(100) NOT NULL,\n" +
+               "    [installed_on] DATETIME NOT NULL,\n" +
                "    [execution_time] INT NOT NULL,\n" +
                "    [success] BIT NOT NULL\n" +
                ");\n" +
