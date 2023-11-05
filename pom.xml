@@ -94,7 +94,7 @@
         <version.commons-logging>1.2</version.commons-logging>
         <version.groovy>4.0.15</version.groovy>
         <version.gson>2.10.1</version.gson>
-        <version.h2.latest>2.2.220</version.h2.latest>
+        <version.h2.latest>2.2.224</version.h2.latest>
         <version.jacoco>0.8.11</version.jacoco>
         <version.java>11</version.java>
         <version.jimfs>1.3.0</version.jimfs>

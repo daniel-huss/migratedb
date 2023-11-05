@@ -402,11 +402,11 @@ public class DbMigrate {
                         // With single connection databases we need to manually disable the transaction for the
                         // migration as it is turned on for schema history changes
                         boolean oldAutoCommit = context.getConnection().getAutoCommit();
-                        if (database.usesSingleSingle() && !isExecuteInTransaction) {
+                        if (database.usesSingleSession() && !isExecuteInTransaction) {
                             context.getConnection().setAutoCommit(true);
                         }
                         resolvedMigration.getExecutor().execute(context);
-                        if (database.usesSingleSingle() && !isExecuteInTransaction) {
+                        if (database.usesSingleSession() && !isExecuteInTransaction) {
                             context.getConnection().setAutoCommit(oldAutoCommit);
                         }
 

@@ -220,7 +220,7 @@ public abstract class BaseDatabase implements Database {
     }
 
     @Override
-    public boolean usesSingleSingle() {
+    public boolean usesSingleSession() {
         return false;
     }
 
@@ -240,7 +240,7 @@ public abstract class BaseDatabase implements Database {
     @Override
     public Session getMigrationSession() {
         if (migrationConnection == null) {
-            if (usesSingleSingle()) {
+            if (usesSingleSession()) {
                 this.migrationConnection = getMainSession();
             } else {
                 this.migrationConnection = getSession(jdbcConnectionFactory.openConnection());

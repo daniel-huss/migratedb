@@ -44,7 +44,7 @@ public class HSQLDBDatabase extends BaseDatabase {
     @Override
     public final void ensureSupported() {
         ensureDatabaseIsRecentEnough("1.8");
-        recommendMigrateDbUpgradeIfNecessary("2.7.2");
+        recommendMigrateDbUpgradeIfNecessary("2.7.99");
     }
 
     @Override
@@ -94,7 +94,7 @@ public class HSQLDBDatabase extends BaseDatabase {
     }
 
     @Override
-    public boolean usesSingleSingle() {
+    public boolean usesSingleSession() {
         return true;
     }
 }

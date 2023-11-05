@@ -19,9 +19,9 @@ package migratedb.v1.core.internal.util;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Stop watch, inspired by the implementation in the Spring framework.
+ * Stopwatch, inspired by the implementation in the Spring framework.
  */
-public class StopWatch {
+public final class StopWatch {
     /**
      * The timestamp at which the stopwatch was started.
      */

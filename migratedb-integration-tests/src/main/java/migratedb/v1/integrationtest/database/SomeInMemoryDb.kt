@@ -19,4 +19,4 @@ package migratedb.v1.integrationtest.database
 /**
  * Use this when any database system will do (and speed is most important).
  */
-object SomeInMemoryDb : DbSystem by H2.V2_2_220
+object SomeInMemoryDb : DbSystem by H2.V2_2_224

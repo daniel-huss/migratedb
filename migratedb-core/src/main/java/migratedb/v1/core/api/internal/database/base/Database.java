@@ -76,7 +76,7 @@ public interface Database extends Closeable {
     /**
      * @return Whether a single session is used for both schema history table management and applying migrations.
      */
-    boolean usesSingleSingle();
+    boolean usesSingleSession();
 
     DatabaseMetaData getJdbcMetaData();
 

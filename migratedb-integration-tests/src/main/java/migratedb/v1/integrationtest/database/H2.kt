@@ -32,7 +32,7 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource
 import javax.sql.DataSource
 
 enum class H2 : DbSystem {
-    V2_2_220,
+    V2_2_224,
     V2_1_210,
     V1_4_200,
     ;
@@ -41,7 +41,8 @@ enum class H2 : DbSystem {
     //  - None
 
     companion object {
-        private const val driverClass = "org.h2.Driver"
+        private const val DRIVER_CLASS = "org.h2.Driver"
+
         private val databaseType = H2DatabaseType()
         private val databaseTypeRegister = DatabaseTypeRegisterImpl().also {
             it.registerDatabaseTypes(listOf(databaseType))
@@ -50,7 +51,7 @@ enum class H2 : DbSystem {
         init {
             // Check that H2 is not on the test class path (because our custom class loader delegates to its parent)
             shouldThrow<ClassNotFoundException> {
-                Class.forName(driverClass)
+                Class.forName(DRIVER_CLASS)
             }
         }
     }
@@ -91,7 +92,7 @@ enum class H2 : DbSystem {
             var url = "jdbc:h2:mem:$databaseName;DB_CLOSE_DELAY=-1"
             schema?.let { url += ";SCHEMA=$it" }
             return SimpleDriverDataSource(
-                ClassUtils.instantiate(driverClass, classLoader),
+                ClassUtils.instantiate(DRIVER_CLASS, classLoader),
                 url,
                 "sa",
                 ""

@@ -96,7 +96,7 @@ public class SQLiteDatabase extends BaseDatabase {
     }
 
     @Override
-    public boolean usesSingleSingle() {
+    public boolean usesSingleSession() {
         return true;
     }
 }

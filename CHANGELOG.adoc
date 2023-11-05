@@ -15,7 +15,7 @@ NOTE: 🔥 = Breaking Change
 
 === Changed
 
-* 🔥 Renamed internal `Connection` API to `Session`.
+* 🔥 Renamed internal `Connection` API to `Session` to avoid name clashes with `java.sql.Connection`.
 
 === Removed
 
