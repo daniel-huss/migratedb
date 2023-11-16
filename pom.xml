@@ -18,7 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.unentscheidbar</groupId>
     <artifactId>migratedb</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>MigrateDB</name>
     <description>MigrateDB: Database Migrations, Easy and Free.</description>
@@ -81,7 +81,7 @@
 
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.outputTimestamp>2023-09-27T12:43:00Z
+        <project.build.outputTimestamp>2023-11-16T22:45:08Z
         </project.build.outputTimestamp><!-- for reproducible builds -->
         <project.build.generatedSources.directory>${project.build.directory}/generated-sources/codegen
         </project.build.generatedSources.directory>
@@ -205,6 +205,11 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.13</version>
+                </plugin>
                 <plugin>
                     <groupId>org.codehaus.gmavenplus</groupId>
                     <artifactId>gmavenplus-plugin</artifactId>
@@ -491,7 +496,6 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.12</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>

@@ -6,7 +6,7 @@ The format is based on https://keepachangelog.com/en/1.1.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
-== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.0.0[1.0.0] - unreleased
+== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.0.0[1.0.0] - 2023-11-16
 
 === Added
 
@@ -15,7 +15,7 @@ NOTE: 🔥 = Breaking Change
 
 === Changed
 
-* 🔥 Renamed internal `Connection` API to `Session` to avoid name clashes with `java.sql.Connection`.
+* 🔥 Renamed internal `Connection` API to `Session` to avoid confusion and name clashes with `java.sql.Connection`.
 
 === Removed
 
@@ -28,6 +28,7 @@ NOTE: 🔥 = Breaking Change
 === Fixed
 
 * `RetryStrategy` wasn't treating negative numbers as unlimited retries.
+* [#1] `JAVA_ARGS` should not be double-quoted in CLI start script.
 
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.3.0[0.3.0] - 2023-09-27
 
@@ -49,8 +50,8 @@ This makes it easier to switch to MigrateDB: Just deploy the next version of you
 * Updated dependencies.
 * Extracted dependency downloader into separate Maven module.
 * 🔥 Made major version part of package name for forward compatibility, so the common prefix is now `migratedb.v1`.
-* 🔥 The `Configration` now returns `List` instead of arrays.
-* 🔥 Renamed `ClassicConfigration` to `DefaultConfiguration`.
+* 🔥 The `Configuration` now returns `List` instead of arrays.
+* 🔥 Renamed `ClassicConfiguration` to `DefaultConfiguration`.
 
 === Removed
 
@@ -59,6 +60,7 @@ This makes it easier to switch to MigrateDB: Just deploy the next version of you
 (Just configure your data source accordingly, I guess?)
 * 🔥 The destructive "clean" command.
 * 🔥 The "error overrides" configuration option, which had no effect anyway.
+
 
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.2.0[0.2.0] - 2022-07-17
 
