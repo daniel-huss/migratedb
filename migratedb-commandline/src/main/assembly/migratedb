@@ -36,4 +36,5 @@ fi
 CP="$CLASSPATH:$INSTALLDIR/lib/*:$INSTALLDIR/drivers/*"
 
 if $(command -v cygpath > /dev/null); then CP=$(cygpath -pw "$CP"); fi
-exec "$JAVA_CMD" "$JAVA_ARGS" -cp "$CP" migratedb.v1.commandline.Main "-baseDirectory=$INSTALLDIR" "$@"
+# shellcheck disable=SC2086
+exec "$JAVA_CMD" $JAVA_ARGS -cp "$CP" migratedb.v1.commandline.Main "-baseDirectory=$INSTALLDIR" "$@"
