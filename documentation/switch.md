@@ -11,7 +11,8 @@ Although MigrateDB is a fork of Flyway, it's not a drop-in replacement due to se
 However, there's not much to do if you want to make the switch, and you won't have to make any changes to your existing SQL migrations.
 
 ## Source code and configuration changes
-1. Replace `org.flywaydb` with `migratedb`
+
+1. Replace `org.flywaydb` with `migratedb.v{{ site.migratedbApiMajorVersion }}`
 2. Replace `Flyway` with `MigrateDb`
 3. Replace `flyway` with `migratedb`
 4. Replace `MigrationVersion` with either `Version` or `TargetVersion`, depending on how it's used. If its value could be 'current' or 'latest', use TargetVersion, otherwise Version.
