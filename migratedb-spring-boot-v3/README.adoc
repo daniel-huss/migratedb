@@ -1,5 +1,4 @@
 = MigrateDB Spring Boot Integration
-:released_version: 0.2.0
 
 Add this dependency to enable automatic database migrations on startup of your Spring Boot application:
 
@@ -8,7 +7,7 @@ Add this dependency to enable automatic database migrations on startup of your S
 <dependency>
     <groupId>de.unentscheidbar</groupId>
     <artifactId>migratedb-spring-boot-v3-starter</artifactId>
-    <version>{released_version}</version>
+    <version>1.0.0</version>
 </dependency>
 ----
 
@@ -113,7 +112,7 @@ For full control over the used `Configuration`, you can define one or more beans
 
 migratedb.baseline-description (java.lang.String)::
 The description to tag an existing schema with when executing baseline.
-(default: << MigrateDB Baseline >>)
+(default: `<< MigrateDB Baseline >>`)
 migratedb.baseline-migration-prefix (java.lang.String)::
 The file name prefix for baseline migrations. Baseline migrations
 represent all migrations with
@@ -121,7 +120,7 @@ represent all migrations with
 migrations if needed for upgrading older deployments. They have the
 following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix,
 which using the defaults translates to B1.1__My_description.sql.
-(default: B)
+(default: `B`)
 migratedb.baseline-on-migrate (java.lang.Boolean)::
 Whether to automatically call baseline when migrate is executed against
 a non-empty schema with no schema history table. This schema will then
@@ -174,7 +173,7 @@ the default schema for the database connection)
 migratedb.enabled (java.lang.Boolean)::
 Whether to enable MigrateDB.
 migratedb.encoding (java.nio.charset.Charset)::
-The encoding of SQL migrations. (default: UTF-8)
+The encoding of SQL migrations. (default: `UTF-8`)
 migratedb.extension-config (java.util.Map<java.lang.String,java.lang.String>)::
 Extension-specific properties. In addition, Spring beans that implement
 `ExtensionConfig` are auto-detected.
@@ -266,7 +265,7 @@ with `classpath:` point to a package on the classpath and may contain
 both SQL and Java-based migrations. Locations starting with
 `filesystem:` point to a directory on the filesystem, may only contain
 SQL migrations and are only scanned recursively down non-hidden
-directories. (default: classpath:db/migration)
+directories. (default: `classpath:db/migration`)
 migratedb.lock-retry-count (java.lang.Integer)::
 The maximum number of retries when trying to obtain a lock. -1 indicates
 attempting to repeat indefinitely.
@@ -285,7 +284,7 @@ migrations should be allowed. `false` if an error should be thrown
 instead. (default: `false`)
 migratedb.old-table (java.lang.String)::
 The old table to convert into the format used by MigrateDB. Only used
-for the "liberate" command.
+for the "liberate" command. (default: `flyway_schema_history`)
 migratedb.out-of-order (java.lang.Boolean)::
 Whether migrations are allowed to be run "out of order". If you already
 have versions 1 and 3 applied, and now a version 2 is found, it will be
@@ -298,19 +297,23 @@ migratedb.password (java.lang.String)::
 If set, database migrations will use a data source that is derived from
 the application data source, but uses different credentials.
 migratedb.placeholder-prefix (java.lang.String)::
-The prefix of every placeholder. (default: $\{ )
+The prefix of every placeholder. (default: `${` )
 migratedb.placeholder-replacement (java.lang.Boolean)::
 Whether placeholders should be replaced. (default: true)
 migratedb.placeholder-suffix (java.lang.String)::
-The suffix of every placeholder. (default: } )
+The suffix of every placeholder. (default: `}` )
 migratedb.placeholders (java.util.Map<java.lang.String,java.lang.String>)::
 The map of <placeholder, replacementValue> to apply to sql migration
 scripts.
+migratedb.repair-on-migrate (java.lang.Boolean)::
+Whether the default execution of MigrateDB should execute the repair command,
+which makes your deployment self-healing. If your application provides a custom
+`MigrateDbExecution` bean, this setting has no effect. (default: `true`)
 migratedb.repeatable-sql-migration-prefix (java.lang.String)::
 The file name prefix for repeatable sql migrations. Repeatable SQL
 migrations have the following file name structure:
 prefixSeparatorDESCRIPTIONsuffix, which using the defaults translates to
-R__My_description.sql. (default: R)
+R__My_description.sql. (default: `R`)
 migratedb.schemas (java.util.List<java.lang.String>)::
 The schemas managed by MigrateDB. These schema names are case-sensitive.
 If not specified, MigrateDB uses the default schema for the database
@@ -324,15 +327,15 @@ unless they already exist.
 +
 (default: The default schema for the database connection)
 migratedb.script-placeholder-prefix (java.lang.String)::
-The prefix of every script placeholder. (default: FP__ )
+The prefix of every script placeholder. (default: `FP_` )
 migratedb.script-placeholder-suffix (java.lang.String)::
-The suffix of every script placeholder. (default: __ )
+The suffix of every script placeholder. (default: `pass:[__]` )
 migratedb.skip-default-callbacks (java.lang.Boolean)::
 Whether default built-in callbacks should be skipped. If true, only
-custom callbacks are used. (default: false)
+custom callbacks are used. (default: `false`)
 migratedb.skip-default-resolvers (java.lang.Boolean)::
 Whether default built-in resolvers should be skipped. If true, only
-custom resolvers are used. (default: false)
+custom resolvers are used. (default: `false`)
 migratedb.skip-executing-migrations (java.lang.Boolean)::
 Whether MigrateDB should skip actually executing the contents of the
 migrations and only update the schema history table. This should be used
@@ -346,12 +349,12 @@ migratedb.sql-migration-prefix (java.lang.String)::
 The file name prefix for versioned SQL migrations. Versioned SQL
 migrations have the following file name structure:
 prefixVERSIONseparatorDESCRIPTIONsuffix, which using the defaults
-translates to V1.1__My_description.sql (default: V)
+translates to V1.1__My_description.sql (default: `V`)
 migratedb.sql-migration-separator (java.lang.String)::
 The file name separator for sql migrations. SQL migrations have the
 following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix,
-which using the defaults translates to V1_1__My_description.sql.
-(default: __)
+which using the defaults translates to pass:[V1_1__My_description.sql].
+(default: `pass:[__]`)
 migratedb.sql-migration-suffixes (java.util.List<java.lang.String>)::
 The file name suffixes for SQL migrations. SQL migrations have the
 following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix,
