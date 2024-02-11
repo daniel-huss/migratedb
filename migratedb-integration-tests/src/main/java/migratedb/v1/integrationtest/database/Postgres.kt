@@ -16,6 +16,8 @@
 
 package migratedb.v1.integrationtest.database
 
+import migratedb.v1.core.api.internal.database.base.DatabaseType
+import migratedb.v1.core.internal.database.postgresql.PostgreSQLDatabaseType
 import migratedb.v1.integrationtest.database.mutation.BasicCreateTableMutation
 import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.v1.integrationtest.util.base.Names
@@ -24,8 +26,6 @@ import migratedb.v1.integrationtest.util.base.SafeIdentifier.Companion.asSafeIde
 import migratedb.v1.integrationtest.util.base.work
 import migratedb.v1.integrationtest.util.container.Lease
 import migratedb.v1.integrationtest.util.container.SharedResources
-import migratedb.v1.core.api.internal.database.base.DatabaseType
-import migratedb.v1.core.internal.database.postgresql.PostgreSQLDatabaseType
 import org.postgresql.ds.PGSimpleDataSource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
@@ -40,7 +40,7 @@ enum class Postgres(image: String) : DbSystem {
     V13("postgres:13-alpine"),
     V14("postgres:14-alpine"),
     V15("postgres:15-alpine"),
-    V16_BETA("postgres:16beta2-alpine"),
+    V16("postgres:16-alpine"),
     ;
 
     // Relevant idiosyncrasies:

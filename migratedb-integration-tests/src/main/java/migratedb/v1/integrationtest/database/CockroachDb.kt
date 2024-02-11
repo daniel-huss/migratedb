@@ -16,6 +16,8 @@
 
 package migratedb.v1.integrationtest.database
 
+import migratedb.v1.core.api.internal.database.base.DatabaseType
+import migratedb.v1.core.internal.database.cockroachdb.CockroachDBDatabaseType
 import migratedb.v1.integrationtest.database.mutation.BasicCreateTableMutation
 import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.v1.integrationtest.util.base.Names
@@ -24,8 +26,6 @@ import migratedb.v1.integrationtest.util.base.SafeIdentifier.Companion.asSafeIde
 import migratedb.v1.integrationtest.util.base.work
 import migratedb.v1.integrationtest.util.container.Lease
 import migratedb.v1.integrationtest.util.container.SharedResources
-import migratedb.v1.core.api.internal.database.base.DatabaseType
-import migratedb.v1.core.internal.database.cockroachdb.CockroachDBDatabaseType
 import org.postgresql.ds.PGSimpleDataSource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
@@ -34,7 +34,8 @@ import java.util.concurrent.Semaphore
 import javax.sql.DataSource
 
 enum class CockroachDb(image: String) : DbSystem {
-    V23_1_5("cockroachdb/cockroach:v23.1.5"),
+    V23_2_0("cockroachdb/cockroach:v23.2.0"),
+    V23_1_5("cockroachdb/cockroach:v23.1.14"),
     V22_2_11("cockroachdb/cockroach:v22.2.11"),
     V21_2_17("cockroachdb/cockroach:v21.2.17"),
     // Lower versions are EOL, should we test them?
@@ -56,7 +57,10 @@ enum class CockroachDb(image: String) : DbSystem {
     }
 
     class Container(image: DockerImageName) : GenericContainer<Container>(image) {
-        fun dataSource(databaseName: String = CockroachDb.defaultDatabase.toString(), currentSchema: String? = null): DataSource {
+        fun dataSource(
+            databaseName: String = CockroachDb.defaultDatabase.toString(),
+            currentSchema: String? = null
+        ): DataSource {
             return PGSimpleDataSource().also {
                 it.user = CockroachDb.adminUser
                 it.portNumbers = intArrayOf(getMappedPort(CockroachDb.port))
@@ -96,9 +100,7 @@ enum class CockroachDb(image: String) : DbSystem {
     override fun get(sharedResources: SharedResources): DbSystem.Handle {
         permits.acquire()
         return Handle(sharedResources.container(containerAlias) {
-            Container(
-                image
-            )
+            Container(image)
         })
     }
 

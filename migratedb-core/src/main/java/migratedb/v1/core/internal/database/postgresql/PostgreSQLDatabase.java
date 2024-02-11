@@ -38,7 +38,7 @@ public class PostgreSQLDatabase extends BaseDatabase {
     @Override
     public void ensureSupported() {
         ensureDatabaseIsRecentEnough("9.0");
-        recommendMigrateDbUpgradeIfNecessaryForMajorVersion("16");
+        recommendMigrateDbUpgradeIfNecessaryForMajorVersion("17");
     }
 
     @Override

@@ -29,7 +29,7 @@ import org.junit.jupiter.api.extension.ExtensionContext.Namespace
 import java.util.concurrent.TimeUnit
 
 @ExtendWith(IntegrationTest.Extension::class)
-@Timeout(15, unit = TimeUnit.MINUTES)
+@Timeout(60, unit = TimeUnit.MINUTES)
 abstract class IntegrationTest : AbstractTest() {
 
     class Extension : BeforeAllCallback {

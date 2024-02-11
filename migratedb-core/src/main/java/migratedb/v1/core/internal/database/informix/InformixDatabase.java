@@ -45,7 +45,7 @@ public class InformixDatabase extends BaseDatabase {
     @Override
     public final void ensureSupported() {
         ensureDatabaseIsRecentEnough("12.10");
-        recommendMigrateDbUpgradeIfNecessary("12.10");
+        recommendMigrateDbUpgradeIfNecessary("14.99");
     }
 
     @Override

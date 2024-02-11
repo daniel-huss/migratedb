@@ -45,7 +45,7 @@ public class CockroachDBDatabase extends BaseDatabase {
     @Override
     public final void ensureSupported() {
         ensureDatabaseIsRecentEnough("1.1");
-        recommendMigrateDbUpgradeIfNecessary("21.2");
+        recommendMigrateDbUpgradeIfNecessary("23.99");
     }
 
     @Override
@@ -134,5 +134,4 @@ public class CockroachDBDatabase extends BaseDatabase {
     public boolean catalogIsSchema() {
         return false;
     }
-
 }

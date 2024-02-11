@@ -27,13 +27,13 @@ class SharedResources private constructor() : ExtensionContext.Store.CloseableRe
             return getOrComputeIfAbsent(SharedResources::class.java, { SharedResources() }, SharedResources::class.java)
         }
 
-        private const val maxContainers = 20
+        private const val MAX_CONTAINERS = 20
     }
 
     private val lock = object : Any() {}
     private var closed = false
     private val network = Network.newNetwork()
-    private val containerPool = ContainerPool(maxContainers)
+    private val containerPool = ContainerPool(MAX_CONTAINERS)
     private val logConsumersByAlias = LinkedHashMap<String, ToFileLogConsumer>()
 
 
