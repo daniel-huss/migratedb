@@ -16,6 +16,7 @@
 
 package migratedb.v1.integrationtest.database
 
+import migratedb.v1.core.internal.database.oracle.OracleDatabaseType
 import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.v1.integrationtest.database.mutation.OracleCreateTableMutation
 import migratedb.v1.integrationtest.util.base.Names
@@ -24,7 +25,6 @@ import migratedb.v1.integrationtest.util.base.rethrowUnless
 import migratedb.v1.integrationtest.util.base.work
 import migratedb.v1.integrationtest.util.container.Lease
 import migratedb.v1.integrationtest.util.container.SharedResources
-import migratedb.v1.core.internal.database.oracle.OracleDatabaseType
 import oracle.jdbc.pool.OracleDataSource
 import org.springframework.dao.DataAccessException
 import org.testcontainers.containers.GenericContainer
@@ -83,7 +83,7 @@ enum class Oracle(image: String) : DbSystem {
     private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
         override val type = OracleDatabaseType()
 
-        private val internalDs = container().dataSource()
+        private val internalDs by lazy { container().dataSource() }
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             internalDs.work(connectTimeout = Duration.ofMinutes(2)) {// startup can be slow

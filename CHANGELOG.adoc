@@ -6,15 +6,17 @@ The format is based on https://keepachangelog.com/en/1.1.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
-== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.0.1[1.0.1] - unreleased
+== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.1.0[1.1.0] - 2024-04-14
 
 === Added
 
-* Tests and support for PostgreSQL 16 (non-beta), CockroachDB 23.2, Informix 14.
+* Tests and support for PostgreSQL 16 (non-beta), CockroachDB 23.2, Informix 14, DB2 11.5.9.
+* Tests for Gradle 8.7
 
 === Changed
 
 * Updated dependencies.
+* Use Maven Toolchains.
 
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.0.0[1.0.0] - 2023-11-16
 

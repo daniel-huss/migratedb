@@ -114,7 +114,7 @@ enum class Derby : DbSystem {
 
     private inner class Handle : DbSystem.Handle {
         override val type: DatabaseType get() = Companion.databaseType
-        private val dataDir = newTempDir("derby-$name", deleteOnExit = false)
+        private val dataDir by lazy { newTempDir("derby-$name", deleteOnExit = false) }
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             val dbPath = dbPath(namespace)

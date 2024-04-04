@@ -17,6 +17,7 @@
 package migratedb.v1.integrationtest.database
 
 import com.informix.jdbcx.IfxDataSource
+import migratedb.v1.core.internal.database.informix.InformixDatabaseType
 import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.v1.integrationtest.database.mutation.InformixCreateTableMutation
 import migratedb.v1.integrationtest.util.base.Names
@@ -24,7 +25,6 @@ import migratedb.v1.integrationtest.util.base.SafeIdentifier
 import migratedb.v1.integrationtest.util.base.work
 import migratedb.v1.integrationtest.util.container.Lease
 import migratedb.v1.integrationtest.util.container.SharedResources
-import migratedb.v1.core.internal.database.informix.InformixDatabaseType
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
@@ -85,7 +85,7 @@ enum class Informix(image: String) : DbSystem {
     private inner class Handle(private val container: Lease<Container>) : DbSystem.Handle {
         override val type = InformixDatabaseType()
         private var released = false
-        private val internalDs = container().dataSource()
+        private val internalDs by lazy { container().dataSource() }
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier? {
             internalDs.work(connectTimeout = Duration.ofMinutes(1)) {

@@ -22,19 +22,19 @@ import migratedb.v1.integrationtest.util.dsl.DatabaseSpec
 import migratedb.v1.integrationtest.util.dsl.Dsl
 import java.sql.Connection
 
-class GivenStepImpl(private val databaseHandle: DbSystem.Handle) : AutoCloseable, Dsl.GivenStep {
+class GivenStepImpl(private val databaseHandle: () -> DbSystem.Handle) : AutoCloseable, Dsl.GivenStep {
     private var database: DatabaseImpl? = null
     private var databaseContext: DatabaseContext? = null
     private val extensions = mutableListOf<(DatabaseContext) -> Unit>()
 
     override fun database(block: (DatabaseSpec).() -> Unit) {
         check(database == null) { "Only one database spec, please" }
-        database = DatabaseImpl(databaseHandle).also(block)
+        database = DatabaseImpl(databaseHandle()).also(block)
     }
 
     override fun independentDbMutation(): IndependentDatabaseMutation {
         val delegate = lazy {
-            databaseHandle.nextMutation(databaseContext!!.schemaName)
+            databaseHandle().nextMutation(databaseContext!!.schemaName)
         }
         return object : IndependentDatabaseMutation {
             override fun isApplied(connection: Connection) = delegate.value.isApplied(connection)
@@ -57,7 +57,7 @@ class GivenStepImpl(private val databaseHandle: DbSystem.Handle) : AutoCloseable
         "Forgot to call database { } within given { }!"
     }.materialize().let { materializeResult ->
         DatabaseContext(
-            databaseHandle = databaseHandle,
+            databaseHandle = databaseHandle(),
             database = materializeResult.database,
             adminDataSource = materializeResult.adminDataSource,
             schemaName = materializeResult.schemaName,

@@ -7,9 +7,9 @@ import org.junit.platform.engine.support.hierarchical.ParallelExecutionConfigura
 class ParallelExecutionConfig : ParallelExecutionConfigurationStrategy {
     override fun createConfiguration(configurationParameters: ConfigurationParameters): ParallelExecutionConfiguration {
         return object : ParallelExecutionConfiguration {
-            override fun getParallelism() = 50
-            override fun getMinimumRunnable() = 0
-            override fun getCorePoolSize() = 50
+            override fun getParallelism() = 500
+            override fun getMinimumRunnable() = 1
+            override fun getCorePoolSize() = 1
             override fun getMaxPoolSize() = 500
             override fun getKeepAliveSeconds() = 5
         }

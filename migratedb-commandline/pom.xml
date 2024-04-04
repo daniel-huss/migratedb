@@ -19,13 +19,13 @@
     <parent>
         <groupId>de.unentscheidbar</groupId>
         <artifactId>migratedb</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>migratedb-commandline</artifactId>
     <name>MigrateDB - CLI</name>
 
     <properties>
-        <version.flyway>8.5.12</version.flyway>
+        <version.flyway>8.5.13</version.flyway>
     </properties>
 
     <dependencies>

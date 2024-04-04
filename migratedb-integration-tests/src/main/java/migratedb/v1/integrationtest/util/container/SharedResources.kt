@@ -27,7 +27,7 @@ class SharedResources private constructor() : ExtensionContext.Store.CloseableRe
             return getOrComputeIfAbsent(SharedResources::class.java, { SharedResources() }, SharedResources::class.java)
         }
 
-        private const val MAX_CONTAINERS = 20
+        private val MAX_CONTAINERS = System.getenv("MAX_CONTAINERS")?.toIntOrNull() ?: 20
     }
 
     private val lock = object : Any() {}
@@ -49,7 +49,7 @@ class SharedResources private constructor() : ExtensionContext.Store.CloseableRe
             checkNotClosed()
             val logConsumer = getOrCreateLogConsumer(alias)
             return containerPool.lease(alias) {
-                // This code block might be called from a different thread and must not acquire any lock, otherwise
+                // This code block might be called from a different thread and must not acquire our lock, otherwise
                 // deadlocks will occur, that's why the log consumer is built eagerly from the synchronized block.
                 setup().also {
                     it.withNetworkAliases(alias)

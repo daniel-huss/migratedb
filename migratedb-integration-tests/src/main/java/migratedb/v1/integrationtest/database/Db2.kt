@@ -37,7 +37,7 @@ import java.time.Duration
 import javax.sql.DataSource
 
 enum class Db2(image: String) : DbSystem {
-    V11_5_7_0("ibmcom/db2:11.5.7.0"),
+    V11_5_9_0("icr.io/db2_community/db2:11.5.9.0"),
     ;
 
     // Relevant idiosyncrasies:
@@ -50,9 +50,9 @@ enum class Db2(image: String) : DbSystem {
 
     companion object {
         private const val password = "testtest1234"
-        const val adminUser = "db2inst1"
-        const val port = 50000
-        const val defaultDatabase = "testdb"
+        private const val adminUser = "db2inst1"
+        private const val port = 50000
+        private const val defaultDatabase = "testdb"
     }
 
     inner class Container(image: DockerImageName) : GenericContainer<Container>(image) {
@@ -78,6 +78,14 @@ enum class Db2(image: String) : DbSystem {
             withEnv("LICENSE", "accept")
             withEnv("ARCHIVE_LOGS", "false")
             withEnv("AUTOCONFIG", "false")
+            withEnv("BLU", "false")
+            withEnv("ENABLE_ORACLE_COMPATIBILITY", "false")
+            withEnv("UPDATEAVAIL", "NO")
+            withEnv("TO_CREATE_SAMPLEDB", "false")
+            withEnv("REPODB", "false")
+            withEnv("IS_OSXFS", "false")
+            withEnv("PERSISTENT_HOME", "true")
+            withEnv("HADR_ENABLED", "false")
 
             withCreateContainerCmdModifier {
                 it.hostConfig!!.apply {
@@ -87,7 +95,7 @@ enum class Db2(image: String) : DbSystem {
 
             withExposedPorts(port)
             waitingFor(Wait.forListeningPort())
-            withStartupTimeout(Duration.ofMinutes(5)) // DB2 startup is very slow
+            withStartupTimeout(Duration.ofMinutes(10)) // DB2 startup is very, very, very slow
         }
     }
 

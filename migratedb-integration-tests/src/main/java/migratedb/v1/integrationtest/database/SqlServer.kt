@@ -17,6 +17,7 @@
 package migratedb.v1.integrationtest.database
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource
+import migratedb.v1.core.internal.database.sqlserver.SQLServerDatabaseType
 import migratedb.v1.integrationtest.database.mutation.BasicCreateTableMutation
 import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.v1.integrationtest.util.base.Names
@@ -25,7 +26,6 @@ import migratedb.v1.integrationtest.util.base.SafeIdentifier.Companion.asSafeIde
 import migratedb.v1.integrationtest.util.base.work
 import migratedb.v1.integrationtest.util.container.Lease
 import migratedb.v1.integrationtest.util.container.SharedResources
-import migratedb.v1.core.internal.database.sqlserver.SQLServerDatabaseType
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
@@ -77,7 +77,7 @@ enum class SqlServer(image: String) : DbSystem {
     private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
         override val type = SQLServerDatabaseType()
 
-        private val internalDs = container().dataSource(adminUser, null)
+        private val internalDs by lazy { container().dataSource(adminUser, null) }
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             return internalDs.work {

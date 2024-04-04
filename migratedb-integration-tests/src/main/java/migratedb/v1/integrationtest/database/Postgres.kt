@@ -90,7 +90,7 @@ enum class Postgres(image: String) : DbSystem {
 
     private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
         override val type: DatabaseType = PostgreSQLDatabaseType()
-        private val internalDs = container().dataSource()
+        private val internalDs by lazy { container().dataSource() }
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             internalDs.work {

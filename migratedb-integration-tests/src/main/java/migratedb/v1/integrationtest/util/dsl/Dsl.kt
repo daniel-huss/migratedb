@@ -17,15 +17,6 @@
 package migratedb.v1.integrationtest.util.dsl
 
 import io.kotest.matchers.booleans.shouldBeTrue
-import migratedb.v1.integrationtest.database.DbSystem
-import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
-import migratedb.v1.integrationtest.util.base.SafeIdentifier
-import migratedb.v1.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
-import migratedb.v1.integrationtest.util.container.SharedResources
-import migratedb.v1.integrationtest.util.dsl.internal.DatabaseContext
-import migratedb.v1.integrationtest.util.dsl.internal.GivenStepImpl
-import migratedb.v1.integrationtest.util.dsl.internal.ThenStepImpl
-import migratedb.v1.integrationtest.util.dsl.internal.WhenStepImpl
 import migratedb.v1.core.api.Checksum
 import migratedb.v1.core.api.MigrationInfo
 import migratedb.v1.core.api.MigrationInfoService
@@ -35,6 +26,15 @@ import migratedb.v1.core.api.output.BaselineResult
 import migratedb.v1.core.api.output.LiberateResult
 import migratedb.v1.core.api.output.MigrateResult
 import migratedb.v1.core.api.output.RepairResult
+import migratedb.v1.integrationtest.database.DbSystem
+import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
+import migratedb.v1.integrationtest.util.base.SafeIdentifier
+import migratedb.v1.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
+import migratedb.v1.integrationtest.util.container.SharedResources
+import migratedb.v1.integrationtest.util.dsl.internal.DatabaseContext
+import migratedb.v1.integrationtest.util.dsl.internal.GivenStepImpl
+import migratedb.v1.integrationtest.util.dsl.internal.ThenStepImpl
+import migratedb.v1.integrationtest.util.dsl.internal.WhenStepImpl
 import org.springframework.jdbc.core.JdbcTemplate
 
 class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable {
@@ -53,12 +53,12 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
         fun MigrationInfo.migrationName() = when {
             isRepeatable -> "R__" + description.spaceToUnderscore()
             else -> (if (type.isBaselineMigration) "B" else "V") +
-                    version?.dotToUnderscore() + "__" + description.spaceToUnderscore()
+                version?.dotToUnderscore() + "__" + description.spaceToUnderscore()
         }
 
         /**
-         * Returns a checksum that depends on the string value and the [delta] value. If, and only if, [delta] is zero, the
-         * checksum will be equal to `Checksum.builder().addString(this).build()`.
+         * Returns a checksum that depends on the string value and the [delta] value. If, and only if, [delta] is zero,
+         * the checksum will be equal to `Checksum.builder().addString(this).build()`.
          */
         fun String.checksum(delta: Int = 0): Checksum = Checksum.builder()
             .addString(this).apply {
@@ -74,15 +74,14 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
         /**
          * Applies [toMigrationName] to every element in a list of strings, returning `null` if this list is `null`.
          */
-        @JvmName("addDescriptionIfMissingOrNull")
         fun List<String>?.toMigrationNames() = this?.map { it.toMigrationName() }
     }
 
-    private val databaseHandle = dbSystem.get(sharedResources)
-    private val givenStep = GivenStepImpl(databaseHandle)
+    private val databaseHandle = lazy { dbSystem.get(sharedResources) }
+    private val givenStep = GivenStepImpl(databaseHandle::value)
 
     override fun close() {
-        databaseHandle.use {
+        databaseHandle.value.use {
             givenStep.use { }
         }
     }
@@ -95,7 +94,7 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
     /**
      * Normalizes the case of a table name.
      */
-    fun normalize(s: CharSequence): String = databaseHandle.normalizeCase(s)
+    fun normalize(s: CharSequence): String = databaseHandle.value.normalizeCase(s)
 
     fun <G : Any> given(block: (GivenStep).() -> G): GivenStepResult<G> {
         val g = givenStep.block()

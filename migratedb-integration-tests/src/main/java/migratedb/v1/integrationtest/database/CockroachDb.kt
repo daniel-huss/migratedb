@@ -107,7 +107,7 @@ enum class CockroachDb(image: String) : DbSystem {
     private inner class Handle(private val container: Lease<Container>) :
         DbSystem.Handle {
         override val type: DatabaseType = CockroachDBDatabaseType()
-        private val internalDs = container().dataSource()
+        private val internalDs by lazy { container().dataSource() }
         private var closed = false
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {

@@ -100,7 +100,7 @@ enum class Sqlite : DbSystem {
 
     private inner class Handle : DbSystem.Handle {
         override val type: DatabaseType get() = Companion.databaseType
-        private val dataDir = newTempDir("sqlite-$name", deleteOnExit = false)
+        private val dataDir by lazy { newTempDir("sqlite-$name", deleteOnExit = false) }
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             // A db exists as soon as we connect to it

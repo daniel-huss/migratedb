@@ -16,6 +16,7 @@
 
 package migratedb.v1.integrationtest.database
 
+import migratedb.v1.core.internal.database.mysql.mariadb.MariaDBDatabaseType
 import migratedb.v1.integrationtest.database.mutation.BasicCreateTableMutation
 import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.v1.integrationtest.util.base.Names
@@ -24,7 +25,6 @@ import migratedb.v1.integrationtest.util.base.SafeIdentifier.Companion.asSafeIde
 import migratedb.v1.integrationtest.util.base.work
 import migratedb.v1.integrationtest.util.container.Lease
 import migratedb.v1.integrationtest.util.container.SharedResources
-import migratedb.v1.core.internal.database.mysql.mariadb.MariaDBDatabaseType
 import org.mariadb.jdbc.MariaDbDataSource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
@@ -91,7 +91,7 @@ enum class MariaDb(image: String) : DbSystem {
     private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
         override val type = MariaDBDatabaseType()
 
-        private val internalDs = container().dataSource(adminUser, defaultDatabase.toString())
+        private val internalDs by lazy { container().dataSource(adminUser, defaultDatabase.toString()) }
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
             internalDs.work {

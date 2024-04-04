@@ -20,6 +20,7 @@ import migratedb.v1.testing.util.base.Exec.async
 import migratedb.v1.testing.util.base.Exec.tryAll
 import java.time.Duration
 import java.time.Instant
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -30,15 +31,15 @@ import kotlin.concurrent.withLock
 import kotlin.concurrent.write
 
 /**
- * Pools containers for shared use, so the same container can be used by multiple threads, but only up to [size] containers
- * may be running at any point in time. When a container is unused by any thread, it may be closed to make room for
- * other containers. "Using" a container is represented by holding onto a [Lease], which must be closed when
+ * Pools containers for shared use, so the same container can be used by multiple threads, but only up to [size]
+ * containers may be running at any point in time. When a container is unused by any thread, it may be closed to make
+ * room for other containers. "Using" a container is represented by holding onto a [Lease], which must be closed when
  * you're done using the container.
  */
 class ContainerPool(private val size: Int) : AutoCloseable {
 
     init {
-        check(size > 3)
+        check(size > 5)
     }
 
     private class LeaseImpl<T : AutoCloseable>(val slot: Slot<T>) : Lease<T> {
@@ -145,7 +146,7 @@ class ContainerPool(private val size: Int) : AutoCloseable {
     private var closed = false
     private val requestedSlots = AtomicInteger(0)
     private val slotLock = ReentrantReadWriteLock()
-    private val slotsByName = HashMap<String, Slot<*>>()
+    private val slotsByName = ConcurrentHashMap<String, Slot<*>>()
     private val mayHaveFreeSlots = slotLock.writeLock().newCondition()
     private val reaper = Reaper()
 
