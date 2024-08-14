@@ -29,7 +29,7 @@ abstract class AbstractRunWithConfigSpec(private val databaseContext: DatabaseCo
         return names.map {
             SimpleJavaMigration(
                 name = it,
-                code = databaseContext.databaseHandle.nextMutation(databaseContext.schemaName)::apply,
+                code = databaseContext.databaseInstance.nextMutation(databaseContext.schemaName)::apply,
                 checksum = it.checksum()
             )
         }.toTypedArray()
@@ -44,7 +44,7 @@ abstract class AbstractRunWithConfigSpec(private val databaseContext: DatabaseCo
         return block(
             FluentConfiguration(config.classLoader)
                 .configuration(config)
-                .dataSource(databaseContext.databaseHandle.newAdminConnection(databaseContext.namespace))
+                .dataSource(databaseContext.databaseInstance.newAdminConnection(databaseContext.namespace))
         )
     }
 

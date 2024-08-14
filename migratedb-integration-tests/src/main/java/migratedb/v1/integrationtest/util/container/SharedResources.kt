@@ -19,6 +19,8 @@ package migratedb.v1.integrationtest.util.container
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 class SharedResources private constructor() : ExtensionContext.Store.CloseableResource {
 
@@ -27,46 +29,38 @@ class SharedResources private constructor() : ExtensionContext.Store.CloseableRe
             return getOrComputeIfAbsent(SharedResources::class.java, { SharedResources() }, SharedResources::class.java)
         }
 
-        private val MAX_CONTAINERS = System.getenv("MAX_CONTAINERS")?.toIntOrNull() ?: 20
+        val MAX_CONTAINERS = System.getenv("MAX_CONTAINERS")?.toIntOrNull() ?: 5
     }
 
-    private val lock = object : Any() {}
+    private val lock = ReentrantLock()
     private var closed = false
     private val network = Network.newNetwork()
     private val containerPool = ContainerPool(MAX_CONTAINERS)
     private val logConsumersByAlias = LinkedHashMap<String, ToFileLogConsumer>()
 
-
     private fun getOrCreateLogConsumer(alias: String): ToFileLogConsumer {
-        synchronized(lock) {
-            checkNotClosed()
+        lock.withLock {
+            check(!closed)
             return logConsumersByAlias.computeIfAbsent(alias) { ToFileLogConsumer(alias) }
         }
     }
 
     fun <T : GenericContainer<*>> container(alias: String, setup: () -> T): Lease<T> {
-        synchronized(lock) {
-            checkNotClosed()
-            val logConsumer = getOrCreateLogConsumer(alias)
-            return containerPool.lease(alias) {
-                // This code block might be called from a different thread and must not acquire our lock, otherwise
-                // deadlocks will occur, that's why the log consumer is built eagerly from the synchronized block.
-                setup().also {
-                    it.withNetworkAliases(alias)
-                    it.withNetwork(network)
-                    it.withLogConsumer(logConsumer)
-                    it.start()
-                }
+        val logConsumer = getOrCreateLogConsumer(alias)
+        return containerPool.lease(alias) {
+            // This code block might be called from a different thread and must not acquire our lock, otherwise
+            // deadlocks will occur, that's why the log consumer is built eagerly from the synchronized block.
+            setup().also {
+                it.withNetworkAliases(alias)
+                it.withNetwork(network)
+                it.withLogConsumer(logConsumer)
+                it.start()
             }
         }
     }
 
-    private fun checkNotClosed() {
-        if (closed) throw IllegalStateException("Closed")
-    }
-
     override fun close() {
-        synchronized(lock) {
+        lock.withLock {
             closed = true
             network.use {
                 containerPool.use {}

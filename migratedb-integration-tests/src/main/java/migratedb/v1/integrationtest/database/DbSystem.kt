@@ -32,7 +32,7 @@ import javax.sql.DataSource
  * Adapter for the various supported database systems.
  */
 interface DbSystem {
-    interface Handle : AutoCloseable {
+    interface Instance : AutoCloseable {
         val type: DatabaseType
 
         /**
@@ -72,13 +72,12 @@ interface DbSystem {
         fun normalizeCase(s: SafeIdentifier): SafeIdentifier = normalizeCase(s.toString()).asSafeIdentifier()
     }
 
-    fun get(sharedResources: SharedResources): Handle
+    fun get(sharedResources: SharedResources): Instance
 
 
     class All : ArgumentsProvider {
         override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(
             CockroachDb.entries,
-            Db2.entries,
             Derby.entries,
             Firebird.entries,
             H2.entries,

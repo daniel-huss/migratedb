@@ -32,6 +32,7 @@ import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
 enum class MySql(image: String) : DbSystem {
+    V9_0_1("mysql:9.0.1"),
     V8_0("mysql:8.0"),
     V5_7("mysql:5.7"),
     ;
@@ -65,9 +66,6 @@ enum class MySql(image: String) : DbSystem {
         }
 
         init {
-            withCreateContainerCmdModifier {
-                it.hostConfig!!.withMemory(300_000_000)
-            }
             withEnv("MYSQL_USER", regularUser)
             withEnv("MYSQL_PASSWORD", password)
             withEnv("MYSQL_ROOT_PASSWORD", password)
@@ -77,11 +75,11 @@ enum class MySql(image: String) : DbSystem {
         }
     }
 
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        return Handle(sharedResources.container(containerAlias) { Container(image) })
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
+        return Instance(sharedResources.container(containerAlias) { Container(image) })
     }
 
-    private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
+    private class Instance(private val container: Lease<Container>) : DbSystem.Instance {
         override val type = MySQLDatabaseType()
 
         private val internalDs by lazy { container().dataSource(adminUser, defaultDatabase.toString()) }

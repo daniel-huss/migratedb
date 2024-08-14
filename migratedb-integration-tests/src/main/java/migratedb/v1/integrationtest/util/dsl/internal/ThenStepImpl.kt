@@ -27,7 +27,7 @@ class ThenStepImpl<G : Any>(given: G, databaseContext: DatabaseContext) : Dsl.Th
     AbstractAfterGiven<G>(given, databaseContext) {
     override fun withConnection(block: (JdbcTemplate) -> Unit) {
         databaseContext.database.supportsChangingCurrentSchema()
-        databaseContext.databaseHandle
+        databaseContext.databaseInstance
             .newAdminConnection(databaseContext.namespace)
             .work(schema = databaseContext.schemaName, action = block)
     }

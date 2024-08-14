@@ -31,8 +31,8 @@ import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
 enum class Firebird(image: String) : DbSystem {
-    V3_0_9("jacobalberty/firebird:v3.0.9"),
     V4_0_1("jacobalberty/firebird:v4.0.1"),
+    V3_0_9("jacobalberty/firebird:v3.0.9"),
     ;
 
     // Relevant idiosyncrasies:
@@ -93,9 +93,6 @@ enum class Firebird(image: String) : DbSystem {
         }
 
         init {
-            withCreateContainerCmdModifier {
-                it.hostConfig!!.withMemory(300_000_000)
-            }
             withEnv("FIREBIRD_DATABASE", defaultDatabase)
             withEnv("FIREBIRD_USER", defaultUser)
             withEnv("FIREBIRD_PASSWORD", password)
@@ -104,11 +101,11 @@ enum class Firebird(image: String) : DbSystem {
         }
     }
 
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        return Handle(sharedResources.container(containerAlias) { Container(image) })
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
+        return Instance(sharedResources.container(containerAlias) { Container(image) })
     }
 
-    private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
+    private class Instance(private val container: Lease<Container>) : DbSystem.Instance {
         override val type = FirebirdDatabaseType()
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier? {

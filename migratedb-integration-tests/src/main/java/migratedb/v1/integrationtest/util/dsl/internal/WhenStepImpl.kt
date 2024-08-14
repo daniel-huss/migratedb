@@ -57,7 +57,7 @@ class WhenStepImpl<G : Any>(given: G, databaseContext: DatabaseContext) : Dsl.Wh
     }
 
     override fun arbitraryMutation(): IndependentDatabaseMutation {
-        return databaseContext.databaseHandle.nextMutation(databaseContext.schemaName)
+        return databaseContext.databaseInstance.nextMutation(databaseContext.schemaName)
     }
 
     override fun <T> justRun(block: JustRun.() -> T): T {

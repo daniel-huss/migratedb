@@ -32,6 +32,7 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource
 import javax.sql.DataSource
 
 enum class H2 : DbSystem {
+    V2_3_230,
     V2_2_224,
     V2_1_210,
     V1_4_200,
@@ -63,11 +64,11 @@ enum class H2 : DbSystem {
 
     override fun toString() = "H2 ${name.replace('_', '.')}"
 
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        return Handle()
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
+        return Instance()
     }
 
-    private inner class Handle : DbSystem.Handle {
+    private inner class Instance : DbSystem.Instance {
         override val type: DatabaseType get() = Companion.databaseType
         private val databaseName = Names.nextFile()
 

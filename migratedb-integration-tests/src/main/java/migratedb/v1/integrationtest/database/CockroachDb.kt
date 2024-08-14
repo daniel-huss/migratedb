@@ -34,7 +34,8 @@ import java.util.concurrent.Semaphore
 import javax.sql.DataSource
 
 enum class CockroachDb(image: String) : DbSystem {
-    V23_2_0("cockroachdb/cockroach:v23.2.0"),
+    V24_1_3("cockroachdb/cockroach:v24.1.3"),
+    V23_2_0("cockroachdb/cockroach:v23.2.9"),
     V23_1_5("cockroachdb/cockroach:v23.1.14"),
     V22_2_11("cockroachdb/cockroach:v22.2.11"),
     V21_2_17("cockroachdb/cockroach:v21.2.17"),
@@ -74,7 +75,6 @@ enum class CockroachDb(image: String) : DbSystem {
         init {
             withCreateContainerCmdModifier {
                 it.withCmd("start", "--insecure", "--join=localhost:${CockroachDb.port}")
-                it.hostConfig!!.withMemory(300_000_000)
             }
             withExposedPorts(CockroachDb.port)
             waitingFor(object : HostPortWaitStrategy() {
@@ -97,15 +97,15 @@ enum class CockroachDb(image: String) : DbSystem {
     // No locking implemented atm, so concurrent execution would lead to serialization errors
     private val permits = Semaphore(1)
 
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
         permits.acquire()
-        return Handle(sharedResources.container(containerAlias) {
+        return Instance(sharedResources.container(containerAlias) {
             Container(image)
         })
     }
 
-    private inner class Handle(private val container: Lease<Container>) :
-        DbSystem.Handle {
+    private inner class Instance(private val container: Lease<Container>) :
+        DbSystem.Instance {
         override val type: DatabaseType = CockroachDBDatabaseType()
         private val internalDs by lazy { container().dataSource() }
         private var closed = false

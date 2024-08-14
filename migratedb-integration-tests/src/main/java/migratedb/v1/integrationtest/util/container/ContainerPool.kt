@@ -15,15 +15,14 @@
  */
 package migratedb.v1.integrationtest.util.container
 
-import migratedb.v1.testing.util.base.Exec
-import migratedb.v1.testing.util.base.Exec.async
-import migratedb.v1.testing.util.base.Exec.tryAll
+import com.google.common.collect.ConcurrentHashMultiset
+import migratedb.v1.testing.util.base.async
+import migratedb.v1.testing.util.base.daemonThreadFactory
+import migratedb.v1.testing.util.base.tryAll
 import java.time.Duration
 import java.time.Instant
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.locks.ReentrantLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
@@ -39,11 +38,63 @@ import kotlin.concurrent.write
 class ContainerPool(private val size: Int) : AutoCloseable {
 
     init {
-        check(size > 5)
+        check(size > 0)
     }
 
-    private class LeaseImpl<T : AutoCloseable>(val slot: Slot<T>) : Lease<T> {
+    private var debug = true
+    private var closed = false
+    private val requestedSlots = ConcurrentHashMultiset.create<String>()
+    private val slotLock = ReentrantReadWriteLock(true)
+    private val slotsByName = HashMap<String, Slot<*>>()
+    private val slotHasBeenReaped = slotLock.writeLock().newCondition()
+    private val reaper = Reaper()
+
+    private fun debug(msg: () -> String) {
+        if (debug) {
+            System.err.println("[${Thread.currentThread().name}] ${msg()}")
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : AutoCloseable> lease(name: String, containerInitializer: () -> T): Lease<T> {
+        requestedSlots.add(name)
+        try {
+            while (true) {
+                slotLock.read {
+                    check(!closed)
+                    slotsByName[name]?.let { return it.lease() as Lease<T> }
+                    slotLock.write {
+                        check(!closed) // re-check needed after upgrading lock
+                        slotsByName[name]?.let { return it.lease() as Lease<T> }
+                        if (slotsByName.size < size) {
+                            val newSlot = Slot(name, containerInitializer)
+                            slotsByName[name] = newSlot
+                            return newSlot.lease()
+                        } else {
+                            slotHasBeenReaped.await(1, TimeUnit.SECONDS)
+                        }
+                    }
+                }
+            }
+        } finally {
+            requestedSlots.remove(name)
+        }
+    }
+
+    override fun close() {
+        slotLock.write {
+            if (closed) return
+            closed = true
+            reaper.use {
+                tryAll(slotsByName.values.map { fun() { it.close() } })
+                slotsByName.clear()
+            }
+        }
+    }
+
+    private class LeaseFromSlot<T : AutoCloseable>(val slot: Slot<T>) : Lease<T> {
         private var closed = false
+
         override fun close() = synchronized(this) {
             if (closed) return
             closed = true
@@ -56,7 +107,10 @@ class ContainerPool(private val size: Int) : AutoCloseable {
         }
     }
 
-    private inner class Slot<T : AutoCloseable>(containerInitializer: () -> T) : AutoCloseable {
+    private inner class Slot<T : AutoCloseable>(
+        val name: String,
+        containerInitializer: () -> T
+    ) : AutoCloseable {
         // @GuardedBy("leaseLock")
         private var leases: Int = 0
         private val futureContainer = async<AutoCloseable>(waitOnClose = true, containerInitializer)
@@ -67,7 +121,7 @@ class ContainerPool(private val size: Int) : AutoCloseable {
         val container
             get() = futureContainer.get() as T
 
-        val idleSince: Duration?
+        val idleTime: Duration?
             get() = slotLock.read {
                 when (leases) {
                     0 -> idleStart?.let { Duration.between(it, Instant.now()) }
@@ -75,23 +129,27 @@ class ContainerPool(private val size: Int) : AutoCloseable {
                 }
             }
 
-        fun lease(): LeaseImpl<T> = slotLock.write {
+        fun lease(): LeaseFromSlot<T> = slotLock.write {
+            debug { "Leasing $name" }
             check(!closed)
             idleStart = Instant.now()
             leases++
-            LeaseImpl(this)
+            LeaseFromSlot(this)
         }
 
         fun unlease() = slotLock.write {
+            debug { "Unleasing $name" }
             idleStart = Instant.now()
             leases = (leases - 1).coerceAtLeast(0)
             if (leases == 0) {
-                mayHaveFreeSlots.signalAll()
+                debug { "Slot $name now has zero leases" }
+                reaper.gazeUpon(this)
             }
         }
 
         override fun close() = slotLock.write {
             if (!closed) {
+                debug { "Closing slot $name" }
                 futureContainer.close()
                 closed = true
             }
@@ -101,7 +159,9 @@ class ContainerPool(private val size: Int) : AutoCloseable {
     private inner class Reaper : AutoCloseable {
         private val lock = ReentrantLock()
         private val timeToWakeUp = lock.newCondition()
-        private val executor = Executors.newSingleThreadExecutor(Exec.threadFactory).also {
+        private val toCheck = HashSet<Slot<*>>()
+        private var scanSlots = true
+        private val executor = Executors.newSingleThreadExecutor(daemonThreadFactory).also {
             it.submit(this::reaperCycle)
         }
 
@@ -110,82 +170,61 @@ class ContainerPool(private val size: Int) : AutoCloseable {
                 lock.withLock {
                     timeToWakeUp.await(5, TimeUnit.SECONDS)
                 }
+                debug { "Requested slots: $requestedSlots" }
                 reapIdleSlots()
             }
         }
 
         private fun reapIdleSlots() {
-            slotLock.write {
-                if (slotsByName.size < size) return
-                val slotsToKill = slotsByName.asSequence()
-                    .mapNotNull { (name, slot) -> slot.idleSince?.let { it to name } }
-                    .filter { (idleTime, _) -> idleTime > Duration.ofSeconds(1) }
-                    .sortedByDescending { (idleTime, _) -> idleTime }
-                    .take(requestedSlots.get().coerceAtLeast(1))
-                    .map { (_, name) -> name }
-                    .toList()
+            var reapCount = 0
 
-                slotsToKill.forEach {
-                    slotsByName.remove(it)?.close()
-                    mayHaveFreeSlots.signal()
+            fun reap(slot: Slot<*>) {
+                debug { "Reaping slot ${slot.name} which has been idle for ${slot.idleTime}" }
+                slotsByName.remove(slot.name)
+                slot.close()
+                slotHasBeenReaped.signal()
+                reapCount++
+            }
+
+            slotLock.write {
+                if (slotsByName.size < size) {
+                    debug { "Pool is not at capacity, nothing to reap" }
+                    return
                 }
+
+                if (scanSlots) {
+                    slotsByName.values.asSequence()
+                        .mapNotNull { slot -> slot.idleTime?.let { slot to it } }
+                        .sortedByDescending { (_, idleTime) -> idleTime }
+                        .take(requestedSlots.elementSet().size.coerceAtLeast(1))
+                        .toList() // -> the map must not be modified while iterating over it
+                        .forEach { (slot, _) ->
+                            reap(slot)
+                        }
+                } else {
+                    for (slot in toCheck) {
+                        slot.idleTime?.takeIf { it.toSeconds() >= 1 }?.let {
+                            reap(slot)
+                        }
+                    }
+                    toCheck.clear()
+                    scanSlots = true // Will be set to false by gazeUpon() if called before the next wake-up
+                }
+
+                debug { "Waking up the reaper resulted in $reapCount slots being reaped" }
             }
         }
 
-        fun wakeUp() {
+        fun gazeUpon(slot: Slot<*>) {
             lock.withLock {
-                timeToWakeUp.signalAll()
+                toCheck.add(slot)
+                scanSlots = false
+                timeToWakeUp.signal()
             }
         }
 
         override fun close() {
             executor.shutdownNow()
-        }
-    }
-
-    private var closed = false
-    private val requestedSlots = AtomicInteger(0)
-    private val slotLock = ReentrantReadWriteLock()
-    private val slotsByName = ConcurrentHashMap<String, Slot<*>>()
-    private val mayHaveFreeSlots = slotLock.writeLock().newCondition()
-    private val reaper = Reaper()
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T : AutoCloseable> lease(name: String, containerInitializer: () -> T): Lease<T> {
-        requestedSlots.incrementAndGet()
-        try {
-            while (true) {
-                slotLock.read {
-                    check(!closed)
-                    slotsByName[name]?.let { return it.lease() as Lease<T> }
-                    reaper.wakeUp()
-                    slotLock.write {
-                        check(!closed) // re-check needed after upgrading lock
-                        slotsByName[name]?.let { return it.lease() as Lease<T> }
-                        if (slotsByName.size < size) {
-                            val newSlot = Slot(containerInitializer)
-                            slotsByName[name] = newSlot
-                            return newSlot.lease()
-                        } else {
-                            mayHaveFreeSlots.await(1, TimeUnit.SECONDS)
-                        }
-                    }
-                }
-            }
-        } finally {
-            requestedSlots.decrementAndGet()
-        }
-    }
-
-
-    override fun close() {
-        slotLock.write {
-            if (closed) return
-            closed = true
-            reaper.use {
-                tryAll(slotsByName.values.map { { it.close() } })
-                mayHaveFreeSlots.signalAll()
-            }
         }
     }
 }

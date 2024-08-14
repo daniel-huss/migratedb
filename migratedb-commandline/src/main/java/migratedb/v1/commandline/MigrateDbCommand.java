@@ -824,8 +824,8 @@ class MigrateDbCommand {
     }
 
     private static DownloadDriversCommand.DriverDefinitions parseDriverDefinitions(Path file) {
-        try (var stream = Files.newInputStream(file)) {
-            return new Yaml().loadAs(new BufferedInputStream(stream), DownloadDriversCommand.DriverDefinitions.class);
+        try (var stream = new BufferedInputStream(Files.newInputStream(file))) {
+            return new Yaml().loadAs(stream, DownloadDriversCommand.DriverDefinitions.class);
         } catch (IOException e) {
             throw new MigrateDbException("Cannot parse driver definitions from '" + file + "'");
         }

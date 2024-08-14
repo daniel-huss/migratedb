@@ -32,17 +32,17 @@ import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
 enum class MariaDb(image: String) : DbSystem {
-    V10_2("mariadb:10.2"),
-    V10_3("mariadb:10.3"),
-    V10_4("mariadb:10.4"),
-    V10_5("mariadb:10.5"),
-    V10_6("mariadb:10.6"),
-    V10_7("mariadb:10.7"),
-    V10_8("mariadb:10.8"),
-    V10_9("mariadb:10.9"),
-    V10_10("mariadb:10.10"),
+    V11_4_2("mariadb:11.4.2"),
     V10_11("mariadb:10.11"),
-    V11_0("mariadb:11.0"),
+    V10_10("mariadb:10.10"),
+    V10_9("mariadb:10.9"),
+    V10_8("mariadb:10.8"),
+    V10_7("mariadb:10.7"),
+    V10_6("mariadb:10.6"),
+    V10_5("mariadb:10.5"),
+    V10_4("mariadb:10.4"),
+    V10_3("mariadb:10.3"),
+    V10_2("mariadb:10.2"),
     ;
 
     // Relevant idiosyncrasies:
@@ -72,9 +72,6 @@ enum class MariaDb(image: String) : DbSystem {
         }
 
         init {
-            withCreateContainerCmdModifier {
-                it.hostConfig!!.withMemory(300_000_000)
-            }
             withEnv("MARIADB_USER", regularUser)
             withEnv("MARIADB_PASSWORD", password)
             withEnv("MARIADB_ROOT_PASSWORD", password)
@@ -84,11 +81,11 @@ enum class MariaDb(image: String) : DbSystem {
         }
     }
 
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        return Handle(sharedResources.container(containerAlias) { Container(image) })
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
+        return Instance(sharedResources.container(containerAlias) { Container(image) })
     }
 
-    private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
+    private class Instance(private val container: Lease<Container>) : DbSystem.Instance {
         override val type = MariaDBDatabaseType()
 
         private val internalDs by lazy { container().dataSource(adminUser, defaultDatabase.toString()) }

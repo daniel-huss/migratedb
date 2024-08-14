@@ -29,8 +29,7 @@ import kotlin.io.path.outputStream
  * Places container logs in `target/container-logs/fileName.txt`.
  */
 class ToFileLogConsumer constructor(fileName: String) : Consumer<OutputFrame>, AutoCloseable {
-
-    private val lock = Any()
+    private val lock = object : Any() {}
     private val pathWithoutExtension = Paths.get("target", "container-logs", *fileName.toSafeFileName())
 
     private val stream = lazy(lock) {

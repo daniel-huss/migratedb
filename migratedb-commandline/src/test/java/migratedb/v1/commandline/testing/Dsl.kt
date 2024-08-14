@@ -19,7 +19,7 @@ package migratedb.v1.commandline.testing
 import io.kotest.assertions.fail
 import migratedb.v1.commandline.DownloadDriversCommand
 import migratedb.v1.dependency_downloader.MavenCentralToLocal
-import migratedb.v1.testing.util.base.Exec
+import migratedb.v1.testing.util.base.async
 import migratedb.v1.testing.util.io.buildDirectory
 import migratedb.v1.testing.util.io.newTempDir
 import net.java.truevfs.access.TArchiveDetector.NULL
@@ -56,22 +56,23 @@ class Dsl : AutoCloseable {
     private val executable = installationDir.resolve("migratedb")
 
     fun exec(vararg args: String, stdin: (OutputStream) -> Unit = {}) = exec(args.toList(), stdin)
+
     fun exec(args: List<String>, stdin: (OutputStream) -> Unit = {}): CliOutput {
         executable.setExecutable(true)
         val process = ProcessBuilder(listOf(executable.absolutePath) + args)
             .directory(installationDir)
             .apply {
                 environment()["JAVA_ARGS"] = "-javaagent:${jacocoAgentJar.absolutePath}=" +
-                        "destfile=${jacocoDestFile.absolutePath}"
+                    "destfile=${jacocoDestFile.absolutePath}"
             }.start()
         try {
-            Exec.async {
+            async {
                 stdin(process.outputStream)
                 process.outputStream.flush()
                 process.outputStream.close()
             }
-            val stdErr = Exec.async { InputStreamReader(process.errorStream, Charsets.UTF_8).use { it.readLines() } }
-            val stdOut = Exec.async { InputStreamReader(process.inputStream, Charsets.UTF_8).use { it.readLines() } }
+            val stdErr = async { InputStreamReader(process.errorStream, Charsets.UTF_8).use { it.readLines() } }
+            val stdOut = async { InputStreamReader(process.inputStream, Charsets.UTF_8).use { it.readLines() } }
             if (!process.waitFor(5, TimeUnit.MINUTES)) {
                 fail("$process seems to be frozen")
             }

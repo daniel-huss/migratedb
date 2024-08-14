@@ -27,6 +27,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 @ExtendWith(IntegrationTest.Extension::class)
 @Timeout(60, unit = TimeUnit.MINUTES)
@@ -34,17 +36,21 @@ abstract class IntegrationTest : AbstractTest() {
 
     class Extension : BeforeAllCallback {
         companion object {
-            private val lock = Any()
-            private lateinit var sharedResources: SharedResources
-            fun resources() = synchronized(lock) { sharedResources }
+            private val namespace = Namespace.create(Extension::class.java)
+            private val lock = ReentrantLock()
+            private var sharedResources: SharedResources? = null
+
+            fun sharedResources() = lock.withLock {
+                sharedResources ?: throw IllegalStateException("Not initialized - beforeAll hasn't been invoked")
+            }
         }
 
-        private val namespace = Namespace.create(Extension::class.java)
-
-        override fun beforeAll(context: ExtensionContext) = synchronized(lock) {
-            sharedResources = context.root.getStore(namespace).resources()
+        override fun beforeAll(context: ExtensionContext) = lock.withLock {
+            if (sharedResources == null) {
+                sharedResources = context.root.getStore(namespace).resources()
+            }
         }
     }
 
-    fun withDsl(dbSystem: DbSystem, block: (Dsl).() -> (Unit)) = Dsl(dbSystem, Extension.resources()).use(block)
+    fun withDsl(dbSystem: DbSystem, block: (Dsl).() -> (Unit)) = Dsl(dbSystem, Extension.sharedResources()).use(block)
 }

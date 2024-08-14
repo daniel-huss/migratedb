@@ -39,7 +39,7 @@ class RunMigrateImpl(private val databaseContext: DatabaseContext) : AbstractRun
     }
 
     override fun usingCode(name: String) = usingCode(name) {
-        databaseContext.databaseHandle.nextMutation(databaseContext.schemaName).apply(it)
+        databaseContext.databaseInstance.nextMutation(databaseContext.schemaName).apply(it)
     }
 
     fun execute(): MigrateResult = execute { config ->

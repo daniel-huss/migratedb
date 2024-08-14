@@ -35,24 +35,25 @@ import javax.sql.DataSource
 import kotlin.io.path.deleteIfExists
 
 enum class Sqlite : DbSystem {
-    V3_8_11_2,
-    V3_14_2_1,
-    V3_15_1,
-    V3_16_1,
-    V3_18_0,
-    V3_19_3,
-    V3_20_1,
-    V3_21_0_1,
-    V3_23_1,
-    V3_25_2,
-    V3_27_2_1,
-    V3_28_0,
-    V3_30_1,
-    V3_31_1,
-    V3_32_3_3,
-    V3_34_0,
-    V3_35_0_1,
+    V3_46_0_1,
     V3_36_0_3,
+    V3_35_0_1,
+    V3_34_0,
+    V3_32_3_3,
+    V3_31_1,
+    V3_30_1,
+    V3_28_0,
+    V3_27_2_1,
+    V3_25_2,
+    V3_23_1,
+    V3_21_0_1,
+    V3_20_1,
+    V3_19_3,
+    V3_18_0,
+    V3_16_1,
+    V3_15_1,
+    V3_14_2_1,
+    V3_8_11_2,
     ;
 
     // Relevant idiosyncrasies:
@@ -94,11 +95,11 @@ enum class Sqlite : DbSystem {
 
     override fun toString() = "SQLite ${name.replace('_', '.')}"
 
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        return Handle()
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
+        return Instance()
     }
 
-    private inner class Handle : DbSystem.Handle {
+    private inner class Instance : DbSystem.Instance {
         override val type: DatabaseType get() = Companion.databaseType
         private val dataDir by lazy { newTempDir("sqlite-$name", deleteOnExit = false) }
 

@@ -30,17 +30,19 @@ import org.postgresql.ds.PGSimpleDataSource
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
+import java.time.Duration
 import javax.sql.DataSource
 
 enum class Postgres(image: String) : DbSystem {
-    V9_6("postgres:9.6-alpine"),
-    V10("postgres:10-alpine"),
-    V11("postgres:11-alpine"),
-    V12("postgres:12-alpine"),
-    V13("postgres:13-alpine"),
-    V14("postgres:14-alpine"),
-    V15("postgres:15-alpine"),
+    V17("postgres:17beta3-alpine"),
     V16("postgres:16-alpine"),
+    V15("postgres:15-alpine"),
+    V14("postgres:14-alpine"),
+    V13("postgres:13-alpine"),
+    V12("postgres:12-alpine"),
+    V11("postgres:11-alpine"),
+    V10("postgres:10-alpine"),
+    V9_6("postgres:9.6-alpine"),
     ;
 
     // Relevant idiosyncrasies:
@@ -72,23 +74,21 @@ enum class Postgres(image: String) : DbSystem {
         }
 
         init {
-            withCreateContainerCmdModifier {
-                it.hostConfig!!.withMemory(300_000_000)
-            }
             withEnv("POSTGRES_PASSWORD", password)
             withCreateContainerCmdModifier {
                 it.withCmd("-c", "fsync=off", "-c", "log_destination=stderr", "-c", "log_statement=all")
             }
             withExposedPorts(port)
             waitingFor(Wait.forListeningPort())
+                .withStartupTimeout(Duration.ofMinutes(2))
         }
     }
 
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        return Handle(sharedResources.container(containerAlias) { Container(image) })
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
+        return Instance(sharedResources.container(containerAlias) { Container(image) })
     }
 
-    private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
+    private class Instance(private val container: Lease<Container>) : DbSystem.Instance {
         override val type: DatabaseType = PostgreSQLDatabaseType()
         private val internalDs by lazy { container().dataSource() }
 

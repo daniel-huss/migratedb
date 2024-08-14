@@ -22,7 +22,7 @@ import migratedb.v1.integrationtest.util.base.SafeIdentifier
 import javax.sql.DataSource
 
 data class DatabaseContext(
-    val databaseHandle: DbSystem.Handle,
+    val databaseInstance: DbSystem.Instance,
     val adminDataSource: DataSource,
     val database: Database,
     val namespace: SafeIdentifier,

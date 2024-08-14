@@ -32,9 +32,9 @@ import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
 enum class SqlServer(image: String) : DbSystem {
-    V2017_CU28("mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04"),
-    V2019_CU15("mcr.microsoft.com/mssql/server:2019-CU15-ubuntu-20.04"),
     V2022_CU5("mcr.microsoft.com/mssql/server:2022-CU5-ubuntu-20.04"),
+    V2019_CU15("mcr.microsoft.com/mssql/server:2019-CU15-ubuntu-20.04"),
+    V2017_CU28("mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04"),
     ;
 
     // Relevant idiosyncrasies:
@@ -70,11 +70,11 @@ enum class SqlServer(image: String) : DbSystem {
         }
     }
 
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        return Handle(sharedResources.container(containerAlias) { Container(image) })
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
+        return Instance(sharedResources.container(containerAlias) { Container(image) })
     }
 
-    private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
+    private class Instance(private val container: Lease<Container>) : DbSystem.Instance {
         override val type = SQLServerDatabaseType()
 
         private val internalDs by lazy { container().dataSource(adminUser, null) }

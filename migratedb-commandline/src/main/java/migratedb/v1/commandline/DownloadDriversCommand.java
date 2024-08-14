@@ -24,17 +24,19 @@ import migratedb.v1.core.internal.util.StringUtils;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.text.StringSubstitutor;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.nodes.Tag;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -59,7 +61,7 @@ public class DownloadDriversCommand {
     }
 
     Result run() {
-        resolvePlaceholders();
+        resolvePlaceholders(driverDefinitions);
         var downloadedDrivers = driversToDownload.isEmpty() ? allSupportedDriverAliases() : driversToDownload;
         var driverDefinitions = downloadedDrivers.stream()
                                                  .map(this::findDriverDefinition)
@@ -160,10 +162,10 @@ public class DownloadDriversCommand {
             var expected = Hex.decodeHex(sha256);
             if (!Arrays.equals(expected, actual)) {
                 throw new MigrateDbException(
-                    "Hash mismatch for file '" + targetFile + "'\n" +
-                    "   Actual:   '" + Hex.encodeHexString(actual) + "'\n" +
-                    "   Expected: '" + sha256 + "'\n" +
-                    "Please try again. If the error persists, the remote driver file may have been corrupted.");
+                        "Hash mismatch for file '" + targetFile + "'\n" +
+                        "   Actual:   '" + Hex.encodeHexString(actual) + "'\n" +
+                        "   Expected: '" + sha256 + "'\n" +
+                        "Please try again. If the error persists, the remote driver file may have been corrupted.");
             }
         } catch (DecoderException e) {
             throw new MigrateDbException("Not a hexadecimal value: '" + sha256 + "'");
@@ -175,11 +177,11 @@ public class DownloadDriversCommand {
                                         .filter(it -> it.alias.equalsIgnoreCase(alias))
                                         .findFirst()
                                         .orElseThrow(() -> new MigrateDbException(
-                                            "No such driver '" + alias + "'. The available drivers are: "
-                                            + allSupportedDriverAliases()));
+                                                "No such driver '" + alias + "'. The available drivers are: "
+                                                + allSupportedDriverAliases()));
     }
 
-    private MessageDigest newSha256() {
+    private static MessageDigest newSha256() {
         try {
             return MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
@@ -187,7 +189,7 @@ public class DownloadDriversCommand {
         }
     }
 
-    private void resolvePlaceholders() {
+    private static void resolvePlaceholders(DriverDefinitions driverDefinitions) {
         var subst = new StringSubstitutor(driverDefinitions.properties, "${", "}");
         subst.setEnableUndefinedVariableException(true);
         driverDefinitions.repo = subst.replace(driverDefinitions.repo);
@@ -266,4 +268,72 @@ public class DownloadDriversCommand {
     }
 
     private static final Log LOG = Log.getLog(DownloadDriversCommand.class);
+
+    /**
+     * Run this with a path to drivers.yaml to set the hashes to whatever the current machine downloads.
+     */
+    public static void main(String[] args) {
+        var driversDotYaml = Paths.get(args[0]);
+        var sha256 = newSha256();
+        var httpClient = HttpClient.newBuilder()
+                                   .version(HttpClient.Version.HTTP_1_1)
+                                   .connectTimeout(Duration.ofSeconds(10))
+                                   .build();
+
+        try (var stream = new BufferedInputStream(Files.newInputStream(driversDotYaml))) {
+            var yaml = new Yaml();
+            var def1 = yaml.loadAs(stream, DownloadDriversCommand.DriverDefinitions.class);
+            var def2 = yaml.loadAs(yaml.dumpAs(def1, Tag.MAP, DumperOptions.FlowStyle.AUTO), DownloadDriversCommand.DriverDefinitions.class);
+
+            resolvePlaceholders(def2);
+
+            var drivers1 = def1.drivers.iterator();
+            var drivers2 = def2.drivers.iterator();
+
+            while (drivers1.hasNext()) {
+                var d1 = drivers1.next();
+                var d2 = drivers2.next();
+
+                var artifacts1 = d1.artifacts.iterator();
+                var artifacts2 = d2.artifacts.iterator();
+
+                while (artifacts1.hasNext()) {
+                    var a1 = artifacts1.next();
+                    var a2 = artifacts2.next();
+
+                    var url = new JarCoordinates(a2.m2).toUrl(def2.repo);
+
+                    System.out.println("Accepting current hash of");
+                    System.out.print(url);
+
+                    var request = HttpRequest.newBuilder(url)
+                                             .GET()
+                                             .timeout(Duration.ofMinutes(10))
+                                             .build();
+
+                    var response = httpClient.send(request, BodyHandlers.ofInputStream());
+                    if (response.statusCode() != 200) {
+                        throw new IOException(response.toString());
+                    }
+
+                    String hash;
+                    sha256.reset();
+                    try (var digestStream = new DigestInputStream(response.body(), sha256)) {
+                        digestStream.transferTo(OutputStream.nullOutputStream());
+                        hash = Hex.encodeHexString(sha256.digest(), true);
+                    }
+
+                    System.out.println(" as " + hash);
+                    a1.sha256 = hash;
+                }
+            }
+
+            var updatedYaml = driversDotYaml.resolveSibling(driversDotYaml.getFileName().toString() + ".updated");
+            Files.writeString(updatedYaml, yaml.dumpAs(def1, Tag.MAP, DumperOptions.FlowStyle.BLOCK));
+
+            System.out.println("Updated definitions at: " + updatedYaml.toAbsolutePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

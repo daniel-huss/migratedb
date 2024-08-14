@@ -28,7 +28,7 @@
         <version.h2>2.2.220</version.h2>
         <version.hibernate>6.3.1.Final</version.hibernate>
         <version.hikaricp>5.0.1</version.hikaricp>
-        <version.hsqldb>2.7.2</version.hsqldb>
+        <version.hsqldb>2.7.3</version.hsqldb>
         <version.jackson>2.15.3</version.jackson>
         <version.java>17</version.java>
         <version.logback>1.4.11</version.logback>

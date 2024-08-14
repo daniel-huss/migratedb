@@ -9,18 +9,19 @@ Evolve your database schema easily and reliably across all your instances.
 
 === Supported databases
 
-Oracle, SQL Server, DB2, MySQL, MariaDB, PostgreSQL, CockroachDB, Informix, H2, HSQLDB, Derby, SQLite, Firebird
+Oracle, SQL Server, MySQL, MariaDB, PostgreSQL, CockroachDB, Informix, H2, HSQLDB, Derby, SQLite, Firebird
 
 Implemented, but currently not testable:
 
-- SAP HANA (no Docker container available)
-- Snowflake (no Docker container available)
-- Spanner (no Docker container available)
-- Synapse (no Docker container available)
-- Sybase ASE (no Docker container available)
-- Redshift (no Docker container available)
-- YugabyteDB (no Docker container available)
-- TiDB (no Docker container available)
+- DB2 (container does not work with podman)
+- SAP HANA (no container available)
+- Snowflake (no container available)
+- Spanner (no container available)
+- Synapse (no container available)
+- Sybase ASE (no container available)
+- Redshift (no container available)
+- YugabyteDB (no container available)
+- TiDB (no container available)
 - Apache Ignite (JDBC driver only works on ancient Hotspot JVMs)
 
 == Documentation
@@ -42,7 +43,7 @@ a large number (>1) of users 😉
 
 - Java 11 or later.
 - Maven 3 (preferably the latest version)
-- Local or remote Docker host (for database containers during integration tests)
+- Local or remote Docker/Podman host (for database containers during integration tests)
 
 == Legacy
 

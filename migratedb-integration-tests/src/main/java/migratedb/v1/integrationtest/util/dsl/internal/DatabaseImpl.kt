@@ -37,12 +37,12 @@ import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.checksum
 import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 import migratedb.v1.integrationtest.util.dsl.SchemaHistoryEntry
 import migratedb.v1.integrationtest.util.dsl.SchemaHistorySpec
-import migratedb.v1.testing.util.base.Exec.tryAll
+import migratedb.v1.testing.util.base.tryAll
 import java.sql.Connection
 import javax.sql.DataSource
 
 class DatabaseImpl(
-    private val databaseHandle: DbSystem.Handle
+    private val databaseInstance: DbSystem.Instance
 ) : DatabaseSpec, AutoCloseable {
     private var namespace: SafeIdentifier = Names.nextNamespace()
     private var schemaHistory: SchemaHistorySpecImpl? = null
@@ -69,15 +69,15 @@ class DatabaseImpl(
     )
 
     fun materialize(): MaterializeResult {
-        val schemaName = databaseHandle.createNamespaceIfNotExists(namespace)?.let(databaseHandle::normalizeCase)
-        val dataSource = databaseHandle.newAdminConnection(namespace)
+        val schemaName = databaseInstance.createNamespaceIfNotExists(namespace)?.let(databaseInstance::normalizeCase)
+        val dataSource = databaseInstance.newAdminConnection(namespace)
         val configuration = FluentConfiguration().also {
             if (schemaName != null) it.schemas(schemaName.toString())
             if (schemaHistoryTable != null) it.table(schemaHistoryTable)
         }
         val db = JdbcConnectionFactoryImpl(dataSource::getConnection, configuration).let { connectionFactory ->
             connectionFactoryToClose = connectionFactory
-            databaseHandle.type.createDatabase(configuration, connectionFactory).also {
+            databaseInstance.type.createDatabase(configuration, connectionFactory).also {
                 database = it
             }
         }
@@ -95,7 +95,7 @@ class DatabaseImpl(
     override fun close() {
         tryAll(
             { database?.close() },
-            { databaseHandle.dropNamespaceIfExists(namespace) },
+            { databaseInstance.dropNamespaceIfExists(namespace) },
             { connectionFactoryToClose?.close() }
         )
     }

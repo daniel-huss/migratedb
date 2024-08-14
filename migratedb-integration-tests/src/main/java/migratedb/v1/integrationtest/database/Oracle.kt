@@ -34,8 +34,8 @@ import java.time.Duration
 import javax.sql.DataSource
 
 enum class Oracle(image: String) : DbSystem {
-    V18_4_0("gvenzl/oracle-xe:18.4.0-slim"),
     V21_3_0("gvenzl/oracle-xe:21.3.0-slim"),
+    V18_4_0("gvenzl/oracle-xe:18.4.0-slim"),
     ;
 
     // Relevant idiosyncrasies:
@@ -64,9 +64,6 @@ enum class Oracle(image: String) : DbSystem {
         }
 
         init {
-            withCreateContainerCmdModifier {
-                it.hostConfig!!.withMemory(2_500_000_000)
-            }
             withEnv("ORACLE_PASSWORD", password)
             withExposedPorts(port)
             waitingFor(
@@ -76,11 +73,11 @@ enum class Oracle(image: String) : DbSystem {
         }
     }
 
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        return Handle(sharedResources.container(containerAlias) { Container(image) })
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
+        return Instance(sharedResources.container(containerAlias) { Container(image) })
     }
 
-    private class Handle(private val container: Lease<Container>) : DbSystem.Handle {
+    private class Instance(private val container: Lease<Container>) : DbSystem.Instance {
         override val type = OracleDatabaseType()
 
         private val internalDs by lazy { container().dataSource() }
@@ -107,8 +104,8 @@ enum class Oracle(image: String) : DbSystem {
                     jdbc.update("alter user $namespace account lock")
                     jdbc.queryForList(
                         "select s.sid as sid, s.serial# as ser" +
-                                " from v\$session s, v\$process p \n" +
-                                " where UPPER(s.username) = UPPER('$namespace')"
+                            " from v\$session s, v\$process p \n" +
+                            " where UPPER(s.username) = UPPER('$namespace')"
                     ).forEach { row ->
                         try {
                             jdbc.update("alter system kill session '${row["sid"]},${row["ser"]}' immediate")

@@ -32,11 +32,10 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource
 import javax.sql.DataSource
 
 enum class Hsqldb : DbSystem {
-    V2_7_2,
+    V2_7_3,
     V2_6_1,
     V2_5_2,
     V2_4_1,
-    V2_3_6,
     ;
 
     // Relevant idiosyncrasies:
@@ -64,11 +63,11 @@ enum class Hsqldb : DbSystem {
 
     override fun toString() = "HSQLDB ${name.replace('_', '.')}"
 
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        return Handle()
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
+        return Instance()
     }
 
-    private inner class Handle : DbSystem.Handle {
+    private inner class Instance : DbSystem.Instance {
         override val type: DatabaseType get() = Companion.databaseType
         private val databaseName = Names.nextFile()
 

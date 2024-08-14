@@ -16,79 +16,43 @@
 
 package migratedb.v1.testing.util.base
 
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
+import java.util.concurrent.*
 import kotlin.reflect.full.isSubclassOf
 
-object Exec {
-    val threadFactory = object : ThreadFactory {
-        private val delegate = Executors.defaultThreadFactory()
-        override fun newThread(r: Runnable) = delegate.newThread(r).also {
-            it.isDaemon = true
-        }
-    }
-
-    @PublishedApi
-    internal val executor: ExecutorService = Executors.newCachedThreadPool(threadFactory)
-
-    inline fun <reified T> async(waitOnClose: Boolean = false, noinline block: () -> T): CloseableFuture<T> {
-        return CloseableFuture(waitOnClose, T::class.isSubclassOf(AutoCloseable::class), executor.submit(block))
-    }
-
-    fun tryAll(vararg blocks: () -> Unit) = tryAll(blocks.toList())
-
-    fun tryAll(blocks: Iterable<() -> Unit>) {
-        var thrown: Exception? = null
-        blocks.forEach {
-            try {
-                it()
-            } catch (t: Exception) {
-                if (t is InterruptedException) Thread.currentThread().interrupt()
-                if (thrown == null) thrown = t else thrown!!.addSuppressed(t)
-            }
-        }
-        thrown?.let { throw it }
-    }
-
-    class CloseableFuture<T>(
-        private val waitOnClose: Boolean,
-        private val valueIsCloseable: Boolean,
-        private val f: Future<T>
-    ) : Future<T> by f, AutoCloseable, ReadOnlyProperty<Any, T>, () -> T {
-        private val closed = AtomicBoolean(false)
-
-        override fun invoke(): T {
-            return f.get()
-        }
-
-        override fun getValue(thisRef: Any, property: KProperty<*>): T {
-            return f.get()
-        }
-
-        override fun close() {
-            if (valueIsCloseable && !closed.getAndSet(true)) {
-                if (waitOnClose) handleInterruptionOnly {
-                    (f.get() as AutoCloseable).close()
-                } else if (f.isDone) {
-                    handleInterruptionOnly {
-                        (f.get() as AutoCloseable).close()
-                    }
-                }
-            }
-        }
-
-        private fun handleInterruptionOnly(block: () -> Unit) {
-            try {
-                block()
-            } catch (e: InterruptedException) {
-                Thread.currentThread().interrupt()
-            } catch (_: Exception) {
-            }
-        }
+val daemonThreadFactory = object : ThreadFactory {
+    private val delegate = Executors.defaultThreadFactory()
+    override fun newThread(r: Runnable) = delegate.newThread(r).also {
+        it.isDaemon = true
     }
 }
+
+@PublishedApi
+internal val executor: ExecutorService = Executors.newCachedThreadPool(daemonThreadFactory)
+
+inline fun <reified T : Any> async(
+    waitOnClose: Boolean = false,
+    noinline block: () -> T
+): CloseableFuture<T> {
+    val blockAsCallable = Callable { block() }
+    return CloseableFuture(
+        waitOnClose = waitOnClose,
+        valueIsCloseable = T::class.isSubclassOf(AutoCloseable::class),
+        future = executor.submit(blockAsCallable)
+    )
+}
+
+fun tryAll(vararg blocks: () -> Unit) = tryAll(blocks.toList())
+
+fun tryAll(blocks: Iterable<() -> Unit>) {
+    var thrown: Exception? = null
+    blocks.forEach {
+        try {
+            it()
+        } catch (t: Exception) {
+            if (t is InterruptedException) Thread.currentThread().interrupt()
+            if (thrown == null) thrown = t else thrown!!.addSuppressed(t)
+        }
+    }
+    thrown?.let { throw it }
+}
+

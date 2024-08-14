@@ -1,11 +1,15 @@
 package migratedb.v1.integrationtest.parser
 
 import io.kotest.matchers.shouldBe
+import migratedb.v1.core.api.resource.Resource
 import migratedb.v1.integrationtest.database.*
 import migratedb.v1.integrationtest.util.base.IntegrationTest
 import migratedb.v1.integrationtest.util.dsl.RunMigrateSpec
-import migratedb.v1.core.api.resource.Resource
 
+/**
+ * Parser test case that checks whether the non-trivial database schema create/drop scripts of some process engine can
+ * be parsed and executed.
+ */
 class ProcessEngineTestCase(val dbSystem: DbSystem, val skipDrop: Boolean = false) : IntegrationTest() {
     private enum class ComponentCategory(private val resourceNamePart: String) {
         Identity("identity"),
@@ -34,7 +38,6 @@ class ProcessEngineTestCase(val dbSystem: DbSystem, val skipDrop: Boolean = fals
     private fun resourceName(dbSystem: DbSystem, component: ComponentCategory, action: ActionCategory) =
         "/org/camunda/bpm/engine/db/$action/activiti." + when (dbSystem) {
             is CockroachDb -> "cockroachdb"
-            is Db2 -> "db2"
             is MariaDb -> "mariadb"
             is SqlServer -> "mssql"
             is MySql -> "mysql"

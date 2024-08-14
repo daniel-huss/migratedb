@@ -26,8 +26,8 @@
 
     <properties>
         <base-pom-dir>../..</base-pom-dir>
-        <version.spring-boot>3.2.4</version.spring-boot>
-        <version.spring-framework>6.1.5</version.spring-framework>
+        <version.spring-boot>3.3.2</version.spring-boot>
+        <version.spring-framework>6.1.11</version.spring-framework>
     </properties>
 
     <modules>

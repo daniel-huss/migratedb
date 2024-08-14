@@ -6,6 +6,21 @@ The format is based on https://keepachangelog.com/en/1.1.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
+== Unreleased
+
+=== Added
+
+* Tests for CockroachDB v24, PostgreSQL v17 (Beta), SQLite v3.46.0.1, MySQL v9, MariaDB v11.4.2,
+
+=== Changed
+
+* Updated dependencies.
+
+=== Removed
+
+* CLI driver download definitions for all but hsqldb, h2, mssql, mysql, postgresql and sqlite.
+* Integration tests for DB2 because of its ill-behaved container (requires privileges).
+
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.1.0[1.1.0] - 2024-04-14
 
 === Added

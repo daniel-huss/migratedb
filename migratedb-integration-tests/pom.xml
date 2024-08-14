@@ -114,6 +114,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+
+        <dependency>
             <!-- Contains some SQL scripts we can use to test the parsers -->
             <groupId>org.camunda.bpm</groupId>
             <artifactId>camunda-engine</artifactId>

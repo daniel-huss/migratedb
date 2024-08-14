@@ -17,6 +17,6 @@
 package migratedb.v1.integrationtest.util.container
 
 /**
- * Holding a lease guarantees that a pooled resource is not going to be closed.
+ * Holding a lease guarantees that a pooled resource is not going to be closed unless the entire pool is closed.
  */
 interface Lease<T : AutoCloseable> : AutoCloseable, () -> T

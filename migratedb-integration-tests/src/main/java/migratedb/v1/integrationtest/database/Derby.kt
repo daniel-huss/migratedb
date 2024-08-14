@@ -18,7 +18,6 @@ package migratedb.v1.integrationtest.database
 
 import io.kotest.assertions.throwables.shouldThrow
 import migratedb.v1.core.api.internal.database.base.DatabaseType
-import migratedb.v1.core.internal.database.DatabaseTypeRegisterImpl
 import migratedb.v1.core.internal.database.derby.DerbyDatabaseType
 import migratedb.v1.core.internal.util.ClassUtils
 import migratedb.v1.dependency_downloader.MavenCentralToLocal
@@ -57,9 +56,6 @@ enum class Derby : DbSystem {
     companion object {
         private val derbyBootLock = Any()
         private val databaseType = DerbyDatabaseType()
-        private val databaseTypeRegister = DatabaseTypeRegisterImpl().also {
-            it.registerDatabaseTypes(listOf(databaseType))
-        }
 
         init {
             System.setProperty("derby.stream.error.file", newTempDir("derby").resolve("derby.log").toString())
@@ -108,11 +104,11 @@ enum class Derby : DbSystem {
 
     override fun toString() = "Derby ${name.replace('_', '.')}"
 
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        return Handle()
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
+        return Instance()
     }
 
-    private inner class Handle : DbSystem.Handle {
+    private inner class Instance : DbSystem.Instance {
         override val type: DatabaseType get() = Companion.databaseType
         private val dataDir by lazy { newTempDir("derby-$name", deleteOnExit = false) }
 

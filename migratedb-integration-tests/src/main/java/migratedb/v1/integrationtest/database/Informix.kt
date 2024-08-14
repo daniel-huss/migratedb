@@ -33,8 +33,7 @@ import java.util.concurrent.Semaphore
 import javax.sql.DataSource
 
 enum class Informix(image: String) : DbSystem {
-    V14_10("ibmcom/informix-developer-database:14.10.FC7W1DE"),
-    V12_10("ibmcom/informix-developer-database:12.10.FC11DE"),
+    V14_10("icr.io/informix/informix-developer-database:14.10.FC7W1DE"),
     ;
 
     // Relevant idiosyncrasies:
@@ -77,12 +76,18 @@ enum class Informix(image: String) : DbSystem {
     /**
      * Informix seems allergic to more than 5 connections per container.
      */
-    override fun get(sharedResources: SharedResources): DbSystem.Handle {
-        handles.acquire()
-        return Handle(sharedResources.container(containerAlias) { Container(image) })
+    override fun get(sharedResources: SharedResources): DbSystem.Instance {
+        val containerLease = sharedResources.container(containerAlias) { Container(image) }
+        try {
+            handles.acquire()
+        } catch (e: InterruptedException) {
+            containerLease.close()
+            throw e
+        }
+        return Instance(containerLease)
     }
 
-    private inner class Handle(private val container: Lease<Container>) : DbSystem.Handle {
+    private inner class Instance(private val container: Lease<Container>) : DbSystem.Instance {
         override val type = InformixDatabaseType()
         private var released = false
         private val internalDs by lazy { container().dataSource() }

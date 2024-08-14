@@ -45,7 +45,7 @@ public class CockroachDBDatabase extends BaseDatabase {
     @Override
     public final void ensureSupported() {
         ensureDatabaseIsRecentEnough("1.1");
-        recommendMigrateDbUpgradeIfNecessary("23.99");
+        recommendMigrateDbUpgradeIfNecessary("24.99");
     }
 
     @Override
