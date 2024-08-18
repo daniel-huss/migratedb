@@ -26,5 +26,5 @@
         <!-- Reduces performance impact imposed by redirected JUL logging -->
         <resetJUL>true</resetJUL>
     </contextListener>
-    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+    <shutdownHook class="ch.qos.logback.core.hook.DefaultShutdownHook"/>
 </configuration>

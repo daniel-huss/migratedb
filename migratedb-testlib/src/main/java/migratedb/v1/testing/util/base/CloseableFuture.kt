@@ -21,7 +21,7 @@ class CloseableFuture<T>(
     }
 
     override fun close() {
-        if (valueIsCloseable && !closed.getAndSet(true)) {
+        if (valueIsCloseable && closed.compareAndSet(false,true)) {
             if (waitOnClose) handleInterruptionOnly {
                 (future.get() as AutoCloseable).close()
             } else if (future.isDone) {

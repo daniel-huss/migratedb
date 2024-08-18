@@ -16,153 +16,121 @@
 
 package migratedb.v1.integrationtest.database
 
-import io.kotest.assertions.throwables.shouldThrow
 import migratedb.v1.core.api.internal.database.base.DatabaseType
 import migratedb.v1.core.internal.database.derby.DerbyDatabaseType
-import migratedb.v1.core.internal.util.ClassUtils
 import migratedb.v1.dependency_downloader.MavenCentralToLocal
 import migratedb.v1.integrationtest.database.mutation.DerbyCreateTableMutation
 import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.v1.integrationtest.util.base.Names
 import migratedb.v1.integrationtest.util.base.SafeIdentifier
 import migratedb.v1.integrationtest.util.base.work
+import migratedb.v1.integrationtest.util.container.Lease
 import migratedb.v1.integrationtest.util.container.SharedResources
-import migratedb.v1.testing.util.io.newTempDir
-import org.springframework.jdbc.datasource.SimpleDriverDataSource
-import java.lang.management.ManagementFactory
-import java.nio.file.Path
-import java.sql.Connection
-import java.sql.Driver
-import java.util.*
-import javax.management.MBeanServerDelegate
-import javax.management.MBeanServerNotification
-import javax.management.MBeanServerNotification.REGISTRATION_NOTIFICATION
-import javax.management.relation.MBeanServerNotificationFilter
+import org.apache.derby.client.BasicClientDataSource
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.Wait
+import org.testcontainers.images.builder.ImageFromDockerfile
 import javax.sql.DataSource
-import kotlin.io.path.exists
-import kotlin.streams.asSequence
 
 
-enum class Derby : DbSystem {
-    V10_15_2_0,
-    V10_14_2_0,
-    V10_13_1_1,
-    V10_12_1_1
+enum class Derby(baseImageTag: String) : DbSystem {
+    V10_17_1_0("open-21-jre"),
+    V10_16_1_1("open-17-jre"),
+    V10_15_2_0("open-11-jre"),
+    V10_14_2_0("open-11-jre"),
+    V10_13_1_1("open-11-jre"),
+    V10_12_1_1("open-8-jre")
     ;
 
     // Relevant idiosyncrasies:
     //  - Does not normalize database names because it's just a file name
 
     companion object {
-        private val derbyBootLock = Any()
         private val databaseType = DerbyDatabaseType()
+        private const val SERVER_PORT = 1257
+        private const val USER_AND_PASS = "sa"
+    }
 
-        init {
-            System.setProperty("derby.stream.error.file", newTempDir("derby").resolve("derby.log").toString())
-            System.setProperty("derby.infolog.append", "true")
-            disableMbeanRegistration()
-        }
+    private val containerAlias = "derby_${name.lowercase()}"
+    private val derbyVersion = name.drop(1).replace('_', '.')
+    private val serverCoordinates = "org.apache.derby:derbynet:$derbyVersion"
+    private val serverJars = MavenCentralToLocal.resolver.resolve(listOf(serverCoordinates))
 
-        private fun disableMbeanRegistration() {
-            // Derby tries to register its MBean on startup and this cannot be disabled. Failing to do so
-            // (because the MBean is already registered) will lead to a NullPointerException on connect() because
-            // the Derby "boot" process is interrupted by the MBean registration exception and they have no
-            // error handling. To solve this, we just unregister any MBean immediately after registration.
-            // To work reliably, this and the code that triggers "booting" Derby have to synchronize- on the same lock.
-            val server = ManagementFactory.getPlatformMBeanServer()
-            val filter = MBeanServerNotificationFilter()
-            filter.enableAllObjectNames()
-            server.addNotificationListener(
-                MBeanServerDelegate.DELEGATE_NAME,
-                { notification, _ ->
-                    synchronized(derbyBootLock) {
-                        (notification as? MBeanServerNotification)?.let {
-                            when (it.type) {
-                                REGISTRATION_NOTIFICATION -> server.unregisterMBean(it.mBeanName)
-                                else -> {}
-                            }
-                        }
+    private val image = run {
+        val imageName = "migratedb-integration-test-apache-derby:$derbyVersion"
+        ImageFromDockerfile(imageName, false)
+            .apply {
+                serverJars.asSequence()
+                    .mapNotNull { it.artifact.file }
+                    .forEach { serverJar ->
+                        val fileNameDerbyServerExpects = serverJar.nameWithoutExtension.substringBefore("-") + ".jar"
+                        withFileFromFile("/derby/$fileNameDerbyServerExpects", serverJar)
                     }
-                },
-                filter, null
-            )
-        }
+            }
+            .withDockerfileFromBuilder { builder ->
+                builder.from("ibm-semeru-runtimes:$baseImageTag")
+                    .user("123456:123456")
+                    .copy("/derby/*", "/opt/app/lib/")
+                    .workDir("/tmp")
+                    .entryPoint(
+                        "java", "-cp", "/opt/app/lib/*",
+                        "-Dderby.user.$USER_AND_PASS=$USER_AND_PASS",
+                        "org.apache.derby.drda.NetworkServerControl", "start", "-p", "$SERVER_PORT", "-h", "0.0.0.0",
+                    )
+            }
     }
 
-    private val driverCoordinates = "org.apache.derby:derby:${name.drop(1).replace('_', '.')}"
-    private val classLoader: ClassLoader by lazy {
-        MavenCentralToLocal.classLoaderFor(driverCoordinates)
-    }
-    private val driverClass = ServiceLoader.load(Driver::class.java, classLoader)
-        .stream().asSequence()
-        .map { it.type() }
-        .filter { it.name.startsWith("org.apache.derby") }
-        .first().name.also {
-            // Check that Derby is not on the test class path (because our custom class loader delegates to its parent)
-            shouldThrow<ClassNotFoundException> { Class.forName(it) }
+    inner class Container : GenericContainer<Container>(image) {
+        init {
+            withExposedPorts(SERVER_PORT)
+            waitingFor(Wait.forListeningPort())
         }
+    }
 
     override fun toString() = "Derby ${name.replace('_', '.')}"
 
     override fun get(sharedResources: SharedResources): DbSystem.Instance {
-        return Instance()
+        return Instance(sharedResources.container(containerAlias, ::Container))
     }
 
-    private inner class Instance : DbSystem.Instance {
+    private inner class Instance(
+        private val container: Lease<Container>
+    ) : DbSystem.Instance, AutoCloseable by container {
+
         override val type: DatabaseType get() = Companion.databaseType
-        private val dataDir by lazy { newTempDir("derby-$name", deleteOnExit = false) }
 
         override fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier {
-            val dbPath = dbPath(namespace)
-            if (!dbPath.exists()) {
-                dataSource(dbPath, create = true).work {
-                    it.execute("create schema $namespace")
-                }
+            dataSource(namespace, create = true).work {
+                it.execute("create schema $namespace")
+
+                // The default schema is the same as the user name, and that schema does not exist by default.
+                it.execute("create schema $USER_AND_PASS")
             }
             return namespace
         }
 
         override fun dropNamespaceIfExists(namespace: SafeIdentifier) {
-            val dbPath = dbPath(namespace)
-            if (dbPath.exists()) {
-                dbPath.toFile().deleteRecursively()
-            }
+            container().execInContainer("rm", "-rf", namespace.toString())
         }
 
         override fun newAdminConnection(namespace: SafeIdentifier): DataSource {
-            return dataSource(dbPath(namespace))
+            return dataSource(namespace)
         }
 
-        private fun dataSource(dbPath: Path, create: Boolean = false): DataSource {
-            val url = "jdbc:derby:${dbPath.toAbsolutePath()}"
-            return object : SimpleDriverDataSource(
-                ClassUtils.instantiate(driverClass, classLoader),
-                url,
-                mapOf(
-                    "username" to "",
-                    "password" to "password",
-                    "create" to "$create",
-                    "shutdown" to "false"
-                ).toProperties()
-            ) {
-                override fun getConnectionFromDriver(username: String?, password: String?): Connection = synchronized(
-                    derbyBootLock
-                ) {
-                    return super.getConnectionFromDriver(username, password)
-                }
+        private fun dataSource(database: SafeIdentifier, create: Boolean = false): DataSource {
+            val c = container()
+            return BasicClientDataSource().also {
+                it.databaseName = database.toString()
+                it.user = USER_AND_PASS
+                it.password = USER_AND_PASS
+                it.serverName = c.host
+                it.portNumber = c.getMappedPort(SERVER_PORT)
+                it.createDatabase = if (create) "create" else null
             }
-        }
-
-        private fun dbPath(namespace: SafeIdentifier): Path {
-            return dataDir.resolve(normalizeCase(namespace).toString()).toAbsolutePath()
         }
 
         override fun nextMutation(schema: SafeIdentifier?): IndependentDatabaseMutation {
             return DerbyCreateTableMutation(schema?.let(this::normalizeCase), normalizeCase(Names.nextTable()))
-        }
-
-        override fun close() {
-            dataDir.toFile().deleteRecursively()
         }
     }
 }

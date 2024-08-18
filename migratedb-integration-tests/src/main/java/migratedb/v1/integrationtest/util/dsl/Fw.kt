@@ -16,17 +16,21 @@ import kotlin.random.Random
 
 class DatabasesSupportedByFw : Args(
     functionHasOneParameter = OneParam.YES,
-    Sqlite.V3_8_11_2,
-    Sqlite.V3_36_0_3,
-    Derby.V10_15_2_0,
-    MariaDb.V10_6,
-    SqlServer.V2019_CU15,
-    Hsqldb.V2_6_1,
-    Postgres.V14,
-    H2.V2_1_210,
-    Informix.V14_10,
+    *databases()
 ) {
     companion object {
+        fun databases() = arrayOf(
+            Sqlite.V3_8_11_2,
+            Sqlite.V3_36_0_3,
+            Derby.V10_15_2_0,
+            MariaDb.V10_6,
+            SqlServer.V2019_CU15,
+            Hsqldb.V2_6_1,
+            Postgres.V14,
+            H2.V2_1_210,
+            Informix.V14_10,
+        )
+
         init {
             // Silence!
             LogFactory.setLogCreator { MultiLogger(emptyList()) }
@@ -192,7 +196,7 @@ class FwSchemaHistory(private val configuration: FluentConfiguration, private va
         val justInserted = get().last().installedRank
         database.mainConnection.jdbcTemplate.update(
             "update $table set ${database.quote("type")} = ?" +
-                    " where ${database.quote("installed_rank")}  = ?",
+                " where ${database.quote("installed_rank")}  = ?",
             type, justInserted
         )
     }

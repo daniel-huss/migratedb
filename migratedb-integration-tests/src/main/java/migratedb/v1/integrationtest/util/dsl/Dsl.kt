@@ -77,12 +77,13 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
         fun List<String>?.toMigrationNames() = this?.map { it.toMigrationName() }
     }
 
-    private val databaseHandle = lazy { dbSystem.get(sharedResources) }
-    private val givenStep = GivenStepImpl(databaseHandle::value)
+    private val databaseInstance = lazy { dbSystem.get(sharedResources) }
+    private val givenStep = GivenStepImpl(databaseInstance::value)
 
     override fun close() {
-        databaseHandle.value.use {
-            givenStep.use { }
+        databaseInstance.value.use {
+            givenStep.use {
+            }
         }
     }
 
@@ -94,7 +95,7 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
     /**
      * Normalizes the case of a table name.
      */
-    fun normalize(s: CharSequence): String = databaseHandle.value.normalizeCase(s)
+    fun normalize(s: CharSequence): String = databaseInstance.value.normalizeCase(s)
 
     fun <G : Any> given(block: (GivenStep).() -> G): GivenStepResult<G> {
         val g = givenStep.block()

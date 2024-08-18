@@ -16,6 +16,7 @@
 
 package migratedb.v1.integrationtest.util.container
 
+import migratedb.v1.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
@@ -35,7 +36,7 @@ class SharedResources private constructor() : ExtensionContext.Store.CloseableRe
     private val lock = ReentrantLock()
     private var closed = false
     private val network = Network.newNetwork()
-    private val containerPool = ContainerPool(MAX_CONTAINERS)
+    private val containerPool = ContainerPool(MAX_CONTAINERS, IntegrationTest::currentTestInfo)
     private val logConsumersByAlias = LinkedHashMap<String, ToFileLogConsumer>()
 
     private fun getOrCreateLogConsumer(alias: String): ToFileLogConsumer {

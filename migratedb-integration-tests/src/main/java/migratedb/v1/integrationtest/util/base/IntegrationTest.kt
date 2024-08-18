@@ -21,6 +21,9 @@ import migratedb.v1.integrationtest.util.container.SharedResources
 import migratedb.v1.integrationtest.util.container.SharedResources.Companion.resources
 import migratedb.v1.integrationtest.util.dsl.Dsl
 import migratedb.v1.testing.util.base.AbstractTest
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.TestInfo
 import org.junit.jupiter.api.Timeout
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.ExtendWith
@@ -36,6 +39,7 @@ abstract class IntegrationTest : AbstractTest() {
 
     class Extension : BeforeAllCallback {
         companion object {
+            private val currentTestPerThread = ThreadLocal.withInitial<TestInfo> { null }
             private val namespace = Namespace.create(Extension::class.java)
             private val lock = ReentrantLock()
             private var sharedResources: SharedResources? = null
@@ -43,6 +47,16 @@ abstract class IntegrationTest : AbstractTest() {
             fun sharedResources() = lock.withLock {
                 sharedResources ?: throw IllegalStateException("Not initialized - beforeAll hasn't been invoked")
             }
+
+            fun setCurrentTestInfo(testInfo: TestInfo) {
+                currentTestPerThread.set(testInfo)
+            }
+
+            fun unsetCurrentTestInfo() {
+                currentTestPerThread.remove()
+            }
+
+            fun getCurrentTestInfo(): TestInfo? = currentTestPerThread.get()
         }
 
         override fun beforeAll(context: ExtensionContext) = lock.withLock {
@@ -50,6 +64,20 @@ abstract class IntegrationTest : AbstractTest() {
                 sharedResources = context.root.getStore(namespace).resources()
             }
         }
+    }
+
+    companion object {
+        fun currentTestInfo() = Extension.getCurrentTestInfo()
+    }
+
+    @BeforeEach
+    internal fun setTestInfo(testInfo: TestInfo) {
+        Extension.setCurrentTestInfo(testInfo)
+    }
+
+    @AfterEach
+    internal fun unsetTestInfo(testInfo: TestInfo) {
+        Extension.unsetCurrentTestInfo()
     }
 
     fun withDsl(dbSystem: DbSystem, block: (Dsl).() -> (Unit)) = Dsl(dbSystem, Extension.sharedResources()).use(block)

@@ -16,17 +16,16 @@
 package migratedb.v1.integrationtest.util.container
 
 import com.google.common.collect.ConcurrentHashMultiset
+import com.google.common.collect.MapMaker
 import migratedb.v1.testing.util.base.async
-import migratedb.v1.testing.util.base.daemonThreadFactory
 import migratedb.v1.testing.util.base.tryAll
+import org.junit.jupiter.api.TestInfo
 import java.time.Duration
 import java.time.Instant
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.locks.ReentrantLock
+import java.util.concurrent.*
+import java.util.concurrent.TimeUnit.SECONDS
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
-import kotlin.concurrent.withLock
 import kotlin.concurrent.write
 
 /**
@@ -35,13 +34,13 @@ import kotlin.concurrent.write
  * room for other containers. "Using" a container is represented by holding onto a [Lease], which must be closed when
  * you're done using the container.
  */
-class ContainerPool(private val size: Int) : AutoCloseable {
+class ContainerPool(private val size: Int, private val currentTestInfoProvider: () -> TestInfo?) : AutoCloseable {
 
     init {
         check(size > 0)
     }
 
-    private var debug = true
+    private val debug = System.getenv("DEBUG_CONTAINER_POOL").toBoolean()
     private var closed = false
     private val requestedSlots = ConcurrentHashMultiset.create<String>()
     private val slotLock = ReentrantReadWriteLock(true)
@@ -51,7 +50,12 @@ class ContainerPool(private val size: Int) : AutoCloseable {
 
     private fun debug(msg: () -> String) {
         if (debug) {
-            System.err.println("[${Thread.currentThread().name}] ${msg()}")
+            val location = currentTestInfoProvider()?.testMethod?.orElse(null)?.let {
+                "@${it.declaringClass.simpleName}::${it.name}"
+            } ?: ""
+            System.err.println(
+                "[${Thread.currentThread().name}]$location\n  ➞ ${msg()}"
+            )
         }
     }
 
@@ -140,10 +144,11 @@ class ContainerPool(private val size: Int) : AutoCloseable {
         fun unlease() = slotLock.write {
             debug { "Unleasing $name" }
             idleStart = Instant.now()
+            val notifyReaper = leases == 1
             leases = (leases - 1).coerceAtLeast(0)
-            if (leases == 0) {
+            if (notifyReaper) {
                 debug { "Slot $name now has zero leases" }
-                reaper.gazeUpon(this)
+                reaper.reapAfterGracePeriod(this)
             }
         }
 
@@ -157,74 +162,69 @@ class ContainerPool(private val size: Int) : AutoCloseable {
     }
 
     private inner class Reaper : AutoCloseable {
-        private val lock = ReentrantLock()
-        private val timeToWakeUp = lock.newCondition()
-        private val toCheck = HashSet<Slot<*>>()
-        private var scanSlots = true
-        private val executor = Executors.newSingleThreadExecutor(daemonThreadFactory).also {
-            it.submit(this::reaperCycle)
+        private val scheduler = Executors.newSingleThreadScheduledExecutor().also {
+            it.scheduleWithFixedDelay(::periodScan, 10, 10, SECONDS)
         }
 
-        private fun reaperCycle() {
-            while (!Thread.currentThread().isInterrupted) {
-                lock.withLock {
-                    timeToWakeUp.await(5, TimeUnit.SECONDS)
-                }
-                debug { "Requested slots: $requestedSlots" }
-                reapIdleSlots()
+        private val scheduledChecks: ConcurrentMap<Slot<*>, ScheduledFuture<*>> = MapMaker()
+            .concurrencyLevel(16)
+            .makeMap()
+
+        /**
+         * Reaps the [slot] if it is still idle after the grace period of one second. Calling this function *again*
+         * during this grace period resets the timeout.
+         */
+        fun reapAfterGracePeriod(slot: Slot<*>) {
+            scheduledChecks[slot]?.cancel(false)
+            try {
+                scheduledChecks[slot] = scheduler.schedule({ reapSlotIfStillIdle(slot) }, 1, SECONDS)
+            } catch (ignored: RejectedExecutionException) {
             }
         }
 
-        private fun reapIdleSlots() {
-            var reapCount = 0
-
-            fun reap(slot: Slot<*>) {
-                debug { "Reaping slot ${slot.name} which has been idle for ${slot.idleTime}" }
-                slotsByName.remove(slot.name)
-                slot.close()
-                slotHasBeenReaped.signal()
-                reapCount++
-            }
-
-            slotLock.write {
-                if (slotsByName.size < size) {
-                    debug { "Pool is not at capacity, nothing to reap" }
-                    return
-                }
-
-                if (scanSlots) {
-                    slotsByName.values.asSequence()
-                        .mapNotNull { slot -> slot.idleTime?.let { slot to it } }
-                        .sortedByDescending { (_, idleTime) -> idleTime }
-                        .take(requestedSlots.elementSet().size.coerceAtLeast(1))
-                        .toList() // -> the map must not be modified while iterating over it
-                        .forEach { (slot, _) ->
-                            reap(slot)
-                        }
-                } else {
-                    for (slot in toCheck) {
-                        slot.idleTime?.takeIf { it.toSeconds() >= 1 }?.let {
-                            reap(slot)
-                        }
+        private fun periodScan() = slotLock.write {
+            if (slotsAreAtCapacity()) {
+                debug { "Periodic scan: Slots are at capacity, pending are $requestedSlots" }
+                slotsByName.values.asSequence()
+                    .mapNotNull { slot -> slot.idleTime?.let { slot to it } }
+                    .sortedByDescending { (_, idleTime) -> idleTime }
+                    .take(requestedSlots.elementSet().size.coerceAtLeast(1))
+                    .toList() // -> the map must not be modified while iterating over it
+                    .forEach { (slot, _) ->
+                        reap(slot)
                     }
-                    toCheck.clear()
-                    scanSlots = true // Will be set to false by gazeUpon() if called before the next wake-up
-                }
-
-                debug { "Waking up the reaper resulted in $reapCount slots being reaped" }
             }
         }
 
-        fun gazeUpon(slot: Slot<*>) {
-            lock.withLock {
-                toCheck.add(slot)
-                scanSlots = false
-                timeToWakeUp.signal()
+        private fun reapSlotIfStillIdle(slot: Slot<*>) = slotLock.write {
+            slot.idleTime?.let {
+                reap(slot)
+            }
+        }
+
+        private fun slotsAreAtCapacity() = slotsByName.size >= size
+
+        /**
+         * Must be guarded by slockLock.write
+         */
+        private fun reap(slot: Slot<*>) {
+            debug { "Reaping slot ${slot.name} which has been idle for ${slot.idleTime}" }
+            val sendSignal = slotsByName.remove(slot.name) != null
+            try {
+                slot.close()
+            } catch (e: InterruptedException) {
+                throw e
+            } catch (e: Exception) {
+                System.err.println("Failed to close a container pool slot: ${e.stackTraceToString()}")
+            } finally {
+                if (sendSignal) {
+                    slotHasBeenReaped.signal()
+                }
             }
         }
 
         override fun close() {
-            executor.shutdownNow()
+            scheduler.shutdownNow()
         }
     }
 }

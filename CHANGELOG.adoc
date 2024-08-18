@@ -10,7 +10,7 @@ NOTE: 🔥 = Breaking Change
 
 === Added
 
-* Tests for CockroachDB v24, PostgreSQL v17 (Beta), SQLite v3.46.0.1, MySQL v9, MariaDB v11.4.2,
+* Tests/support for CockroachDB v24, PostgreSQL v17 (Beta), SQLite v3.46.0.1, MySQL v9, MariaDB v11.4.2, Apache Derby v10.17.1.0.
 
 === Changed
 
@@ -87,7 +87,6 @@ This makes it easier to switch to MigrateDB: Just deploy the next version of you
 (Just configure your data source accordingly, I guess?)
 * 🔥 The destructive "clean" command.
 * 🔥 The "error overrides" configuration option, which had no effect anyway.
-
 
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/0.2.0[0.2.0] - 2022-07-17
 

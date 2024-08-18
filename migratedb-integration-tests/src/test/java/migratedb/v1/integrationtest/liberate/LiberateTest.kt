@@ -22,15 +22,19 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldBeSingleton
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEqualIgnoringCase
-import migratedb.v1.integrationtest.database.*
+import migratedb.v1.core.api.MigrationType
+import migratedb.v1.core.api.Version
+import migratedb.v1.integrationtest.database.DbSystem
 import migratedb.v1.integrationtest.util.base.IntegrationTest
 import migratedb.v1.integrationtest.util.base.Names
 import migratedb.v1.integrationtest.util.dsl.DatabasesSupportedByFw
 import migratedb.v1.integrationtest.util.dsl.fwSchemaHistory
-import migratedb.v1.core.api.MigrationType
-import migratedb.v1.core.api.Version
+import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.ArgumentsProvider
 import org.junit.jupiter.params.provider.ArgumentsSource
+import kotlin.streams.asStream
 
 class LiberateTest : IntegrationTest() {
 
@@ -114,8 +118,8 @@ class LiberateTest : IntegrationTest() {
         }
 
     @ParameterizedTest
-    @ArgumentsSource(DatabasesSupportedByFw::class)
-    fun `Does not fail on arbitrary FW schema history`(dbSystem: DbSystem) = (0..50).forEach { schemaHistorySize ->
+    @ArgumentsSource(DatabasesSupportedByFwAndHistorySize::class)
+    fun `Does not fail on arbitrary FW schema history`(dbSystem: DbSystem, schemaHistorySize: Int) {
         val oldSchemaHistoryTable = Names.nextTable().toString()
         withDsl(dbSystem) {
             given {
@@ -131,5 +135,16 @@ class LiberateTest : IntegrationTest() {
                 actual.oldSchemaHistoryTable.shouldBeEqualIgnoringCase(oldSchemaHistoryTable)
             }
         }
+    }
+
+    internal class DatabasesSupportedByFwAndHistorySize : ArgumentsProvider {
+        override fun provideArguments(context: ExtensionContext) = DatabasesSupportedByFw.databases()
+            .asSequence()
+            .flatMap { database ->
+                listOf(1, 2, 5, 10, 25, 50, 100).map { historySize ->
+                    Arguments.of(database, historySize)
+                }
+            }
+            .asStream()
     }
 }
