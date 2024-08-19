@@ -1,6 +1,6 @@
 <!--
   ~ Copyright (C) Red Gate Software Ltd 2010-2021
-  ~ Copyright 2022-2023 The MigrateDB contributors
+  ~ Copyright 2022-2024 The MigrateDB contributors
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
     <parent>
         <groupId>de.unentscheidbar</groupId>
         <artifactId>migratedb</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>migratedb-core</artifactId>
     <name>MigrateDB - Core Library</name>

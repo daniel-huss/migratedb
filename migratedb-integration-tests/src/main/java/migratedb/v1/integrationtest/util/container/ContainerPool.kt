@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 The MigrateDB contributors
+ * Copyright 2022-2024 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,7 +198,9 @@ class ContainerPool(private val size: Int, private val currentTestInfoProvider: 
 
         private fun reapSlotIfStillIdle(slot: Slot<*>) = slotLock.write {
             slot.idleTime?.let {
-                reap(slot)
+                if (slot.name !in requestedSlots) {
+                    reap(slot)
+                }
             }
         }
 

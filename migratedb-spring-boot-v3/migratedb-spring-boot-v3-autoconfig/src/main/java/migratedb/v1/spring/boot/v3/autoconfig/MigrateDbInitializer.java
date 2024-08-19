@@ -48,7 +48,7 @@ public class MigrateDbInitializer implements InitializingBean, Ordered {
 
     @Override
     public int getOrder() {
-        return this.order;
+        return order;
     }
 
     public void setOrder(int order) {
