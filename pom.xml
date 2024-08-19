@@ -81,7 +81,8 @@
 
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.outputTimestamp>2024-08-19T22:31:30Z</project.build.outputTimestamp><!-- for reproducible builds -->
+        <project.build.outputTimestamp>2024-08-19T23:18:32Z
+        </project.build.outputTimestamp><!-- for reproducible builds -->
         <project.build.generatedSources.directory>${project.build.directory}/generated-sources/codegen
         </project.build.generatedSources.directory>
 
@@ -344,6 +345,9 @@
                             <!-- No need to exclude anything -->
                         </excludes>
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
+                        <jdkToolchain>
+                            <version>17</version>
+                        </jdkToolchain>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -357,6 +361,11 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <jdkToolchain>
+                            <version>17</version>
+                        </jdkToolchain>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.felix</groupId>

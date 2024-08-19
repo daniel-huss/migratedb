@@ -16,15 +16,16 @@
 
 package migratedb.v1.commandline.testing
 
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import migratedb.v1.dependency_downloader.MavenCentralToLocal
+import org.eclipse.jetty.http.HttpHeader
+import org.eclipse.jetty.io.Content
+import org.eclipse.jetty.server.Handler
 import org.eclipse.jetty.server.Request
+import org.eclipse.jetty.server.Response
 import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.server.handler.AbstractHandler
+import org.eclipse.jetty.util.Callback
 import java.net.InetAddress
 import java.net.InetSocketAddress
-import java.nio.file.Files
 import java.util.*
 
 
@@ -37,22 +38,19 @@ object LocalArtifactRepository {
     private val dependencyResolver = MavenCentralToLocal.resolver
 
     private val server = Server(binding).also { srv ->
-        srv.handler = object : AbstractHandler() {
-            override fun handle(
-                target: String,
-                baseRequest: Request,
-                request: HttpServletRequest,
-                response: HttpServletResponse
-            ) {
-                val coordinates = toCoordinates(baseRequest.httpURI.decodedPath)
+        srv.handler = object : Handler.Abstract() {
+
+            override fun handle(request: Request, response: Response, callback: Callback): Boolean {
+                val coordinates = toCoordinates(request.httpURI.decodedPath)
                 val file = dependencyResolver.resolve(listOf(coordinates))
                     .single { "${it.artifact.groupId}:${it.artifact.artifactId}:${it.artifact.version}" == coordinates }
                     .artifact.file
+
                 response.status = 200
-                response.contentType = "application/octet-stream"
-                response.outputStream.use {
-                    Files.copy(file.toPath(), it)
-                }
+                response.headers.put(HttpHeader.CONTENT_TYPE, "application/octet-stream")
+                Content.copy(Content.Source.from(file.toPath()), response, callback)
+                callback.succeeded()
+                return true
             }
         }
         srv.start()
