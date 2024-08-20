@@ -19,7 +19,7 @@
     <parent>
         <groupId>de.unentscheidbar</groupId>
         <artifactId>migratedb</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0-SNAPSHOT</version>
     </parent>
     <artifactId>migratedb-commandline</artifactId>
     <name>MigrateDB - CLI</name>
