@@ -61,7 +61,7 @@ interface.
 
 The `event` argument tells you
 which [`Event`](/migratedb/documentation/usage/api/javadoc/migratedb/core/api/callback/Event)
-(`beforeClean`, `afterMigrate`, ...) is being handled and the `context` argument gives you access to things
+(`afterMigrate`, ...) is being handled and the `context` argument gives you access to things
 like the database connection and the MigrateDB configuration.
 
 It is possible for a Java callback to handle multiple events; for example, if you wanted to write a callback to

@@ -25,16 +25,7 @@ This script will form your baseline migration. Save it in a location specified i
 the [locations](/migratedb/documentation/configuration/parameters/locations) property. Give it a relevant version number and
 description such as `V1__baseline_migration.sql`.
 
-## Clean all databases containing data you don't mind losing
-
-Now comes the point where we have to make sure that the migrations meant for production will work everywhere with
-the [clean](/migratedb/documentation/command/clean) command.
-
-For all databases with unimportant data that you don't mind losing, execute:
-<pre class="console">&gt; migratedb clean</pre>
-by altering the [url](/migratedb/documentation/configuration/parameters/url) to completely remove their contents.
-
-## Align the databases not cleaned with production
+## Align the databases with production
 
 Now you need to check all remaining databases (e.g. test). You must make sure that their structure (DDL) and reference
 data matches production exactly. This step is important, as all scripts destined for production will likely be applied
@@ -47,20 +38,11 @@ Now comes the time to [baseline](/migratedb/documentation/command/baseline) the 
 with a baseline version. Use the same version and description you used for the baselined migration
 above (`V1__baseline_migration.sql`).
 
-You can accomplish it like this:
-<pre class="console">&gt; migratedb -baselineVersion="1" -baselineDescription="baseline_migration" baseline</pre>
-You must perform this step for each database that hasn't been cleaned by altering
-the [url](/migratedb/documentation/configuration/parameters/url) again.
-
 ## Done!
 
 Congratulations! You are now ready.
 
-When you execute:
-
-<pre class="console">&gt; migratedb migrate</pre>
-
-against the empty databases (by altering the [url](/migratedb/documentation/configuration/parameters/url)), they will be migrated
+When you execute `migrate` against the empty databases, they will be migrated
 to the state of production and the others will be left as is.
 
 As soon as you add a new migration, it can be applied identically to any of your databases.

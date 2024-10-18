@@ -121,10 +121,6 @@ name of the user you are trying to proxy as. For example, if you connect as user
 i.e. `migratedb.user=A`) and you want to proxy as user `B` for migrations, you need to
 add `migratedb.jdbcproperties.PROXY_USER_NAME=B`.
 
-## Limitations
-
-- SPATIAL EXTENSIONS: `sdo_geom_metadata` can only be cleaned for the user currently logged in
-
 ### SQL*Plus
 
 #### Unsupported commands

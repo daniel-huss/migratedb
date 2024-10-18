@@ -124,11 +124,6 @@ structure [here](https://www.postgresql.org/docs/9.6/libpq-pgpass.html).
 ## Limitations
 
 - No support for psql meta-commands with no JDBC equivalent like `\set`
-- Clean does not remove objects created by extensions. It is therefore highly recommended to create your extensions
-  using `CREATE EXTENSION IF NOT EXISTS` in order to be able to clean and (re-)migrate your schema(s) at will
-- No support for cleaning referenced large objects
-  in `pg_largeobject` ([Issue 1934](https://github.com/daniel-huss/migratedb/issues/1934))
-- No support for the `passfile` or `hostaddr` parameter when using pgpass as there is no JDBC equivalent
 
 <p class="next-steps">
     <a class="btn btn-primary" href="/migratedb/documentation/database/aurora-postgresql">Aurora PostgreSQL ➡️</a>

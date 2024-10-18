@@ -72,20 +72,6 @@ These are the events MigrateDB supports:
         <td>After failed Migrate runs</td>
     </tr>
     <tr><td></td><td></td></tr>
-    <tr><td></td><td></td></tr>
-    <tr id="beforeClean">
-        <td>beforeClean</td>
-        <td>Before Clean runs</td>
-    </tr>
-    <tr id="afterClean">
-        <td>afterClean</td>
-        <td>After successful Clean runs</td>
-    </tr>
-    <tr id="afterCleanError">
-        <td>afterCleanError</td>
-        <td>After failed Clean runs</td>
-    </tr>
-    <tr><td></td><td></td></tr>
     <tr id="beforeInfo">
         <td>beforeInfo</td>
         <td>Before Info runs</td>

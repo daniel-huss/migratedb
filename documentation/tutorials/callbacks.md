@@ -41,14 +41,13 @@ CHECKPOINT SYNC;
 
 ## Triggering the callback
 
-To trigger the execution of the callback, we'll clean and migrate the database again.
+To trigger the execution of the callback, we'll migrate the database again.
 
 So go ahead and invoke `migrate`.
 
 This will give you the following result:
 
 <pre class="console">Database: jdbc:h2:file:./foobardb (H2 1.4)
-Successfully cleaned schema "PUBLIC" (execution time 00:00.003s)
 Successfully validated 2 migrations (execution time 00:00.010s)
 <strong>Executing SQL callback: beforeMigrate</strong>
 Creating Schema History table: "PUBLIC"."migratedb_state"

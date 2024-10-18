@@ -68,11 +68,6 @@ by `MigrateDb.configure()` (e.g. `MigrateDb.configure().connectRetries(5).load()
 - [baselineOnMigrate](/migratedb/documentation/configuration/parameters/baselineOnMigrate)
 - [baselineVersion](/migratedb/documentation/configuration/parameters/baselineVersion)
 
-### Clean
-
-- [cleanDisabled](/migratedb/documentation/configuration/parameters/cleanDisabled)
-- [cleanOnValidationError](/migratedb/documentation/configuration/parameters/cleanOnValidationError)
-
 ### Validate
 
 - [ignoreFutureMigrations](/migratedb/documentation/configuration/parameters/ignoreFutureMigrations)

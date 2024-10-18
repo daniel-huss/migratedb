@@ -22,7 +22,6 @@ redirect_from:
 * [Does MigrateDB depend on Spring?](#spring)
 * [Can I make structure changes to the DB outside MigrateDB?](#outside-changes)
 * [How do you repair the database after a failed migration?](#repair)
-* [Why does clean drop individual objects instead of the schema itself?](#clean-objects)
 * [What is the best strategy for handling database-specific sql?](#db-specific-sql)
 * [Why is the migratedb_state table case-sensitive?](#case-sensitive)
 
@@ -173,14 +172,6 @@ If your database doesn't, these are the steps to follow:
 2. Invoke the repair command
 3. Fix the failed migration
 4. Try again
-
-
-<div id="clean-objects"></div>
-
-## Why does `clean` drop individual objects instead of the schema itself?
-
-`clean` will remove what MigrateDB created. If MigrateDB also created the schema itself, `clean` will drop it. Otherwise,
-it will only drop the objects within the schema.
 
 
 <div id="db-specific-sql"></div>

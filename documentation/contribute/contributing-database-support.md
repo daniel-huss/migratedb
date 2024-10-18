@@ -96,7 +96,6 @@ Here are all the changes and additions you'll need to make:
     * `getObjectCount()` – to query the number of objects of a given type that exist in the schema
     * `doCreate()` – to create the schema in the database
     * `doDrop()` – to drop the schema in the database
-    * `doClean()` – to drop all the objects that exist in the schema
     * `doAllTables()` – to query for all the tables in the schema and return a populated array of `FooTable` objects
     * `getTable()` – to return a `FooTable` object for the given name
 1. Add overrides for `FooTable` to customize it to fit the SQL dialect your database uses:
