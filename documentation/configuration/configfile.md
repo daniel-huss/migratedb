@@ -9,17 +9,6 @@ redirect_from: /documentation/configfiles/
 
 MigrateDB supports loading configuration via config files.
 
-## Loading
-
-By default MigrateDB will load configuration files from the following locations:
-
-- <i>installDir<i>/conf/migratedb.conf
-- <i>userhome<i>/migratedb.conf
-- <i>workingDir<i>/migratedb.conf
-
-Additionally you can make MigrateDB load other configurations using
-the [configFiles](/migratedb/documentation/configuration/parameters/configFiles) configuration parameter.
-
 ## Structure
 
 Config files have the following structure:
@@ -38,20 +27,6 @@ migratedb.schemas=schema1,schema2
 migratedb.placeholders.keyABC=valueXYZ
 ```
 
-### Environment variable substitution
-
-Environment variables in config files are substituted:
-
-```properties
-migratedb.placeholders.abc=${ABC}
-```
-
-If an environment variable isn't set, an empty value is assumed.
-
 ## Reference
 
 See [configuration](/migratedb/documentation/configuration/parameters) for a full list of supported configuration parameters.
-
-<p class="next-steps">
-  <a class="btn btn-primary" href="/migratedb/documentation/configuration/envvars">Environment Variables ➡️</a>
-</p>

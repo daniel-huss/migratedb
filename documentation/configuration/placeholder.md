@@ -10,7 +10,6 @@ redirect_from: /documentation/placeholders/
 MigrateDB comes with support for placeholder replacement in:
 
 - [SQL migrations](/migratedb/documentation/configuration/placeholder#sql-migration-placeholders)
-- [Script migrations](/migratedb/documentation/configuration/placeholder#script-migration-placeholders)
 
 # SQL Migration Placeholders
 
@@ -30,7 +29,6 @@ Placeholders are supported in versioned migrations, repeatable migrations, and S
 
 Placeholders can be configured through a number of different ways.
 
-- Via environment variables. `MIGRATEDB_PLACEHOLDERS_MYPLACEHOLDER=value`
 - Via configuration parameters. `migratedb.placeholders.myplaceholder=value`
 - Via the api. `.placeholders(Map.of("myplaceholder", "value"))`
 
@@ -45,7 +43,6 @@ parameters.
 MigrateDB also provides default placeholders, whose values are automatically populated:
 
 - `${migratedb:defaultSchema}` = The default schema for MigrateDB
-- `${migratedb:user}` = The user MigrateDB will use to connect to the database
 - `${migratedb:database}` = The name of the database from the connection url
 - `${migratedb:timestamp}` = The time that MigrateDB parsed the script, formatted as 'yyyy-MM-dd HH:mm:ss'
 - `${migratedb:filename}` = The filename of the current script
@@ -75,31 +72,3 @@ GRANT SELECT ON SCHEMA ${migratedb:defaultSchema} TO ${migratedb:user};
 -- User defined placeholder
 INSERT INTO ${tableName} (name) VALUES ('Mr. T');
 ```
-
-# Script Migration Placeholders
-
-Much like SQL placeholders, MigrateDB supports placeholder replacement in
-[script migrations](/migratedb/documentation/concepts/migrations#script-migrations). Placeholders can be read
-through environment variables in your chosen scripting language and by default are prefixed by `FP__`
-and suffixed by `__`. When accessing a placeholder that contains a colon (`:`), you must replace the colon with an
-underscore (`_`).
-
-### Example
-
-Here are some examples of the supported syntax:
-
-Powershell:
-
-```powershell
-echo $env:FP__migratedb_filename__
-```
-
-Bash:
-
-```bash
-echo $FP__migratedb_filename__
-```
-
-<p class="next-steps">
-  <a class="btn btn-primary" href="/migratedb/documentation/configuration/scriptconfigfiles">Script Config Files ➡️</a>
-</p>
