@@ -34,7 +34,7 @@ import java.time.Duration
 import javax.sql.DataSource
 
 enum class Postgres(image: String) : DbSystem {
-    V17("postgres:17beta3-alpine"),
+    V17("postgres:17-alpine"),
     V16("postgres:16-alpine"),
     V15("postgres:15-alpine"),
     V14("postgres:14-alpine"),

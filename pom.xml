@@ -49,7 +49,6 @@
         <module>migratedb-testlib</module>
         <module>migratedb-core</module>
         <module>migratedb-scanner</module>
-        <module>migratedb-commandline</module>
         <module>migratedb-integration-tests</module>
         <module>migratedb-maven-plugin</module>
         <module>migratedb-gradle-plugin</module>
@@ -87,27 +86,27 @@
 
         <version.apiguardian>1.1.2</version.apiguardian>
         <version.auto-service>1.1.1</version.auto-service>
-        <version.checkerframework>3.46.0</version.checkerframework>
+        <version.checkerframework>3.48.1</version.checkerframework>
         <version.commons-codec>1.17.1</version.commons-codec>
-        <version.commons-io>2.16.1</version.commons-io>
-        <version.commons-logging>1.3.3</version.commons-logging>
-        <version.groovy>4.0.22</version.groovy>
+        <version.commons-io>2.17.0</version.commons-io>
+        <version.commons-logging>1.3.4</version.commons-logging>
+        <version.groovy>4.0.23</version.groovy>
         <version.gson>2.11.0</version.gson>
         <version.h2.latest>2.3.230</version.h2.latest>
         <version.jacoco>0.8.12</version.jacoco>
         <version.java>11</version.java>
         <version.jimfs>1.3.0</version.jimfs>
-        <version.jqwik>1.9.0</version.jqwik>
+        <version.jqwik>1.9.1</version.jqwik>
         <version.jtds>1.3.1</version.jtds>
-        <version.junit>5.10.3</version.junit>
+        <version.junit>5.11.2</version.junit>
         <version.kotest>5.9.1</version.kotest>
-        <version.kotlin>2.0.10</version.kotlin>
-        <version.logback>1.5.6</version.logback>
+        <version.kotlin>2.0.21</version.kotlin>
+        <version.logback>1.5.11</version.logback>
         <version.maven-api>3.8.4</version.maven-api>
         <version.p6spy>3.9.1</version.p6spy>
         <version.slf4j>2.0.16</version.slf4j>
-        <version.spring-jdbc>5.3.33</version.spring-jdbc>
-        <version.testcontainers>1.19.8</version.testcontainers>
+        <version.spring-jdbc>5.3.39</version.spring-jdbc>
+        <version.testcontainers>1.20.2</version.testcontainers>
     </properties>
 
     <dependencyManagement>
@@ -338,7 +337,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.5.0</version>
                     <configuration>
                         <excludes combine.children="override">
                             <!-- No need to exclude anything -->
@@ -351,7 +350,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.5.0</version>
                     <executions>
                         <execution>
                             <goals>

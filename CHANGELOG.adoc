@@ -6,6 +6,22 @@ The format is based on https://keepachangelog.com/en/1.1.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
+
+== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.3.0[1.3.0] - 2024-10-20
+
+=== Removed
+
+* Command line application, which doesn't seem to carry its weight given how easy it is to use the API in a script.
+
+=== Added
+
+* Tests/support for PostgreSQL v17.
+
+=== Changed
+
+* Updated dependencies.
+* Changed log message that occurs when the detected database major version is lower than the latest tested version from WARNING to INFO.
+
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.2.0[1.2.0] - 2024-08-20
 
 === Added

@@ -126,9 +126,9 @@ public abstract class BaseDatabase implements Database {
     private void recommendMigrateDbUpgrade(String newestSupportedVersion) {
         String message =
                 "MigrateDB upgrade recommended: " + databaseType + " " + computeVersionDisplayName(getVersion())
-                + " is newer than this version of MigrateDB and support has not been tested."
-                + " The latest supported version of " + databaseType + " is " + newestSupportedVersion + ".";
-        LOG.warn(message);
+                + " is newer than this version of MigrateDB and has not been tested."
+                + " The latest tested version of " + databaseType + " is " + newestSupportedVersion + ".";
+        LOG.info(message);
     }
 
     /**
