@@ -21,22 +21,10 @@ point it will abandon the migration. A value of -1 indicates that MigrateDB shou
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -lockRetryCount=10 migrate
-```
-
 ### Configuration File
 
 ```properties
 migratedb.lockRetryCount=10
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_LOCK_RETRY_COUNT=10
 ```
 
 ### API

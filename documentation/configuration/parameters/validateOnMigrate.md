@@ -18,24 +18,6 @@ true
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -validateOnMigrate="false" migrate
-```
-
-### Configuration File
-
-```properties
-migratedb.validateOnMigrate=false
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_VALIDATE_ON_MIGRATE=false
-```
-
 ### API
 
 ```java

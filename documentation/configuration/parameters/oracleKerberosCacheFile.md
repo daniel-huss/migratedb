@@ -16,24 +16,6 @@ and only has any significance when `oracleKerberosConfigFile` is also specified.
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -oracle.kerberosCacheFile="/temp/krb5cc_123" info
-```
-
-### Configuration File
-
-```properties
-migratedb.oracle.kerberosCacheFile=/temp/krb5cc_123
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_ORACLE_KERBEROS_CACHE_FILE=/temp/krb5cc_123
-```
-
 ### API
 
 ```java

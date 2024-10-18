@@ -18,34 +18,6 @@ true
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -outputQueryResults="false" info
-```
-
-### Configuration File
-
-```properties
-migratedb.outputQueryResults=false
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_OUTPUT_QUERY_RESULTS=false
-```
-
-### API
-
-```java
-MigrateDb.configure()
-    .outputQueryResults(false)
-    .load()
-```
-
-## Use Cases
-
 ### Checking the result of your migrations
 
 When developing and testing migrations, you often want to do a sanity check to ensure that they behave and return

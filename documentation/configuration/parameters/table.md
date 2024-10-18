@@ -25,24 +25,6 @@ migratedb_state
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -table="my_schema_history_table" info
-```
-
-### Configuration File
-
-```properties
-migratedb.table=my_schema_history_table
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_TABLE=my_schema_history_table
-```
-
 ### API
 
 ```java

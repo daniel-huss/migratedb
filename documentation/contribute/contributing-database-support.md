@@ -22,32 +22,6 @@ database of choice.
 * A JDBC driver for your database.
 * A Java IDE that builds with Java 11 or higher. We use and recommend IntelliJ
 
-## Getting started
-
-Fork the [MigrateDB](https://github.com/daniel-huss/migratedb) repo. If you’re using IntelliJ, you should be able to
-open the MigrateDB top level folder and see a number of projects. Copy the
-file `/migratedb-commandline/src/main/assembly/migratedb.conf` to an accessible location on your machine. This location
-will be a temporary 'scratch' area for testing. Use this copy to set up the following properties:
-
-* `migratedb.url` - the JDBC URL of your development database
-* `migratedb.user` - the user account
-* `migratedb.password` - the password to the database
-* `migratedb.locations` - to point to an accessible folder where you can put test migrations.
-
-You can now set up a run configuration in your IDE that will compile MigrateDB and run using your newly created
-configuration:
-
-* Main class: `migratedb.v{{ site.migratedbApiMajorVersion }}.commandline.Main`
-* Program arguments: `info -X -configFiles=<scratch location>\migratedb.conf`
-* Classpath of module: `migratedb-commandline`
-
-MigrateDB itself should start. Since MigrateDB doesn't yet support your database you should see a message like:
-
-`migratedb.{{ site.migratedbApiMajorVersion }}.core.api.MigrateDBException: Unable to autodetect JDBC driver for url: jdbc:mydatabase://<host>:<port>/<databasename>`
-
-You’re now ready to start adding that database support. We’re going to assume your database platform is called **FooDb**
-. Change the obvious naming conventions to suit your database.
-
 ## Let's code!
 
 Here are all the changes and additions you'll need to make:
@@ -132,18 +106,6 @@ Here are all the changes and additions you'll need to make:
       is used to prevent concurrent reads and writes to the schema history while a migration is underway. If your
       database doesn’t support table-level locks, do nothing.`
 
-## Try it!
-
-You should at this point be able to drop your jar into MigrateDB (the `lib` folder is preferable) and
-the necessary driver jars into `drivers`, run the `migratedb info` build configuration and see an empty version history.
-Congratulations! You have got a basic implementation up and running. You can now start creating migration scripts and
-running
-`migratedb migrate` on them.
-
-Basic SQL scripts should run with few problems, but you may find more edge cases, particularly in `Parser`. Look at the
-existing overrides for existing platforms for examples of how to deal with them. If you find you need to make more
-invasive changes in the core of MigrateDB, please do contact us for advice. We will need to test bigger changes
-ourselves against all our test instances before we can accept them.
 
 ## What's next?
 
@@ -155,4 +117,4 @@ In this case you will need to:
 + Have completed every section of this tutorial
 + Submitted your code as a [Pull Request](https://github.com/daniel-huss/migratedb/pulls) for our review, remembering to
   include supporting material (e.g. test code, results, screenshots etc.) to prove compatibility
-+ Completed any requested code changes
++ Complete any requested code changes

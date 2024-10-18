@@ -27,22 +27,11 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -batch="true" info
-```
 
 ### Configuration File
 
 ```properties
 migratedb.batch=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_BATCH=true
 ```
 
 ### API

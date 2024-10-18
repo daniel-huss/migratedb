@@ -21,24 +21,6 @@ list also acts as the default schema, which is where the schema history table wi
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -schemas="schema1,schema2" info
-```
-
-### Configuration File
-
-```properties
-migratedb.schemas=schema1,schema2
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_SCHEMAS=schema1,schema2
-```
-
 ### API
 
 ```java

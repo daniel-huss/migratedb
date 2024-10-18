@@ -44,13 +44,6 @@ executeInTransaction=false
 # Whether this SQL migration should have its MigrateDB placeholders replaced. This behaves exactly like the global
 # 'placeholderReplacement' parameter but applies only to this script. Default: true
 placeholderReplacement=true
-
-# Whether this migration should be executed or ignored. Valid values are 'true', 'false', 'A==B', 'A!=B' (where
-# A,B are values), and combinations of these using `&&` (AND), `||` (OR) and parentheses. This
-# migration is executed if the boolean expression evaluates to true, ignored if it evaluates to false, and throws an
-# exception if the expression is invalid. Placeholder replacement is also supported in the expression.
-# Example: 'shouldExecute=(${environment}==dev || ${environment}==test)' will run if '${environment}' is 'dev' or 'test'
-shouldExecute=${should_execute}==true
 ```
 
 <p class="next-steps">

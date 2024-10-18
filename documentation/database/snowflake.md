@@ -79,8 +79,7 @@ location of the private key:
 
 ## Limitations
 
-- Parallel migrations as described [here](/migratedb/documentation/learnmore/faq#parallel) are unavailable in Snowflake. You can
-  track the status of this feature in our GitHub issues [here](https://github.com/daniel-huss/migratedb/issues/3305).
+- Parallel migrations as described [here](/migratedb/documentation/learnmore/faq#parallel) are unavailable in Snowflake.
 
 <p class="next-steps">
     <a class="btn btn-primary" href="/migratedb/documentation/database/sqlite">SQLite ➡️</a>

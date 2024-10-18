@@ -18,24 +18,6 @@ The suffix of every [placeholder](/migratedb/documentation/configuration/placeho
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -placeholderSuffix="$$" info
-```
-
-### Configuration File
-
-```properties
-migratedb.placeholderSuffix=$$
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_PLACEHOLDER_SUFFIX=$$
-```
-
 ### API
 
 ```java

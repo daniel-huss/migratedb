@@ -19,35 +19,6 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -oracle.sqlplus="true" info
-```
-
-### Configuration File
-
-```properties
-migratedb.oracle.sqlplus=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_ORACLE_SQLPLUS=true
-```
-
-### API
-
-```java
-MigrateDb.configure()
-    .extensionConfig(OracleConfig.class, new OracleConfig()
-            .sqlplus(true))
-    .load()
-```
-
-## Use Cases
-
 ### Configuring consistent sessions for your migrations
 
 See our list of [supported SQL\*Plus commands](/migratedb/documentation/database/oracle#sqlplus-commands) and how you can utilize

@@ -18,24 +18,6 @@ true
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -placeholderReplacement="false" info
-```
-
-### Configuration File
-
-```properties
-migratedb.placeholderReplacement=false
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_PLACEHOLDER_REPLACEMENT=false
-```
-
 ### API
 
 ```java

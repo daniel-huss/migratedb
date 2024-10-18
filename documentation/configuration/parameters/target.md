@@ -31,24 +31,6 @@ Special values:
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -target="2.0" migrate
-```
-
-### Configuration File
-
-```properties
-migratedb.target=2.0
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_TARGET=2.0
-```
-
 ### API
 
 ```java

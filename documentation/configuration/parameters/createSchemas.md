@@ -19,22 +19,10 @@ true
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -createSchemas="false" info
-```
-
 ### Configuration File
 
 ```properties
 migratedb.createSchemas=false
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_CREATE_SCHEMAS=false
 ```
 
 ### API

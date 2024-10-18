@@ -20,24 +20,6 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -oracle.sqlplusWarn="true" info
-```
-
-### Configuration File
-
-```properties
-migratedb.oracle.sqlplusWarn=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_ORACLE_SQLPLUS_WARN=true
-```
-
 ### API
 
 ```java

@@ -27,7 +27,7 @@ These error codes may appear from any command, and are indicative of more genera
 ### `JDBC_DRIVER`
 
 - **Caused by:** The JDBC driver is unable to be instantiated
-- **Solution:** Check whether the JDBC driver is present on the [classpath](/migratedb/documentation/adding-to-the-class-path)
+- **Solution:** Check whether the JDBC driver is present on the classpath.
 
 ### `DB_CONNECTION`
 

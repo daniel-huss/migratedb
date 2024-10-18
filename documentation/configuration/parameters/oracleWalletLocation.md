@@ -18,24 +18,6 @@ null
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -oracle.walletLocation="/User/db/my_wallet" info
-```
-
-### Configuration File
-
-```properties
-migratedb.oracle.walletLocation=/User/db/my_wallet
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_ORACLE_WALLET_LOCATION=/User/db/my_wallet
-```
-
 ### API
 
 ```java

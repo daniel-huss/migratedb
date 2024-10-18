@@ -21,24 +21,6 @@ R
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -repeatableSqlMigrationPrefix="A" info
-```
-
-### Configuration File
-
-```properties
-migratedb.repeatableSqlMigrationPrefix=A
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_REPEATABLE_SQL_MIGRATION_PREFIX=A
-```
-
 ### API
 
 ```java

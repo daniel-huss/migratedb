@@ -18,22 +18,10 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -failOnMissingLocations="true" migrate
-```
-
 ### Configuration File
 
 ```properties
 migratedb.failOnMissingLocations=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_FAIL_ON_MISSING_LOCATIONS=true
 ```
 
 ### API

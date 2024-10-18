@@ -88,12 +88,9 @@ public class V3__Anonymize extends BaseJavaMigration {
 Finally compile the project using
 <pre class="console"><span>bar&gt;</span> mvn compile</pre>
 
-This is now the status
+The new status is:
 
-<pre class="console"><span>bar&gt;</span>./migratedb <strong>info</strong>
-
-[INFO] Database: jdbc:h2:file:./target/foobar (H2 1.4)
-[INFO]
+<pre class="console">
 +-----------+---------+---------------------+------+---------------------+---------+
 | Category  | Version | Description         | Type | Installed On        | State   |
 +-----------+---------+---------------------+------+---------------------+---------+
@@ -108,11 +105,7 @@ Note the new pending migration of type `JDBC`.
 
 It's time to execute our new migration.
 
-So go ahead and invoke
-
-<pre class="console"><span>bar&gt;</span>./migratedb <strong>migrate</strong></pre>
-
-This will give you the following result:
+So go ahead and invoke `migrate`, this will give you the following result:
 
 <pre class="console">[INFO] Database: jdbc:h2:file:./target/foobar (H2 1.4)
 [INFO] Successfully validated 3 migrations (execution time 00:00.022s)
@@ -122,9 +115,7 @@ This will give you the following result:
 
 And you can check that this is indeed the new status:
 
-<pre class="console"><span>bar&gt;</span>./migratedb <strong>info</strong>
-
-[INFO] Database: jdbc:h2:file:./target/foobar (H2 1.4)
+<pre class="console">
 [INFO]
 +-----------+---------+---------------------+------+---------------------+---------+
 | Category  | Version | Description         | Type | Installed On        | State   |

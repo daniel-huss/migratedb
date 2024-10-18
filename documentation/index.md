@@ -35,9 +35,6 @@ title: Documentation
     or <a href="/migratedb/documentation/concepts/migrations#java-based-migrations">Java</a>
     (for advanced data transformations or dealing with LOBs).</p>
 
-<p>It has a <a href="/migratedb/documentation/usage/commandline">Command-line client</a>.
-    If you are on the JVM, we recommend using the <a href="/migratedb/documentation/usage/api">Java API</a>
-    for migrating the database on application startup.</p>
 
 <p class="next-steps">
     <a class="btn btn-primary" href="/migratedb/documentation/concepts/migrations">Migrations ➡️</a>

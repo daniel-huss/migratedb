@@ -13,30 +13,17 @@ variety of different means, depending on how you are using MigrateDB.
 
 ## Usage
 
-### Command Line
-
-If using the command line, config parameters can be set via command line arguments (
-e.g. `./migratedb -url=jdbc:h2:mem:migratedb info`), [configuration files](/migratedb/documentation/configuration/configfile), or
-environment variables (e.g. `MIGRATEDB_URL=jdbc:h2:mem:migratedb`).
-
-### API
-
-If using the API, config parameters can be set via calling methods on the configuration object returned
-by `MigrateDb.configure()` (e.g. `MigrateDb.configure().url("jdbc:h2:mem:migratedb").load()`)
+When using the API, config parameters can be set via calling methods on the configuration object returned
+by `MigrateDb.configure()` (e.g. `MigrateDb.configure().connectRetries(5).load()`)
 , [configuration files](/migratedb/documentation/configuration/configfile).
 
 ## Parameters
 
 ### Connection
 
-- [url](/migratedb/documentation/configuration/parameters/url)
-- [user](/migratedb/documentation/configuration/parameters/user)
-- [password](/migratedb/documentation/configuration/parameters/password)
-- [driver](/migratedb/documentation/configuration/parameters/driver)
 - [connectRetries](/migratedb/documentation/configuration/parameters/connectRetries)
 - [connectRetriesInterval](/migratedb/documentation/configuration/parameters/connectRetriesInterval)
 - [initSql](/migratedb/documentation/configuration/parameters/initSql)
-- [jdbcProperties](/migratedb/documentation/configuration/parameters/jdbcProperties)
 
 ### General
 
@@ -68,7 +55,6 @@ by `MigrateDb.configure()` (e.g. `MigrateDb.configure().url("jdbc:h2:mem:migrate
 - [target](/migratedb/documentation/configuration/parameters/target)
 - [validateMigrationNaming](/migratedb/documentation/configuration/parameters/validateMigrationNaming)
 - [validateOnMigrate](/migratedb/documentation/configuration/parameters/validateOnMigrate)
-- [workingDirectory](/migratedb/documentation/configuration/parameters/workingDirectory)
 
 ### Schema
 

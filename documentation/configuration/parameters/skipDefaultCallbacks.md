@@ -19,24 +19,6 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -skipDefaultCallbacks="true" info
-```
-
-### Configuration File
-
-```properties
-migratedb.skipDefaultCallbacks=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_SKIP_DEFAULT_CALLBACKS=true
-```
-
 ### API
 
 ```java

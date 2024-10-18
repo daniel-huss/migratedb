@@ -21,24 +21,6 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -validateMigrationNaming="true" info
-```
-
-### Configuration File
-
-```properties
-migratedb.validateMigrationNaming=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_VALIDATE_MIGRATION_NAMING=true
-```
-
 ### API
 
 ```java

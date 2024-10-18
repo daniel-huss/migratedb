@@ -19,24 +19,6 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -skipDefaultResolvers="true" info
-```
-
-### Configuration File
-
-```properties
-migratedb.skipDefaultResolvers=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_SKIP_DEFAULT_RESOLVERS=true
-```
-
 ### API
 
 ```java

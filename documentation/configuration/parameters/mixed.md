@@ -26,24 +26,6 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -mixed="true" info
-```
-
-### Configuration File
-
-```properties
-migratedb.mixed=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_MIXED=true
-```
-
 ### API
 
 ```java

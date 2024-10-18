@@ -21,24 +21,6 @@ V
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -sqlMigrationPrefix="M" info
-```
-
-### Configuration File
-
-```properties
-migratedb.sqlMigrationPrefix=M
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_SQL_MIGRATION_PREFIX=M
-```
-
 ### API
 
 ```java

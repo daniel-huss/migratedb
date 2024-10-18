@@ -18,22 +18,10 @@ between connect retries to the value provided.
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -connectRetriesInterval=60 info
-```
-
 ### Configuration File
 
 ```properties
 migratedb.connectRetriesInterval=60
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_CONNECT_RETRIES_INTERVAL=60
 ```
 
 ### API

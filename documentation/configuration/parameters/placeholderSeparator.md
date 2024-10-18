@@ -18,24 +18,6 @@ The separator of default [placeholders](/migratedb/documentation/configuration/p
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -placeholderSeparator="_" info
-```
-
-### Configuration File
-
-```properties
-migratedb.placeholderSeparator=_
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_PLACEHOLDER_SEPARATOR=_
-```
-
 ### API
 
 ```java

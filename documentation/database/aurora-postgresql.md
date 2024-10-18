@@ -26,10 +26,6 @@ subtitle: Aurora PostgreSQL
 <td>Yes - add <code>?ssl=true</code></td>
 </tr>
 <tr>
-<th>Ships with MigrateDB Command-line</th>
-<td>Yes</td>
-</tr>
-<tr>
 <th>Maven Central coordinates</th>
 <td><code>org.postgresql:postgresql:42.2.5</code></td>
 </tr>

@@ -24,22 +24,10 @@ the database's default schema.
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -defaultSchema="schema2" info
-```
-
 ### Configuration File
 
 ```properties
 migratedb.defaultSchema=schema2
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_DEFAULT_SCHEMA=schema2
 ```
 
 ### API

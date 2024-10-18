@@ -18,22 +18,10 @@ The username that will be recorded in the schema history table as having applied
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -installedBy="ci-pipeline" clean
-```
-
 ### Configuration File
 
 ```properties
 migratedb.installedBy=ci-pipeline
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_INSTALLED_BY=ci-pipeline
 ```
 
 ### API

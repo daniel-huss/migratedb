@@ -23,22 +23,11 @@ B
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -baselineMigrationPrefix="IB" info
-```
 
 ### Configuration File
 
 ```properties
 migratedb.baselineMigrationPrefix=IB
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_BASELINE_MIGRATION_PREFIX=IB
 ```
 
 ### API

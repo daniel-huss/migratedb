@@ -25,22 +25,10 @@ true
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -ignoreFutureMigrations="false" validate
-```
-
 ### Configuration File
 
 ```properties
 migratedb.ignoreFutureMigrations=false
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_IGNORE_FUTURE_MIGRATIONS=false
 ```
 
 ### API

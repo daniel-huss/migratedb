@@ -21,11 +21,3 @@ overhead of dealing with lots of scripts, many of which might be old and irrelev
 
 <a class="btn btn-primary" href="reset-the-baseline-migration">Learn more about resetting the baseline migration</a>
 
-## Usage
-
-See [configuration](/migratedb/documentation/configuration/parameters/#baseline) for baseline specific configuration parameters.
-{% include commandUsage.html command="baseline" %}
-
-<p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/command/repair">Repair ➡️</a>
-</p>

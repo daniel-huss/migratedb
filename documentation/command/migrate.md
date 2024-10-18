@@ -26,11 +26,3 @@ Migrate will apply the migrations 6, 7, 8 and 9 in order.
 #### Example 2: We have migrations available up to version 9, and the database is at version 9.
 
 Migrate does nothing.
-
-## Usage
-
-{% include commandUsage.html command="migrate" %}
-
-<p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/command/clean">Clean ➡️</a>
-</p>

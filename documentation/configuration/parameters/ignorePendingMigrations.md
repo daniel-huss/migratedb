@@ -24,22 +24,11 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -ignorePendingMigrations="true" validate
-```
 
 ### Configuration File
 
 ```properties
 migratedb.ignorePendingMigrations=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_IGNORE_PENDING_MIGRATIONS=true
 ```
 
 ### API

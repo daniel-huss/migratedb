@@ -15,8 +15,7 @@ Comma-separated list of locations to scan recursively for migrations. The locati
 ### Classpath
 
 Unprefixed locations or locations starting with <code>classpath:</code> point to a package on the classpath and may
-contain both SQL and Java-based migrations. You must ensure the package is available on the classpath (
-see [Adding to the classpath](/migratedb/documentation/adding-to-the-class-path)).
+contain both SQL and Java-based migrations.
 
 ### Filesystem
 
@@ -29,22 +28,10 @@ classpath:db/migration
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -locations="filesystem:./sql" info
-```
-
 ### Configuration File
 
 ```properties
 migratedb.locations=filesystem:./sql
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_LOCATIONS=filesystem:./sql
 ```
 
 ### API

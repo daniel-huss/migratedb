@@ -17,11 +17,3 @@ Repair is your tool to fix issues with the schema history table. It has a few ma
 - Mark all missing migrations as **deleted**
     - As a result, `repair` must be given the same [`locations`](/migratedb/documentation/configuration/parameters/locations)
       as `migrate`!
-
-## Usage
-
-{% include commandUsage.html command="repair" %}
-
-<p class="next-steps">
-    <a class="btn btn-primary" href="/migratedb/documentation/usage/commandline/">Command-line ➡️</a>
-</p>

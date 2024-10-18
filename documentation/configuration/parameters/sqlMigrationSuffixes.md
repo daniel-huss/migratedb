@@ -24,24 +24,6 @@ specific file associations.
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -sqlMigrationSuffixes=".sql,.pkg,.pkb" info
-```
-
-### Configuration File
-
-```properties
-migratedb.sqlMigrationSuffixes=.sql,.pkg,.pkb
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_SQL_MIGRATION_SUFFIXES=.sql,.pkg,.pkb
-```
-
 ### API
 
 ```java

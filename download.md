@@ -7,9 +7,15 @@ title: Download
 
 <ul>
     <li><a href="https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core">Core Library</a></li>
-    <li><a href="https://github.com/daniel-huss/migratedb/releases/">Command Line Interface</a></li>
-
 </ul>
+
+````xml
+<plugin>
+    <groupId>de.unentscheidbar</groupId>
+    <artifactId>migratedb-core</artifactId>
+    <version>{{ site.migratedbReleaseVersion }}</version>
+</plugin>
+````
 
 ## Maven Plugin
 ````xml

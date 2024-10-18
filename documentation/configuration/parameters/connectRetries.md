@@ -20,22 +20,10 @@ between retries doubles with each subsequent attempt.
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -connectRetries=10 info
-```
-
 ### Configuration File
 
 ```properties
 migratedb.connectRetries=10
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_CONNECT_RETRIES=10
 ```
 
 ### API

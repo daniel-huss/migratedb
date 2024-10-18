@@ -21,24 +21,6 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -outOfOrder="true" info
-```
-
-### Configuration File
-
-```properties
-migratedb.outOfOrder=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_OUT_OF_ORDER=true
-```
-
 ### API
 
 ```java

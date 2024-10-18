@@ -31,22 +31,11 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -ignoreMissingMigrations="true" validate
-```
 
 ### Configuration File
 
 ```properties
 migratedb.ignoreMissingMigrations=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_IGNORE_MISSING_MIGRATIONS=true
 ```
 
 ### API

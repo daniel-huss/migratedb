@@ -31,39 +31,11 @@ UTF-8
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -encoding="UTF-16" info
-```
-
 ### Configuration File
 
 ```properties
 migratedb.encoding=UTF-16
 ```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_ENCODING=UTF-16
-```
-
-### API
-
-```java
-MigrateDb.configure()
-    .encoding("UTF-16")
-    .load()
-```
-
-
-## Troubleshooting
-
-### My text editor doesn't support any of MigrateDB's supported encodings
-
-This is because some encoding names are synonyms for others. For instance, an editor which specifies `ANSI` is
-actually `ISO-8859-1`.
 
 ### I'm getting a MalformedInputException
 

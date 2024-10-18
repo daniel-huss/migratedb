@@ -18,22 +18,10 @@ The Description to tag an existing schema with when executing [baseline](/migrat
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -baselineDescription="Baseline" baseline
-```
-
 ### Configuration File
 
 ```properties
 migratedb.baselineDescription=Baseline
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_BASELINE_DESCRIPTION=Baseline
 ```
 
 ### API

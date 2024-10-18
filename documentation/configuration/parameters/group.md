@@ -19,22 +19,10 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -group="true" info
-```
-
 ### Configuration File
 
 ```properties
 migratedb.group=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_GROUP=true
 ```
 
 ### API

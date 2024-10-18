@@ -30,24 +30,6 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -skipExecutingMigrations="true" migrate
-```
-
-### Configuration File
-
-```properties
-migratedb.skipExecutingMigrations=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_SKIP_EXECUTING_MIGRATIONS=true
-```
-
 ### API
 
 ```java

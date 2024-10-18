@@ -21,24 +21,6 @@ __
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -sqlMigrationSeparator="-" info
-```
-
-### Configuration File
-
-```properties
-migratedb.sqlMigrationSeparator=-
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_SQL_MIGRATION_SEPARATOR=-
-```
-
 ### API
 
 ```java

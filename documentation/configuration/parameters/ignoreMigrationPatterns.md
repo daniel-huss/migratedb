@@ -64,22 +64,10 @@ empty
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -ignoreMigrationPatterns="repeatable:missing" validate
-```
-
 ### Configuration File
 
 ```properties
 migratedb.ignoreMigrationPatterns="repeatable:missing"
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_IGNORE_MIGRATION_PATTERNS="repeatable:missing"
 ```
 
 ### API

@@ -27,9 +27,6 @@ title: Documentation
                         <li {% if page.url contains "documentation/getstarted/firststeps" %} open {% endif %}>
                             <span>First steps</span>
                             <ul class="nav nav-pills nav-stacked">
-                                <li {% if page.menu=='commandline' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/getstarted/firststeps/commandline">Command-line</a></li>
-
                                 <li {% if page.menu=='api' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/getstarted/firststeps/api">API</a></li>
                             </ul>
@@ -71,28 +68,6 @@ title: Documentation
 
                     <li {% if page.url contains "documentation/usage" %} open class="active" {% endif %}>
                         <span>Usage</span>
-                        <li {% if layout.menu=='commandLine' %} open {% endif %} class="collapsible-nested">
-                            <span>Command-line</span>
-                            <ul class="nav nav-pills nav-stacked">
-                                <li {% if page.pill=='cli_overview' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/usage/commandline">Overview</a></li>
-
-                                <li {% if page.pill=='cli_migrate' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/usage/commandline/migrate">migrate</a></li>
-
-                                <li {% if page.pill=='cli_info' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/usage/commandline/info">info</a></li>
-
-                                <li {% if page.pill=='cli_validate' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/usage/commandline/validate">validate</a></li>
-
-                                <li {% if page.pill=='cli_baseline' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/usage/commandline/baseline">baseline</a></li>
-
-                                <li {% if page.pill=='cli_repair' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/usage/commandline/repair">repair</a></li>
-                            </ul>
-                        </li>
                         <li {% if layout.menu=='api' %} open {% endif %} class="collapsible-nested">
                             <span>API (Java)</span>
                             <ul class="nav nav-pills nav-stacked">
@@ -134,9 +109,6 @@ title: Documentation
                     <li {% if page.url contains "documentation/tutorials" %} open class="active" {% endif %}>
                         <span>Tutorials</span>
                         <ul class="nav nav-pills nav-stacked">
-                            <li {% if page.menu=='repeatable' %} class="active" {% endif %}>
-                            <a href="/migratedb/documentation/tutorials/repeatable">Repeatable migrations</a></li>
-
                             <li {% if page.menu=='tut_baseline-migrations' %} class="active" {% endif %}>
                             <a href="/migratedb/documentation/tutorials/baseline-migrations">Baseline Migrations</a></li>
 
@@ -148,9 +120,6 @@ title: Documentation
 
                             <li {% if page.menu=='tut_customvalidationrules' %} class="active" {% endif %}>
                             <a href="/migratedb/documentation/tutorials/custom-validation-rules">Custom Validation Rules</a></li>
-
-                            <li {% if page.menu=='tut_injectingenvironments' %} class="active" {% endif %}>
-                            <a href="/migratedb/documentation/tutorials/injecting-environments">Injecting Environments</a></li>
                         </ul>
                     </li>
 
@@ -183,12 +152,6 @@ title: Documentation
                                 <li {% if page.pill=='cherryPick' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/configuration/parameters/cherryPick">cherryPick</a></li>
 
-                                <li {% if page.pill=='configFileEncoding' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/configuration/parameters/configFileEncoding">configFileEncoding</a></li>
-
-                                <li {% if page.pill=='configFiles' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/configuration/parameters/configFiles">configFiles</a></li>
-
                                 <li {% if page.pill=='connectRetries' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/configuration/parameters/connectRetries">connectRetries</a></li>
 
@@ -200,9 +163,6 @@ title: Documentation
 
                                 <li {% if page.pill=='defaultSchema' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/configuration/parameters/defaultSchema">defaultSchema</a></li>
-
-                                <li {% if page.pill=='driver' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/configuration/parameters/driver">driver</a></li>
 
                                 <li {% if page.pill=='encoding' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/configuration/parameters/encoding">encoding</a></li>
@@ -233,9 +193,6 @@ title: Documentation
 
                                 <li {% if page.pill=='installedBy' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/configuration/parameters/installedBy">installedBy</a></li>
-
-                                <li {% if page.pill=='jarDirs' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/configuration/parameters/jarDirs">jarDirs</a></li>
 
                                 <li {% if page.pill=='jdbcProperties' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/configuration/parameters/jdbcProperties">jdbcProperties</a></li>
@@ -272,9 +229,6 @@ title: Documentation
 
                                 <li {% if page.pill=='outputQueryResults' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/configuration/parameters/outputQueryResults">outputQueryResults</a></li>
-
-                                <li {% if page.pill=='password' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/configuration/parameters/password">password</a></li>
 
                                 <li {% if page.pill=='placeholderPrefix' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/configuration/parameters/placeholderPrefix">placeholderPrefix</a></li>
@@ -333,40 +287,19 @@ title: Documentation
                                 <li {% if page.pill=='target' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/configuration/parameters/target">target</a></li>
 
-                                <li {% if page.pill=='url' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/configuration/parameters/url">url</a></li>
-
-                                <li {% if page.pill=='user' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/configuration/parameters/user">user</a></li>
-
                                 <li {% if page.pill=='validateMigrationNaming' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/configuration/parameters/validateMigrationNaming">validateMigrationNaming</a></li>
 
                                 <li {% if page.pill=='validateOnMigrate' %} class="active" {% endif %}>
                                 <a href="/migratedb/documentation/configuration/parameters/validateOnMigrate">validateOnMigrate</a></li>
-
-                                <li {% if page.pill=='workingDirectory' %} class="active" {% endif %}>
-                                <a href="/migratedb/documentation/configuration/parameters/workingDirectory">workingDirectory</a></li>
                             </ul>
                         </li>
                         <ul class="nav nav-pills nav-stacked">
-                        <li {% if page.menu=='envvars' %} class="active" {% endif %}>
-                        <a href="/migratedb/documentation/configuration/envvars">Environment Variables</a></li>
-
-                        <li {% if page.menu=='configFiles' %} class="active" {% endif %}>
-                        <a href="/migratedb/documentation/configuration/configfile">Config Files</a></li>
-
                         <li {% if page.menu=='scriptconfigfiles' %} class="active" {% endif %}>
                         <a href="/migratedb/documentation/configuration/scriptconfigfiles">Script Config Files</a></li>
 
                         <li {% if page.menu=='placeholders' %} class="active" {% endif %}>
                         <a href="/migratedb/documentation/configuration/placeholder">Placeholders</a></li>
-
-                        <li {% if page.menu=='ssl' %} class="active" {% endif %}>
-                        <a href="/migratedb/documentation/configuration/ssl">SSL support</a></li>
-
-                        <li {% if page.menu=='authentication' %} class="active" {% endif %}>
-                        <a href="/migratedb/documentation/configuration/authentication">Authentication</a></li>
                     </ul>
 
                     <li {% if page.url contains "documentation/database" %} open class="active" {% endif %}>

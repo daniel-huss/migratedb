@@ -12,10 +12,6 @@ redirect_from:
 
 # Tutorial: Callbacks
 
-This tutorial assumes you have successfully completed the [**First Steps:
-Command-line**](/migratedb/documentation/getstarted/firststeps/commandline)
-tutorial. **If you have not done so, please do so first.** This tutorial picks up where that one left off.
-
 This brief tutorial will teach **how to use callbacks**. It will take you through the
 steps on how to create and use them.
 
@@ -31,23 +27,6 @@ They are typically used for
 - Updating materialized views
 - Storage housekeeping (`VACUUM` for PostgreSQL for example)
 
-## Reviewing the status
-
-After having completed the [First Steps: Command-line](/migratedb/documentation/getstarted/firststeps/commandline), you can now
-execute
-
-<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb <strong>info</strong></pre>
-
-This should give you the following status:
-
-<pre class="console">Database: jdbc:h2:file:./foobardb (H2 1.4)
-                     
-+-----------+---------+---------------------+------+---------------------+----------+
-| Category  | Version | Description         | Type | Installed On        | State    |
-+-----------+---------+---------------------+------+---------------------+----------+
-| Versioned | 1       | Create person table | SQL  | 2017-12-21 18:05:10 | Success  |
-| Versioned | 2       | Add people          | SQL  | 2017-12-21 18:05:10 | Success  |
-+-----------+---------+---------------------+------+---------------------+----------+</pre>
 
 ## Creating a callback
 
@@ -64,9 +43,7 @@ CHECKPOINT SYNC;
 
 To trigger the execution of the callback, we'll clean and migrate the database again.
 
-So go ahead and invoke
-
-<pre class="console"><span>migratedb-{{ site.migratedbReleaseVersion }}&gt;</span> migratedb clean <strong>migrate</strong></pre>
+So go ahead and invoke `migrate`.
 
 This will give you the following result:
 

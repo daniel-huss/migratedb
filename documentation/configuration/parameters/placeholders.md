@@ -25,26 +25,6 @@ and `${KEY1}`.
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -placeholders.key1=value1 -placeholders.key2=value2 info
-```
-
-### Configuration File
-
-```properties
-migratedb.placeholders.key1=value1
-migratedb.placeholders.key2=value2
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_PLACEHOLDERS_KEY1=value1
-MIGRATEDB_PLACEHOLDERS_KEY2=value2
-```
-
 ### API
 
 ```java

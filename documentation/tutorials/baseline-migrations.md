@@ -52,8 +52,7 @@ B3__create_table.sql
 ```
 
 This should contain the SQL that represents our environment after the original 3 migrations are applied. After adding
-this migration to our existing environment, we will notice no difference as shown in the below output after
-running `migratedb info`:
+this migration to our existing environment, we will notice no difference :
 
 ```
 +-----------+---------+-------------------+------+---------------------+---------+
@@ -65,7 +64,7 @@ running `migratedb info`:
 +-----------+---------+-------------------+------+---------------------+---------+
 ```
 
-However, when we come to apply our migrations in a new environment, `migratedb info` will show the following output:
+However, when we come to apply our migrations in a new environmen:
 
 ```
 +-----------+---------+--------------+------------------+--------------+---------+
@@ -76,7 +75,7 @@ However, when we come to apply our migrations in a new environment, `migratedb i
 ```
 
 Migrations with a version less than or equal to the latest baseline migration's version are ignored.
-Running `migratedb migrate` will cause just the `B3` script to be applied, and the history table will show this as a
+Running `migrate` will cause just the `B3` script to be applied, and the history table will show this as a
 result:
 
 ```

@@ -38,7 +38,7 @@ Let's assume our schema history table is as follows:
 ```
 
 We have a missing repeatable migration `repeatable` and a pending versioned migration `first`.
-Running `migratedb validate` will fail for both of these migrations, erroring that there is
+Running `validate` will fail for both of these migrations, erroring that there is
 a `Detected applied migration not resolved locally` and `Detected resolved migration not applied to database`.
 
 While the default behavior of validate here causes an error, you may not want to error in this scenario.
@@ -50,7 +50,7 @@ on any pending migrations. Instead, you want to ensure that migrations that have
 successfully validated instead.
 
 Achieving the desired result only requires passing a list of patterns to `ignoreMigrationPatterns` with the
-value `repeatable:missing,versioned:pending`. `migratedb validate` will no longer fail for missing repeatable migrations
+value `repeatable:missing,versioned:pending`. `validate` will no longer fail for missing repeatable migrations
 or pending versioned migrations.
 
 ## Summary

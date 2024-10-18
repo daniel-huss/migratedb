@@ -25,22 +25,10 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -baselineOnMigrate="true" migrate
-```
-
 ### Configuration File
 
 ```properties
 migratedb.baselineOnMigrate=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_BASELINE_ON_MIGRATE=true
 ```
 
 ### API

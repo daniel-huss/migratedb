@@ -18,24 +18,6 @@ ${
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -placeholderPrefix="$$" info
-```
-
-### Configuration File
-
-```properties
-migratedb.placeholderPrefix=$$
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_PLACEHOLDER_PREFIX=$$
-```
-
 ### API
 
 ```java

@@ -87,9 +87,6 @@ Oracle supports user and password being provided in the JDBC URL, in the form
 
 `jdbc:oracle:thin:<user>/<password>@//<host>:<port>/<database>`
 
-In this case, they do not need to be passed separately in configuration and the MigrateDB commandline will not prompt
-for them.
-
 ### Oracle Wallet
 
 MigrateDB can connect to your databases using credentials in your Oracle Wallet.

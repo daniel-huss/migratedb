@@ -25,8 +25,3 @@ break the conventions of MigrateDB’s validation.
 In these cases you need a way to tell MigrateDB that these migrations are valid.
 
 <a class="btn btn-primary" href="custom-validate-rules">Learn more about custom validate rules</a>
-
-## Usage
-
-See [configuration](/migratedb/documentation/configuration/parameters/#validate) for validate specific configuration parameters.
-{% include commandUsage.html command="validate" %}

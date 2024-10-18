@@ -30,22 +30,10 @@ false
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -ignoreIgnoredMigrations="true" validate
-```
-
 ### Configuration File
 
 ```properties
 migratedb.ignoreIgnoredMigrations=true
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_IGNORE_IGNORED_MIGRATIONS=true
 ```
 
 ### API

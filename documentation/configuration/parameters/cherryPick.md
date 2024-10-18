@@ -27,33 +27,11 @@ skipped and is marked as 'ignored'. `V2__create_table2.sql` can be cherry picked
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -cherryPick="2.0" migrate
-```
-
 ### Configuration File
 
 ```properties
 migratedb.cherryPick=2.0
 ```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_CHERRY_PICK=2.0
-```
-
-### API
-
-```java
-MigrateDb.configure()
-    .cherryPick("2.0")
-    .load()
-```
-
-## Use Cases
 
 ### Deferred migration execution
 

@@ -21,7 +21,9 @@ This should cover most changes. The full list of breaking changes can be found i
 
 ## Conversion of schema history table
 
-Your existing schema history needs to be converted into the format used by MigrateDB. This will, by default, happen automatically the next time you [migrate](/migratedb/documentation/usage/commandline/migrate). If your schema history does not use the default name `flyway_schema_history`, set the configuration parameter `oldTable`to the custom table name.
+Your existing schema history needs to be converted into the format used by MigrateDB. This will, by default, happen
+automatically the next time you [migrate](/migratedb/documentation/usage/api/migrate). If your schema history does not
+use the default name `flyway_schema_history`, set the configuration parameter `oldTable`to the custom table name.
 
 Alternatively, you can execute the `liberate` command manually. You only have to run it _once_ per schema history table:
 
@@ -33,26 +35,6 @@ MigrateDb.configure()
          .load()
          .liberate()
 ```
-
-### Command line
-
-```powershell
-./migratedb -oldTable=table_if_different_from_default liberate
-```
-
-## Build tool changes
-
-MigrateDB does class path scanning during build-time, not at runtime. This approach is much more maintainable and works in any runtime environment.
-
-There are scanner plugins for Maven and Gradle users and a scanner library for every other build tool.
-
-### Maven
-
-See [Maven plugin usage](/migratedb/documentation/usage/maven).
-
-### Gradle 
-
-See [Gradle plugin usage](/migratedb/documentation/usage/gradle).
 
 ### Other build tools
 

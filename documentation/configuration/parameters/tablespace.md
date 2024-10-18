@@ -17,24 +17,6 @@ all others.
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -tablespace="xyz" info
-```
-
-### Configuration File
-
-```properties
-migratedb.tablespace=xyz
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_TABLESPACE=xyz
-```
-
 ### API
 
 ```java

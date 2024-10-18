@@ -108,9 +108,6 @@ The user and password can be provided in the JDBC URL, in the form
 
 `jdbc:postgresql://<host>:<port>/<database>?user=myUsername&password=myPassword&<key1>=<value1>&<key2>=<value2>...`
 
-In this case, they do not need to be passed separately in configuration and the MigrateDB commandline will not prompt
-for them.
-
 ### SCRAM
 
 SCRAM authentication encryption is supported transparently using the current driver (42.2.14) - note that

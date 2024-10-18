@@ -17,22 +17,10 @@ be included into any one script.
 
 ## Usage
 
-### Command line
-
-```powershell
-./migratedb -initSql="ALTER SESSION SET NLS_LANGUAGE='ENGLISH';" info
-```
-
 ### Configuration File
 
 ```properties
 migratedb.initSql=ALTER SESSION SET NLS_LANGUAGE='ENGLISH';
-```
-
-### Environment Variable
-
-```properties
-MIGRATEDB_INIT_SQL=ALTER SESSION SET NLS_LANGUAGE='ENGLISH';
 ```
 
 ### API
