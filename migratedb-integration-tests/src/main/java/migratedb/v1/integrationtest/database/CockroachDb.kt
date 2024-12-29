@@ -34,6 +34,7 @@ import java.util.concurrent.Semaphore
 import javax.sql.DataSource
 
 enum class CockroachDb(image: String) : DbSystem {
+    V24_3_2("cockroachdb/cockroach:v24.3.2"),
     V24_1_3("cockroachdb/cockroach:v24.1.3"),
     V23_2_0("cockroachdb/cockroach:v23.2.9"),
     V23_1_5("cockroachdb/cockroach:v23.1.14"),

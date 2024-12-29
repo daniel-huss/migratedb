@@ -18,7 +18,7 @@
     <parent>
         <groupId>de.unentscheidbar</groupId>
         <artifactId>migratedb</artifactId>
-        <version>1.3.0</version>
+        <version>1.4.0-SNAPSHOT</version>
     </parent>
     <artifactId>migratedb-maven-plugin</artifactId>
     <name>MigrateDB - Maven Plugin</name>

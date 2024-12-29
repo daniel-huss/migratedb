@@ -32,8 +32,8 @@ import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
 enum class SqlServer(image: String) : DbSystem {
-    V2022_CU5("mcr.microsoft.com/mssql/server:2022-CU5-ubuntu-20.04"),
-    V2019_CU15("mcr.microsoft.com/mssql/server:2019-CU15-ubuntu-20.04"),
+    V2022_CU5("mcr.microsoft.com/mssql/server:2022-CU16-ubuntu-22.04"),
+    V2019_CU15("mcr.microsoft.com/mssql/server:2019-CU29-ubuntu-20.04"),
     V2017_CU28("mcr.microsoft.com/mssql/server:2017-CU28-ubuntu-16.04"),
     ;
 

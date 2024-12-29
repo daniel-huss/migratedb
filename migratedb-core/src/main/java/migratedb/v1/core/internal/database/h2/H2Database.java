@@ -121,7 +121,7 @@ public class H2Database extends BaseDatabase {
     @Override
     public final void ensureSupported() {
         ensureDatabaseIsRecentEnough("1.2.137");
-        recommendMigrateDbUpgradeIfNecessary("2.2.999");
+        recommendMigrateDbUpgradeIfNecessary("2.3.999");
     }
 
     @Override

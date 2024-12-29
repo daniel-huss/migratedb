@@ -36,7 +36,7 @@ xref:migratedb-spring-boot-v3/README.adoc[See here if you're using Spring Boot]
 
 The main priority of this project is to provide a bloat-free library for database migrations.
 Bugs will be fixed, and new software versions will be supported as long as the changes are testable.
-New features must fit reasonably within the scope of a database schema migration _library_, and have to be useful to a large number (>1) of users 😉
+New features must fit reasonably within the scope of a schema/data migration _library_, and have to be useful to a large number (>1) of users 😉
 
 === Build Prerequisites
 

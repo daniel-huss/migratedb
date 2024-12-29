@@ -35,7 +35,7 @@ class DatabasesSupportedByFw : Args(
     *databases()
 ) {
     companion object {
-        fun databases() = arrayOf(
+        fun databases() = arrayOf<DbSystem>(
             Sqlite.V3_8_11_2,
             Sqlite.V3_36_0_3,
             Derby.V10_15_2_0,

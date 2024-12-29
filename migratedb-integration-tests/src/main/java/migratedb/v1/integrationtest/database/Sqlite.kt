@@ -18,7 +18,6 @@ package migratedb.v1.integrationtest.database
 
 import io.kotest.assertions.throwables.shouldThrow
 import migratedb.v1.core.api.internal.database.base.DatabaseType
-import migratedb.v1.core.internal.database.DatabaseTypeRegisterImpl
 import migratedb.v1.core.internal.database.sqlite.SQLiteDatabaseType
 import migratedb.v1.core.internal.util.ClassUtils
 import migratedb.v1.dependency_downloader.MavenCentralToLocal
@@ -35,7 +34,9 @@ import javax.sql.DataSource
 import kotlin.io.path.deleteIfExists
 
 enum class Sqlite : DbSystem {
-    V3_46_0_1,
+    V3_47_1_0,
+    V3_46_1_3,
+    V3_45_3_0,
     V3_36_0_3,
     V3_35_0_1,
     V3_34_0,
@@ -61,17 +62,14 @@ enum class Sqlite : DbSystem {
     //    its tables (we don't use that feature here)
 
     companion object {
-        private const val driverClass = "org.sqlite.JDBC"
+        private const val DRIVER_CLASS = "org.sqlite.JDBC"
         private val databaseType = SQLiteDatabaseType()
-        private val databaseTypeRegister = DatabaseTypeRegisterImpl().also {
-            it.registerDatabaseTypes(listOf(databaseType))
-        }
         private val defaultSchema = "main".asSafeIdentifier()
 
         init {
             // Check that SQLite is not on the test class path (because our custom class loader delegates to its parent)
             shouldThrow<ClassNotFoundException> {
-                Class.forName(driverClass)
+                Class.forName(DRIVER_CLASS)
             }
         }
     }
@@ -114,7 +112,7 @@ enum class Sqlite : DbSystem {
 
         override fun newAdminConnection(namespace: SafeIdentifier): DataSource {
             return SimpleDriverDataSource(
-                ClassUtils.instantiate(driverClass, classLoader),
+                ClassUtils.instantiate(DRIVER_CLASS, classLoader),
                 "jdbc:sqlite:${databaseFile(namespace)}",
                 "sa",
                 ""

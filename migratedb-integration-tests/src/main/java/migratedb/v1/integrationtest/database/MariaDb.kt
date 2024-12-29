@@ -32,7 +32,9 @@ import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
 enum class MariaDb(image: String) : DbSystem {
-    V11_4_2("mariadb:11.4.2"),
+    V11_7_1("mariadb:11.7-rc"),
+    V11_6_1("mariadb:11.6.2"),
+    V11_4_2("mariadb:11.4.4"),
     V10_11("mariadb:10.11"),
     V10_10("mariadb:10.10"),
     V10_9("mariadb:10.9"),
@@ -40,9 +42,6 @@ enum class MariaDb(image: String) : DbSystem {
     V10_7("mariadb:10.7"),
     V10_6("mariadb:10.6"),
     V10_5("mariadb:10.5"),
-    V10_4("mariadb:10.4"),
-    V10_3("mariadb:10.3"),
-    V10_2("mariadb:10.2"),
     ;
 
     // Relevant idiosyncrasies:

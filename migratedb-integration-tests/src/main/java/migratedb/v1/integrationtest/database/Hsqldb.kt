@@ -32,7 +32,7 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource
 import javax.sql.DataSource
 
 enum class Hsqldb : DbSystem {
-    V2_7_3,
+    V2_7_4,
     V2_6_1,
     V2_5_2,
     V2_4_1,

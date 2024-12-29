@@ -231,7 +231,7 @@ object ConfigSetters {
             .toList()
     }
 
-    private fun extensionConfigParamsArbitrary(): Arbitrary<*> {
+    private fun extensionConfigParamsArbitrary(): Arbitrary<out Any> {
         val files = String.any().ofLength(1..100).map { "target/$it" }
         val booleans = Boolean.any()
         val freshConfigs = Arbitraries.ofSuppliers(::OracleConfig)
@@ -251,8 +251,8 @@ object ConfigSetters {
      */
     private class Params(val params: Array<Any>)
 
-    class Setter(name: String, private val validParamsProvider: Arbitrary<*>, vararg signature: KClass<*>) {
-        constructor(name: String, validParamsProvider: Arbitrary<*>) : this(
+    class Setter(name: String, private val validParamsProvider: Arbitrary<out Any>, vararg signature: KClass<*>) {
+        constructor(name: String, validParamsProvider: Arbitrary<out Any>) : this(
             name = name,
             signature = emptyArray(),
             validParamsProvider = validParamsProvider
@@ -268,7 +268,7 @@ object ConfigSetters {
 
         val asAction: Arbitrary<Action<DefaultConfiguration>>
             get() =
-                validParamsProvider.map { validParam ->
+                validParamsProvider.map { validParam: Any ->
                     Action<DefaultConfiguration> {
                         setterFunction(it, validParam)
                         it
@@ -302,6 +302,7 @@ object ConfigSetters {
             private val argTypes: List<TypeUsage>,
             private val method: Method
         ) : (Configuration, Any) -> Unit {
+
             override fun invoke(p1: Configuration, p2: Any) {
                 try {
                     when (p2) {

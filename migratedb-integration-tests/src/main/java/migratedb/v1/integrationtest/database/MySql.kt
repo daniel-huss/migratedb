@@ -32,8 +32,8 @@ import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
 enum class MySql(image: String) : DbSystem {
-    V9_0_1("mysql:9.0.1"),
-    V8_0("mysql:8.0"),
+    V9_1("mysql:9.1"),
+    V8_4("mysql:8.4"),
     V5_7("mysql:5.7"),
     ;
 

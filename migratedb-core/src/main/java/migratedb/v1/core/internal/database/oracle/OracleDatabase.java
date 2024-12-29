@@ -55,7 +55,7 @@ public class OracleDatabase extends BaseDatabase {
     @Override
     public final void ensureSupported() {
         ensureDatabaseIsRecentEnough("10");
-        recommendMigrateDbUpgradeIfNecessary("19.0");
+        recommendMigrateDbUpgradeIfNecessaryForMajorVersion("23");
     }
 
     @Override

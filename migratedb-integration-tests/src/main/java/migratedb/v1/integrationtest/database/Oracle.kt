@@ -21,6 +21,7 @@ import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutatio
 import migratedb.v1.integrationtest.database.mutation.OracleCreateTableMutation
 import migratedb.v1.integrationtest.util.base.Names
 import migratedb.v1.integrationtest.util.base.SafeIdentifier
+import migratedb.v1.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 import migratedb.v1.integrationtest.util.base.rethrowUnless
 import migratedb.v1.integrationtest.util.base.work
 import migratedb.v1.integrationtest.util.container.Lease
@@ -33,9 +34,10 @@ import org.testcontainers.utility.DockerImageName
 import java.time.Duration
 import javax.sql.DataSource
 
-enum class Oracle(image: String) : DbSystem {
-    V21_3_0("gvenzl/oracle-xe:21.3.0-slim"),
-    V18_4_0("gvenzl/oracle-xe:18.4.0-slim"),
+enum class Oracle(image: String, defaultDatabase: String) : DbSystem {
+    V23("gvenzl/oracle-free:23-slim-faststart", "FREEPDB1"),
+    V21_3_0("gvenzl/oracle-xe:21.3.0-slim", "XEPDB1"),
+    V18_4_0("gvenzl/oracle-xe:18.4.0-slim", "XEPDB1"),
     ;
 
     // Relevant idiosyncrasies:
@@ -45,6 +47,7 @@ enum class Oracle(image: String) : DbSystem {
 
     private val containerAlias = "oracle_${name.lowercase()}"
     private val image = DockerImageName.parse(image)
+    private val defaultDatabase = defaultDatabase.asSafeIdentifier()
 
     override fun toString() = "Oracle ${name.replace('_', '.')}"
 
@@ -54,12 +57,12 @@ enum class Oracle(image: String) : DbSystem {
         private const val password = "insecure"
     }
 
-    class Container(image: DockerImageName) : GenericContainer<Container>(image) {
+    inner class Container(image: DockerImageName) : GenericContainer<Container>(image) {
         fun dataSource(user: String = adminUser): DataSource {
             return OracleDataSource().also {
                 it.user = user
                 it.setPassword(password)
-                it.url = "jdbc:oracle:thin:@$host:${getMappedPort(port)}/XEPDB1"
+                it.url = "jdbc:oracle:thin:@$host:${getMappedPort(port)}/$defaultDatabase"
             }
         }
 
