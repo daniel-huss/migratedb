@@ -18,7 +18,7 @@
     <parent>
         <groupId>de.unentscheidbar</groupId>
         <artifactId>migratedb</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.1</version>
     </parent>
     <artifactId>migratedb-dependency-downloader</artifactId>
     <name>MigrateDB - Dependency Downloader</name>
@@ -36,17 +36,17 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-resolver-provider</artifactId>
-            <version>3.9.3</version>
+            <version>3.9.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.resolver</groupId>
             <artifactId>maven-resolver-connector-basic</artifactId>
-            <version>1.9.13</version>
+            <version>1.9.22</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.resolver</groupId>
             <artifactId>maven-resolver-transport-http</artifactId>
-            <version>1.9.13</version>
+            <version>1.9.22</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.resolver</groupId>

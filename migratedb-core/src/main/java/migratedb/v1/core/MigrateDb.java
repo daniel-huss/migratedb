@@ -141,8 +141,8 @@ public class MigrateDb {
             if (configuration.isLiberateOnMigrate()) {
                 if (!context.schemaHistory.exists() &&
                     context.defaultSchema.getTable(configuration.getOldTable()).exists()) {
-                    LOG.info("Executing liberate command because " + context.schemaHistory.getTable() + " is missing , but table" +
-                             configuration.getOldTable() + " exists");
+                    LOG.info("Executing liberate command because " + context.schemaHistory.getTable() + " is missing" +
+                             " , but table " + configuration.getOldTable() + " exists");
                     liberateResult = new DbLiberate(context.schemaHistory,
                                                     configuration,
                                                     context.database,

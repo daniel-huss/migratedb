@@ -18,7 +18,7 @@
     <parent>
         <groupId>de.unentscheidbar</groupId>
         <artifactId>migratedb</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.1</version>
     </parent>
     <artifactId>migratedb-maven-plugin</artifactId>
     <name>MigrateDB - Maven Plugin</name>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.7.1</version>
+            <version>3.15.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -96,7 +96,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.4.5</version>
+                <version>3.8.0</version>
                 <reportSets/>
             </plugin>
             <plugin>
