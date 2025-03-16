@@ -10,7 +10,7 @@ NOTE: 🔥 = Breaking Change
 
 === Changed
 
-* Updated internal dependencies.
+* Updated build-time dependencies.
 * Updated Spring Boot autoconfiguration environment to 3.4.2.
 * Fixed a typo in the liberate-on-migrate log statement.
 
@@ -22,7 +22,7 @@ NOTE: 🔥 = Breaking Change
 
 === Changed
 
-* Updated internal dependencies.
+* Updated build-time dependencies.
 * Updated Spring Boot autoconfiguration environment to 3.4.1.
 
 
@@ -38,7 +38,7 @@ NOTE: 🔥 = Breaking Change
 
 === Changed
 
-* Updated dependencies.
+* Updated build-time dependencies.
 * Changed log message that occurs when the detected database major version is lower than the latest tested version from WARNING to INFO.
 
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.2.0[1.2.0] - 2024-08-20
@@ -49,7 +49,7 @@ NOTE: 🔥 = Breaking Change
 
 === Changed
 
-* Updated dependencies.
+* Updated build-time dependencies.
 
 === Removed
 
@@ -65,7 +65,7 @@ NOTE: 🔥 = Breaking Change
 
 === Changed
 
-* Updated dependencies.
+* Updated build-time dependencies.
 * Use Maven Toolchains.
 
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.0.0[1.0.0] - 2023-11-16
