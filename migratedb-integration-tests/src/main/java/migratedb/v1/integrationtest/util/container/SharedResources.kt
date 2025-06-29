@@ -23,7 +23,7 @@ import org.testcontainers.containers.Network
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-class SharedResources private constructor() : ExtensionContext.Store.CloseableResource {
+class SharedResources private constructor() : AutoCloseable {
 
     companion object {
         fun ExtensionContext.Store.resources(): SharedResources {

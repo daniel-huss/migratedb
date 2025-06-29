@@ -6,6 +6,15 @@ The format is based on https://keepachangelog.com/en/1.1.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
+== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.5.0[1.5.0] - unreleased
+
+=== Changed
+
+* *Fixed a bug that prevented discovery of SQL baseline script resources.*
+* Fixed a bug where multiple `migratedb.v1.core.api.callback.Event` enum constants had the same ID (`afterInfoOperationFinish`)
+* Updated build-time dependencies.
+* Updated Spring Boot autoconfiguration environment to 3.5.3.
+
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.4.1[1.4.1] - 2025-02-05
 
 === Changed
@@ -24,7 +33,6 @@ NOTE: 🔥 = Breaking Change
 
 * Updated build-time dependencies.
 * Updated Spring Boot autoconfiguration environment to 3.4.1.
-
 
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.3.0[1.3.0] - 2024-10-20
 

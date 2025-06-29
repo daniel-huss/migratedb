@@ -158,21 +158,21 @@ public enum Event {
      */
     AFTER_MIGRATE_OPERATION_FINISH("afterMigrateOperationFinish"),
     /**
-     * Fired after an info operation has finished.
+     * Fired after a resolve operation has finished.
      */
     AFTER_INFO_OPERATION_FINISH("afterInfoOperationFinish"),
     /**
      * Fired after a validate operation has finished.
      */
-    AFTER_VALIDATE_OPERATION_FINISH("afterInfoOperationFinish"),
+    AFTER_VALIDATE_OPERATION_FINISH("afterValidateOperationFinish"),
     /**
      * Fired after a validate operation has finished.
      */
-    AFTER_REPAIR_OPERATION_FINISH("afterInfoOperationFinish"),
+    AFTER_REPAIR_OPERATION_FINISH("afterRepairOperationFinish"),
     /**
      * Fired after a validate operation has finished.
      */
-    AFTER_BASELINE_OPERATION_FINISH("afterInfoOperationFinish"),
+    AFTER_BASELINE_OPERATION_FINISH("afterBaselineOperationFinish"),
     /**
      * Fired after a liberate operation has finished.
      */

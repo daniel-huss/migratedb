@@ -41,7 +41,6 @@ public final class LocationScanner<T> implements ClassProvider<T>, ResourceProvi
 
     public LocationScanner(Class<T> supertype,
                            Collection<Location> locations,
-                           ClassLoader classLoader,
                            boolean failOnMissingLocations) {
         this.supertype = supertype;
         this.resourceProviders = locations.stream().map(Location::resourceProvider).collect(toUnmodifiableList());

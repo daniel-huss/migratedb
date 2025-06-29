@@ -186,6 +186,25 @@
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>de.unentscheidbar</groupId>
+                <artifactId>migratedb-maven-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>scan</goal>
+                        </goals>
+                        <configuration>
+                            <includeDependencies>false</includeDependencies>
+                            <includes>
+                                <include>classpath-migrations</include>
+                            </includes>
+                            <outputDirectory>${project.build.outputDirectory}/classpath-migrations</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -222,7 +222,6 @@ final class MigrateDbExecutor {
                 LocationScanner<JavaMigration> scanner = new LocationScanner<>(
                         JavaMigration.class,
                         configuration.getLocations(),
-                        configuration.getClassLoader(),
                         configuration.isFailOnMissingLocations()
                 );
                 // set the defaults

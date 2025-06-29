@@ -76,7 +76,7 @@ abstract class IntegrationTest : AbstractTest() {
     }
 
     @AfterEach
-    internal fun unsetTestInfo(testInfo: TestInfo) {
+    internal fun unsetTestInfo() {
         Extension.unsetCurrentTestInfo()
     }
 

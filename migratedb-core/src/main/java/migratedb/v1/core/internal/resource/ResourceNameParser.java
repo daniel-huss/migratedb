@@ -161,7 +161,7 @@ public class ResourceNameParser {
         List<Prefix> prefixes = new ArrayList<>();
 
         prefixes.add(new Prefix(configuration.getSqlMigrationPrefix(), ResourceType.MIGRATION));
-
+        prefixes.add(new Prefix(configuration.getBaselineMigrationPrefix(), ResourceType.BASELINE_MIGRATION));
         prefixes.add(new Prefix(configuration.getRepeatableSqlMigrationPrefix(), ResourceType.REPEATABLE_MIGRATION));
         for (Event event : Event.values()) {
             prefixes.add(new Prefix(event.getId(), ResourceType.CALLBACK));

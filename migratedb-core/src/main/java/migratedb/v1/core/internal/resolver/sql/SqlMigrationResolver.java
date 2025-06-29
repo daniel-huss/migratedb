@@ -1,19 +1,3 @@
-/*
- * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package migratedb.v1.core.internal.resolver.sql;
 
 import migratedb.v1.core.api.Checksum;
@@ -46,6 +30,7 @@ import java.util.List;
  * Migration resolver for SQL file resources.
  */
 public class SqlMigrationResolver implements MigrationResolver {
+
     private final SqlScriptExecutorFactory sqlScriptExecutorFactory;
     private final ResourceProvider resourceProvider;
     private final SqlScriptFactory sqlScriptFactory;
@@ -66,10 +51,11 @@ public class SqlMigrationResolver implements MigrationResolver {
 
     @Override
     public List<ResolvedMigration> resolveMigrations(Context context) {
-        List<ResolvedMigration> migrations = new ArrayList<>();
+        var migrations = new ArrayList<ResolvedMigration>();
         var suffixes = configuration.getSqlMigrationSuffixes();
-        addMigrations(migrations, configuration.getSqlMigrationPrefix(), suffixes, false);
-        addMigrations(migrations, configuration.getRepeatableSqlMigrationPrefix(), suffixes, true);
+        addMigrations(migrations, configuration.getSqlMigrationPrefix(), suffixes, false, false);
+        addMigrations(migrations, configuration.getBaselineMigrationPrefix(), suffixes, false, true);
+        addMigrations(migrations, configuration.getRepeatableSqlMigrationPrefix(), suffixes, true, false);
         migrations.sort(new ResolvedMigrationComparator());
         return migrations;
     }
@@ -122,10 +108,11 @@ public class SqlMigrationResolver implements MigrationResolver {
         return null;
     }
 
-    private void addMigrations(List<ResolvedMigration> migrations,
+    private void addMigrations(ArrayList<ResolvedMigration> migrations,
                                String prefix,
                                List<String> suffixes,
-                               boolean repeatable) {
+                               boolean repeatable,
+                               boolean baseline) {
         ResourceNameParser resourceNameParser = new ResourceNameParser(configuration);
 
         for (Resource resource : resourceProvider.getResources(prefix, suffixes)) {
@@ -143,14 +130,13 @@ public class SqlMigrationResolver implements MigrationResolver {
             var checksum = getChecksumForResource(repeatable, resources, resourceName);
             var equivalentChecksum = getEquivalentChecksumForResource(repeatable, resources);
 
-            var isBaseline = filename.startsWith(configuration.getBaselineMigrationPrefix());
             migrations.add(new ResolvedMigrationImpl(
                     resourceName.getVersion(),
                     resourceName.getDescription(),
                     resource.getLastNameComponent(),
                     checksum,
                     equivalentChecksum,
-                    isBaseline ? MigrationType.SQL_BASELINE : MigrationType.SQL,
+                    baseline ? MigrationType.SQL_BASELINE : MigrationType.SQL,
                     resource.describeLocation(),
                     new SqlMigrationExecutor(sqlScriptExecutorFactory, sqlScript)) {
             });
