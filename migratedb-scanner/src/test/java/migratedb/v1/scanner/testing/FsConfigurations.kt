@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,12 @@ import com.google.common.jimfs.Configuration
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
+import org.junit.jupiter.params.support.ParameterDeclarations
 import java.util.stream.Stream
 
 class FsConfigurations : ArgumentsProvider {
-    override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
+
+    override fun provideArguments(parameters: ParameterDeclarations, context: ExtensionContext): Stream<out Arguments> {
         return Stream.of(Configuration.unix(), Configuration.windows(), Configuration.osX())
             .map(Arguments::of)
     }

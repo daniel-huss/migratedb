@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.function.Predicate;
  * All migrations except for DELETED markers in a more easily navigable data structure.
  */
 final class NavigableMigrations {
+
     final @Nullable Version baseline;
     final Map<String, RepeatableMigrationEntry> repeatableMigrations;
     final NavigableMap<Version, VersionedMigrationEntry> versionedMigrations;
@@ -55,7 +56,7 @@ final class NavigableMigrations {
                           it.resolvedIncrementalMigration != null && !it.deleted)
             .findFirst()
             .map(it -> it.resolvedIncrementalMigration == null ? it.resolvedBaselineMigration
-                                                               : it.resolvedIncrementalMigration);
+                : it.resolvedIncrementalMigration);
     }
 
     Optional<AppliedMigration> latestAppliedVersioned() {
@@ -77,10 +78,14 @@ final class NavigableMigrations {
      * number.
      */
     static final class VersionedMigrationEntry {
+
         final Version version;
-        @Nullable final ResolvedMigration resolvedIncrementalMigration;
-        @Nullable final ResolvedMigration resolvedBaselineMigration;
-        @Nullable final AppliedMigration appliedMigration;
+        @Nullable
+        final ResolvedMigration resolvedIncrementalMigration;
+        @Nullable
+        final ResolvedMigration resolvedBaselineMigration;
+        @Nullable
+        final AppliedMigration appliedMigration;
         final boolean deleted;
         final boolean outOfOrder;
 
@@ -111,8 +116,10 @@ final class NavigableMigrations {
      * Correlated info about resolved and applied migrations for a repeatable migration with a certain description.
      */
     static final class RepeatableMigrationEntry {
+
         final String description;
-        @Nullable final ResolvedMigration resolvedMigration;
+        @Nullable
+        final ResolvedMigration resolvedMigration;
         final AppliedMigration latestAppliedMigration;
         final List<AppliedMigration> supersededRuns;
         final boolean deleted;

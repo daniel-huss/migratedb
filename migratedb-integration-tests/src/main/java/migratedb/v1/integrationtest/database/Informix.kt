@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,12 +45,14 @@ enum class Informix(image: String) : DbSystem {
     override fun toString() = "Informix ${name.replace('_', '.')}"
 
     companion object {
+
         private const val port = 9088
         private const val adminUser = "informix"
         private const val password = "in4mix"
     }
 
     class Container(image: DockerImageName) : GenericContainer<Container>(image) {
+
         fun dataSource(database: String? = null): DataSource {
             return IfxDataSource().also {
                 it.user = adminUser
@@ -88,6 +90,7 @@ enum class Informix(image: String) : DbSystem {
     }
 
     private inner class Instance(private val container: Lease<Container>) : DbSystem.Instance {
+
         override val type = InformixDatabaseType()
         private var released = false
         private val internalDs by lazy { container().dataSource() }

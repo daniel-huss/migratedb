@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package migratedb.v1.integrationtest.parser
 
 import io.kotest.matchers.shouldBe
-import migratedb.v1.integrationtest.database.*
+import migratedb.v1.integrationtest.database.DbSystem
+import migratedb.v1.integrationtest.database.SqlServer
 import migratedb.v1.integrationtest.util.base.IntegrationTest
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource

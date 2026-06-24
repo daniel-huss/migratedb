@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import java.util.Map;
  * Collection of utility methods for querying the DB. Inspired by Spring's JdbcTemplate.
  */
 public class JdbcTemplate {
+
     /**
      * The DB connection to use.
      */
@@ -268,7 +269,7 @@ public class JdbcTemplate {
     }
 
     private void extractResults(Results results, Statement statement, String sql, boolean hasResults)
-            throws SQLException {
+        throws SQLException {
         // retrieve all results to ensure all errors are detected
         int updateCount = -1;
         while (hasResults || (updateCount = statement.getUpdateCount()) != -1) {
@@ -345,7 +346,7 @@ public class JdbcTemplate {
                 statement.setNull(i + 1, nullType);
             } else {
                 throw new MigrateDbException("Unhandled object of type '" + params[i].getClass().getName() + "'. " +
-                        "Please contact support or leave an issue on GitHub.");
+                                             "Please contact support or leave an issue on GitHub.");
             }
         }
         return statement;

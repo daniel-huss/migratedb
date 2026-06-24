@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class TargetVersion {
+
     /**
      * Represents {@code MigrateDb.info().latest()}.
      */
@@ -92,6 +93,7 @@ public final class TargetVersion {
     }
 
     public class OrElseGetStep<T> {
+
         private final Function<? super Version, ? extends T> mapper;
 
         public OrElseGetStep(Function<? super Version, ? extends T> mapper) {
@@ -112,6 +114,7 @@ public final class TargetVersion {
     }
 
     public class OrElseDoStep {
+
         public void orElseDo(Map<TargetVersion, Runnable> actions) {
             if (version == null) {
                 var action = actions.get(TargetVersion.this);

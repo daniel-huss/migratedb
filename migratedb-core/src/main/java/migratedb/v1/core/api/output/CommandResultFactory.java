@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.function.Function;
 
 public class CommandResultFactory {
+
     public static LiberateResult createLiberateResult(Configuration configuration,
                                                       Database database,
                                                       String schemaHistorySchema,
@@ -62,15 +63,15 @@ public class CommandResultFactory {
 
         var currentSchemaVersion = current == null ? null : current.getVersion();
         String schemaVersion = convertToString(currentSchemaVersion == null ? SchemaHistory.EMPTY_SCHEMA_DESCRIPTION
-                                                       : currentSchemaVersion);
+                                                   : currentSchemaVersion);
 
         return new InfoResult(
-                migratedbVersion,
-                databaseName,
-                schemaVersion,
-                String.join(", ", configuration.getSchemas()),
-                infoOutputs,
-                allSchemasEmpty);
+            migratedbVersion,
+            databaseName,
+            schemaVersion,
+            String.join(", ", configuration.getSchemas()),
+            infoOutputs,
+            allSchemasEmpty);
     }
 
     public static MigrateResult createMigrateResult(String databaseName,
@@ -130,17 +131,17 @@ public class CommandResultFactory {
 
     public static ValidateOutput createValidateOutput(MigrationInfo migrationInfo, ErrorDetails validateError) {
         return new ValidateOutput(
-                convertToString(migrationInfo.getVersion()),
-                migrationInfo.getDescription(),
-                convertToString(migrationInfo.getPhysicalLocation()),
-                validateError);
+            convertToString(migrationInfo.getVersion()),
+            migrationInfo.getDescription(),
+            convertToString(migrationInfo.getPhysicalLocation()),
+            validateError);
     }
 
     public static RepairOutput createRepairOutput(MigrationInfo migrationInfo) {
         return new RepairOutput(
-                convertToString(migrationInfo.getVersion()),
-                migrationInfo.getDescription(),
-                migrationInfo.getPhysicalLocation() != null ? migrationInfo.getPhysicalLocation() : "");
+            convertToString(migrationInfo.getVersion()),
+            migrationInfo.getDescription(),
+            migrationInfo.getPhysicalLocation() != null ? migrationInfo.getPhysicalLocation() : "");
     }
 
     public static RepairOutput createRepairOutput(AppliedMigration am) {

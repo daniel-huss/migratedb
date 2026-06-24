@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import static migratedb.v1.core.internal.jdbc.ExecutionTemplateFactory.createExe
  * Handles MigrateDB's repair command.
  */
 public class DbRepair {
+
     private static final Log LOG = Log.getLog(DbRepair.class);
 
     /**
@@ -101,13 +102,13 @@ public class DbRepair {
         this.configuration = configuration;
 
         this.migrationInfoService = new MigrationInfoServiceImpl(
-                migrationResolver,
-                schemaHistory,
-                database,
-                configuration,
-                TargetVersion.LATEST,
-                configuration.getCherryPick(),
-                ValidationContext.allAllowed());
+            migrationResolver,
+            schemaHistory,
+            database,
+            configuration,
+            TargetVersion.LATEST,
+            configuration.getCherryPick(),
+            ValidationContext.allAllowed());
 
         this.repairResult = CommandResultFactory.createRepairResult(configuration, database);
     }
@@ -124,19 +125,19 @@ public class DbRepair {
             stopWatch.start();
 
             repairActions = createExecutionTemplate(session.getJdbcConnection(), database)
-                    .execute(() -> {
-                        CompletedRepairActions completedActions = new CompletedRepairActions();
+                .execute(() -> {
+                    CompletedRepairActions completedActions = new CompletedRepairActions();
 
-                        completedActions.removedFailedMigrations = schemaHistory.removeFailedMigrations(
-                                repairResult,
-                                configuration.getCherryPick());
-                        migrationInfoService.refresh();
+                    completedActions.removedFailedMigrations = schemaHistory.removeFailedMigrations(
+                        repairResult,
+                        configuration.getCherryPick());
+                    migrationInfoService.refresh();
 
-                        completedActions.deletedMissingMigrations = markUnavailableMigrationsAsDeleted();
+                    completedActions.deletedMissingMigrations = markUnavailableMigrationsAsDeleted();
 
-                        completedActions.alignedAppliedMigrationChecksums = alignAppliedMigrationsWithResolvedMigrations();
-                        return completedActions;
-                    });
+                    completedActions.alignedAppliedMigrationChecksums = alignAppliedMigrationsWithResolvedMigrations();
+                    return completedActions;
+                });
 
             stopWatch.stop();
 
@@ -144,8 +145,8 @@ public class DbRepair {
                      + DateTimeUtils.formatDuration(stopWatch.getTotalTimeMillis()) + ").");
             if (repairActions.deletedMissingMigrations) {
                 LOG.info(
-                        "Please ensure the previous contents of the deleted migrations are removed from the database, or " +
-                        "moved into an existing migration.");
+                    "Please ensure the previous contents of the deleted migrations are removed from the database, or " +
+                    "moved into an existing migration.");
             }
             if (repairActions.removedFailedMigrations && !database.supportsDdlTransactions()) {
                 LOG.info("Manual cleanup of the remaining effects of the failed migration may still be required.");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package migratedb.v1.testing.util.base
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
+import org.junit.jupiter.params.support.ParameterDeclarations
 import java.util.stream.Stream
 import kotlin.streams.asStream
 
@@ -36,7 +37,7 @@ abstract class Args private constructor(
     constructor(functionHasOneParameter: OneParam, vararg args: Any?) : this({ args.asSequence().map { listOf(it) } })
 
 
-    override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
+    override fun provideArguments(parameters: ParameterDeclarations, context: ExtensionContext): Stream<out Arguments> {
         return args().asStream().map { Arguments.arguments(*it.toTypedArray()) }
     }
 }

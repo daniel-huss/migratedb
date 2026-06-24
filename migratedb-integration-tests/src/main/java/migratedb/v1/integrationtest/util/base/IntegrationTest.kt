@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ abstract class IntegrationTest : AbstractTest() {
 
     class Extension : BeforeAllCallback {
         companion object {
+
             private val currentTestPerThread = ThreadLocal.withInitial<TestInfo> { null }
             private val namespace = Namespace.create(Extension::class.java)
             private val lock = ReentrantLock()
@@ -67,6 +68,7 @@ abstract class IntegrationTest : AbstractTest() {
     }
 
     companion object {
+
         fun currentTestInfo() = Extension.getCurrentTestInfo()
     }
 

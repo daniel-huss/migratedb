@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@ import migratedb.v1.core.api.Location
 import migratedb.v1.core.api.MigrateDbException
 import migratedb.v1.core.api.TargetVersion
 import migratedb.v1.core.api.Version
-import migratedb.v1.core.api.configuration.PropertyNames.*
+import migratedb.v1.core.api.configuration.PropertyNames.GROUP
+import migratedb.v1.core.api.configuration.PropertyNames.Info
 import migratedb.v1.core.api.pattern.ValidatePattern
 import migratedb.v1.core.testing.*
 import net.jqwik.api.Arbitraries
@@ -41,6 +42,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
 import org.junit.jupiter.params.provider.ArgumentsSource
+import org.junit.jupiter.params.support.ParameterDeclarations
 import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -50,6 +52,7 @@ import java.util.stream.Stream
 
 @Domain(MigrateDbDomain::class)
 internal class DefaultConfigurationTest {
+
     @Property(tries = 200)
     fun `configure(Configuration) copies all properties except class loader into empty configuration`(
         @ForAll source: DefaultConfiguration
@@ -99,6 +102,7 @@ internal class DefaultConfigurationTest {
     }
 
     data class ConfigKeyField(val field: Field) {
+
         override fun toString(): String {
             return "${field.get(null)}"
         }
@@ -131,13 +135,14 @@ internal class DefaultConfigurationTest {
             return generator
         }
 
+        @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
         private fun generatorForType(type: Class<*>): Arbitrary<String> {
             return when (type) {
                 String::class.java -> String.any().ofLength(1..100)
                 Charset::class.java -> just(Charsets.UTF_8).map { it.name() }
                 Location::class.java -> anyLocation().map { it.toString() }
                 File::class.java -> String.any().alpha().ofLength(1..10).map { "target/$it" }
-                Integer::class.java -> Int.any(1..Integer.MAX_VALUE).map { it.toString() }
+                java.lang.Integer::class.java -> Int.any(1..Integer.MAX_VALUE).map { it.toString() }
                 java.lang.Boolean::class.java -> Boolean.any().map { it.toString() }
                 Version::class.java -> anyMigrationVersionString()
                 TargetVersion::class.java -> anyTargetVersionString()
@@ -149,12 +154,17 @@ internal class DefaultConfigurationTest {
     }
 
     internal class ConfigKeyFields : ArgumentsProvider {
-        override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
+
+        override fun provideArguments(
+            parameters: ParameterDeclarations,
+            context: ExtensionContext
+        ): Stream<out Arguments> {
             return PropertyNames::class.java.stringConstantFields().map { Arguments.arguments(ConfigKeyField(it)) }
         }
     }
 
     companion object {
+
         fun Class<*>.stringConstantFields(): Stream<Field> {
             return Arrays.stream(fields)
                 .filter {

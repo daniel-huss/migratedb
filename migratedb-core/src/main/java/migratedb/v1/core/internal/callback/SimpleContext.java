@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,11 @@ import migratedb.v1.core.api.configuration.Configuration;
 import migratedb.v1.core.api.internal.database.base.Session;
 import migratedb.v1.core.api.output.OperationResult;
 
+import java.sql.Connection;
 import java.util.List;
 
 public class SimpleContext implements Context {
+
     private final Configuration configuration;
     private final Session session;
     private final MigrationInfo migrationInfo;
@@ -58,7 +60,7 @@ public class SimpleContext implements Context {
     }
 
     @Override
-    public java.sql.Connection getConnection() {
+    public Connection getConnection() {
         return session.getJdbcConnection();
     }
 
@@ -78,6 +80,7 @@ public class SimpleContext implements Context {
     }
 
     private static class SimpleStatement implements Statement {
+
         private final String sql;
         private final List<Warning> warnings;
         private final List<Error> errors;

@@ -30,7 +30,7 @@ https://daniel-huss.github.io/migratedb[Website],
 xref:CHANGELOG.adoc[Changelog],
 https://daniel-huss.github.io/migratedb/documentation/contribute[How to contribute]
 
-xref:migratedb-spring-boot-v3/README.adoc[See here if you're using Spring Boot]
+xref:migratedb-spring-boot/README.adoc[See here if you're using Spring Boot]
 
 == Support
 
@@ -40,10 +40,11 @@ New features must fit reasonably within the scope of a schema/data migration _li
 
 === Build Prerequisites
 
-- JDK 17 or later.
+- JDK 21 or later (the project itself only requires 17, but the tests need to load classes compiled for 21)
 - Maven 3.9 or later.
 - Local or remote Docker/Podman host (for database containers during integration tests)
-- Integration tests require an internet connection, to pull images from container registries and to download artifacts from Maven Central. Once all artifacts have been downloaded into the local repository, going offline should be possible.
+- Integration tests require an internet connection, to pull images from container registries and to download artifacts from Maven Central.
+Once all artifacts have been downloaded into the local repository, going offline should be possible.
 
 == Legacy
 
@@ -58,7 +59,7 @@ https://daniel-huss.github.io/migratedb/documentation/switch[See instructions].
 == License
 
 Copyright (C) Red Gate Software Ltd 2010-2021 +
-Copyright 2022-2024 The MigrateDB contributors
+Copyright 2022-2026 The MigrateDB contributors
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at

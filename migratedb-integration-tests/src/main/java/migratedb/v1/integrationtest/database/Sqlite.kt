@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,9 @@ import javax.sql.DataSource
 import kotlin.io.path.deleteIfExists
 
 enum class Sqlite : DbSystem {
+    V3_53_2_0,
+    V3_51_3_0,
+    V3_50_3_0,
     V3_47_1_0,
     V3_46_1_3,
     V3_45_3_0,
@@ -62,6 +65,7 @@ enum class Sqlite : DbSystem {
     //    its tables (we don't use that feature here)
 
     companion object {
+
         private const val DRIVER_CLASS = "org.sqlite.JDBC"
         private val databaseType = SQLiteDatabaseType()
         private val defaultSchema = "main".asSafeIdentifier()
@@ -98,6 +102,7 @@ enum class Sqlite : DbSystem {
     }
 
     private inner class Instance : DbSystem.Instance {
+
         override val type: DatabaseType get() = Companion.databaseType
         private val dataDir by lazy { newTempDir("sqlite-$name", deleteOnExit = false) }
 

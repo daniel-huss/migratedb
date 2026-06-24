@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,12 @@ public abstract class BaseParser implements Parser {
         try {
             c.close();
         } catch (Exception suppressed) {
-            if (suppressed instanceof InterruptedException) Thread.currentThread().interrupt();
-            if (!suppressed.equals(context)) context.addSuppressed(suppressed);
+            if (suppressed instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            if (!suppressed.equals(context)) {
+                context.addSuppressed(suppressed);
+            }
         }
     }
 
@@ -156,7 +160,6 @@ public abstract class BaseParser implements Parser {
      *
      * @param reader   The original reader.
      * @param metadata The resource's metadata.
-     *
      * @return The new reader with placeholder replacement.
      */
     protected Reader replacePlaceholders(Reader reader, SqlScriptMetadata metadata) {
@@ -333,7 +336,6 @@ public abstract class BaseParser implements Parser {
      *
      * @param token              The latest token.
      * @param nonCommentPartSeen Whether a non-comment part has already been seen.
-     *
      * @return {@code true} if it should, {@code false} if not.
      */
     protected boolean shouldDiscard(Token token, boolean nonCommentPartSeen) {
@@ -363,7 +365,7 @@ public abstract class BaseParser implements Parser {
     }
 
     protected void adjustBlockDepth(ParserContext context, List<Token> tokens, Token keyword, PeekingReader reader)
-    throws IOException {
+        throws IOException {
 
     }
 
@@ -610,7 +612,7 @@ public abstract class BaseParser implements Parser {
     }
 
     protected Token handleDelimiter(PeekingReader reader, ParserContext context, int pos, int line, int col)
-    throws IOException {
+        throws IOException {
         String text = context.getDelimiter().getDelimiter();
         reader.swallow(text.length());
         return new Token(TokenType.DELIMITER, pos, line, col, text, text, context.getParensDepth());
@@ -678,12 +680,12 @@ public abstract class BaseParser implements Parser {
     }
 
     protected Token handleCommentDirective(PeekingReader reader, ParserContext context, int pos, int line, int col)
-    throws IOException {
+        throws IOException {
         return null;
     }
 
     protected Token handleStringLiteral(PeekingReader reader, ParserContext context, int pos, int line, int col)
-    throws IOException {
+        throws IOException {
         reader.swallow();
         reader.swallowUntilIncludingWithEscape('\'', true);
         return new Token(TokenType.STRING, pos, line, col, null, null, context.getParensDepth());

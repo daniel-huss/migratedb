@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,14 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import migratedb.v1.core.api.migration.ScriptMigration
 import migratedb.v1.integrationtest.database.SomeInMemoryDb
 import migratedb.v1.integrationtest.util.base.IntegrationTest
-import migratedb.v1.core.api.migration.ScriptMigration
 import org.junit.jupiter.api.Test
 import java.io.Reader
 
 class ScriptMigrationTest : IntegrationTest() {
+
     @Test
     fun `getChecksum() replaces placeholders`() = withDsl(SomeInMemoryDb) {
         given {
@@ -89,6 +90,7 @@ class ScriptMigrationTest : IntegrationTest() {
 
 
     class V001__Test : ScriptMigration() {
+
         override fun script() = object : Any() {
             override fun toString() = """
             create table t (t varchar primary key);
@@ -98,6 +100,7 @@ class ScriptMigrationTest : IntegrationTest() {
     }
 
     class V002__Test : ScriptMigration() {
+
         var closed = mutableListOf<Boolean>()
 
         override fun script(): Any {

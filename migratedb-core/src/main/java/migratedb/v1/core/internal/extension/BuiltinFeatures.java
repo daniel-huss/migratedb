@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package migratedb.v1.core.internal.extension;
 import migratedb.v1.core.api.MigrateDbExtension;
 import migratedb.v1.core.api.internal.database.base.DatabaseType;
 import migratedb.v1.core.internal.database.bigquery.BigQueryDatabaseType;
-import migratedb.v1.core.internal.database.cockroachdb.CockroachDBDatabaseType;
 import migratedb.v1.core.internal.database.db2.DB2DatabaseType;
 import migratedb.v1.core.internal.database.derby.DerbyDatabaseType;
 import migratedb.v1.core.internal.database.firebird.FirebirdDatabaseType;
@@ -69,7 +68,6 @@ public final class BuiltinFeatures implements MigrateDbExtension {
     public Set<DatabaseType> getDatabaseTypes() {
         return Set.of(
             new BigQueryDatabaseType(),
-            new CockroachDBDatabaseType(),
             new DB2DatabaseType(),
             new DerbyDatabaseType(),
             new FirebirdDatabaseType(),

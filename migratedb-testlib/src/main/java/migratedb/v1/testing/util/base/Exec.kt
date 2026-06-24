@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ fun tryAll(blocks: Iterable<() -> Unit>) {
             it()
         } catch (t: Exception) {
             if (t is InterruptedException) Thread.currentThread().interrupt()
-            if (thrown == null) thrown = t else thrown!!.addSuppressed(t)
+            if (thrown == null) thrown = t else thrown.addSuppressed(t)
         }
     }
     thrown?.let { throw it }

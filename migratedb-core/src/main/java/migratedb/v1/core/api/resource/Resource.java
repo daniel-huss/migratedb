@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
  * A textual resource (such as a .sql file) used by MigrateDB.
  */
 public interface Resource {
+
     /**
      * @return The path of this resource, separated by forward slashes ({@code "/"} on all platforms. Never ends with a
      * slash.

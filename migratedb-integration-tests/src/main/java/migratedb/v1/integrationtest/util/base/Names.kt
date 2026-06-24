@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import migratedb.v1.integrationtest.util.base.SafeIdentifier.Companion.asSafeIde
 import java.util.concurrent.atomic.AtomicLong
 
 object Names {
+
     private val counter = AtomicLong(0)
     fun nextNamespace() = "ns_${counter.incrementAndGet()}".asSafeIdentifier()
     fun nextTable() = "table${counter.incrementAndGet()}".asSafeIdentifier()

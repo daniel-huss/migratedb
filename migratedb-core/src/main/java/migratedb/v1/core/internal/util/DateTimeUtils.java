@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public final class DateTimeUtils {
+
     private static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss",
-            Locale.ROOT);
+                                                                                        Locale.ROOT);
 
     /**
      * @param date The date to format.

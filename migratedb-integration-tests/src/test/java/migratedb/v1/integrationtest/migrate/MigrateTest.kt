@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,15 +29,15 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.result.shouldBeFailure
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEqualIgnoringCase
+import migratedb.v1.core.api.MigrateDbException
+import migratedb.v1.core.api.MigrationType
+import migratedb.v1.core.api.Version
+import migratedb.v1.core.api.configuration.DefaultConfiguration
 import migratedb.v1.integrationtest.database.DbSystem
 import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
 import migratedb.v1.integrationtest.util.base.IntegrationTest
 import migratedb.v1.integrationtest.util.dsl.DatabasesSupportedByFw
 import migratedb.v1.integrationtest.util.dsl.fwSchemaHistory
-import migratedb.v1.core.api.MigrateDbException
-import migratedb.v1.core.api.MigrationType
-import migratedb.v1.core.api.Version
-import migratedb.v1.core.api.configuration.DefaultConfiguration
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
 import java.sql.Connection

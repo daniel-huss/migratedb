@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package migratedb.v1.core.internal.util;
 
 public class BomFilter {
+
     private static final char BOM = '\ufeff';
 
     /**
      * Determine if this char is a UTF-8 Byte Order Mark
      *
      * @param c The char to check
-     *
      * @return Whether this char is a UTF-8 Byte Order Mark
      */
     public static boolean isBom(char c) {
@@ -34,7 +34,6 @@ public class BomFilter {
      * Removes the UTF-8 Byte Order Mark from the start of a string if present.
      *
      * @param s The string
-     *
      * @return The string without a Byte Order Mark at the start
      */
     public static String filterBomFromString(String s) {

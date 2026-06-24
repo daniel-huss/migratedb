@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package migratedb.v1.testing.util.base
 
-import io.kotest.assertions.print.Print
 import io.kotest.assertions.print.Printers
-import io.kotest.assertions.print.printed
+import io.kotest.assertions.print.print
 import org.testcontainers.shaded.com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.SerializationFeature
@@ -29,20 +28,18 @@ abstract class AbstractTest {
             .enable(SerializationFeature.INDENT_OUTPUT)
 
         init {
-            Printers.add(Any::class, object : Print<Any> {
-                @Suppress("OVERRIDE_DEPRECATION")
-                override fun print(a: Any) = print(a, 0)
-                override fun print(a: Any, level: Int) = when {
-                    a.classOverridesObjectToString() -> a.toString().printed()
-                    else -> jsonMapper.writeValueAsString(a).printed()
+            Printers.add(Any::class) { a ->
+                when {
+                    a.classOverridesObjectToString() -> a.toString().print()
+                    else -> jsonMapper.writeValueAsString(a).print()
                 }
-            })
+            }
         }
 
         private fun Any.classOverridesObjectToString(): Boolean {
             return generateSequence(this::class.java) {
                 when (it.superclass) {
-                    Object::class.java -> null
+                    Any::class.java -> null
                     else -> it.superclass
                 }
             }.any { runCatching { it.getDeclaredMethod("toString") }.isSuccess }

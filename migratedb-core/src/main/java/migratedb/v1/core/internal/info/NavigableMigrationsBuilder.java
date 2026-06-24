@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.*;
 
 class NavigableMigrationsBuilder {
+
     private final List<ResolvedMigration> allResolvedMigrations;
     private final List<AppliedMigration> allAppliedMigrationsInExecutionOrder;
     private final Set<Version> deletedVersions;
@@ -80,8 +81,8 @@ class NavigableMigrationsBuilder {
             throw new MigrateDbException("Schema history corrupted: More than one schema creation marker found");
         }
         return new NavigableMigrations(
-                repeatableInfo,
-                                       new TreeMap<>(versionedInfo));
+            repeatableInfo,
+            new TreeMap<>(versionedInfo));
     }
 
     private Map<Version, VersionedMigrationEntry> infoAboutVersionedMigrations() {
@@ -147,7 +148,7 @@ class NavigableMigrationsBuilder {
             .collect(toList());
         var deleted = deletedRepeatableDescriptions.contains(description);
         var supersededRuns = allApplied.isEmpty() ? List.<AppliedMigration>of()
-                                                  : allApplied.subList(0, allApplied.size() - 1);
+            : allApplied.subList(0, allApplied.size() - 1);
         var latestApplied = allApplied.isEmpty() ? null : allApplied.get(allApplied.size() - 1);
         return new RepeatableMigrationEntry(description,
                                             resolved,
@@ -208,6 +209,7 @@ class NavigableMigrationsBuilder {
     }
 
     private static final class Holder<T> {
+
         T value;
     }
 

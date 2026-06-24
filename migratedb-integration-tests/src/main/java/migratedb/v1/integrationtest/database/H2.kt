@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package migratedb.v1.integrationtest.database
 
 import io.kotest.assertions.throwables.shouldThrow
 import migratedb.v1.core.api.internal.database.base.DatabaseType
-import migratedb.v1.core.internal.database.DatabaseTypeRegisterImpl
 import migratedb.v1.core.internal.database.h2.H2DatabaseType
 import migratedb.v1.core.internal.util.ClassUtils
 import migratedb.v1.dependency_downloader.MavenCentralToLocal
@@ -42,12 +41,10 @@ enum class H2 : DbSystem {
     //  - None
 
     companion object {
+
         private const val DRIVER_CLASS = "org.h2.Driver"
 
         private val databaseType = H2DatabaseType()
-        private val databaseTypeRegister = DatabaseTypeRegisterImpl().also {
-            it.registerDatabaseTypes(listOf(databaseType))
-        }
 
         init {
             // Check that H2 is not on the test class path (because our custom class loader delegates to its parent)
@@ -69,6 +66,7 @@ enum class H2 : DbSystem {
     }
 
     private inner class Instance : DbSystem.Instance {
+
         override val type: DatabaseType get() = Companion.databaseType
         private val databaseName = Names.nextFile()
 

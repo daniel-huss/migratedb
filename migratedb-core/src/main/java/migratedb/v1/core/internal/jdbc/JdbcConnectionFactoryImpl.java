@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.sql.SQLException;
  * Utility class for dealing with jdbc connections.
  */
 public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory, AutoCloseable {
+
     private final ConnectionProvider dataSource;
     private final int connectRetries;
     private final int connectRetriesInterval;
@@ -95,7 +96,7 @@ public class JdbcConnectionFactoryImpl implements JdbcConnectionFactory, AutoClo
                                                                             connectRetries,
                                                                             connectRetriesInterval,
                                                                             configuration.getDatabaseTypeRegister())
-                : firstConnection;
+            : firstConnection;
         firstConnection = null;
         try {
             databaseType.alterConnectionAsNeeded(connection, configuration);

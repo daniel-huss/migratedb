@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import java.util.Comparator;
  * </ul>
  */
 public final class MigrationExecutionOrdering implements Comparator<MigrationInfo> {
+
     @Override
     public int compare(MigrationInfo o1, MigrationInfo o2) {
         if ((o1.getInstalledRank() != null) && (o2.getInstalledRank() != null)) {

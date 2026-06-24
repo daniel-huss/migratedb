@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import migratedb.v1.core.internal.schemahistory.SchemaHistory;
  * Handles MigrateDB 's baseline command.
  */
 public class DbBaseline {
+
     private static final Log LOG = Log.getLog(DbBaseline.class);
 
     /**
@@ -93,36 +94,36 @@ public class DbBaseline {
                 AppliedMigration baselineMarker = schemaHistory.getBaselineMarker();
                 if (baselineMarker != null) {
                     if (baselineVersion.equals(baselineMarker.getVersion())
-                            && baselineDescription.equals(baselineMarker.getDescription())) {
+                        && baselineDescription.equals(baselineMarker.getDescription())) {
                         LOG.info("Schema history table " + schemaHistory + " already initialized with ("
-                                + baselineVersion + "," + baselineDescription + "). Skipping.");
+                                 + baselineVersion + "," + baselineDescription + "). Skipping.");
                         baselineResult.successfullyBaselined = true;
                         baselineResult.baselineVersion = baselineVersion.toString();
                     } else {
                         throw new MigrateDbException(
-                                "Unable to baseline schema history table " + schemaHistory + " with ("
-                                        + baselineVersion + "," + baselineDescription
-                                        + ") as it has already been baselined with ("
-                                        + baselineMarker.getVersion() + "," + baselineMarker.getDescription() + ")");
+                            "Unable to baseline schema history table " + schemaHistory + " with ("
+                            + baselineVersion + "," + baselineDescription
+                            + ") as it has already been baselined with ("
+                            + baselineMarker.getVersion() + "," + baselineMarker.getDescription() + ")");
                     }
                 } else {
                     if (schemaHistory.hasSchemasMarker() && baselineVersion.equals(Version.parse("0"))) {
                         throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
-                                " with version 0 as this version was used for schema creation");
+                                                     " with version 0 as this version was used for schema creation");
                     }
 
                     if (schemaHistory.hasAppliedMigrations()) {
                         throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
-                                " as it already contains migrations");
+                                                     " as it already contains migrations");
                     }
 
                     if (schemaHistory.allAppliedMigrations().isEmpty()) {
                         throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
-                                " as it already exists, and is empty.");
+                                                     " as it already exists, and is empty.");
                     }
 
                     throw new MigrateDbException("Unable to baseline schema history table " + schemaHistory +
-                            " as it already contains migrations.");
+                                                 " as it already contains migrations.");
                 }
             }
         } catch (MigrateDbException e) {

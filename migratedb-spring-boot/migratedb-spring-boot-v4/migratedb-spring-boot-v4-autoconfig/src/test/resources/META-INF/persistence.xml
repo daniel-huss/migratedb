@@ -1,0 +1,5 @@
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
+    <persistence-unit name="manually-configured">
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+</persistence>

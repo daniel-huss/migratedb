@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import java.sql.*;
  * Utility class for dealing with jdbc connections.
  */
 public final class JdbcUtils {
+
     private static final Log LOG = Log.getLog(JdbcUtils.class);
 
     /**
@@ -47,7 +48,7 @@ public final class JdbcUtils {
                                             int connectRetries,
                                             int connectRetriesInterval,
                                             DatabaseTypeRegister databaseTypeRegister)
-            throws MigrateDbException {
+        throws MigrateDbException {
         BackoffStrategy backoffStrategy = new BackoffStrategy(1, 2, connectRetriesInterval);
         int retries = 0;
         while (true) {
@@ -55,7 +56,7 @@ public final class JdbcUtils {
                 return dataSource.getConnection();
             } catch (SQLException e) {
                 if ("08S01".equals(e.getSQLState()) && e.getMessage().contains(
-                        "This driver is not configured for integrated authentication")) {
+                    "This driver is not configured for integrated authentication")) {
                     throw new MigrateDbSqlException("Unable to obtain connection from database", e);
                 } else if (e.getSQLState() == null && e.getMessage().contains("MSAL4J")) {
                     throw new MigrateDbSqlException("Unable to obtain connection from database.\n" +

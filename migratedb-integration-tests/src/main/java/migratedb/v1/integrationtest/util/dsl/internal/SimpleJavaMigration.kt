@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package migratedb.v1.integrationtest.util.dsl.internal
 
-import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 import migratedb.v1.core.api.Checksum
 import migratedb.v1.core.api.Version
 import migratedb.v1.core.api.configuration.Configuration
 import migratedb.v1.core.api.migration.Context
 import migratedb.v1.core.api.migration.JavaMigration
 import migratedb.v1.core.internal.resolver.MigrationInfoHelper
+import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 import java.sql.Connection
 
 class SimpleJavaMigration(
@@ -30,6 +30,7 @@ class SimpleJavaMigration(
     private val code: (Connection) -> Unit,
     private val checksum: Checksum? = null
 ) : JavaMigration {
+
     private val version: Version?
     private val description: String
     private val prefix = name[0].uppercase()

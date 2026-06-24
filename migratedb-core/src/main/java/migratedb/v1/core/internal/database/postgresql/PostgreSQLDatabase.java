@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class PostgreSQLDatabase extends BaseDatabase {
+
     public PostgreSQLDatabase(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);
     }
@@ -38,7 +39,7 @@ public class PostgreSQLDatabase extends BaseDatabase {
     @Override
     public void ensureSupported() {
         ensureDatabaseIsRecentEnough("9.0");
-        recommendMigrateDbUpgradeIfNecessaryForMajorVersion("17");
+        recommendMigrateDbUpgradeIfNecessaryForMajorVersion("19.99");
     }
 
     @Override

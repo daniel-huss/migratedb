@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,12 +46,14 @@ enum class SqlServer(image: String) : DbSystem {
     override fun toString() = "SQL Server ${name.replace('_', '.')}"
 
     companion object {
+
         private const val port = 1433
         private const val password = "AaaBbb0_"
         const val adminUser = "sa"
     }
 
     class Container(image: DockerImageName) : GenericContainer<Container>(image) {
+
         fun dataSource(user: String, database: String?): DataSource {
             return SQLServerDataSource().also {
                 it.user = user
@@ -63,7 +65,7 @@ enum class SqlServer(image: String) : DbSystem {
         }
 
         init {
-            withEnv("ACCEPT_EULA", "Y")
+            withEnv("ACCEPT_EULA", "Y") // I don't know what this means but the container doesn't start without it
             withEnv("SA_PASSWORD", password)
             withExposedPorts(port)
             waitingFor(Wait.forListeningPort())
@@ -75,6 +77,7 @@ enum class SqlServer(image: String) : DbSystem {
     }
 
     private class Instance(private val container: Lease<Container>) : DbSystem.Instance {
+
         override val type = SQLServerDatabaseType()
 
         private val internalDs by lazy { container().dataSource(adminUser, null) }

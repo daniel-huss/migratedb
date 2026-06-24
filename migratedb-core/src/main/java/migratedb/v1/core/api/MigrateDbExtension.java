@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.Set;
  * extension, use {@link FluentConfiguration#useExtension(MigrateDbExtension)}.
  */
 public interface MigrateDbExtension {
+
     /**
      * @return A human-readable English description of this extension.
      */

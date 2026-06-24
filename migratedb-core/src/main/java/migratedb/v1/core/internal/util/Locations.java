@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
  * Encapsulation of a location list. Removes duplicates and sub-locations (for file-based locations).
  */
 public class Locations {
+
     private static final Log LOG = Log.getLog(Locations.class);
 
     private final List<Location> locations;
@@ -50,8 +51,8 @@ public class Locations {
      */
     public Locations(List<String> rawLocations, @Nullable ClassLoader classLoader) {
         this.locations = processLocations(rawLocations.stream()
-                .map(it -> Location.parse(it, classLoader))
-                .collect(Collectors.toUnmodifiableList()));
+                                                      .map(it -> Location.parse(it, classLoader))
+                                                      .collect(Collectors.toUnmodifiableList()));
     }
 
     private static List<Location> processLocations(List<Location> locations) {
@@ -91,7 +92,7 @@ public class Locations {
     private static @Nullable Location getParentLocationIfExists(FileSystemLocation location, Collection<Location> otherLocations) {
         for (var otherLocation : otherLocations) {
             if (otherLocation instanceof FileSystemLocation &&
-                    isParent(((FileSystemLocation) otherLocation), location)) {
+                isParent(((FileSystemLocation) otherLocation), location)) {
                 return otherLocation;
             }
         }
@@ -101,10 +102,14 @@ public class Locations {
     private static boolean isParent(FileSystemLocation maybeParent, FileSystemLocation maybeChild) {
         var parentDir = maybeParent.getBaseDirectory();
         var childDir = maybeChild.getBaseDirectory();
-        if (parentDir.equals(childDir) || childDir.getNameCount() < parentDir.getNameCount()) return false;
+        if (parentDir.equals(childDir) || childDir.getNameCount() < parentDir.getNameCount()) {
+            return false;
+        }
         do {
             childDir = childDir.getParent();
-            if (parentDir.equals(childDir)) return true;
+            if (parentDir.equals(childDir)) {
+                return true;
+            }
         } while (childDir != null && !childDir.equals(childDir.getParent()));
         return false;
     }

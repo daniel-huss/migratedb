@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package migratedb.v1.integrationtest.util.dsl.internal
 
-import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.checksum
-import migratedb.v1.integrationtest.util.dsl.RunWithConfigSpec
 import migratedb.v1.core.api.configuration.FluentConfiguration
 import migratedb.v1.core.api.migration.JavaMigration
 import migratedb.v1.core.internal.util.ClassUtils
+import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.checksum
+import migratedb.v1.integrationtest.util.dsl.RunWithConfigSpec
 
 abstract class AbstractRunWithConfigSpec(private val databaseContext: DatabaseContext) : RunWithConfigSpec {
+
     private var config = newConfig()
 
     override fun createMigrations(names: Collection<String>): Array<JavaMigration> {

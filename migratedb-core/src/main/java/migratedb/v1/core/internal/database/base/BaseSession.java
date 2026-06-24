@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
 public abstract class BaseSession implements Session {
+
     protected JdbcTemplate jdbcTemplate;
 
     private final Database database;
@@ -99,8 +100,8 @@ public abstract class BaseSession implements Session {
     @Override
     public <T> T lock(Table table, Callable<T> callable) {
         return ExecutionTemplateFactory
-                .createTableExclusiveExecutionTemplate(jdbcTemplate.getConnection(), table, database)
-                .execute(callable);
+            .createTableExclusiveExecutionTemplate(jdbcTemplate.getConnection(), table, database)
+            .execute(callable);
     }
 
     @Override

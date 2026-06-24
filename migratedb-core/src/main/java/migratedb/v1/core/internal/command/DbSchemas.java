@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import java.util.List;
  * Handles MigrateDB 's automatic schema creation.
  */
 public class DbSchemas {
+
     private static final Log LOG = Log.getLog(DbSchemas.class);
 
     /**
@@ -93,9 +94,9 @@ public class DbSchemas {
                                                 if (!schema.exists()) {
                                                     if (schema.getName() == null) {
                                                         throw new MigrateDbException(
-                                                                "Unable to determine schema for the schema history table." +
-                                                                " Set a default schema for the connection or specify one " +
-                                                                "using the defaultSchema property!");
+                                                            "Unable to determine schema for the schema history table." +
+                                                            " Set a default schema for the connection or specify one " +
+                                                            "using the defaultSchema property!");
                                                     }
                                                     LOG.debug("Creating schema: " + schema);
                                                     schema.create();

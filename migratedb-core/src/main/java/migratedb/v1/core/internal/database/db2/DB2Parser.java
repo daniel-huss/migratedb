@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class DB2Parser extends BaseParser {
+
     private static final String COMMENT_DIRECTIVE = "--#";
     private static final String SET_TERMINATOR_DIRECTIVE = COMMENT_DIRECTIVE + "SET TERMINATOR ";
 
@@ -38,11 +39,11 @@ public class DB2Parser extends BaseParser {
     private static final List<String> CONTROL_FLOW_KEYWORDS = Arrays.asList("LOOP", "CASE", "DO", "REPEAT", "IF");
 
     private static final Pattern CREATE_IF_NOT_EXISTS = Pattern.compile(
-            ".*CREATE\\s([^\\s]+\\s){0,2}IF\\sNOT\\sEXISTS");
+        ".*CREATE\\s([^\\s]+\\s){0,2}IF\\sNOT\\sEXISTS");
     private static final Pattern CREATE_OR_REPLACE_PACKAGE = Pattern.compile(
-            ".*CREATE\\s(OR\\sREPLACE\\s)?PACKAGE\\s([^\\s]+\\s){0,2}(IS|AS)");
+        ".*CREATE\\s(OR\\sREPLACE\\s)?PACKAGE\\s([^\\s]+\\s){0,2}(IS|AS)");
     private static final Pattern DROP_IF_EXISTS = Pattern.compile(
-            ".*DROP\\s([^\\s]+\\s){0,2}IF\\sEXISTS");
+        ".*DROP\\s([^\\s]+\\s){0,2}IF\\sEXISTS");
 
     @Override
     protected void adjustBlockDepth(ParserContext context, List<Token> tokens, Token keyword, PeekingReader reader) throws IOException {
@@ -55,14 +56,14 @@ public class DB2Parser extends BaseParser {
         String previousPreviousToken = lastKeywordIndex >= 0 ? tokens.get(lastKeywordIndex).getText() : null;
 
         if (("BEGIN".equals(keyword.getText()) && (!"ROW".equals(previousKeyword) || previousPreviousToken == null || "EACH".equals(previousPreviousToken)))
-                || CONTROL_FLOW_KEYWORDS.contains(keyword.getText())
-                || doTokensMatchPattern(tokens, keyword, CREATE_OR_REPLACE_PACKAGE)) {
+            || CONTROL_FLOW_KEYWORDS.contains(keyword.getText())
+            || doTokensMatchPattern(tokens, keyword, CREATE_OR_REPLACE_PACKAGE)) {
             if (!previousTokenIsKeyword || !"END".equals(previousKeyword)) {
                 context.increaseBlockDepth(keyword.getText());
             }
         } else if (("END".equals(keyword.getText()) && !"ROW".equals(previousKeyword))
-                || doTokensMatchPattern(tokens, keyword, CREATE_IF_NOT_EXISTS)
-                || doTokensMatchPattern(tokens, keyword, DROP_IF_EXISTS)) {
+                   || doTokensMatchPattern(tokens, keyword, CREATE_IF_NOT_EXISTS)
+                   || doTokensMatchPattern(tokens, keyword, DROP_IF_EXISTS)) {
             context.decreaseBlockDepth();
         }
     }
@@ -79,17 +80,17 @@ public class DB2Parser extends BaseParser {
 
     @Override
     protected Token handleCommentDirective(PeekingReader reader, ParserContext context, int pos, int line, int col)
-            throws IOException {
+        throws IOException {
         if (SET_TERMINATOR_DIRECTIVE.equals(reader.peek(SET_TERMINATOR_DIRECTIVE.length()))) {
             reader.swallow(SET_TERMINATOR_DIRECTIVE.length());
             String delimiter = reader.readUntilExcluding('\n', '\r');
             return new Token(TokenType.NEW_DELIMITER,
-                    pos,
-                    line,
-                    col,
-                    delimiter.trim(),
-                    delimiter,
-                    context.getParensDepth());
+                             pos,
+                             line,
+                             col,
+                             delimiter.trim(),
+                             delimiter,
+                             context.getParensDepth());
         }
         reader.swallowUntilExcluding('\n', '\r');
         return new Token(TokenType.COMMENT, pos, line, col, null, null, context.getParensDepth());

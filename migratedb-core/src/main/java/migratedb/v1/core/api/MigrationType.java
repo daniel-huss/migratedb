@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,9 +81,9 @@ public enum MigrationType {
     }
 
     /**
-     * @return Whether this is a baseline migration, which represents all migrations with version {@code ≤} current baseline
-     * migration version. Note that the special baseline marker {@link #BASELINE} is not a real migration, and therefore
-     * not a baseline migration.
+     * @return Whether this is a baseline migration, which represents all migrations with version {@code ≤} current
+     * baseline migration version. Note that the special baseline marker {@link #BASELINE} is not a real migration, and
+     * therefore not a baseline migration.
      */
     public boolean isBaselineMigration() {
         return baselineMigration;

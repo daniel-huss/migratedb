@@ -32,6 +32,7 @@ import java.util.function.Consumer;
  * turn this off by overriding {@link #getChecksum(Configuration)}.</p>
  */
 public abstract class ScriptMigration extends BaseJavaMigration {
+
     /**
      * Provides the script to execute. If this returns a {@code Reader}, its lines are executed and the reader is
      * properly closed. Everything else is converted to a String via {@link Object#toString()}.
@@ -54,9 +55,9 @@ public abstract class ScriptMigration extends BaseJavaMigration {
         var script = script();
         try (var reader = script instanceof Reader ? (Reader) script : new StringReader(script.toString());
              var placeholderReplacingReader = new PlaceholderReplacingReader(configuration.getPlaceholderPrefix(),
-                     configuration.getPlaceholderSuffix(),
-                     configuration.getPlaceholders(),
-                     reader)) {
+                                                                             configuration.getPlaceholderSuffix(),
+                                                                             configuration.getPlaceholders(),
+                                                                             reader)) {
             consumer.accept(placeholderReplacingReader);
         } catch (IOException e) {
             throw new RuntimeException(e);

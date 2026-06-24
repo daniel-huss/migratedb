@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.io.Reader;
 import java.util.Arrays;
 
 public class PeekingReader extends FilterReader {
+
     private int[] peekBuffer = new int[256];
     private int peekMax = 0;
     private int peekBufferOffset = 0;
@@ -85,7 +86,6 @@ public class PeekingReader extends FilterReader {
      * Peek ahead in the stream to see if the next character matches this one.
      *
      * @param c The character to match.
-     *
      * @return {@code true} if it does, {@code false} if not.
      */
     public boolean peek(char c) throws IOException {
@@ -98,7 +98,6 @@ public class PeekingReader extends FilterReader {
      *
      * @param c1 The first character to match.
      * @param c2 The second character to match.
-     *
      * @return {@code true} if it does, {@code false} if not.
      */
     public boolean peek(char c1, char c2) throws IOException {
@@ -153,7 +152,6 @@ public class PeekingReader extends FilterReader {
      * Peek ahead in the stream to see if the next characters match this string exactly.
      *
      * @param str The string to match.
-     *
      * @return {@code true} if they do, {@code false} if not.
      */
     public boolean peek(String str) throws IOException {
@@ -164,7 +162,6 @@ public class PeekingReader extends FilterReader {
      * Peek ahead in the stream to look at this number of characters ahead in the reader.
      *
      * @param numChars The number of characters.
-     *
      * @return The characters.
      */
     public String peek(int numChars) throws IOException {
@@ -176,7 +173,6 @@ public class PeekingReader extends FilterReader {
      *
      * @param numChars          The number of characters.
      * @param peekMultipleLines Whether the peek should go across lines or not
-     *
      * @return The characters.
      */
     public String peek(int numChars, boolean peekMultipleLines) throws IOException {
@@ -259,7 +255,6 @@ public class PeekingReader extends FilterReader {
      *
      * @param delimiter1 The first delimiting character.
      * @param delimiter2 The second delimiting character.
-     *
      * @return The string read, without the delimiting characters.
      */
     public String readUntilExcluding(char delimiter1, char delimiter2) throws IOException {
@@ -324,7 +319,6 @@ public class PeekingReader extends FilterReader {
      *
      * @param delimiter  The delimiting character.
      * @param selfEscape Whether the delimiter can escape itself by being present twice.
-     *
      * @return The string read, without the delimiting character.
      */
     public String readUntilExcludingWithEscape(char delimiter, boolean selfEscape) throws IOException {
@@ -338,7 +332,6 @@ public class PeekingReader extends FilterReader {
      * @param delimiter  The delimiting character.
      * @param selfEscape Whether the delimiter can escape itself by being present twice.
      * @param escape     A separate escape character.
-     *
      * @return The string read, without the delimiting character.
      */
     public String readUntilExcludingWithEscape(char delimiter, boolean selfEscape, char escape) throws IOException {
@@ -395,7 +388,6 @@ public class PeekingReader extends FilterReader {
      * Reads all characters in this stream until any of the delimiting strings is encountered.
      *
      * @param strings The delimiting strings.
-     *
      * @return The string read, without the delimiting string.
      */
     public String readUntilExcluding(String... strings) throws IOException {
@@ -420,7 +412,6 @@ public class PeekingReader extends FilterReader {
      * Reads all characters in this stream until any of this delimiting character has been encountered.
      *
      * @param delimiter The delimiting character.
-     *
      * @return The string read, including the delimiting characters.
      */
     public String readUntilIncluding(char delimiter) throws IOException {
@@ -443,7 +434,6 @@ public class PeekingReader extends FilterReader {
      * Reads all characters in this stream until the delimiting sequence is encountered.
      *
      * @param delimiterSequence The delimiting sequence.
-     *
      * @return The string read, including the delimiting characters.
      */
     public String readUntilIncluding(String delimiterSequence) throws IOException {
@@ -468,7 +458,6 @@ public class PeekingReader extends FilterReader {
      * Reads all characters in this stream as long as they can be part of a keyword.
      *
      * @param delimiter The current delimiter.
-     *
      * @return The string read.
      */
     public String readKeywordPart(Delimiter delimiter, ParserContext context) throws IOException {

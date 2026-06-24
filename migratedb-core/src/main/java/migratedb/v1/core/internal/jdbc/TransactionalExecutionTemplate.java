@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.concurrent.Callable;
  * Spring-like template for executing transactions.
  */
 public class TransactionalExecutionTemplate implements ExecutionTemplate {
+
     private static final Log LOG = Log.getLog(TransactionalExecutionTemplate.class);
 
     /**
@@ -56,7 +57,6 @@ public class TransactionalExecutionTemplate implements ExecutionTemplate {
      * Executes this callback within a transaction.
      *
      * @param callback The callback to execute.
-     *
      * @return The result of the transaction code.
      */
     @Override

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
  * {@code new MigrateDb(Configuration)} constructor.
  */
 public class DefaultConfiguration implements Configuration {
+
     private @Nullable ConnectionProvider dataSource;
     private int connectRetries;
     private int connectRetriesInterval = 120;
@@ -941,8 +942,8 @@ public class DefaultConfiguration implements Configuration {
     public void setConnectRetriesInterval(int connectRetriesInterval) {
         if (connectRetriesInterval < 0) {
             throw new MigrateDbException(
-                    "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
-                    ErrorCode.CONFIGURATION);
+                "Invalid number for connectRetriesInterval (must be 0 or greater): " + connectRetriesInterval,
+                ErrorCode.CONFIGURATION);
         }
         this.connectRetriesInterval = connectRetriesInterval;
     }

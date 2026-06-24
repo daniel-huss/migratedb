@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
  * Note: "1.0" and "1.0.0" are considered equivalent by {@link #compareTo(Version)} and {@link #equals(Object)}!
  */
 public final class Version implements Comparable<Version> {
+
     /**
      * Regex for matching proper version format
      */
@@ -83,7 +84,6 @@ public final class Version implements Comparable<Version> {
      * Convenience method for quickly checking whether this version is at least as new as this other version.
      *
      * @param otherVersion The other version.
-     *
      * @return {@code true} if this version is equal or newer, {@code false} if it is older.
      */
     public boolean isAtLeast(String otherVersion) {
@@ -94,7 +94,6 @@ public final class Version implements Comparable<Version> {
      * Convenience method for quickly checking whether this version is newer than this other version.
      *
      * @param otherVersion The other version.
-     *
      * @return {@code true} if this version is newer, {@code false} if it is not.
      */
     public boolean isNewerThan(String otherVersion) {
@@ -105,7 +104,6 @@ public final class Version implements Comparable<Version> {
      * Convenience method for quickly checking whether this major version is newer than this other major version.
      *
      * @param otherVersion The other version.
-     *
      * @return {@code true} if this major version is newer, {@code false} if it is not.
      */
     public boolean isMajorNewerThan(String otherVersion) {

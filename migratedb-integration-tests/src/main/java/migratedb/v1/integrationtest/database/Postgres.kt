@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,8 @@ import java.time.Duration
 import javax.sql.DataSource
 
 enum class Postgres(image: String) : DbSystem {
+    V19Beta1("postgres:19beta1-alpine"),
+    V18("postgres:18-alpine"),
     V17("postgres:17-alpine"),
     V16("postgres:16-alpine"),
     V15("postgres:15-alpine"),
@@ -54,6 +56,7 @@ enum class Postgres(image: String) : DbSystem {
     override fun toString() = "PostgreSQL ${name.replace('_', '.')}"
 
     companion object {
+
         const val port = 5432
         const val password = "test"
         const val adminUser = "postgres"
@@ -61,6 +64,7 @@ enum class Postgres(image: String) : DbSystem {
     }
 
     class Container(image: DockerImageName) : GenericContainer<Container>(image) {
+
         fun dataSource(databaseName: String = defaultDatabase.toString(), currentSchema: String? = null): DataSource {
             return PGSimpleDataSource().also {
                 it.user = adminUser
@@ -89,6 +93,7 @@ enum class Postgres(image: String) : DbSystem {
     }
 
     private class Instance(private val container: Lease<Container>) : DbSystem.Instance {
+
         override val type: DatabaseType = PostgreSQLDatabaseType()
         private val internalDs by lazy { container().dataSource() }
 

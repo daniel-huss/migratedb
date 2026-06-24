@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import java.util.List;
  * Abstraction for database-specific functionality.
  */
 public abstract class BaseDatabase implements Database {
+
     private static final Log LOG = Log.getLog(BaseDatabase.class);
 
     private final DatabaseMetaData jdbcMetaData;
@@ -105,9 +106,9 @@ public abstract class BaseDatabase implements Database {
     protected final void ensureDatabaseIsRecentEnough(String oldestSupportedVersion) {
         if (!getVersion().isAtLeast(oldestSupportedVersion)) {
             throw new MigrateDbUpgradeRequiredException(
-                    databaseType,
-                    computeVersionDisplayName(getVersion()),
-                    computeVersionDisplayName(Version.parse(oldestSupportedVersion)));
+                databaseType,
+                computeVersionDisplayName(getVersion()),
+                computeVersionDisplayName(Version.parse(oldestSupportedVersion)));
         }
     }
 
@@ -125,9 +126,9 @@ public abstract class BaseDatabase implements Database {
 
     private void recommendMigrateDbUpgrade(String newestSupportedVersion) {
         String message =
-                "MigrateDB upgrade recommended: " + databaseType + " " + computeVersionDisplayName(getVersion())
-                + " is newer than this version of MigrateDB and has not been tested."
-                + " The latest tested version of " + databaseType + " is " + newestSupportedVersion + ".";
+            "MigrateDB upgrade recommended: " + databaseType + " " + computeVersionDisplayName(getVersion())
+            + " is newer than this version of MigrateDB and has not been tested."
+            + " The latest tested version of " + databaseType + " is " + newestSupportedVersion + ".";
         LOG.info(message);
     }
 

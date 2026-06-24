@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.List;
  * Dumps migrations in an ascii-art table in the logs and the console.
  */
 public class MigrationInfoDumper {
+
     /**
      * Prevent instantiation.
      */
@@ -47,12 +48,12 @@ public class MigrationInfoDumper {
         List<List<String>> rows = new ArrayList<>();
         for (MigrationInfo migrationInfo : migrationInfos) {
             List<String> row = Arrays.asList(
-                    getCategory(migrationInfo),
-                    getVersionStr(migrationInfo),
-                    migrationInfo.getDescription(),
-                    migrationInfo.getType().name(),
-                    DateTimeUtils.formatDateAsIsoishString(migrationInfo.getInstalledOn()),
-                    migrationInfo.getState().getDisplayName()
+                getCategory(migrationInfo),
+                getVersionStr(migrationInfo),
+                migrationInfo.getDescription(),
+                migrationInfo.getType().name(),
+                DateTimeUtils.formatDateAsIsoishString(migrationInfo.getInstalledOn()),
+                migrationInfo.getState().getDisplayName()
             );
             rows.add(row);
         }

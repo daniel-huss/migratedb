@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,15 @@ import kotlin.concurrent.withLock
 class SharedResources private constructor() : AutoCloseable {
 
     companion object {
+
         fun ExtensionContext.Store.resources(): SharedResources {
-            return getOrComputeIfAbsent(SharedResources::class.java, { SharedResources() }, SharedResources::class.java)
+            return synchronized(this) {
+                computeIfAbsent(
+                    SharedResources::class.java,
+                    { SharedResources() },
+                    SharedResources::class.java
+                )
+            }
         }
 
         val MAX_CONTAINERS = System.getenv("MAX_CONTAINERS")?.toIntOrNull() ?: 5

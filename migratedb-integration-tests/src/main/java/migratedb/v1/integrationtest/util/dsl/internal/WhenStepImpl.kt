@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,17 @@
 
 package migratedb.v1.integrationtest.util.dsl.internal
 
-import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
-import migratedb.v1.integrationtest.util.dsl.*
 import migratedb.v1.core.api.MigrationInfoService
 import migratedb.v1.core.api.output.BaselineResult
 import migratedb.v1.core.api.output.LiberateResult
 import migratedb.v1.core.api.output.MigrateResult
 import migratedb.v1.core.api.output.RepairResult
+import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutation
+import migratedb.v1.integrationtest.util.dsl.*
 
 class WhenStepImpl<G : Any>(given: G, databaseContext: DatabaseContext) : Dsl.WhenStep<G>,
     AbstractAfterGiven<G>(given, databaseContext) {
+
     override fun baseline(block: RunBaselineSpec.() -> Unit): BaselineResult {
         val runBaseline = RunBaselineImpl(databaseContext)
         runBaseline.block()

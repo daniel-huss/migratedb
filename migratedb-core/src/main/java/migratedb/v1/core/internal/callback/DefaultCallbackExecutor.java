@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import java.util.concurrent.Callable;
  * Executes the callbacks for a specific event.
  */
 public class DefaultCallbackExecutor implements CallbackExecutor {
+
     private final Configuration configuration;
     private final Database database;
     private final Schema schema;
@@ -107,10 +108,10 @@ public class DefaultCallbackExecutor implements CallbackExecutor {
             if (callback.supports(event, context)) {
                 if (callback.canHandleInTransaction(event, context)) {
                     ExecutionTemplateFactory.createExecutionTemplate(session.getJdbcConnection(), database).execute(
-                            (Callable<Void>) () -> {
-                                execute(session, callback, event, context);
-                                return null;
-                            });
+                        (Callable<Void>) () -> {
+                            execute(session, callback, event, context);
+                            return null;
+                        });
                 } else {
                     execute(session, callback, event, context);
                 }

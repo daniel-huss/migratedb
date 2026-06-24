@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,12 @@
 package migratedb.v1.core.testing
 
 import com.google.common.base.Equivalence
-import java.util.*
 
-// Kotlin compiler does not understand that Equivalence<Any> is valid for Map.diff(), so we have to declare it <Any?> :-/
-@Suppress("WRONG_NULLABILITY_FOR_JAVA_OVERRIDE")
-object SmartEquivalence : Equivalence<Any?>() {
-    override fun doEquivalent(a: Any?, b: Any?): Boolean {
-        return when {
-            a is Array<*> && b is Array<*> -> elementsEqual(a.toList(), b.toList())
-            a is Iterable<*> && b is Iterable<*> -> elementsEqual(a.toList(), b.toList())
+object SmartEquivalence : Equivalence<Any>() {
+    override fun doEquivalent(a: Any, b: Any): Boolean {
+        return when (a) {
+            is Array<*> if b is Array<*> -> elementsEqual(a.toList(), b.toList())
+            is Iterable<*> if b is Iterable<*> -> elementsEqual(a.toList(), b.toList())
             else -> a == b
         }
     }
@@ -39,7 +36,7 @@ object SmartEquivalence : Equivalence<Any?>() {
         return false
     }
 
-    override fun doHash(t: Any?): Int {
+    override fun doHash(t: Any): Int {
         return when (t) {
             is Array<*> -> t.contentHashCode()
             else -> t.hashCode()

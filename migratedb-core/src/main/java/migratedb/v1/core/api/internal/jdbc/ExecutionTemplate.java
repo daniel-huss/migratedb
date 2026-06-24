@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ public interface ExecutionTemplate {
      * Executes this callback within the context of the connection
      *
      * @param callback The callback to execute.
-     *
      * @return The result of the callback.
      */
     <T> T execute(Callable<T> callback);

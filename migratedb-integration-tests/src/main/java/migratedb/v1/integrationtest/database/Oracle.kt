@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,12 +52,14 @@ enum class Oracle(image: String, defaultDatabase: String) : DbSystem {
     override fun toString() = "Oracle ${name.replace('_', '.')}"
 
     companion object {
+
         private const val port = 1521
         private const val adminUser = "system"
         private const val password = "insecure"
     }
 
     inner class Container(image: DockerImageName) : GenericContainer<Container>(image) {
+
         fun dataSource(user: String = adminUser): DataSource {
             return OracleDataSource().also {
                 it.user = user
@@ -81,6 +83,7 @@ enum class Oracle(image: String, defaultDatabase: String) : DbSystem {
     }
 
     private class Instance(private val container: Lease<Container>) : DbSystem.Instance {
+
         override val type = OracleDatabaseType()
 
         private val internalDs by lazy { container().dataSource() }

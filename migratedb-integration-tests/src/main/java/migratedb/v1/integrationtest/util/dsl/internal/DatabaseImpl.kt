@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import javax.sql.DataSource
 class DatabaseImpl(
     private val databaseInstance: DbSystem.Instance
 ) : DatabaseSpec, AutoCloseable {
+
     private var namespace: SafeIdentifier = Names.nextNamespace()
     private var schemaHistory: SchemaHistorySpecImpl? = null
     private var database: Database? = null
@@ -101,6 +102,7 @@ class DatabaseImpl(
     }
 
     inner class SchemaHistorySpecImpl : SchemaHistorySpec {
+
         private val entries = mutableListOf<SchemaHistoryEntry>()
 
         override fun entry(
@@ -173,6 +175,7 @@ class DatabaseImpl(
 
 
     companion object {
+
         /**
          * Creates a new schema history accessor.
          */
@@ -204,6 +207,7 @@ class DatabaseImpl(
      * its connections are never used...
      */
     private object DummyConnectionFactory : JdbcConnectionFactory {
+
         private fun wontImplement(): Nothing {
             throw UnsupportedOperationException("This is just a dummy")
         }

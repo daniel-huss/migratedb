@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 public interface Configuration {
+
     /**
      * @return The ClassLoader to use for loading migrations, resolvers, etc. from the classpath. (default:
      * Thread.currentThread().getContextClassLoader() )
@@ -43,8 +44,8 @@ public interface Configuration {
 
     /**
      * @return The maximum number of retries when attempting to connect to the database. After each failed attempt,
-     * MigrateDB will wait 1 second before attempting to connect again, up to the maximum number of times specified by
-     * * connectRetries. The interval between retries doubles with each subsequent attempt. (default: 0)
+     * MigrateDB will wait 1 second before attempting to connect again, up to the maximum number of times specified by *
+     * connectRetries. The interval between retries doubles with each subsequent attempt. (default: 0)
      */
     int getConnectRetries();
 

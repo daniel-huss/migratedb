@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ enum class Hsqldb : DbSystem {
     //  - None
 
     companion object {
+
         private const val driverClass = "org.hsqldb.jdbc.JDBCDriver"
         private val databaseType = HSQLDBDatabaseType()
         private val databaseTypeRegister = DatabaseTypeRegisterImpl().also {
@@ -68,6 +69,7 @@ enum class Hsqldb : DbSystem {
     }
 
     private inner class Instance : DbSystem.Instance {
+
         override val type: DatabaseType get() = Companion.databaseType
         private val databaseName = Names.nextFile()
 

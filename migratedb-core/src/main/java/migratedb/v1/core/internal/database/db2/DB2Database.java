@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DB2Database extends BaseDatabase {
+
     public DB2Database(Configuration configuration, JdbcConnectionFactory jdbcConnectionFactory) {
         super(configuration, jdbcConnectionFactory);
     }
@@ -43,8 +44,8 @@ public class DB2Database extends BaseDatabase {
     @Override
     public String getRawCreateScript(Table table, boolean baseline) {
         String tablespace = configuration.getTablespace() == null
-                ? ""
-                : " IN \"" + configuration.getTablespace() + "\"";
+            ? ""
+            : " IN \"" + configuration.getTablespace() + "\"";
 
         return "CREATE TABLE " + table + " (\n" +
                "    \"installed_rank\" INT NOT NULL,\n" +

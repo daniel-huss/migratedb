@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import kotlin.io.path.outputStream
  * Places container logs in `target/container-logs/fileName.txt`.
  */
 class ToFileLogConsumer constructor(fileName: String) : Consumer<OutputFrame>, AutoCloseable {
+
     private val lock = object : Any() {}
     private val pathWithoutExtension = Paths.get("target", "container-logs", *fileName.toSafeFileName())
 

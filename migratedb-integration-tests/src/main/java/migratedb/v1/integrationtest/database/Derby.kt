@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ enum class Derby(baseImageTag: String) : DbSystem {
     //  - Does not normalize database names because it's just a file name
 
     companion object {
+
         private val databaseType = DerbyDatabaseType()
         private const val SERVER_PORT = 1257
         private const val USER_AND_PASS = "sa"
@@ -69,7 +70,6 @@ enum class Derby(baseImageTag: String) : DbSystem {
             }
             .withDockerfileFromBuilder { builder ->
                 builder.from("ibm-semeru-runtimes:$baseImageTag")
-                    .user("123456:123456")
                     .copy("/derby/*", "/opt/app/lib/")
                     .workDir("/tmp")
                     .entryPoint(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,10 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.maps.shouldContainAll
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
+import migratedb.v1.core.api.MigrationInfo
+import migratedb.v1.core.api.MigrationInfoService
+import migratedb.v1.core.api.MigrationState
+import migratedb.v1.core.api.configuration.FluentConfiguration
 import migratedb.v1.integrationtest.database.DbSystem
 import migratedb.v1.integrationtest.database.SomeInMemoryDb
 import migratedb.v1.integrationtest.util.base.IntegrationTest
@@ -31,10 +35,6 @@ import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.toMigrationNames
 import migratedb.v1.integrationtest.util.dsl.SchemaHistorySpec
 import migratedb.v1.integrationtest.util.dsl.internal.availableMigrations
-import migratedb.v1.core.api.MigrationInfo
-import migratedb.v1.core.api.MigrationInfoService
-import migratedb.v1.core.api.MigrationState
-import migratedb.v1.core.api.configuration.FluentConfiguration
 
 abstract class AbstractMigrationInfoTest : IntegrationTest() {
     object DoNotCheck : CharSequence by ""
@@ -57,6 +57,7 @@ abstract class AbstractMigrationInfoTest : IntegrationTest() {
         expectedState: Map<String, MigrationState>? = null,
         expectedStatesInAppliedOrder: Map<String, List<MigrationState>>? = null,
     ) {
+
         private val expectedAll = expectedAll.toMigrationNames()
         private val expectedPending = expectedPending.toMigrationNames()
         private val expectedApplied = expectedApplied.toMigrationNames()
@@ -142,7 +143,7 @@ abstract class AbstractMigrationInfoTest : IntegrationTest() {
                     grouped.entries.firstOrNull { (_, v) -> v.toSet().size > 1 }?.let {
                         fail(
                             "Cannot use expectedState because at least one version has multiple ocurrences." +
-                                    " Use expectedStatesInAppliedOrder.\n$it"
+                                " Use expectedStatesInAppliedOrder.\n$it"
                         )
                     }
                     grouped.mapValues { (_, v) -> v.first() }

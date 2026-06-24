@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * and callbacks are named in the form prefixSeparatorDESCRIPTIONsuffix
  */
 public final class ResourceName {
+
     private final String prefix;
     private final String version;
     private final String separator;
@@ -51,7 +52,6 @@ public final class ResourceName {
      * Construct a result representing an invalid resource name
      *
      * @param message A message explaining the reason the resource name is invalid
-     *
      * @return The fully populated parsing result.
      */
     public static ResourceName invalid(String message) {

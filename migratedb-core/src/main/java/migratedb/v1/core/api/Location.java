@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,6 +76,7 @@ public abstract class Location {
     public abstract String toString();
 
     public static final class CustomLocation extends Location {
+
         /**
          * The prefix for custom location implementations.
          */
@@ -137,6 +138,7 @@ public abstract class Location {
     }
 
     public static final class ClassPathLocation extends Location {
+
         /**
          * The prefix for classpath locations.
          */
@@ -160,7 +162,8 @@ public abstract class Location {
         }
 
         /**
-         * @return The resource name prefix of the index files without leading or trailing slashes, e.g. {@code db/migration}.
+         * @return The resource name prefix of the index files without leading or trailing slashes, e.g.
+         * {@code db/migration}.
          */
         public String namePrefix() {
             return StringUtils.trimChar(namePrefixWithTrailingSlash, '/');
@@ -175,10 +178,10 @@ public abstract class Location {
         public ClassProvider<?> classProvider() {
             return new ClassProvider<>() {
                 private final List<Class<?>> classes = readLines(CLASS_LIST_RESOURCE_NAME)
-                        .stream()
-                        .map(it -> ClassUtils.loadClass(it, classLoader))
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toUnmodifiableList());
+                    .stream()
+                    .map(it -> ClassUtils.loadClass(it, classLoader))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toUnmodifiableList());
 
                 @Override
                 public Collection<Class<?>> getClasses() {
@@ -190,7 +193,7 @@ public abstract class Location {
         @Override
         public boolean exists() {
             return classLoader.getResource(namePrefixWithTrailingSlash + RESOURCE_LIST_RESOURCE_NAME) != null ||
-                    classLoader.getResource(namePrefixWithTrailingSlash + CLASS_LIST_RESOURCE_NAME) != null;
+                   classLoader.getResource(namePrefixWithTrailingSlash + CLASS_LIST_RESOURCE_NAME) != null;
         }
 
         private List<String> readLines(String relativeResourceName) {
@@ -228,6 +231,7 @@ public abstract class Location {
     }
 
     public static final class FileSystemLocation extends Location {
+
         /**
          * The prefix for filesystem locations.
          */

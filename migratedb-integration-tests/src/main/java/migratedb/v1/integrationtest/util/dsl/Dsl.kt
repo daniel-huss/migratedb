@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import migratedb.v1.integrationtest.database.mutation.IndependentDatabaseMutatio
 import migratedb.v1.integrationtest.util.base.SafeIdentifier
 import migratedb.v1.integrationtest.util.base.SafeIdentifier.Companion.asSafeIdentifier
 import migratedb.v1.integrationtest.util.container.SharedResources
+import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 import migratedb.v1.integrationtest.util.dsl.internal.DatabaseContext
 import migratedb.v1.integrationtest.util.dsl.internal.GivenStepImpl
 import migratedb.v1.integrationtest.util.dsl.internal.ThenStepImpl
@@ -39,6 +40,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 
 class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable {
     companion object {
+
         /**
          * Auto-completes a shortened migration name like "V1" to a valid migration name like "V1__V1".
          */
@@ -117,6 +119,7 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
     }
 
     interface GivenStep {
+
         fun database(block: DatabaseSpec.() -> Unit)
         fun independentDbMutation(): IndependentDatabaseMutation
 
@@ -133,15 +136,18 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
     }
 
     interface GivenStepResult<G : Any> {
+
         fun <W : Any> `when`(block: (WhenStep<G>).() -> W): WhenStepResult<G, W>
     }
 
     interface AfterGiven<G> {
+
         val given: G
         val schemaName: SafeIdentifier?
     }
 
     interface WhenStep<G> : AfterGiven<G> {
+
         fun <T> justRun(block: JustRun.() -> T): T
 
         fun baseline(block: RunBaselineSpec.() -> Unit): BaselineResult
@@ -158,10 +164,12 @@ class Dsl(dbSystem: DbSystem, sharedResources: SharedResources) : AutoCloseable 
     }
 
     interface WhenStepResult<G : Any, W : Any> {
+
         fun then(block: (ThenStep<G>).(W) -> Unit)
     }
 
     interface ThenStep<G : Any> : AfterGiven<G> {
+
         fun withConnection(block: (JdbcTemplate) -> Unit)
 
         fun schemaHistory(table: String? = null, block: (List<AppliedMigration>).() -> Unit)

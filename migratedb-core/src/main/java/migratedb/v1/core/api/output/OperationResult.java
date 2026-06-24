@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,9 @@ import org.checkerframework.framework.qual.TypeUseLocation;
 import java.util.LinkedList;
 import java.util.List;
 
-@DefaultQualifier(value = Nullable.class, locations = { TypeUseLocation.FIELD, TypeUseLocation.PARAMETER })
+@DefaultQualifier(value = Nullable.class, locations = {TypeUseLocation.FIELD, TypeUseLocation.PARAMETER})
 public abstract class OperationResult {
+
     public String migratedbVersion;
     public String database;
     public List<String> warnings;

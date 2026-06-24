@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import static migratedb.v1.core.internal.schemahistory.SchemaHistory.NO_DESCRIPT
  * Converts the schema history table into the format used by MigrateDB.
  */
 public class DbLiberate {
+
     private static final Log LOG = Log.getLog(DbLiberate.class);
 
     private final SchemaHistory schemaHistory;
@@ -108,21 +109,21 @@ public class DbLiberate {
                     throw new MigrateDbException(message);
                 }
                 return CommandResultFactory.createLiberateResult(
-                        configuration,
-                        database,
-                        schemaHistory.getTable().getSchema().getName(),
-                        schemaHistory.getTable().getName(),
-                        List.of(new LiberateAction(LiberateAction.TYPE_ABORTED, message))
+                    configuration,
+                    database,
+                    schemaHistory.getTable().getSchema().getName(),
+                    schemaHistory.getTable().getName(),
+                    List.of(new LiberateAction(LiberateAction.TYPE_ABORTED, message))
                 );
             }
             var changes = database.getMainSession().lock(schemaHistory.getTable(),
                                                          () -> convertToMigrateDb(fromTable));
             return CommandResultFactory.createLiberateResult(
-                    configuration,
-                    database,
-                    schemaHistory.getTable().getSchema().getName(),
-                    schemaHistory.getTable().getName(),
-                    changes);
+                configuration,
+                database,
+                schemaHistory.getTable().getSchema().getName(),
+                schemaHistory.getTable().getName(),
+                changes);
         });
     }
 
@@ -246,20 +247,21 @@ public class DbLiberate {
         }
 
         return new OldSchemaHistoryRow(
-                installedRank,
-                description,
-                version,
-                type,
-                isUndo,
-                isTableMarker,
-                script,
-                installedBy,
-                executionTime,
-                success
+            installedRank,
+            description,
+            version,
+            type,
+            isUndo,
+            isTableMarker,
+            script,
+            installedBy,
+            executionTime,
+            success
         );
     }
 
     private static final class OldSchemaHistoryRow {
+
         public final int installedRank;
         public final String description;
         public final @Nullable Version version;
@@ -303,6 +305,7 @@ public class DbLiberate {
     }
 
     private static final class ResultSetReader {
+
         private final ResultSet rs;
         private final Map<String, Integer> columnPositions;
 

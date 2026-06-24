@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import migratedb.v1.integrationtest.util.dsl.Dsl
 import java.sql.Connection
 
 class GivenStepImpl(private val databaseInstance: () -> DbSystem.Instance) : AutoCloseable, Dsl.GivenStep {
+
     private var database: DatabaseImpl? = null
     private var databaseContext: DatabaseContext? = null
     private val extensions = mutableListOf<(DatabaseContext) -> Unit>()

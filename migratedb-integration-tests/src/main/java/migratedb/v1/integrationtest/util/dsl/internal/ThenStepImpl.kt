@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 
 class ThenStepImpl<G : Any>(given: G, databaseContext: DatabaseContext) : Dsl.ThenStep<G>,
     AbstractAfterGiven<G>(given, databaseContext) {
+
     override fun withConnection(block: (JdbcTemplate) -> Unit) {
         databaseContext.database.supportsChangingCurrentSchema()
         databaseContext.databaseInstance

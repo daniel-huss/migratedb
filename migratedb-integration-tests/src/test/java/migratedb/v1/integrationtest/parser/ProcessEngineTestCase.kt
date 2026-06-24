@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import migratedb.v1.integrationtest.util.dsl.RunMigrateSpec
  * Parser test case that checks whether the non-trivial database schema create/drop scripts of some process engine can
  * be parsed and executed.
  */
-class ProcessEngineTestCase(val dbSystem: DbSystem, val skipDrop: Boolean = false) : IntegrationTest() {
+class ProcessEngineTestCase(val dbSystem: DbSystem, private val skipDrop: Boolean = false) : IntegrationTest() {
+
     private enum class ComponentCategory(private val resourceNamePart: String) {
         Identity("identity"),
         Engine("engine"),
@@ -38,6 +39,7 @@ class ProcessEngineTestCase(val dbSystem: DbSystem, val skipDrop: Boolean = fals
         override fun toString() = resourceNamePart
 
         companion object {
+
             fun inOrder(action: ActionCategory) = when (action) {
                 ActionCategory.Create -> entries
                 ActionCategory.Drop -> entries.asReversed()
@@ -53,7 +55,6 @@ class ProcessEngineTestCase(val dbSystem: DbSystem, val skipDrop: Boolean = fals
 
     private fun resourceName(dbSystem: DbSystem, component: ComponentCategory, action: ActionCategory) =
         "/org/camunda/bpm/engine/db/$action/activiti." + when (dbSystem) {
-            is CockroachDb -> "cockroachdb"
             is MariaDb -> "mariadb"
             is SqlServer -> "mssql"
             is MySql -> "mysql"

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import java.util.Objects;
  * Its natural ordering is inconsistent with equals().
  */
 public final class AppliedMigration {
+
     /**
      * The order in which this migration was applied amongst all others. (For out of order detection)
      */
@@ -195,48 +196,48 @@ public final class AppliedMigration {
         }
         AppliedMigration other = (AppliedMigration) o;
         return (executionTime == other.executionTime) &&
-                (installedRank == other.installedRank) &&
-                (success == other.success) &&
-                Objects.equals(checksum, other.checksum) &&
-                Objects.equals(description, other.description) &&
-                Objects.equals(installedBy, other.installedBy) &&
-                Objects.equals(installedOn, other.installedOn) &&
-                Objects.equals(script, other.script) &&
-                Objects.equals(type, other.type) &&
-                Objects.equals(version, other.version);
+               (installedRank == other.installedRank) &&
+               (success == other.success) &&
+               Objects.equals(checksum, other.checksum) &&
+               Objects.equals(description, other.description) &&
+               Objects.equals(installedBy, other.installedBy) &&
+               Objects.equals(installedOn, other.installedOn) &&
+               Objects.equals(script, other.script) &&
+               Objects.equals(type, other.type) &&
+               Objects.equals(version, other.version);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(installedRank,
-                version,
-                description,
-                type,
-                script,
-                checksum,
-                installedOn,
-                installedBy,
-                executionTime,
-                success);
+                            version,
+                            description,
+                            type,
+                            script,
+                            checksum,
+                            installedOn,
+                            installedBy,
+                            executionTime,
+                            success);
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +
-                "installedRank=" + installedRank +
-                ", version=" + version +
-                ", description='" + description + '\'' +
-                ", type=" + type +
-                ", checksum=" + checksum +
-                ", installedOn=" + installedOn +
-                ", installedBy='" + installedBy + '\'' +
-                ", success=" + success +
-                '}';
+               "installedRank=" + installedRank +
+               ", version=" + version +
+               ", description='" + description + '\'' +
+               ", type=" + type +
+               ", checksum=" + checksum +
+               ", installedOn=" + installedOn +
+               ", installedBy='" + installedBy + '\'' +
+               ", success=" + success +
+               '}';
     }
 
     public boolean isExecutionOfRepeatableMigration() {
         return getVersion() == null &&
-                !getType().equals(MigrationType.BASELINE) &&
-                !getType().equals(MigrationType.SCHEMA);
+               !getType().equals(MigrationType.BASELINE) &&
+               !getType().equals(MigrationType.SCHEMA);
     }
 }

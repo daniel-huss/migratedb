@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import java.util.Properties;
  * {@link DefaultConfiguration#configure(Properties)}.
  */
 public final class PropertyNames {
+
     @Info(typeHint = String.class)
     public static final String BASELINE_DESCRIPTION = "migratedb.baselineDescription";
 
@@ -181,6 +182,7 @@ public final class PropertyNames {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface Info {
+
         Class<?> typeHint();
 
         boolean commaSeparated() default false;

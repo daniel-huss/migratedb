@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class PlaceholderReplacingReader extends FilterReader {
+
     private final String prefix;
     private final String suffix;
     private final CaseInsensitiveMap placeholders = new CaseInsensitiveMap();
@@ -83,10 +84,10 @@ public class PlaceholderReplacingReader extends FilterReader {
         placeholders.putAll(parsingContextPlaceholders);
 
         return new PlaceholderReplacingReader(
-                configuration.getPlaceholderPrefix(),
-                configuration.getPlaceholderSuffix(),
-                placeholders,
-                reader);
+            configuration.getPlaceholderPrefix(),
+            configuration.getPlaceholderSuffix(),
+            placeholders,
+            reader);
     }
 
     public static PlaceholderReplacingReader createForScriptMigration(Configuration configuration,
@@ -99,10 +100,10 @@ public class PlaceholderReplacingReader extends FilterReader {
         placeholders.putAll(parsingContextPlaceholders);
 
         return new PlaceholderReplacingReader(
-                configuration.getScriptPlaceholderPrefix(),
-                configuration.getScriptPlaceholderSuffix(),
-                placeholders,
-                reader);
+            configuration.getScriptPlaceholderPrefix(),
+            configuration.getScriptPlaceholderSuffix(),
+            placeholders,
+            reader);
     }
 
     @Override
@@ -164,12 +165,12 @@ public class PlaceholderReplacingReader extends FilterReader {
 
                 if (placeholder.contains("migratedb:")) {
                     throw new MigrateDbException("Failed to populate value for default placeholder: "
-                            + canonicalPlaceholder);
+                                                 + canonicalPlaceholder);
                 }
 
                 throw new MigrateDbException("No value provided for placeholder: "
-                        + canonicalPlaceholder
-                        + ".  Check your configuration!");
+                                             + canonicalPlaceholder
+                                             + ".  Check your configuration!");
             }
 
             // set the current placeholder replacement

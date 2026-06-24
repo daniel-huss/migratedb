@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 
 public final class ExceptionUtils {
+
     /**
      * @return The root cause or the throwable itself if it doesn't have a cause.
      */
@@ -35,7 +36,9 @@ public final class ExceptionUtils {
         Throwable rootCause = throwable;
         while (true) {
             var cause = rootCause.getCause();
-            if (cause == null || !seen.add(cause) || seen.size() >= 10_000) break;
+            if (cause == null || !seen.add(cause) || seen.size() >= 10_000) {
+                break;
+            }
             rootCause = cause;
         }
 
@@ -52,7 +55,7 @@ public final class ExceptionUtils {
         }
 
         String message = "SQL State  : " + cause.getSQLState() + "\n"
-                + "Error Code : " + cause.getErrorCode() + "\n";
+                         + "Error Code : " + cause.getErrorCode() + "\n";
         if (cause.getMessage() != null) {
             message += "Message    : " + cause.getMessage().trim() + "\n";
         }

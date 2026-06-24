@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package migratedb.v1.integrationtest.util.dsl.internal
 import migratedb.v1.integrationtest.util.dsl.Dsl.Companion.toMigrationName
 
 class ScriptMigration(name: String, val sql: String) {
+
     val name = name.toMigrationName()
     override fun toString() = name
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public abstract class BaseDatabaseType implements DatabaseType {
+
     private static final Log LOG = Log.getLog(BaseDatabaseType.class);
 
     public static final int DEFAULT_PRIORITY = 0;
@@ -105,12 +106,12 @@ public abstract class BaseDatabaseType implements DatabaseType {
     @Override
     public SqlScriptFactory createSqlScriptFactory(Configuration configuration, ParsingContext parsingContext) {
         return (resource, mixed, resourceProvider) ->
-                new ParserSqlScript(createParser(configuration,
-                                                 resourceProvider,
-                                                 parsingContext),
-                                    resource,
-                                    SqlScriptMetadataImpl.getMetadataResource(resourceProvider, resource),
-                                    mixed);
+            new ParserSqlScript(createParser(configuration,
+                                             resourceProvider,
+                                             parsingContext),
+                                resource,
+                                SqlScriptMetadataImpl.getMetadataResource(resourceProvider, resource),
+                                mixed);
     }
 
     @Override
@@ -118,9 +119,9 @@ public abstract class BaseDatabaseType implements DatabaseType {
                                                                    CallbackExecutor callbackExecutor) {
         DatabaseType thisRef = this;
         return (connection, outputQueryResults) ->
-                new DefaultSqlScriptExecutor(new JdbcTemplate(connection, thisRef),
-                                             callbackExecutor,
-                                             outputQueryResults);
+            new DefaultSqlScriptExecutor(new JdbcTemplate(connection, thisRef),
+                                         callbackExecutor,
+                                         outputQueryResults);
     }
 
     @Override

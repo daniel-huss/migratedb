@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package migratedb.v1.core.internal.util;
 
 public final class FeatureDetector {
+
     private final ClassLoader classLoader;
     private Boolean apacheCommonsLoggingAvailable;
     private Boolean slf4jAvailable;
@@ -39,7 +40,7 @@ public final class FeatureDetector {
             // provide any implementation, causing SLF4J to drop what we want to be console output on the floor.
             // Versions up to 1.7 have a StaticLoggerBinder
             slf4jAvailable = ClassUtils.isPresent("org.slf4j.Logger", classLoader)
-                    && ClassUtils.isPresent("org.slf4j.impl.StaticLoggerBinder", classLoader);
+                             && ClassUtils.isPresent("org.slf4j.impl.StaticLoggerBinder", classLoader);
             // Versions 1.8 and later use a ServiceLocator to bind to the implementation
             slf4jAvailable |= ClassUtils.isImplementationPresent("org.slf4j.spi.SLF4JServiceProvider", classLoader);
         }

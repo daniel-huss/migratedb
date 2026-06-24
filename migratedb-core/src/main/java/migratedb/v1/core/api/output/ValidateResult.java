@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,19 +22,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ValidateResult extends OperationResult {
+
     public final ErrorDetails errorDetails;
     public final List<ValidateOutput> invalidMigrations;
     public final boolean validationSuccessful;
     public final int validateCount;
 
     public ValidateResult(
-            String migratedbVersion,
-            String database,
-            ErrorDetails errorDetails,
-            boolean validationSuccessful,
-            int validateCount,
-            List<ValidateOutput> invalidMigrations,
-            List<String> warnings) {
+        String migratedbVersion,
+        String database,
+        ErrorDetails errorDetails,
+        boolean validationSuccessful,
+        int validateCount,
+        List<ValidateOutput> invalidMigrations,
+        List<String> warnings) {
         this.migratedbVersion = migratedbVersion;
         this.database = database;
         this.errorDetails = errorDetails;
@@ -44,7 +45,6 @@ public class ValidateResult extends OperationResult {
         this.operation = "validate";
         warnings.forEach(this::addWarning);
     }
-
 
     public String getAllErrorMessages() {
         return invalidMigrations.stream().map(m -> m.errorDetails.errorMessage).collect(Collectors.joining("\n"));

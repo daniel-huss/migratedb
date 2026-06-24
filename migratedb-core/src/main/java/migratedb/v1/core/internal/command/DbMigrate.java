@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import java.util.*;
 import static migratedb.v1.core.internal.jdbc.ExecutionTemplateFactory.createExecutionTemplate;
 
 public class DbMigrate {
+
     private static final Log LOG = Log.getLog(DbMigrate.class);
 
     private final Database database;
@@ -98,12 +99,12 @@ public class DbMigrate {
             stopWatch.start();
 
             count = configuration.isGroup() ?
-                    // When group is active, start the transaction boundary early to
-                    // ensure that all changes to the schema history table are either committed or rolled back
-                    // atomically.
-                    schemaHistory.withLock(this::migrateAll) :
-                    // For all regular cases, proceed with the migration as usual.
-                    migrateAll();
+                // When group is active, start the transaction boundary early to
+                // ensure that all changes to the schema history table are either committed or rolled back
+                // atomically.
+                schemaHistory.withLock(this::migrateAll) :
+                // For all regular cases, proceed with the migration as usual.
+                migrateAll();
 
             stopWatch.stop();
 
@@ -143,10 +144,10 @@ public class DbMigrate {
         while (true) {
             boolean firstRun = total == 0;
             int count = configuration.isGroup()
-                    // With group active a lock on the schema history table has already been acquired.
-                    ? migrateGroup(firstRun)
-                    // Otherwise acquire the lock now. The lock will be released at the end of each migration.
-                    : schemaHistory.withLock(() -> migrateGroup(firstRun));
+                // With group active a lock on the schema history table has already been acquired.
+                ? migrateGroup(firstRun)
+                // Otherwise acquire the lock now. The lock will be released at the end of each migration.
+                : schemaHistory.withLock(() -> migrateGroup(firstRun));
             total += count;
             if (count == 0) {
                 // No further migrations available
@@ -187,14 +188,14 @@ public class DbMigrate {
         var current = infoService.current();
         var currentSchemaVersion = current == null ? null : current.getVersion();
         var currentSchemaVersionString = currentSchemaVersion == null ? SchemaHistory.EMPTY_SCHEMA_DESCRIPTION
-                : currentSchemaVersion.toString();
+            : currentSchemaVersion.toString();
         if (firstRun) {
             LOG.info("Current version of schema " + schema + ": " + currentSchemaVersionString);
 
             migrateResult.initialSchemaVersion = currentSchemaVersionString;
             if (configuration.isOutOfOrder()) {
                 String outOfOrderWarning =
-                        "outOfOrder mode is active. Migration of schema " + schema + " may not be reproducible.";
+                    "outOfOrder mode is active. Migration of schema " + schema + " may not be reproducible.";
                 LOG.warn(outOfOrderWarning);
                 migrateResult.addWarning(outOfOrderWarning);
             }
@@ -226,15 +227,15 @@ public class DbMigrate {
                 && (failed[0].getState() == MigrationState.FUTURE_FAILED)
                 && configuration.isIgnoreFutureMigrations()) {
                 LOG.warn(
-                        "Schema " + schema + " contains a failed future migration to version " + failed[0].getVersion() +
-                        " !");
+                    "Schema " + schema + " contains a failed future migration to version " + failed[0].getVersion() +
+                    " !");
             } else {
                 if (failed[0].getVersion() == null) {
                     throw new MigrateDbException("Schema " + schema + " contains a failed repeatable migration (" +
                                                  doQuote(failed[0].getDescription()) + ") !");
                 }
                 throw new MigrateDbException(
-                        "Schema " + schema + " contains a failed migration to version " + failed[0].getVersion() + " !");
+                    "Schema " + schema + " contains a failed migration to version " + failed[0].getVersion() + " !");
             }
         }
 
@@ -292,10 +293,10 @@ public class DbMigrate {
         try {
             if (executeGroupInTransaction) {
                 createExecutionTemplate(session.getJdbcConnection(), database)
-                        .execute(() -> {
-                            doMigrateGroup(group, stopWatch, skipExecutingMigrations, true);
-                            return null;
-                        });
+                    .execute(() -> {
+                        doMigrateGroup(group, stopWatch, skipExecutingMigrations, true);
+                        return null;
+                    });
             } else {
                 doMigrateGroup(group, stopWatch, skipExecutingMigrations, false);
             }
@@ -340,13 +341,13 @@ public class DbMigrate {
 
             if (!configuration.isMixed() && executeGroupInTransaction != inTransaction) {
                 throw new MigrateDbException(
-                        "Detected both transactional and non-transactional migrations within the same migration group"
-                        + " (even though mixed is false). First offending migration: "
-                        + doQuote((resolvedMigration.getVersion() == null ? "" : resolvedMigration.getVersion())
-                                  + (StringUtils.hasLength(resolvedMigration.getDescription()) ? " " +
-                                                                                                 resolvedMigration.getDescription()
-                                : ""))
-                        + (inTransaction ? "" : " [non-transactional]"));
+                    "Detected both transactional and non-transactional migrations within the same migration group"
+                    + " (even though mixed is false). First offending migration: "
+                    + doQuote((resolvedMigration.getVersion() == null ? "" : resolvedMigration.getVersion())
+                              + (StringUtils.hasLength(resolvedMigration.getDescription()) ? " " +
+                                                                                             resolvedMigration.getDescription()
+                        : ""))
+                    + (inTransaction ? "" : " [non-transactional]"));
             }
 
             executeGroupInTransaction &= inTransaction;
@@ -450,7 +451,7 @@ public class DbMigrate {
             migrationText = "schema " + schema + " to version " + doQuote(migration.getVersion()
                                                                           +
                                                                           (StringUtils.hasLength(migration.getDescription())
-                                                                                  ? " - " + migration.getDescription() : ""))
+                                                                              ? " - " + migration.getDescription() : ""))
                             + (isOutOfOrder ? " [out of order]" : "")
                             + (migrationExecutor.canExecuteInTransaction() ? "" : " [non-transactional]");
         } else {
@@ -465,6 +466,7 @@ public class DbMigrate {
     }
 
     public static class MigrateDbMigrateException extends MigrateDbException {
+
         private final MigrationInfo migration;
         private final boolean outOfOrder;
 

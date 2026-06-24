@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,10 @@ import java.sql.Connection
 /**
  * Creates / drops a table in a schema. Works with SQL databases that support `information_schema.tables`.
  */
-class BasicCreateTableMutation(private val normalizedSchema: SafeIdentifier?, private val normalizedTable: SafeIdentifier) :
+class BasicCreateTableMutation(
+    private val normalizedSchema: SafeIdentifier?,
+    private val normalizedTable: SafeIdentifier
+) :
     IndependentDatabaseMutation {
 
     private val qualifiedTable = when (normalizedSchema) {

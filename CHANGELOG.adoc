@@ -6,6 +6,28 @@ The format is based on https://keepachangelog.com/en/1.1.0/[Keep a Changelog], a
 
 NOTE: 🔥 = Breaking Change
 
+== https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.6.0[1.6.0] - 2026-06-23
+
+=== Added
+
+* Support for Spring Boot 4
+
+* Tests/support for database versions:
+** PostgreSQL v18, v19 (Beta)
+** H2 v2.4
+** MariaDB v12, v13
+** MySQL v9.7
+** SQLite v3.53.2
+
+=== Changed
+
+* Updated build-time dependencies.
+* Updated Spring Boot 3 autoconfiguration environment to 3.5.15.
+
+=== Removed
+
+* Support for CockroachDB (due to license) ¯\(ツ)/¯
+
 == https://mvnrepository.com/artifact/de.unentscheidbar/migratedb-core/1.5.0[1.5.0] - 2025-07-06
 
 === Changed

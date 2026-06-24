@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
+import org.junit.jupiter.params.support.ParameterDeclarations
 import java.util.stream.Stream
 import javax.sql.DataSource
 
@@ -32,7 +33,9 @@ import javax.sql.DataSource
  * Adapter for the various supported database systems.
  */
 interface DbSystem {
+
     interface Instance : AutoCloseable {
+
         val type: DatabaseType
 
         /**
@@ -41,7 +44,7 @@ interface DbSystem {
          * at the schema or at the database level.
          *
          * @return The identifier that must be used to qualify tables in the namespace. This can be null, which means
-         * that qualified names are not supported.
+         *    that qualified names are not supported.
          */
         fun createNamespaceIfNotExists(namespace: SafeIdentifier): SafeIdentifier?
 
@@ -76,26 +79,30 @@ interface DbSystem {
 
 
     class All : ArgumentsProvider {
-        override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(
-            CockroachDb.entries,
-            Derby.entries,
-            Firebird.entries,
-            H2.entries,
-            Hsqldb.entries,
-            Informix.entries,
-            MariaDb.entries,
-            MySql.entries,
-            Oracle.entries,
-            Postgres.entries,
-            SqlServer.entries,
-            Sqlite.entries,
-        ).flatMap { it.stream() }.map { arguments(it) }
+
+        override fun provideArguments(parameters: ParameterDeclarations, context: ExtensionContext): Stream<Arguments> =
+            Stream.of(
+                Derby.entries,
+                Firebird.entries,
+                H2.entries,
+                Hsqldb.entries,
+                Informix.entries,
+                MariaDb.entries,
+                MySql.entries,
+                Oracle.entries,
+                Postgres.entries,
+                SqlServer.entries,
+                Sqlite.entries,
+            ).flatMap { it.stream() }.map { arguments(it) }
     }
 
 
+    @Suppress("unused")
     class JustOneForDebugging : ArgumentsProvider {
-        override fun provideArguments(context: ExtensionContext): Stream<Arguments> = Stream.of(
-            SomeInMemoryDb
-        ).map { arguments(it) }
+
+        override fun provideArguments(parameters: ParameterDeclarations, context: ExtensionContext): Stream<Arguments> =
+            Stream.of(
+                SomeInMemoryDb
+            ).map { arguments(it) }
     }
 }

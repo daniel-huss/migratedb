@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,17 +137,17 @@ class MigrateDbScanTest {
         @Override
         Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             def gradleVersions = [
-                '8.10',
-                '8.3',
+                '9.6.0',
+                '9.5.1',
+                '8.14.5',
                 '8.2.1',
-                '7.6',
-                '7.3',
+                '7.6.6',
             ]
             def compilingPlugins = [
                 "id 'java'",
                 "id 'java-library'",
                 "id 'application'",
-                "id 'org.jetbrains.kotlin.jvm' version '1.9.23'"
+                "id 'org.jetbrains.kotlin.jvm' version '2.4.0'"
             ]
             return gradleVersions.stream()
                 .flatMap { v ->
@@ -186,7 +186,9 @@ class MigrateDbScanTest {
             $pluginConfig            
 
             tasks.findByPath(':startScripts')?.configure {
-                mainClassName = 'Main'
+                if (hasProperty('mainClassName')) {
+                    mainClassName = 'Main'
+                }
             }
         """
         resources.each { createResource(it) }

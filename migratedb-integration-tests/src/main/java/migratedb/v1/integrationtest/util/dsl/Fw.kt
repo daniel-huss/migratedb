@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,9 @@ class DatabasesSupportedByFw : Args(
     functionHasOneParameter = OneParam.YES,
     *databases()
 ) {
+
     companion object {
+
         fun databases() = arrayOf<DbSystem>(
             Sqlite.V3_8_11_2,
             Sqlite.V3_36_0_3,
@@ -56,6 +58,7 @@ class DatabasesSupportedByFw : Args(
 
 //
 interface FwSchemaHistorySpec {
+
     fun entry(version: String?, description: String, type: String, success: Boolean)
 }
 
@@ -103,6 +106,7 @@ fun Dsl.GivenStep.fwSchemaHistory(table: String, size: Int): List<AppliedMigrati
 
 
 class FwSchemaHistory(private val configuration: FluentConfiguration, private val random: Random) : AutoCloseable {
+
     private val jdbcConnectionFactory = JdbcConnectionFactory(configuration.dataSource, configuration, null)
     private val database = jdbcConnectionFactory.databaseType.createDatabase(
         configuration,

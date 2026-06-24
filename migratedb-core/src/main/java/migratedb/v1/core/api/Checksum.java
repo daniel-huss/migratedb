@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import static java.util.Collections.emptyIterator;
  * Digest-based checksum that replaces the old Integer checksum.
  */
 public final class Checksum {
+
     private final byte[] bytes;
 
     private Checksum(byte[] bytes) {
@@ -67,7 +68,6 @@ public final class Checksum {
      * Parses the string value of a checksum. This method accepts the output of {@link #toString()}.
      *
      * @param string String form of checksum to parse.
-     *
      * @return Reconstituted checksum.
      */
     public static Checksum parse(String string) {
@@ -79,6 +79,7 @@ public final class Checksum {
     }
 
     public static final class Builder {
+
         private final MessageDigest digest = newMessageDigest();
         /**
          * To make sure the digest changes every time a value is added, even if that value is null or an empty byte

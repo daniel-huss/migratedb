@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,9 +97,10 @@ class ContainerPool(private val size: Int, private val currentTestInfoProvider: 
     }
 
     private class LeaseFromSlot<T : AutoCloseable>(val slot: Slot<T>) : Lease<T> {
+
         private var closed = false
 
-        override fun close() = synchronized(this) {
+        override fun close(): Unit = synchronized(this) {
             if (closed) return
             closed = true
             slot.unlease()
@@ -115,6 +116,7 @@ class ContainerPool(private val size: Int, private val currentTestInfoProvider: 
         val name: String,
         containerInitializer: () -> T
     ) : AutoCloseable {
+
         // @GuardedBy("leaseLock")
         private var leases: Int = 0
         private val futureContainer = async<AutoCloseable>(waitOnClose = true, containerInitializer)
@@ -162,6 +164,7 @@ class ContainerPool(private val size: Int, private val currentTestInfoProvider: 
     }
 
     private inner class Reaper : AutoCloseable {
+
         private val scheduler = Executors.newSingleThreadScheduledExecutor().also {
             it.scheduleWithFixedDelay(::periodScan, 10, 10, SECONDS)
         }
@@ -178,7 +181,7 @@ class ContainerPool(private val size: Int, private val currentTestInfoProvider: 
             scheduledChecks[slot]?.cancel(false)
             try {
                 scheduledChecks[slot] = scheduler.schedule({ reapSlotIfStillIdle(slot) }, 1, SECONDS)
-            } catch (ignored: RejectedExecutionException) {
+            } catch (_: RejectedExecutionException) {
             }
         }
 

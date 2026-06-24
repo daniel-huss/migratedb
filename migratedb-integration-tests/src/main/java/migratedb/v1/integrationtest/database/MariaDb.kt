@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,11 @@ import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
 enum class MariaDb(image: String) : DbSystem {
-    V11_7_1("mariadb:11.7-rc"),
-    V11_6_1("mariadb:11.6.2"),
-    V11_4_2("mariadb:11.4.4"),
+    V13("mariadb:13.0-rc"),
+    V12_3_2("mariadb:12.3.2"),
+    V11_8("mariadb:11.8"),
+    V11_6_2("mariadb:11.6.2"),
+    V11_4_4("mariadb:11.4.4"),
     V10_11("mariadb:10.11"),
     V10_10("mariadb:10.10"),
     V10_9("mariadb:10.9"),
@@ -53,6 +55,7 @@ enum class MariaDb(image: String) : DbSystem {
     override fun toString() = "MariaDB ${name.replace('_', '.')}"
 
     companion object {
+
         private const val port = 3306
         private const val password = "test"
         const val adminUser = "root"
@@ -61,6 +64,7 @@ enum class MariaDb(image: String) : DbSystem {
     }
 
     class Container(image: DockerImageName) : GenericContainer<Container>(image) {
+
         fun dataSource(user: String, database: String): DataSource {
             return MariaDbDataSource().also {
                 it.user = user
@@ -85,6 +89,7 @@ enum class MariaDb(image: String) : DbSystem {
     }
 
     private class Instance(private val container: Lease<Container>) : DbSystem.Instance {
+
         override val type = MariaDBDatabaseType()
 
         private val internalDs by lazy { container().dataSource(adminUser, defaultDatabase.toString()) }

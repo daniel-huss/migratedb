@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import migratedb.v1.core.api.internal.database.base.DatabaseType;
 import java.sql.Connection;
 
 public interface JdbcConnectionFactory {
+
     DatabaseType getDatabaseType();
 
     String getJdbcUrl();
@@ -32,6 +33,7 @@ public interface JdbcConnectionFactory {
     Connection openConnection();
 
     interface ConnectionInitializer {
+
         void initialize(JdbcConnectionFactory jdbcConnectionFactory, Connection connection);
     }
 }

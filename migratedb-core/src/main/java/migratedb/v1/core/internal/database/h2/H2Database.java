@@ -1,6 +1,6 @@
 /*
  * Copyright (C) Red Gate Software Ltd 2010-2021
- * Copyright 2022-2024 The MigrateDB contributors
+ * Copyright 2022-2026 The MigrateDB contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class H2Database extends BaseDatabase {
+
     /**
      * A dummy user used in Oracle mode, where USER() can return null but nulls can't be inserted into the schema
      * history table
@@ -44,6 +45,7 @@ public class H2Database extends BaseDatabase {
      * <a href="http://h2database.com/html/features.html#compatibility">H2 features</a>
      */
     private static final class CompatibilityMode {
+
         static final CompatibilityMode REGULAR = new CompatibilityMode("REGULAR");
         static final CompatibilityMode Oracle = new CompatibilityMode("Oracle");
 
@@ -93,8 +95,8 @@ public class H2Database extends BaseDatabase {
     @Override
     protected Version determineVersion() {
         String query = requiresV2MetadataColumnNames
-                ? "SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'info.BUILD_ID'"
-                : "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'info.BUILD_ID'";
+            ? "SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'info.BUILD_ID'"
+            : "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'info.BUILD_ID'";
         try {
             int buildId = getMainSession().getJdbcTemplate().queryForInt(query);
             return Version.parse(super.determineVersion() + "." + buildId);
@@ -105,8 +107,8 @@ public class H2Database extends BaseDatabase {
 
     private CompatibilityMode determineCompatibilityMode() {
         String query = requiresV2MetadataColumnNames
-                ? "SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'"
-                : "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'MODE'";
+            ? "SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'"
+            : "SELECT VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE NAME = 'MODE'";
         try {
             String mode = getMainSession().getJdbcTemplate().queryForString(query);
             if (mode == null || mode.isEmpty()) {
@@ -121,7 +123,7 @@ public class H2Database extends BaseDatabase {
     @Override
     public final void ensureSupported() {
         ensureDatabaseIsRecentEnough("1.2.137");
-        recommendMigrateDbUpgradeIfNecessary("2.3.999");
+        recommendMigrateDbUpgradeIfNecessary("2.4.999");
     }
 
     @Override
@@ -129,7 +131,7 @@ public class H2Database extends BaseDatabase {
         // In Oracle mode, empty strings in the marker row would be converted to NULLs. As the script column is
         // defined as NOT NULL, we insert a dummy value when required.
         String script = Objects.equals(compatibilityMode, CompatibilityMode.Oracle)
-                ? DUMMY_SCRIPT_NAME : "";
+            ? DUMMY_SCRIPT_NAME : "";
 
         return "CREATE TABLE IF NOT EXISTS " + table + " (\n" +
                "    \"installed_rank\" INT NOT NULL,\n" +
